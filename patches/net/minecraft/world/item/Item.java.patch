@@ -87,15 +87,6 @@
          return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
      }
  
-@@ -220,7 +_,7 @@
- 
-     @Override
-     public String toString() {
--        return BuiltInRegistries.ITEM.wrapAsHolder(this).getRegisteredName();
-+        return BuiltInRegistries.ITEM.getKey(this).toString();
-     }
- 
-     protected String getOrCreateDescriptionId() {
 @@ -240,10 +_,12 @@
      }
  
