@@ -5,6 +5,9 @@
 
 package net.neoforged.neoforge.common.util;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,14 +25,13 @@ public class RecipeMatcher {
      *
      * @return An array mapping inputs to tests. ret[x] = y means input[x] = test[y]
      */
-    public static <T> int[] findMatches(List<T> inputs, List<? extends Predicate<T>> tests) {
+    public static <T> int @Nullable [] findMatches(List<T> inputs, List<? extends Predicate<T>> tests) {
         int elements = inputs.size();
         if (elements != tests.size())
             return null; // There will not be a 1:1 mapping of inputs -> tests
 
         int[] ret = new int[elements];
-        for (int x = 0; x < elements; x++)
-            ret[x] = -1;
+        Arrays.fill(ret, -1);
 
         // [UnusedInputs] [UnusedIngredients] [IngredientMatchMask]...
         BitSet data = new BitSet((elements + 2) * elements);

@@ -70,7 +70,7 @@ import org.jetbrains.annotations.Nullable;
 public class IngredientTests {
     @GameTest
     @EmptyTemplate
-    // @TestHolder(description = "Tests if BlockTagIngredient works") TODO - fix
+    @TestHolder(description = "Tests if BlockTagIngredient works")
     static void blockTagIngredient(final DynamicTest test, final RegistrationHelper reg) {
         reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override
@@ -147,7 +147,7 @@ public class IngredientTests {
 
     @GameTest
     @EmptyTemplate
-    // @TestHolder(description = "Tests if strict NBT ingredients match the correct stacks") TODO - fix strict ingredients
+    @TestHolder(description = "Tests if strict NBT ingredients match the correct stacks")
     static void strictNBTIngredient(final DynamicTest test, final RegistrationHelper reg) {
         reg.addProvider(event -> new RecipeProvider(event.getGenerator().getPackOutput(), event.getLookupProvider()) {
             @Override

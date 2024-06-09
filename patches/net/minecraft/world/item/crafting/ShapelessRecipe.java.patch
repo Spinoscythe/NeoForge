@@ -19,7 +19,7 @@
      public boolean matches(CraftingInput p_346123_, Level p_44263_) {
          if (p_346123_.ingredientCount() != this.ingredients.size()) {
              return false;
-+        } else if (isSimple) {
++        } else if (!isSimple) {
 +            return net.neoforged.neoforge.common.util.RecipeMatcher.findMatches(p_346123_.items(), this.ingredients) != null;
          } else {
              return p_346123_.size() == 1 && this.ingredients.size() == 1
