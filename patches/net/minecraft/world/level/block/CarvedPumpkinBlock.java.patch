@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/level/block/CarvedPumpkinBlock.java
++++ b/net/minecraft/world/level/block/CarvedPumpkinBlock.java
+@@ -63,6 +_,9 @@
+         BlockPattern.BlockPatternMatch blockpattern$blockpatternmatch = this.getOrCreateSnowGolemFull().find(p_51379_, p_51380_);
+         if (blockpattern$blockpatternmatch != null) {
+             SnowGolem snowgolem = EntityType.SNOW_GOLEM.create(p_51379_, EntitySpawnReason.TRIGGERED);
++            var event = new net.neoforged.neoforge.event.entity.EntityMultiblockFormationEvent(snowgolem, blockpattern$blockpatternmatch, p_51379_, p_51380_);
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
++            snowgolem = (SnowGolem) event.getMob();
+             if (snowgolem != null) {
+                 spawnGolemInWorld(p_51379_, blockpattern$blockpatternmatch, snowgolem, blockpattern$blockpatternmatch.getBlock(0, 2, 0).getPos());
+             }
+@@ -70,6 +_,9 @@
+             BlockPattern.BlockPatternMatch blockpattern$blockpatternmatch1 = this.getOrCreateIronGolemFull().find(p_51379_, p_51380_);
+             if (blockpattern$blockpatternmatch1 != null) {
+                 IronGolem irongolem = EntityType.IRON_GOLEM.create(p_51379_, EntitySpawnReason.TRIGGERED);
++                var event = new net.neoforged.neoforge.event.entity.EntityMultiblockFormationEvent(irongolem, blockpattern$blockpatternmatch1, p_51379_, p_51380_);
++                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
++                irongolem = (IronGolem) event.getMob();
+                 if (irongolem != null) {
+                     irongolem.setPlayerCreated(true);
+                     spawnGolemInWorld(p_51379_, blockpattern$blockpatternmatch1, irongolem, blockpattern$blockpatternmatch1.getBlock(1, 2, 0).getPos());
