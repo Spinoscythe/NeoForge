@@ -114,13 +114,6 @@ public enum KeyModifier {
 
         @Override
         public boolean isActive(@Nullable IKeyConflictContext conflictContext) {
-            if (conflictContext != null && !conflictContext.conflicts(KeyConflictContext.IN_GAME)) {
-                for (KeyModifier keyModifier : MODIFIER_VALUES) {
-                    if (keyModifier.isActive(conflictContext)) {
-                        return false;
-                    }
-                }
-            }
             return true;
         }
 
