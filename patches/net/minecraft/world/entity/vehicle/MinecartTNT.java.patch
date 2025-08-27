@@ -1,0 +1,40 @@
+--- a/net/minecraft/world/entity/vehicle/MinecartTNT.java
++++ b/net/minecraft/world/entity/vehicle/MinecartTNT.java
+@@ -62,7 +_,7 @@
+         if (this.horizontalCollision) {
+             double d0 = this.getDeltaMovement().horizontalDistanceSqr();
+             if (d0 >= 0.01F) {
+-                this.explode(this.ignitionSource, d0);
++                this.explode(d0);
+             }
+         }
+     }
+@@ -100,6 +_,10 @@
+         return new ItemStack(Items.TNT_MINECART);
+     }
+ 
++    protected void explode(double p_38689_) {
++        this.explode(null, p_38689_);
++    }
++
+     protected void explode(@Nullable DamageSource p_259539_, double p_260287_) {
+         if (this.level() instanceof ServerLevel serverlevel) {
+             if (serverlevel.getGameRules().getBoolean(GameRules.RULE_TNT_EXPLODES)) {
+@@ -126,7 +_,7 @@
+     public boolean causeFallDamage(double p_397109_, float p_150347_, DamageSource p_150349_) {
+         if (p_397109_ >= 3.0) {
+             double d0 = p_397109_ / 10.0;
+-            this.explode(this.ignitionSource, d0 * d0);
++            this.explode(d0 * d0);
+         }
+ 
+         return super.causeFallDamage(p_397109_, p_150347_, p_150349_);
+@@ -151,7 +_,7 @@
+     public void primeFuse(@Nullable DamageSource p_397568_) {
+         if (!(this.level() instanceof ServerLevel serverlevel && !serverlevel.getGameRules().getBoolean(GameRules.RULE_TNT_EXPLODES))) {
+             this.fuse = 80;
+-            if (!this.level().isClientSide()) {
++            if (!this.level().isClientSide) {
+                 if (p_397568_ != null && this.ignitionSource == null) {
+                     this.ignitionSource = this.damageSources().explosion(this, p_397568_.getEntity());
+                 }

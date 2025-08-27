@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/level/GameRules.java
++++ b/net/minecraft/world/level/GameRules.java
+@@ -213,6 +_,12 @@
+         GameRules.Category.MISC,
+         GameRules.IntegerValue.create(8, 1, 1000, FeatureFlagSet.of(FeatureFlags.MINECART_IMPROVEMENTS), (p_360120_, p_360121_) -> {})
+     );
++    public static final GameRules.Key<GameRules.IntegerValue> RULE_SPAWN_CHUNK_RADIUS = register(
++        "spawnChunkRadius", GameRules.Category.MISC, GameRules.IntegerValue.create(2, 0, 32, FeatureFlagSet.of(), (p_415459_, p_415460_) -> {
++            ServerLevel serverlevel = p_415459_.overworld();
++            serverlevel.setDefaultSpawnPos(serverlevel.getSharedSpawnPos(), serverlevel.getSharedSpawnAngle());
++        })
++    );
+     public static final GameRules.Key<GameRules.BooleanValue> RULE_TNT_EXPLODES = register(
+         "tntExplodes", GameRules.Category.MISC, GameRules.BooleanValue.create(true)
+     );

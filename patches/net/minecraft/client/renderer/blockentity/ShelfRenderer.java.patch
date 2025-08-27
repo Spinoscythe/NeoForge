@@ -1,0 +1,96 @@
+--- a/net/minecraft/client/renderer/blockentity/ShelfRenderer.java
++++ /dev/null
+@@ -1,93 +_,0 @@
+-package net.minecraft.client.renderer.blockentity;
+-
+-import com.mojang.blaze3d.vertex.PoseStack;
+-import com.mojang.math.Axis;
+-import it.unimi.dsi.fastutil.HashCommon;
+-import javax.annotation.Nullable;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.entity.ItemRenderer;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+-import net.minecraft.core.Direction;
+-import net.minecraft.core.NonNullList;
+-import net.minecraft.world.entity.ItemOwner;
+-import net.minecraft.world.item.ItemDisplayContext;
+-import net.minecraft.world.item.ItemStack;
+-import net.minecraft.world.level.block.ShelfBlock;
+-import net.minecraft.world.level.block.entity.ShelfBlockEntity;
+-import net.minecraft.world.phys.AABB;
+-import net.minecraft.world.phys.Vec3;
+-import net.neoforged.api.distmarker.Dist;
+-import net.neoforged.api.distmarker.OnlyIn;
+-
+-@OnlyIn(Dist.CLIENT)
+-public class ShelfRenderer implements BlockEntityRenderer<ShelfBlockEntity> {
+-    private static final float ITEM_SIZE = 0.25F;
+-    private static final float ALIGN_ITEMS_TO_BOTTOM = -0.125F;
+-    private final ItemRenderer itemRenderer;
+-
+-    public ShelfRenderer(BlockEntityRendererProvider.Context p_434373_) {
+-        this.itemRenderer = p_434373_.itemRenderer();
+-    }
+-
+-    public void submit(
+-        ShelfBlockEntity p_439300_,
+-        float p_439111_,
+-        PoseStack p_440061_,
+-        int p_439838_,
+-        int p_439066_,
+-        Vec3 p_439252_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440654_,
+-        SubmitNodeCollector p_439335_
+-    ) {
+-        Direction direction = p_439300_.getBlockState().getValue(ShelfBlock.FACING);
+-        NonNullList<ItemStack> nonnulllist = p_439300_.getItems();
+-        int i = HashCommon.long2int(p_439300_.getBlockPos().asLong());
+-        float f = direction.getAxis().isHorizontal() ? -direction.toYRot() : 180.0F;
+-
+-        for (int j = 0; j < nonnulllist.size(); j++) {
+-            ItemStack itemstack = nonnulllist.get(j);
+-            if (!itemstack.isEmpty()) {
+-                this.submitItem(p_439300_, p_440061_, p_439335_, p_439838_, p_439066_, j, f, itemstack, i);
+-            }
+-        }
+-    }
+-
+-    private void submitItem(
+-        ShelfBlockEntity p_439069_,
+-        PoseStack p_439632_,
+-        SubmitNodeCollector p_440637_,
+-        int p_439738_,
+-        int p_439849_,
+-        int p_440499_,
+-        float p_439208_,
+-        ItemStack p_440034_,
+-        int p_440140_
+-    ) {
+-        float f = (p_440499_ - 1) * 0.3125F;
+-        boolean flag = p_439069_.getAlignItemsToBottom();
+-        Vec3 vec3 = new Vec3(f, flag ? -0.125 : 0.0, -0.25);
+-        p_439632_.pushPose();
+-        p_439632_.translate(0.5F, 0.5F, 0.5F);
+-        p_439632_.mulPose(Axis.YP.rotationDegrees(p_439208_));
+-        p_439632_.translate(vec3);
+-        p_439632_.scale(0.25F, 0.25F, 0.25F);
+-        if (!flag) {
+-            AABB aabb = this.itemRenderer.getBoundingBox(p_440034_, ItemDisplayContext.ON_SHELF, p_439069_.getLevel(), p_439069_, p_440140_ + p_440499_);
+-            p_439632_.translate(0.0, -(aabb.maxY - aabb.minY) / 2.0, 0.0);
+-        }
+-
+-        this.itemRenderer
+-            .renderUpwardsFrom(
+-                ItemOwner.offsetFromOwner(p_439069_, vec3.yRot(p_439208_ * (float) (Math.PI / 180.0))),
+-                p_440034_,
+-                ItemDisplayContext.ON_SHELF,
+-                p_439632_,
+-                p_440637_,
+-                p_439069_.getLevel(),
+-                p_439738_,
+-                p_439849_,
+-                p_440140_ + p_440499_
+-            );
+-        p_439632_.popPose();
+-    }
+-}

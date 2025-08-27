@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/renderer/entity/state/LivingEntityRenderState.java
++++ b/net/minecraft/client/renderer/entity/state/LivingEntityRenderState.java
+@@ -27,6 +_,7 @@
+     public boolean isAutoSpinAttack;
+     public boolean hasRedOverlay;
+     public boolean isInvisibleToPlayer;
++    public boolean appearsGlowing;
+     @Nullable
+     public Direction bedOrientation;
+     @Nullable

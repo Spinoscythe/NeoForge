@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/level/block/EndGatewayBlock.java
++++ b/net/minecraft/world/level/block/EndGatewayBlock.java
+@@ -45,9 +_,7 @@
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153189_, BlockState p_153190_, BlockEntityType<T> p_153191_) {
+         return createTickerHelper(
+-            p_153191_,
+-            BlockEntityType.END_GATEWAY,
+-            p_153189_.isClientSide() ? TheEndGatewayBlockEntity::beamAnimationTick : TheEndGatewayBlockEntity::portalTick
++            p_153191_, BlockEntityType.END_GATEWAY, p_153189_.isClientSide ? TheEndGatewayBlockEntity::beamAnimationTick : TheEndGatewayBlockEntity::portalTick
+         );
+     }
+ 
+@@ -91,7 +_,7 @@
+     @Override
+     protected void entityInside(BlockState p_350647_, Level p_350785_, BlockPos p_350610_, Entity p_350849_, InsideBlockEffectApplier p_405476_) {
+         if (p_350849_.canUsePortal(false)
+-            && !p_350785_.isClientSide()
++            && !p_350785_.isClientSide
+             && p_350785_.getBlockEntity(p_350610_) instanceof TheEndGatewayBlockEntity theendgatewayblockentity
+             && !theendgatewayblockentity.isCoolingDown()) {
+             p_350849_.setAsInsidePortal(this, p_350610_);

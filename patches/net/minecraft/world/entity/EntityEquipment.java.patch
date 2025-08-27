@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/entity/EntityEquipment.java
++++ b/net/minecraft/world/entity/EntityEquipment.java
+@@ -28,6 +_,7 @@
+     }
+ 
+     public ItemStack set(EquipmentSlot p_397821_, ItemStack p_397647_) {
++        p_397647_.getItem().verifyComponentsAfterLoad(p_397647_);
+         return Objects.requireNonNullElse(this.items.put(p_397821_, p_397647_), ItemStack.EMPTY);
+     }
+ 

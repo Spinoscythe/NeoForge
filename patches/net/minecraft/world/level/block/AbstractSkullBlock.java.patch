@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/AbstractSkullBlock.java
++++ b/net/minecraft/world/level/block/AbstractSkullBlock.java
+@@ -38,7 +_,7 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_151992_, BlockState p_151993_, BlockEntityType<T> p_151994_) {
+-        if (p_151992_.isClientSide()) {
++        if (p_151992_.isClientSide) {
+             boolean flag = p_151993_.is(Blocks.DRAGON_HEAD)
+                 || p_151993_.is(Blocks.DRAGON_WALL_HEAD)
+                 || p_151993_.is(Blocks.PIGLIN_HEAD)
+@@ -74,7 +_,7 @@
+     protected void neighborChanged(
+         BlockState p_301179_, Level p_301325_, BlockPos p_301085_, Block p_301182_, @Nullable Orientation p_362711_, boolean p_300890_
+     ) {
+-        if (!p_301325_.isClientSide()) {
++        if (!p_301325_.isClientSide) {
+             boolean flag = p_301325_.hasNeighborSignal(p_301085_);
+             if (flag != p_301179_.getValue(POWERED)) {
+                 p_301325_.setBlock(p_301085_, p_301179_.setValue(POWERED, flag), 2);

@@ -1,5 +1,16 @@
 --- a/net/minecraft/client/gui/screens/inventory/MerchantScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/MerchantScreen.java
+@@ -160,8 +_,8 @@
+     }
+ 
+     @Override
+-    public void renderContents(GuiGraphics p_283487_, int p_281994_, int p_282099_, float p_281815_) {
+-        super.renderContents(p_283487_, p_281994_, p_282099_, p_281815_);
++    public void render(GuiGraphics p_283487_, int p_281994_, int p_282099_, float p_281815_) {
++        super.render(p_283487_, p_281994_, p_282099_, p_281815_);
+         MerchantOffers merchantoffers = this.menu.getOffers();
+         if (!merchantoffers.isEmpty()) {
+             int i = (this.width - this.imageWidth) / 2;
 @@ -230,7 +_,11 @@
              p_281357_.renderItemDecorations(this.font, p_283466_, p_282403_, p_283601_);
          } else {
@@ -13,3 +24,21 @@
              p_281357_.blitSprite(RenderPipelines.GUI_TEXTURED, DISCOUNT_STRIKETHRUOGH_SPRITE, p_282403_ + 7, p_283601_ + 12, 9, 2);
          }
      }
+@@ -271,7 +_,7 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_99131_, double p_99132_, int p_99133_, boolean p_433614_) {
++    public boolean mouseClicked(double p_99131_, double p_99132_, int p_99133_) {
+         this.isDragging = false;
+         int i = (this.width - this.imageWidth) / 2;
+         int j = (this.height - this.imageHeight) / 2;
+@@ -279,7 +_,7 @@
+             this.isDragging = true;
+         }
+ 
+-        return super.mouseClicked(p_99131_, p_99132_, p_99133_, p_433614_);
++        return super.mouseClicked(p_99131_, p_99132_, p_99133_);
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

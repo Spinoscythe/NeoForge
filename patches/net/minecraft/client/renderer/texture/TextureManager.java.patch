@@ -1,0 +1,18 @@
+--- a/net/minecraft/client/renderer/texture/TextureManager.java
++++ b/net/minecraft/client/renderer/texture/TextureManager.java
+@@ -124,13 +_,12 @@
+ 
+     @Override
+     public CompletableFuture<Void> reload(
+-        PreparableReloadListener.SharedState p_435296_, Executor p_118480_, PreparableReloadListener.PreparationBarrier p_118476_, Executor p_118481_
++        PreparableReloadListener.PreparationBarrier p_118476_, ResourceManager p_118477_, Executor p_118480_, Executor p_118481_
+     ) {
+-        ResourceManager resourcemanager = p_435296_.resourceManager();
+         List<TextureManager.PendingReload> list = new ArrayList<>();
+         this.byPath.forEach((p_389356_, p_389357_) -> {
+             if (p_389357_ instanceof ReloadableTexture reloadabletexture) {
+-                list.add(scheduleLoad(resourcemanager, p_389356_, reloadabletexture, p_118480_));
++                list.add(scheduleLoad(p_118477_, p_389356_, reloadabletexture, p_118480_));
+             }
+         });
+         return CompletableFuture.allOf(list.stream().map(TextureManager.PendingReload::newContents).toArray(CompletableFuture[]::new))

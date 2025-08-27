@@ -1,0 +1,71 @@
+--- a/net/minecraft/client/renderer/entity/layers/WolfArmorLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/WolfArmorLayer.java
+@@ -1,13 +_,14 @@
+ package net.minecraft.client.renderer.entity.layers;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import java.util.Map;
+ import net.minecraft.client.model.Model;
+ import net.minecraft.client.model.WolfModel;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.WolfRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+@@ -41,43 +_,24 @@
+         this.equipmentRenderer = p_371602_;
+     }
+ 
+-    public void submit(PoseStack p_436050_, SubmitNodeCollector p_434212_, int p_433618_, WolfRenderState p_435660_, float p_435015_, float p_434923_) {
+-        ItemStack itemstack = p_435660_.bodyArmorItem;
++    public void render(PoseStack p_316890_, MultiBufferSource p_316537_, int p_316674_, WolfRenderState p_360943_, float p_316775_, float p_316264_) {
++        ItemStack itemstack = p_360943_.bodyArmorItem;
+         Equippable equippable = itemstack.get(DataComponents.EQUIPPABLE);
+         if (equippable != null && !equippable.assetId().isEmpty()) {
+-            WolfModel wolfmodel = p_435660_.isBaby ? this.babyModel : this.adultModel;
++            WolfModel wolfmodel = p_360943_.isBaby ? this.babyModel : this.adultModel;
++            wolfmodel.setupAnim(p_360943_);
+             this.equipmentRenderer
+-                .renderLayers(
+-                    EquipmentClientInfo.LayerType.WOLF_BODY,
+-                    equippable.assetId().get(),
+-                    wolfmodel,
+-                    p_435660_,
+-                    itemstack,
+-                    p_436050_,
+-                    p_434212_,
+-                    p_433618_,
+-                    p_435660_.outlineColor
+-                );
+-            this.maybeRenderCracks(p_436050_, p_434212_, p_433618_, itemstack, wolfmodel, p_435660_);
++                .renderLayers(EquipmentClientInfo.LayerType.WOLF_BODY, equippable.assetId().get(), wolfmodel, itemstack, p_316890_, p_316537_, p_316674_);
++            this.maybeRenderCracks(p_316890_, p_316537_, p_316674_, itemstack, wolfmodel);
+         }
+     }
+ 
+-    private void maybeRenderCracks(
+-        PoseStack p_331222_, SubmitNodeCollector p_434578_, int p_330931_, ItemStack p_331187_, Model<WolfRenderState> p_364428_, WolfRenderState p_433708_
+-    ) {
++    private void maybeRenderCracks(PoseStack p_331222_, MultiBufferSource p_331637_, int p_330931_, ItemStack p_331187_, Model p_364428_) {
+         Crackiness.Level crackiness$level = Crackiness.WOLF_ARMOR.byDamage(p_331187_);
+         if (crackiness$level != Crackiness.Level.NONE) {
+             ResourceLocation resourcelocation = ARMOR_CRACK_LOCATIONS.get(crackiness$level);
+-            p_434578_.submitModel(
+-                p_364428_,
+-                p_433708_,
+-                p_331222_,
+-                RenderType.armorTranslucent(resourcelocation),
+-                p_330931_,
+-                OverlayTexture.NO_OVERLAY,
+-                p_433708_.outlineColor,
+-                null
+-            );
++            VertexConsumer vertexconsumer = p_331637_.getBuffer(RenderType.armorTranslucent(resourcelocation));
++            p_364428_.renderToBuffer(p_331222_, vertexconsumer, p_330931_, OverlayTexture.NO_OVERLAY);
+         }
+     }
+ }

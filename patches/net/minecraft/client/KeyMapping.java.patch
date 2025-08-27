@@ -13,7 +13,13 @@
      public static final String CATEGORY_MOVEMENT = "key.categories.movement";
      public static final String CATEGORY_MISC = "key.categories.misc";
      public static final String CATEGORY_MULTIPLAYER = "key.categories.multiplayer";
-@@ -43,17 +_,17 @@
+@@ -38,27 +_,27 @@
+     private final String name;
+     private final InputConstants.Key defaultKey;
+     private final String category;
+-    protected InputConstants.Key key;
++    private InputConstants.Key key;
+     boolean isDown;
      private int clickCount;
  
      public static void click(InputConstants.Key p_90836_) {
@@ -36,7 +42,28 @@
      }
  
      public static void setAll() {
-@@ -101,7 +_,7 @@
+         for (KeyMapping keymapping : ALL.values()) {
+-            if (keymapping.shouldSetOnIngameFocus()) {
++            if (keymapping.key.getType() == InputConstants.Type.KEYSYM && keymapping.key.getValue() != InputConstants.UNKNOWN.getValue()) {
+                 keymapping.setDown(InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), keymapping.key.getValue()));
+             }
+         }
+@@ -70,14 +_,6 @@
+         }
+     }
+ 
+-    public static void restoreToggleStatesOnScreenClosed() {
+-        for (KeyMapping keymapping : ALL.values()) {
+-            if (keymapping instanceof ToggleKeyMapping togglekeymapping && togglekeymapping.shouldRestoreStateOnScreenClosed()) {
+-                togglekeymapping.setDown(true);
+-            }
+-        }
+-    }
+-
+     public static void resetToggleKeys() {
+         for (KeyMapping keymapping : ALL.values()) {
+             if (keymapping instanceof ToggleKeyMapping togglekeymapping) {
+@@ -109,7 +_,7 @@
      }
  
      public boolean isDown() {
@@ -45,7 +72,24 @@
      }
  
      public String getCategory() {
-@@ -135,9 +_,13 @@
+@@ -125,15 +_,11 @@
+         }
+     }
+ 
+-    protected void release() {
++    private void release() {
+         this.clickCount = 0;
+         this.setDown(false);
+     }
+ 
+-    protected boolean shouldSetOnIngameFocus() {
+-        return this.key.getType() == InputConstants.Type.KEYSYM && this.key.getValue() != InputConstants.UNKNOWN.getValue();
+-    }
+-
+     public String getName() {
+         return this.name;
+     }
+@@ -147,9 +_,13 @@
      }
  
      public int compareTo(KeyMapping p_90841_) {
@@ -62,7 +106,7 @@
      }
  
      public static Supplier<Component> createNameSupplier(String p_90843_) {
-@@ -146,6 +_,20 @@
+@@ -158,6 +_,20 @@
      }
  
      public boolean same(KeyMapping p_90851_) {
@@ -83,7 +127,7 @@
          return this.key.equals(p_90851_.key);
      }
  
-@@ -164,11 +_,13 @@
+@@ -176,11 +_,13 @@
      }
  
      public Component getTranslatedKeyMessage() {
@@ -98,7 +142,7 @@
      }
  
      public String saveString() {
-@@ -182,5 +_,86 @@
+@@ -194,5 +_,86 @@
      @Nullable
      public static KeyMapping get(String p_389468_) {
          return ALL.get(p_389468_);

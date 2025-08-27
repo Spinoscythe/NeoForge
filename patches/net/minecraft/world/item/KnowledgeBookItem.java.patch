@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/KnowledgeBookItem.java
++++ b/net/minecraft/world/item/KnowledgeBookItem.java
+@@ -31,7 +_,7 @@
+         if (list.isEmpty()) {
+             return InteractionResult.FAIL;
+         } else {
+-            if (!p_42824_.isClientSide()) {
++            if (!p_42824_.isClientSide) {
+                 RecipeManager recipemanager = p_42824_.getServer().getRecipeManager();
+                 List<RecipeHolder<?>> list1 = new ArrayList<>(list.size());
+ 

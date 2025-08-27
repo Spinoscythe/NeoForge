@@ -1,0 +1,47 @@
+--- a/net/minecraft/client/gui/screens/inventory/BookViewScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/BookViewScreen.java
+@@ -101,7 +_,7 @@
+     }
+ 
+     protected void createMenuControls() {
+-        this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, p_432224_ -> this.onClose()).bounds(this.width / 2 - 100, 196, 200, 20).build());
++        this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, p_425145_ -> this.onClose()).bounds(this.width / 2 - 100, 196, 200, 20).build());
+     }
+ 
+     protected void createPageControlButtons() {
+@@ -184,12 +_,12 @@
+ 
+     @Override
+     public void renderBackground(GuiGraphics p_295678_, int p_296491_, int p_294260_, float p_294869_) {
+-        super.renderBackground(p_295678_, p_296491_, p_294260_, p_294869_);
++        this.renderTransparentBackground(p_295678_);
+         p_295678_.blit(RenderPipelines.GUI_TEXTURED, BOOK_LOCATION, (this.width - 192) / 2, 2, 0.0F, 0.0F, 192, 192, 256, 256);
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_98272_, double p_98273_, int p_98274_, boolean p_434370_) {
++    public boolean mouseClicked(double p_98272_, double p_98273_, int p_98274_) {
+         if (p_98274_ == 0) {
+             Style style = this.getClickedComponentStyleAt(p_98272_, p_98273_);
+             if (style != null && this.handleComponentClicked(style)) {
+@@ -197,7 +_,7 @@
+             }
+         }
+ 
+-        return super.mouseClicked(p_98272_, p_98273_, p_98274_, p_434370_);
++        return super.mouseClicked(p_98272_, p_98273_, p_98274_);
+     }
+ 
+     @Override
+@@ -217,11 +_,6 @@
+     }
+ 
+     protected void closeContainerOnServer() {
+-    }
+-
+-    @Override
+-    public boolean isInGameUi() {
+-        return true;
+     }
+ 
+     @Nullable

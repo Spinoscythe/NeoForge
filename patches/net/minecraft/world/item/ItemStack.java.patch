@@ -1,6 +1,28 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -247,6 +_,10 @@
+@@ -71,12 +_,12 @@
+ import net.minecraft.world.inventory.Slot;
+ import net.minecraft.world.inventory.tooltip.TooltipComponent;
+ import net.minecraft.world.item.component.Consumable;
++import net.minecraft.world.item.component.CustomData;
+ import net.minecraft.world.item.component.DamageResistant;
+ import net.minecraft.world.item.component.ItemAttributeModifiers;
+ import net.minecraft.world.item.component.ItemContainerContents;
+ import net.minecraft.world.item.component.TooltipDisplay;
+ import net.minecraft.world.item.component.TooltipProvider;
+-import net.minecraft.world.item.component.TypedEntityData;
+ import net.minecraft.world.item.component.UseCooldown;
+ import net.minecraft.world.item.component.UseRemainder;
+ import net.minecraft.world.item.component.Weapon;
+@@ -90,7 +_,6 @@
+ import net.minecraft.world.level.ItemLike;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.Spawner;
+-import net.minecraft.world.level.block.entity.BlockEntityType;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+ import org.apache.commons.lang3.function.TriConsumer;
+@@ -248,6 +_,10 @@
          return !this.isEmpty() && this.components.hasNonDefault(p_389426_);
      }
  
@@ -11,6 +33,14 @@
      public ItemStack(ItemLike p_41599_) {
          this(p_41599_, 1);
      }
+@@ -272,6 +_,7 @@
+         this.item = p_330978_.asItem();
+         this.count = p_330639_;
+         this.components = p_330546_;
++        this.getItem().verifyComponentsAfterLoad(this);
+     }
+ 
+     private ItemStack(@Nullable Void p_282703_) {
 @@ -343,7 +_,7 @@
      }
  
@@ -120,6 +150,15 @@
          }
  
          this.setDamageValue(p_361754_);
+@@ -490,7 +_,7 @@
+     }
+ 
+     public void hurtAndBreak(int p_418267_, LivingEntity p_418272_, InteractionHand p_418180_) {
+-        this.hurtAndBreak(p_418267_, p_418272_, p_418180_.asEquipmentSlot());
++        this.hurtAndBreak(p_418267_, p_418272_, LivingEntity.getSlotForHand(p_418180_));
+     }
+ 
+     public void hurtAndBreak(int p_41623_, LivingEntity p_41624_, EquipmentSlot p_319898_) {
 @@ -498,7 +_,7 @@
              this.hurtAndBreak(
                  p_41623_,
@@ -138,7 +177,27 @@
      }
  
      public <T> void copyFrom(DataComponentType<T> p_397950_, DataComponentGetter p_397631_) {
-@@ -796,7 +_,7 @@
+@@ -753,15 +_,19 @@
+         if (optional.isPresent()) {
+             LOGGER.error("Failed to apply component patch '{}' to item: '{}'", p_341407_, optional.get().message());
+             this.components.restorePatch(datacomponentpatch);
++        } else {
++            this.getItem().verifyComponentsAfterLoad(this);
+         }
+     }
+ 
+     public void applyComponents(DataComponentPatch p_332097_) {
+         this.components.applyPatch(p_332097_);
++        this.getItem().verifyComponentsAfterLoad(this);
+     }
+ 
+     public void applyComponents(DataComponentMap p_330402_) {
+         this.components.setAll(p_330402_);
++        this.getItem().verifyComponentsAfterLoad(this);
+     }
+ 
+     public Component getHoverName() {
+@@ -792,7 +_,7 @@
      }
  
      public Component getStyledHoverName() {
@@ -147,7 +206,7 @@
          if (this.has(DataComponents.CUSTOM_NAME)) {
              mutablecomponent.withStyle(ChatFormatting.ITALIC);
          }
-@@ -822,6 +_,7 @@
+@@ -818,6 +_,7 @@
              List<Component> list = Lists.newArrayList();
              list.add(this.getStyledHoverName());
              this.addDetailsToTooltip(p_339637_, tooltipdisplay, p_41652_, p_41653_, list::add);
@@ -155,9 +214,11 @@
              return list;
          }
      }
-@@ -849,7 +_,8 @@
+@@ -844,9 +_,9 @@
+         this.addToTooltip(DataComponents.STORED_ENCHANTMENTS, p_400057_, p_400252_, p_399603_, p_400174_);
          this.addToTooltip(DataComponents.ENCHANTMENTS, p_400057_, p_400252_, p_399603_, p_400174_);
          this.addToTooltip(DataComponents.DYED_COLOR, p_400057_, p_400252_, p_399603_, p_400174_);
+-        this.addToTooltip(DataComponents.PROFILE, p_400057_, p_400252_, p_399603_, p_400174_);
          this.addToTooltip(DataComponents.LORE, p_400057_, p_400252_, p_399603_, p_400174_);
 -        this.addAttributeTooltips(p_399603_, p_400252_, p_399628_);
 +        // Neo: Replace attribute tooltips with custom handling
@@ -165,7 +226,20 @@
          if (this.has(DataComponents.UNBREAKABLE) && p_400252_.shows(DataComponents.UNBREAKABLE)) {
              p_399603_.accept(UNBREAKABLE_TOOLTIP);
          }
-@@ -897,7 +_,10 @@
+@@ -854,10 +_,9 @@
+         this.addToTooltip(DataComponents.OMINOUS_BOTTLE_AMPLIFIER, p_400057_, p_400252_, p_399603_, p_400174_);
+         this.addToTooltip(DataComponents.SUSPICIOUS_STEW_EFFECTS, p_400057_, p_400252_, p_399603_, p_400174_);
+         this.addToTooltip(DataComponents.BLOCK_STATE, p_400057_, p_400252_, p_399603_, p_400174_);
+-        this.addToTooltip(DataComponents.ENTITY_DATA, p_400057_, p_400252_, p_399603_, p_400174_);
+         if ((this.is(Items.SPAWNER) || this.is(Items.TRIAL_SPAWNER)) && p_400252_.shows(DataComponents.BLOCK_ENTITY_DATA)) {
+-            TypedEntityData<BlockEntityType<?>> typedentitydata = this.get(DataComponents.BLOCK_ENTITY_DATA);
+-            Spawner.appendHoverText(typedentitydata, p_399603_, "SpawnData");
++            CustomData customdata = this.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY);
++            Spawner.appendHoverText(customdata, p_399603_, "SpawnData");
+         }
+ 
+         AdventureModePredicate adventuremodepredicate1 = this.get(DataComponents.CAN_BREAK);
+@@ -895,7 +_,10 @@
              OP_NBT_WARNING.forEach(p_399603_);
          }
      }
@@ -177,7 +251,7 @@
      private void addAttributeTooltips(Consumer<Component> p_330796_, TooltipDisplay p_400175_, @Nullable Player p_330530_) {
          if (p_400175_.shows(DataComponents.ATTRIBUTE_MODIFIERS)) {
              for (EquipmentSlotGroup equipmentslotgroup : EquipmentSlotGroup.values()) {
-@@ -952,6 +_,17 @@
+@@ -950,6 +_,17 @@
          return !this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).isEmpty();
      }
  
@@ -195,7 +269,7 @@
      public ItemEnchantments getEnchantments() {
          return this.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
      }
-@@ -977,16 +_,28 @@
+@@ -975,16 +_,28 @@
      }
  
      public void forEachModifier(EquipmentSlotGroup p_348610_, TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> p_415655_) {
@@ -224,7 +298,7 @@
          EnchantmentHelper.forEachModifier(this, p_332001_, p_330882_);
      }
  
-@@ -998,7 +_,7 @@
+@@ -996,7 +_,7 @@
  
          MutableComponent mutablecomponent1 = ComponentUtils.wrapInSquareBrackets(mutablecomponent);
          if (!this.isEmpty()) {
@@ -233,7 +307,7 @@
          }
  
          return mutablecomponent1;
-@@ -1065,11 +_,14 @@
+@@ -1063,11 +_,14 @@
          this.getItem().onUseTick(p_41732_, p_41733_, this, p_41734_);
      }
  

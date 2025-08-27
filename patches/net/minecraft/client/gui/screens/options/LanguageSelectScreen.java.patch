@@ -1,0 +1,79 @@
+--- a/net/minecraft/client/gui/screens/options/LanguageSelectScreen.java
++++ b/net/minecraft/client/gui/screens/options/LanguageSelectScreen.java
+@@ -1,5 +_,6 @@
+ package net.minecraft.client.gui.screens.options;
+ 
++import net.minecraft.Util;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.Options;
+ import net.minecraft.client.gui.GuiGraphics;
+@@ -8,7 +_,6 @@
+ import net.minecraft.client.gui.components.StringWidget;
+ import net.minecraft.client.gui.layouts.LinearLayout;
+ import net.minecraft.client.gui.navigation.CommonInputs;
+-import net.minecraft.client.gui.screens.AccessibilityOnboardingScreen;
+ import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.client.resources.language.LanguageInfo;
+ import net.minecraft.client.resources.language.LanguageManager;
+@@ -69,11 +_,6 @@
+         this.minecraft.setScreen(this.lastScreen);
+     }
+ 
+-    @Override
+-    protected boolean panoramaShouldSpin() {
+-        return !(this.lastScreen instanceof AccessibilityOnboardingScreen);
+-    }
+-
+     @OnlyIn(Dist.CLIENT)
+     class LanguageSelectionList extends ObjectSelectionList<LanguageSelectScreen.LanguageSelectionList.Entry> {
+         public LanguageSelectionList(Minecraft p_345567_) {
+@@ -106,6 +_,7 @@
+         public class Entry extends ObjectSelectionList.Entry<LanguageSelectScreen.LanguageSelectionList.Entry> {
+             final String code;
+             private final Component language;
++            private long lastClickTime;
+ 
+             public Entry(String p_346435_, LanguageInfo p_345619_) {
+                 this.code = p_346435_;
+@@ -113,9 +_,20 @@
+             }
+ 
+             @Override
+-            public void renderContent(GuiGraphics p_440595_, int p_440193_, int p_440169_, boolean p_440373_, float p_439659_) {
+-                p_440595_.drawCenteredString(
+-                    LanguageSelectScreen.this.font, this.language, LanguageSelectionList.this.width / 2, this.getContentYMiddle() - 9 / 2, -1
++            public void render(
++                GuiGraphics p_345300_,
++                int p_345469_,
++                int p_345328_,
++                int p_345700_,
++                int p_345311_,
++                int p_345185_,
++                int p_344805_,
++                int p_345963_,
++                boolean p_345912_,
++                float p_346091_
++            ) {
++                p_345300_.drawCenteredString(
++                    LanguageSelectScreen.this.font, this.language, LanguageSelectionList.this.width / 2, p_345328_ + p_345185_ / 2 - 9 / 2, -1
+                 );
+             }
+ 
+@@ -131,13 +_,14 @@
+             }
+ 
+             @Override
+-            public boolean mouseClicked(double p_344965_, double p_345385_, int p_345080_, boolean p_435547_) {
++            public boolean mouseClicked(double p_344965_, double p_345385_, int p_345080_) {
+                 this.select();
+-                if (p_435547_) {
++                if (Util.getMillis() - this.lastClickTime < 250L) {
+                     LanguageSelectScreen.this.onDone();
+                 }
+ 
+-                return super.mouseClicked(p_344965_, p_345385_, p_345080_, p_435547_);
++                this.lastClickTime = Util.getMillis();
++                return super.mouseClicked(p_344965_, p_345385_, p_345080_);
+             }
+ 
+             private void select() {

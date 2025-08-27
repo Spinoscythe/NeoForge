@@ -1,9 +1,136 @@
 --- a/net/minecraft/client/renderer/LightTexture.java
 +++ b/net/minecraft/client/renderer/LightTexture.java
-@@ -187,4 +_,20 @@
+@@ -11,6 +_,7 @@
+ import com.mojang.blaze3d.textures.GpuTexture;
+ import com.mojang.blaze3d.textures.GpuTextureView;
+ import com.mojang.blaze3d.textures.TextureFormat;
++import com.mojang.blaze3d.vertex.VertexFormat;
+ import java.util.OptionalInt;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.multiplayer.ClientLevel;
+@@ -34,14 +_,13 @@
+         .putFloat()
+         .putFloat()
+         .putFloat()
+-        .putFloat()
+-        .putFloat()
+-        .putFloat()
+-        .putFloat()
+-        .putVec3()
++        .putInt()
++        .putFloat()
++        .putFloat()
++        .putFloat()
++        .putFloat()
+         .putVec3()
+         .get();
+-    private static final Vector3f END_FLASH_SKY_LIGHT_COLOR = new Vector3f(0.9F, 0.2F, 1.0F);
+     private final GpuTexture texture;
+     private final GpuTextureView textureView;
+     private boolean updateLightTexture;
+@@ -100,59 +_,44 @@
+             if (clientlevel != null) {
+                 float f = clientlevel.getSkyDarken(1.0F);
+                 float f1;
+-                Vector3f vector3f;
+-                if (clientlevel.effects().hasEndFlashes()) {
+-                    vector3f = new Vector3f(0.99F, 1.12F, 1.0F);
+-                    EndFlashState endflashstate = clientlevel.endFlashState();
+-                    if (endflashstate != null && !this.minecraft.options.hideLightningFlash().get()) {
+-                        f1 = endflashstate.getIntensity(p_109882_);
+-                    } else {
+-                        f1 = 0.0F;
+-                    }
++                if (clientlevel.getSkyFlashTime() > 0) {
++                    f1 = 1.0F;
+                 } else {
+-                    vector3f = new Vector3f(1.0F, 1.0F, 1.0F);
+-                    if (clientlevel.getSkyFlashTime() > 0) {
+-                        f1 = 1.0F;
+-                    } else {
+-                        f1 = f * 0.95F + 0.05F;
+-                    }
++                    f1 = f * 0.95F + 0.05F;
+                 }
+ 
+-                float f9 = this.minecraft.options.darknessEffectScale().get().floatValue();
+-                float f2 = this.minecraft.player.getEffectBlendFactor(MobEffects.DARKNESS, p_109882_) * f9;
+-                float f3 = this.calculateDarknessScale(this.minecraft.player, f2, p_109882_) * f9;
+-                float f5 = this.minecraft.player.getWaterVision();
+-                float f4;
++                float f2 = this.minecraft.options.darknessEffectScale().get().floatValue();
++                float f3 = this.minecraft.player.getEffectBlendFactor(MobEffects.DARKNESS, p_109882_) * f2;
++                float f4 = this.calculateDarknessScale(this.minecraft.player, f3, p_109882_) * f2;
++                float f6 = this.minecraft.player.getWaterVision();
++                float f5;
+                 if (this.minecraft.player.hasEffect(MobEffects.NIGHT_VISION)) {
+-                    f4 = GameRenderer.getNightVisionScale(this.minecraft.player, p_109882_);
+-                } else if (f5 > 0.0F && this.minecraft.player.hasEffect(MobEffects.CONDUIT_POWER)) {
+-                    f4 = f5;
+-                } else {
+-                    f4 = 0.0F;
+-                }
+-
+-                Vector3f vector3f1;
+-                if (clientlevel.effects().hasEndFlashes()) {
+-                    vector3f1 = END_FLASH_SKY_LIGHT_COLOR;
+-                } else {
+-                    vector3f1 = new Vector3f(f, f, 1.0F).lerp(new Vector3f(1.0F, 1.0F, 1.0F), 0.35F);
+-                }
+-
+-                float f6 = this.blockLightRedFlicker + 1.5F;
+-                float f7 = clientlevel.dimensionType().ambientLight();
+-                float f8 = this.minecraft.options.gamma().get().floatValue();
++                    f5 = GameRenderer.getNightVisionScale(this.minecraft.player, p_109882_);
++                } else if (f6 > 0.0F && this.minecraft.player.hasEffect(MobEffects.CONDUIT_POWER)) {
++                    f5 = f6;
++                } else {
++                    f5 = 0.0F;
++                }
++
++                Vector3f vector3f = new Vector3f(f, f, 1.0F).lerp(new Vector3f(1.0F, 1.0F, 1.0F), 0.35F);
++                float f7 = this.blockLightRedFlicker + 1.5F;
++                float f8 = clientlevel.dimensionType().ambientLight();
++                boolean flag = clientlevel.effects().forceBrightLightmap();
++                float f9 = this.minecraft.options.gamma().get().floatValue();
++                RenderSystem.AutoStorageIndexBuffer rendersystem$autostorageindexbuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
++                GpuBuffer gpubuffer = rendersystem$autostorageindexbuffer.getBuffer(6);
+                 CommandEncoder commandencoder = RenderSystem.getDevice().createCommandEncoder();
+ 
+                 try (GpuBuffer.MappedView gpubuffer$mappedview = commandencoder.mapBuffer(this.ubo.currentBuffer(), false, true)) {
+                     Std140Builder.intoBuffer(gpubuffer$mappedview.data())
+-                        .putFloat(f7)
++                        .putFloat(f8)
+                         .putFloat(f1)
+-                        .putFloat(f6)
++                        .putFloat(f7)
++                        .putInt(flag ? 1 : 0)
++                        .putFloat(f5)
+                         .putFloat(f4)
+-                        .putFloat(f3)
+                         .putFloat(this.renderer.getDarkenWorldAmount(p_109882_))
+-                        .putFloat(Math.max(0.0F, f8 - f2))
+-                        .putVec3(vector3f1)
++                        .putFloat(Math.max(0.0F, f9 - f3))
+                         .putVec3(vector3f);
+                 }
+ 
+@@ -160,7 +_,9 @@
+                     renderpass.setPipeline(RenderPipelines.LIGHTMAP);
+                     RenderSystem.bindDefaultUniforms(renderpass);
+                     renderpass.setUniform("LightmapInfo", this.ubo.currentBuffer());
+-                    renderpass.draw(0, 3);
++                    renderpass.setVertexBuffer(0, RenderSystem.getQuadVertexBuffer());
++                    renderpass.setIndexBuffer(gpubuffer, rendersystem$autostorageindexbuffer.type());
++                    renderpass.drawIndexed(0, 0, 6, 1);
+                 }
+ 
+                 this.ubo.rotate();
+@@ -199,5 +_,21 @@
+             int j = Math.max(block(p_364253_), p_362788_);
              return pack(j, i);
          }
-     }
++    }
 +
 +    // Neo: block and sky only return the integer part. So we add these methods that work with fractional parts too.
 +    // A full block or sky value is encoded as `0xij` where i is the integer part and j is the fractional part.
@@ -19,5 +146,5 @@
 +
 +    public static int skyWithFraction(int light) {
 +        return light >>> 16 & 0xFF;
-+    }
+     }
  }

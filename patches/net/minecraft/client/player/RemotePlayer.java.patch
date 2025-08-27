@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/player/RemotePlayer.java
++++ b/net/minecraft/client/player/RemotePlayer.java
+@@ -81,8 +_,8 @@
+     }
+ 
+     @Override
+-    public void lerpMotion(Vec3 p_436787_) {
+-        this.lerpDeltaMovement = p_436787_;
++    public void lerpMotion(double p_273090_, double p_272647_, double p_273555_) {
++        this.lerpDeltaMovement = new Vec3(p_273090_, p_272647_, p_273555_);
+         this.lerpDeltaMovementSteps = this.getType().updateInterval() + 1;
+     }
+ 

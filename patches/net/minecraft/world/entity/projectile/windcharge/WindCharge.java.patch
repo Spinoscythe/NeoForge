@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/entity/projectile/windcharge/WindCharge.java
++++ b/net/minecraft/world/entity/projectile/windcharge/WindCharge.java
+@@ -8,9 +_,7 @@
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.tags.BlockTags;
+ import net.minecraft.util.Mth;
+-import net.minecraft.util.random.WeightedList;
+ import net.minecraft.world.entity.Entity;
+-import net.minecraft.world.entity.EntityReference;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.entity.projectile.ProjectileDeflection;
+@@ -48,8 +_,8 @@
+     }
+ 
+     @Override
+-    public boolean deflect(ProjectileDeflection p_350880_, @Nullable Entity p_350728_, @Nullable EntityReference<Entity> p_439961_, boolean p_350553_) {
+-        return this.noDeflectTicks > 0 ? false : super.deflect(p_350880_, p_350728_, p_439961_, p_350553_);
++    public boolean deflect(ProjectileDeflection p_350880_, @Nullable Entity p_350728_, @Nullable Entity p_350716_, boolean p_350553_) {
++        return this.noDeflectTicks > 0 ? false : super.deflect(p_350880_, p_350728_, p_350716_, p_350553_);
+     }
+ 
+     @Override
+@@ -67,7 +_,6 @@
+                 Level.ExplosionInteraction.TRIGGER,
+                 ParticleTypes.GUST_EMITTER_SMALL,
+                 ParticleTypes.GUST_EMITTER_LARGE,
+-                WeightedList.of(),
+                 SoundEvents.WIND_CHARGE_BURST
+             );
+     }

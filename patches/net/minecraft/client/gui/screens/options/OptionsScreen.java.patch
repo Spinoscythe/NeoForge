@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/screens/options/OptionsScreen.java
++++ b/net/minecraft/client/gui/screens/options/OptionsScreen.java
+@@ -38,7 +_,7 @@
+     private static final Component SKIN_CUSTOMIZATION = Component.translatable("options.skinCustomisation");
+     private static final Component SOUNDS = Component.translatable("options.sounds");
+     private static final Component VIDEO = Component.translatable("options.video");
+-    public static final Component CONTROLS = Component.translatable("options.controls");
++    private static final Component CONTROLS = Component.translatable("options.controls");
+     private static final Component LANGUAGE = Component.translatable("options.language");
+     private static final Component CHAT = Component.translatable("options.chat");
+     private static final Component RESOURCEPACK = Component.translatable("options.resourcepack");

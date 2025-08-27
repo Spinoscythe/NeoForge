@@ -1,0 +1,18 @@
+--- a/net/minecraft/world/entity/monster/WitherSkeleton.java
++++ b/net/minecraft/world/entity/monster/WitherSkeleton.java
+@@ -71,6 +_,15 @@
+     }
+ 
+     @Override
++    protected void dropCustomDeathLoot(ServerLevel p_348522_, DamageSource p_34174_, boolean p_34176_) {
++        super.dropCustomDeathLoot(p_348522_, p_34174_, p_34176_);
++        if (p_34174_.getEntity() instanceof Creeper creeper && creeper.canDropMobsSkull()) {
++            creeper.increaseDroppedSkulls();
++            this.spawnAtLocation(p_348522_, Items.WITHER_SKELETON_SKULL);
++        }
++    }
++
++    @Override
+     protected void populateDefaultEquipmentSlots(RandomSource p_219154_, DifficultyInstance p_219155_) {
+         this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
+     }

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ShearsItem.java
 +++ b/net/minecraft/world/item/ShearsItem.java
-@@ -58,20 +_,57 @@
+@@ -58,24 +_,61 @@
          }
      }
  
@@ -61,3 +61,8 @@
              level.setBlockAndUpdate(blockpos, blockstate1);
              level.gameEvent(GameEvent.BLOCK_CHANGE, blockpos, GameEvent.Context.of(p_186371_.getPlayer(), blockstate1));
              if (player != null) {
+-                itemstack.hurtAndBreak(1, player, p_186371_.getHand().asEquipmentSlot());
++                itemstack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(p_186371_.getHand()));
+             }
+ 
+             return InteractionResult.SUCCESS;

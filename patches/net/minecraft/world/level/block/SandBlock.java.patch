@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/SandBlock.java
++++ b/net/minecraft/world/level/block/SandBlock.java
+@@ -13,8 +_,8 @@
+ 
+ public class SandBlock extends ColoredFallingBlock {
+     public static final MapCodec<SandBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432676_ -> p_432676_.group(ColorRGBA.CODEC.fieldOf("falling_dust_color").forGetter(p_401097_ -> p_401097_.dustColor), propertiesCodec())
+-            .apply(p_432676_, SandBlock::new)
++        p_401346_ -> p_401346_.group(ColorRGBA.CODEC.fieldOf("falling_dust_color").forGetter(p_401097_ -> p_401097_.dustColor), propertiesCodec())
++            .apply(p_401346_, SandBlock::new)
+     );
+ 
+     @Override

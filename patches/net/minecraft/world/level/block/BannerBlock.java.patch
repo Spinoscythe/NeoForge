@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/BannerBlock.java
++++ b/net/minecraft/world/level/block/BannerBlock.java
+@@ -24,8 +_,8 @@
+ 
+ public class BannerBlock extends AbstractBannerBlock {
+     public static final MapCodec<BannerBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432601_ -> p_432601_.group(DyeColor.CODEC.fieldOf("color").forGetter(AbstractBannerBlock::getColor), propertiesCodec())
+-            .apply(p_432601_, BannerBlock::new)
++        p_367979_ -> p_367979_.group(DyeColor.CODEC.fieldOf("color").forGetter(AbstractBannerBlock::getColor), propertiesCodec())
++            .apply(p_367979_, BannerBlock::new)
+     );
+     public static final IntegerProperty ROTATION = BlockStateProperties.ROTATION_16;
+     private static final Map<DyeColor, Block> BY_COLOR = Maps.newHashMap();

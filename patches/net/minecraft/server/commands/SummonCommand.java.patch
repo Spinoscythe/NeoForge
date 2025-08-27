@@ -1,0 +1,45 @@
+--- a/net/minecraft/server/commands/SummonCommand.java
++++ b/net/minecraft/server/commands/SummonCommand.java
+@@ -17,7 +_,6 @@
+ import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.server.level.ServerLevel;
+-import net.minecraft.world.Difficulty;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntitySpawnReason;
+ import net.minecraft.world.entity.EntityType;
+@@ -27,9 +_,6 @@
+ 
+ public class SummonCommand {
+     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.summon.failed"));
+-    private static final SimpleCommandExceptionType ERROR_FAILED_PEACEFUL = new SimpleCommandExceptionType(
+-        Component.translatable("commands.summon.failed.peaceful")
+-    );
+     private static final SimpleCommandExceptionType ERROR_DUPLICATE_UUID = new SimpleCommandExceptionType(Component.translatable("commands.summon.failed.uuid"));
+     private static final SimpleCommandExceptionType INVALID_POSITION = new SimpleCommandExceptionType(Component.translatable("commands.summon.invalidPosition"));
+ 
+@@ -83,8 +_,6 @@
+         BlockPos blockpos = BlockPos.containing(p_270366_);
+         if (!Level.isInSpawnableBounds(blockpos)) {
+             throw INVALID_POSITION.create();
+-        } else if (p_270582_.getLevel().getDifficulty() == Difficulty.PEACEFUL && !p_270277_.value().isAllowedInPeaceful()) {
+-            throw ERROR_FAILED_PEACEFUL.create();
+         } else {
+             CompoundTag compoundtag = p_270197_.copy();
+             compoundtag.putString("id", p_270277_.key().location().toString());
+@@ -96,10 +_,11 @@
+             if (entity == null) {
+                 throw ERROR_FAILED.create();
+             } else {
+-                if (p_270947_ && entity instanceof Mob mob) {
+-                    mob.finalizeSpawn(
+-                        p_270582_.getLevel(), p_270582_.getLevel().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.COMMAND, null
+-                    );
++                if (p_270947_ && entity instanceof Mob) {
++                    ((Mob)entity)
++                        .finalizeSpawn(
++                            p_270582_.getLevel(), p_270582_.getLevel().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.COMMAND, null
++                        );
+                 }
+ 
+                 if (!serverlevel.tryAddFreshEntityWithPassengers(entity)) {

@@ -1,0 +1,32 @@
+--- a/net/minecraft/client/gui/screens/CreateBuffetWorldScreen.java
++++ b/net/minecraft/client/gui/screens/CreateBuffetWorldScreen.java
+@@ -123,14 +_,25 @@
+             }
+ 
+             @Override
+-            public void renderContent(GuiGraphics p_440239_, int p_439437_, int p_440381_, boolean p_439172_, float p_440598_) {
+-                p_440239_.drawString(CreateBuffetWorldScreen.this.font, this.name, this.getContentX() + 5, this.getContentY() + 2, -1);
++            public void render(
++                GuiGraphics p_281315_,
++                int p_282451_,
++                int p_283356_,
++                int p_283563_,
++                int p_282677_,
++                int p_283473_,
++                int p_283681_,
++                int p_281493_,
++                boolean p_281302_,
++                float p_283122_
++            ) {
++                p_281315_.drawString(CreateBuffetWorldScreen.this.font, this.name, p_283563_ + 5, p_283356_ + 2, -1);
+             }
+ 
+             @Override
+-            public boolean mouseClicked(double p_95798_, double p_95799_, int p_95800_, boolean p_433528_) {
++            public boolean mouseClicked(double p_95798_, double p_95799_, int p_95800_) {
+                 BiomeList.this.setSelected(this);
+-                return super.mouseClicked(p_95798_, p_95799_, p_95800_, p_433528_);
++                return super.mouseClicked(p_95798_, p_95799_, p_95800_);
+             }
+         }
+     }

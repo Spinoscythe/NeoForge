@@ -1,0 +1,50 @@
+--- a/net/minecraft/client/renderer/entity/layers/WingsLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/WingsLayer.java
+@@ -6,7 +_,7 @@
+ import net.minecraft.client.model.EntityModel;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+ import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+@@ -32,29 +_,20 @@
+         this.equipmentRenderer = p_371554_;
+     }
+ 
+-    public void submit(PoseStack p_435137_, SubmitNodeCollector p_434138_, int p_434689_, S p_434317_, float p_433309_, float p_432928_) {
+-        ItemStack itemstack = p_434317_.chestEquipment;
++    public void render(PoseStack p_371573_, MultiBufferSource p_371529_, int p_371828_, S p_371273_, float p_371865_, float p_371528_) {
++        ItemStack itemstack = p_371273_.chestEquipment;
+         Equippable equippable = itemstack.get(DataComponents.EQUIPPABLE);
+         if (equippable != null && !equippable.assetId().isEmpty()) {
+-            ResourceLocation resourcelocation = getPlayerElytraTexture(p_434317_);
+-            ElytraModel elytramodel = p_434317_.isBaby ? this.elytraBabyModel : this.elytraModel;
+-            p_435137_.pushPose();
+-            p_435137_.translate(0.0F, 0.0F, 0.125F);
++            ResourceLocation resourcelocation = getPlayerElytraTexture(p_371273_);
++            ElytraModel elytramodel = p_371273_.isBaby ? this.elytraBabyModel : this.elytraModel;
++            p_371573_.pushPose();
++            p_371573_.translate(0.0F, 0.0F, 0.125F);
++            elytramodel.setupAnim(p_371273_);
+             this.equipmentRenderer
+                 .renderLayers(
+-                    EquipmentClientInfo.LayerType.WINGS,
+-                    equippable.assetId().get(),
+-                    elytramodel,
+-                    p_434317_,
+-                    itemstack,
+-                    p_435137_,
+-                    p_434138_,
+-                    p_434689_,
+-                    resourcelocation,
+-                    p_434317_.outlineColor,
+-                    0
++                    EquipmentClientInfo.LayerType.WINGS, equippable.assetId().get(), elytramodel, itemstack, p_371573_, p_371529_, p_371828_, resourcelocation
+                 );
+-            p_435137_.popPose();
++            p_371573_.popPose();
+         }
+     }
+ 

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/PotionItem.java
++++ b/net/minecraft/world/item/PotionItem.java
+@@ -44,7 +_,7 @@
+             level.playSound(null, blockpos, SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS, 1.0F, 1.0F);
+             player.setItemInHand(p_220235_.getHand(), ItemUtils.createFilledResult(itemstack, player, new ItemStack(Items.GLASS_BOTTLE)));
+             player.awardStat(Stats.ITEM_USED.get(itemstack.getItem()));
+-            if (!level.isClientSide()) {
++            if (!level.isClientSide) {
+                 ServerLevel serverlevel = (ServerLevel)level;
+ 
+                 for (int i = 0; i < 5; i++) {

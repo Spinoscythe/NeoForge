@@ -1,0 +1,109 @@
+--- a/net/minecraft/client/gui/components/ChatComponent.java
++++ b/net/minecraft/client/gui/components/ChatComponent.java
+@@ -13,7 +_,6 @@
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.GuiGraphics;
+ import net.minecraft.client.gui.screens.ChatScreen;
+-import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.client.multiplayer.chat.ChatListener;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.chat.MessageSignature;
+@@ -45,10 +_,6 @@
+     private final List<GuiMessage.Line> trimmedMessages = Lists.newArrayList();
+     private int chatScrollbarPos;
+     private boolean newMessageSinceScroll;
+-    @Nullable
+-    private ChatComponent.Draft latestDraft;
+-    @Nullable
+-    private ChatScreen preservedScreen;
+     private final List<ChatComponent.DelayedMessageDeletion> messageDeletionQueue = new ArrayList<>();
+ 
+     public ChatComponent(Minecraft p_93768_) {
+@@ -174,7 +_,7 @@
+     }
+ 
+     public void clearMessages(boolean p_93796_) {
+-        this.minecraft.getChatListener().flushQueue();
++        this.minecraft.getChatListener().clearQueue();
+         this.messageDeletionQueue.clear();
+         this.trimmedMessages.clear();
+         this.allMessages.clear();
+@@ -478,38 +_,6 @@
+         return (int)(9.0 * (this.minecraft.options.chatLineSpacing().get() + 1.0));
+     }
+ 
+-    public void saveAsDraft(String p_437236_) {
+-        boolean flag = p_437236_.startsWith("/");
+-        this.latestDraft = new ChatComponent.Draft(p_437236_, flag ? ChatComponent.ChatMethod.COMMAND : ChatComponent.ChatMethod.MESSAGE);
+-    }
+-
+-    public void discardDraft() {
+-        this.latestDraft = null;
+-    }
+-
+-    public <T extends ChatScreen> T createScreen(ChatComponent.ChatMethod p_437379_, ChatScreen.ChatConstructor<T> p_437409_) {
+-        return this.latestDraft != null && p_437379_.isDraftRestorable(this.latestDraft)
+-            ? p_437409_.create(this.latestDraft.text(), true)
+-            : p_437409_.create(p_437379_.prefix(), false);
+-    }
+-
+-    public void openScreen(ChatComponent.ChatMethod p_437427_, ChatScreen.ChatConstructor<?> p_437274_) {
+-        this.minecraft.setScreen(this.createScreen(p_437427_, p_437274_));
+-    }
+-
+-    public void preserveCurrentChatScreen() {
+-        if (this.minecraft.screen instanceof ChatScreen chatscreen) {
+-            this.preservedScreen = chatscreen;
+-        }
+-    }
+-
+-    @Nullable
+-    public ChatScreen restoreChatScreen() {
+-        ChatScreen chatscreen = this.preservedScreen;
+-        this.preservedScreen = null;
+-        return chatscreen;
+-    }
+-
+     public ChatComponent.State storeState() {
+         return new ChatComponent.State(List.copyOf(this.allMessages), List.copyOf(this.recentChat), List.copyOf(this.messageDeletionQueue));
+     }
+@@ -525,39 +_,7 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    public static enum ChatMethod {
+-        MESSAGE("") {
+-            @Override
+-            public boolean isDraftRestorable(ChatComponent.Draft p_437208_) {
+-                return true;
+-            }
+-        },
+-        COMMAND("/") {
+-            @Override
+-            public boolean isDraftRestorable(ChatComponent.Draft p_437306_) {
+-                return this == p_437306_.chatMethod();
+-            }
+-        };
+-
+-        private final String prefix;
+-
+-        ChatMethod(String p_437288_) {
+-            this.prefix = p_437288_;
+-        }
+-
+-        public String prefix() {
+-            return this.prefix;
+-        }
+-
+-        public abstract boolean isDraftRestorable(ChatComponent.Draft p_437343_);
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+     record DelayedMessageDeletion(MessageSignature signature, int deletableAfter) {
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    public record Draft(String text, ChatComponent.ChatMethod chatMethod) {
+     }
+ 
+     @FunctionalInterface

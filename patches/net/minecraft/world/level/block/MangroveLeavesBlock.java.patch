@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/level/block/MangroveLeavesBlock.java
++++ b/net/minecraft/world/level/block/MangroveLeavesBlock.java
+@@ -14,10 +_,10 @@
+ 
+ public class MangroveLeavesBlock extends TintedParticleLeavesBlock implements BonemealableBlock {
+     public static final MapCodec<MangroveLeavesBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432672_ -> p_432672_.group(
++        p_399455_ -> p_399455_.group(
+                 ExtraCodecs.floatRange(0.0F, 1.0F).fieldOf("leaf_particle_chance").forGetter(p_399454_ -> p_399454_.leafParticleChance), propertiesCodec()
+             )
+-            .apply(p_432672_, MangroveLeavesBlock::new)
++            .apply(p_399455_, MangroveLeavesBlock::new)
+     );
+ 
+     @Override

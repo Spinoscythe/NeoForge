@@ -1,12 +1,205 @@
 --- a/net/minecraft/client/renderer/blockentity/BlockEntityWithBoundingBoxRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BlockEntityWithBoundingBoxRenderer.java
-@@ -133,4 +_,9 @@
+@@ -2,12 +_,10 @@
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.blaze3d.vertex.VertexConsumer;
+-import javax.annotation.Nullable;
+ import net.minecraft.client.Minecraft;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+ import net.minecraft.client.renderer.ShapeRenderer;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.core.Vec3i;
+@@ -21,7 +_,6 @@
+ import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+-import org.joml.Matrix4f;
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class BlockEntityWithBoundingBoxRenderer<T extends BlockEntity & BoundingBoxRenderable> implements BlockEntityRenderer<T> {
+@@ -29,92 +_,80 @@
+     }
+ 
+     @Override
+-    public void submit(
+-        T p_439244_,
+-        float p_438886_,
+-        PoseStack p_439198_,
+-        int p_438966_,
+-        int p_439206_,
+-        Vec3 p_440073_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440673_,
+-        SubmitNodeCollector p_440158_
+-    ) {
++    public void render(T p_397324_, float p_397611_, PoseStack p_397388_, MultiBufferSource p_397625_, int p_397985_, int p_397795_, Vec3 p_401190_) {
+         if (Minecraft.getInstance().player.canUseGameMasterBlocks() || Minecraft.getInstance().player.isSpectator()) {
+-            BoundingBoxRenderable.Mode boundingboxrenderable$mode = p_439244_.renderMode();
++            BoundingBoxRenderable.Mode boundingboxrenderable$mode = p_397324_.renderMode();
+             if (boundingboxrenderable$mode != BoundingBoxRenderable.Mode.NONE) {
+-                BoundingBoxRenderable.RenderableBox boundingboxrenderable$renderablebox = p_439244_.getRenderableBox();
++                BoundingBoxRenderable.RenderableBox boundingboxrenderable$renderablebox = p_397324_.getRenderableBox();
+                 BlockPos blockpos = boundingboxrenderable$renderablebox.localPos();
+                 Vec3i vec3i = boundingboxrenderable$renderablebox.size();
+                 if (vec3i.getX() >= 1 && vec3i.getY() >= 1 && vec3i.getZ() >= 1) {
+                     float f = 1.0F;
+                     float f1 = 0.9F;
+                     float f2 = 0.5F;
++                    VertexConsumer vertexconsumer = p_397625_.getBuffer(RenderType.lines());
+                     BlockPos blockpos1 = blockpos.offset(vec3i);
+-                    p_440158_.submitCustomGeometry(
+-                        p_439198_,
+-                        RenderType.lines(),
+-                        (p_438793_, p_438794_) -> ShapeRenderer.renderLineBox(
+-                            p_438793_,
+-                            p_438794_,
+-                            blockpos.getX(),
+-                            blockpos.getY(),
+-                            blockpos.getZ(),
+-                            blockpos1.getX(),
+-                            blockpos1.getY(),
+-                            blockpos1.getZ(),
+-                            0.9F,
+-                            0.9F,
+-                            0.9F,
+-                            1.0F,
+-                            0.5F,
+-                            0.5F,
+-                            0.5F
+-                        )
++                    ShapeRenderer.renderLineBox(
++                        p_397388_,
++                        vertexconsumer,
++                        blockpos.getX(),
++                        blockpos.getY(),
++                        blockpos.getZ(),
++                        blockpos1.getX(),
++                        blockpos1.getY(),
++                        blockpos1.getZ(),
++                        0.9F,
++                        0.9F,
++                        0.9F,
++                        1.0F,
++                        0.5F,
++                        0.5F,
++                        0.5F
+                     );
+-                    if (boundingboxrenderable$mode == BoundingBoxRenderable.Mode.BOX_AND_INVISIBLE_BLOCKS && p_439244_.getLevel() != null) {
+-                        this.submitInvisibleBlocks(p_439244_, p_439244_.getLevel(), blockpos, vec3i, p_440158_, p_439198_);
++                    if (boundingboxrenderable$mode == BoundingBoxRenderable.Mode.BOX_AND_INVISIBLE_BLOCKS && p_397324_.getLevel() != null) {
++                        this.renderInvisibleBlocks(p_397324_, p_397324_.getLevel(), blockpos, vec3i, p_397625_, p_397388_);
+                     }
+                 }
+             }
+         }
+     }
+ 
+-    private void submitInvisibleBlocks(
+-        T p_439793_, BlockGetter p_439873_, BlockPos p_439251_, Vec3i p_440449_, SubmitNodeCollector p_439496_, PoseStack p_440650_
++    private void renderInvisibleBlocks(
++        T p_397069_, BlockGetter p_397190_, BlockPos p_397106_, Vec3i p_397027_, MultiBufferSource p_397495_, PoseStack p_396990_
+     ) {
+-        BlockPos blockpos = p_439793_.getBlockPos();
+-        BlockPos blockpos1 = blockpos.offset(p_439251_);
+-        p_439496_.submitCustomGeometry(p_440650_, RenderType.lines(), (p_438789_, p_438790_) -> {
+-            for (BlockPos blockpos2 : BlockPos.betweenClosed(blockpos1, blockpos1.offset(p_440449_).offset(-1, -1, -1))) {
+-                BlockState blockstate = p_439873_.getBlockState(blockpos2);
+-                boolean flag = blockstate.isAir();
+-                boolean flag1 = blockstate.is(Blocks.STRUCTURE_VOID);
+-                boolean flag2 = blockstate.is(Blocks.BARRIER);
+-                boolean flag3 = blockstate.is(Blocks.LIGHT);
+-                boolean flag4 = flag1 || flag2 || flag3;
+-                if (flag || flag4) {
+-                    float f = flag ? 0.05F : 0.0F;
+-                    double d0 = blockpos2.getX() - blockpos.getX() + 0.45F - f;
+-                    double d1 = blockpos2.getY() - blockpos.getY() + 0.45F - f;
+-                    double d2 = blockpos2.getZ() - blockpos.getZ() + 0.45F - f;
+-                    double d3 = blockpos2.getX() - blockpos.getX() + 0.55F + f;
+-                    double d4 = blockpos2.getY() - blockpos.getY() + 0.55F + f;
+-                    double d5 = blockpos2.getZ() - blockpos.getZ() + 0.55F + f;
+-                    if (flag) {
+-                        ShapeRenderer.renderLineBox(p_438789_, p_438790_, d0, d1, d2, d3, d4, d5, 0.5F, 0.5F, 1.0F, 1.0F, 0.5F, 0.5F, 1.0F);
+-                    } else if (flag1) {
+-                        ShapeRenderer.renderLineBox(p_438789_, p_438790_, d0, d1, d2, d3, d4, d5, 1.0F, 0.75F, 0.75F, 1.0F, 1.0F, 0.75F, 0.75F);
+-                    } else if (flag2) {
+-                        ShapeRenderer.renderLineBox(p_438789_, p_438790_, d0, d1, d2, d3, d4, d5, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F);
+-                    } else if (flag3) {
+-                        ShapeRenderer.renderLineBox(p_438789_, p_438790_, d0, d1, d2, d3, d4, d5, 1.0F, 1.0F, 0.0F, 1.0F, 1.0F, 1.0F, 0.0F);
+-                    }
++        VertexConsumer vertexconsumer = p_397495_.getBuffer(RenderType.lines());
++        BlockPos blockpos = p_397069_.getBlockPos();
++        BlockPos blockpos1 = blockpos.offset(p_397106_);
++
++        for (BlockPos blockpos2 : BlockPos.betweenClosed(blockpos1, blockpos1.offset(p_397027_).offset(-1, -1, -1))) {
++            BlockState blockstate = p_397190_.getBlockState(blockpos2);
++            boolean flag = blockstate.isAir();
++            boolean flag1 = blockstate.is(Blocks.STRUCTURE_VOID);
++            boolean flag2 = blockstate.is(Blocks.BARRIER);
++            boolean flag3 = blockstate.is(Blocks.LIGHT);
++            boolean flag4 = flag1 || flag2 || flag3;
++            if (flag || flag4) {
++                float f = flag ? 0.05F : 0.0F;
++                double d0 = blockpos2.getX() - blockpos.getX() + 0.45F - f;
++                double d1 = blockpos2.getY() - blockpos.getY() + 0.45F - f;
++                double d2 = blockpos2.getZ() - blockpos.getZ() + 0.45F - f;
++                double d3 = blockpos2.getX() - blockpos.getX() + 0.55F + f;
++                double d4 = blockpos2.getY() - blockpos.getY() + 0.55F + f;
++                double d5 = blockpos2.getZ() - blockpos.getZ() + 0.55F + f;
++                if (flag) {
++                    ShapeRenderer.renderLineBox(p_396990_, vertexconsumer, d0, d1, d2, d3, d4, d5, 0.5F, 0.5F, 1.0F, 1.0F, 0.5F, 0.5F, 1.0F);
++                } else if (flag1) {
++                    ShapeRenderer.renderLineBox(p_396990_, vertexconsumer, d0, d1, d2, d3, d4, d5, 1.0F, 0.75F, 0.75F, 1.0F, 1.0F, 0.75F, 0.75F);
++                } else if (flag2) {
++                    ShapeRenderer.renderLineBox(p_396990_, vertexconsumer, d0, d1, d2, d3, d4, d5, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F);
++                } else if (flag3) {
++                    ShapeRenderer.renderLineBox(p_396990_, vertexconsumer, d0, d1, d2, d3, d4, d5, 1.0F, 1.0F, 0.0F, 1.0F, 1.0F, 1.0F, 0.0F);
+                 }
+             }
+-        });
++        }
+     }
+ 
+-    private void renderStructureVoids(T p_397113_, BlockPos p_397422_, Vec3i p_398022_, VertexConsumer p_397021_, Matrix4f p_440690_) {
++    private void renderStructureVoids(T p_397113_, BlockPos p_397422_, Vec3i p_398022_, VertexConsumer p_397021_, PoseStack p_397646_) {
+         BlockGetter blockgetter = p_397113_.getLevel();
+         if (blockgetter != null) {
+             BlockPos blockpos = p_397113_.getBlockPos();
+@@ -126,15 +_,15 @@
+                 }
+             }
+ 
+-            discretevoxelshape.forAllFaces((p_438799_, p_438800_, p_438801_, p_438802_) -> {
++            discretevoxelshape.forAllFaces((p_397952_, p_397448_, p_397536_, p_397862_) -> {
+                 float f = 0.48F;
+-                float f1 = p_438800_ + p_397422_.getX() - blockpos.getX() + 0.5F - 0.48F;
+-                float f2 = p_438801_ + p_397422_.getY() - blockpos.getY() + 0.5F - 0.48F;
+-                float f3 = p_438802_ + p_397422_.getZ() - blockpos.getZ() + 0.5F - 0.48F;
+-                float f4 = p_438800_ + p_397422_.getX() - blockpos.getX() + 0.5F + 0.48F;
+-                float f5 = p_438801_ + p_397422_.getY() - blockpos.getY() + 0.5F + 0.48F;
+-                float f6 = p_438802_ + p_397422_.getZ() - blockpos.getZ() + 0.5F + 0.48F;
+-                ShapeRenderer.renderFace(p_440690_, p_397021_, p_438799_, f1, f2, f3, f4, f5, f6, 0.75F, 0.75F, 1.0F, 0.2F);
++                float f1 = p_397448_ + p_397422_.getX() - blockpos.getX() + 0.5F - 0.48F;
++                float f2 = p_397536_ + p_397422_.getY() - blockpos.getY() + 0.5F - 0.48F;
++                float f3 = p_397862_ + p_397422_.getZ() - blockpos.getZ() + 0.5F - 0.48F;
++                float f4 = p_397448_ + p_397422_.getX() - blockpos.getX() + 0.5F + 0.48F;
++                float f5 = p_397536_ + p_397422_.getY() - blockpos.getY() + 0.5F + 0.48F;
++                float f6 = p_397862_ + p_397422_.getZ() - blockpos.getZ() + 0.5F + 0.48F;
++                ShapeRenderer.renderFace(p_397646_, p_397021_, p_397952_, f1, f2, f3, f4, f5, f6, 0.75F, 0.75F, 1.0F, 0.2F);
+             });
+         }
+     }
+@@ -147,5 +_,10 @@
+     @Override
      public int getViewDistance() {
          return 96;
-     }
++    }
 +
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(BlockEntity blockEntity) {
 +        return net.minecraft.world.phys.AABB.INFINITE;
-+    }
+     }
  }

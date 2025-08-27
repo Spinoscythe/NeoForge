@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/entity/AreaEffectCloud.java
++++ b/net/minecraft/world/entity/AreaEffectCloud.java
+@@ -78,7 +_,7 @@
+     }
+ 
+     public void setRadius(float p_19713_) {
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.getEntityData().set(DATA_RADIUS, Mth.clamp(p_19713_, 0.0F, 32.0F));
+         }
+     }
+@@ -305,12 +_,12 @@
+     }
+ 
+     public void setOwner(@Nullable LivingEntity p_19719_) {
+-        this.owner = EntityReference.of(p_19719_);
++        this.owner = p_19719_ != null ? new EntityReference<>(p_19719_) : null;
+     }
+ 
+     @Nullable
+     public LivingEntity getOwner() {
+-        return EntityReference.getLivingEntity(this.owner, this.level());
++        return EntityReference.get(this.owner, this.level(), LivingEntity.class);
+     }
+ 
+     @Override

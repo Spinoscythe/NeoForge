@@ -1,0 +1,28 @@
+--- a/net/minecraft/client/gui/screens/inventory/BeaconScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/BeaconScreen.java
+@@ -71,6 +_,8 @@
+     protected void init() {
+         super.init();
+         this.beaconButtons.clear();
++        this.addBeaconButton(new BeaconScreen.BeaconConfirmButton(this.leftPos + 164, this.topPos + 107));
++        this.addBeaconButton(new BeaconScreen.BeaconCancelButton(this.leftPos + 190, this.topPos + 107));
+ 
+         for (int i = 0; i <= 2; i++) {
+             int j = BeaconBlockEntity.BEACON_EFFECTS.get(i).size();
+@@ -105,8 +_,6 @@
+         );
+         beaconscreen$beaconpowerbutton1.visible = false;
+         this.addBeaconButton(beaconscreen$beaconpowerbutton1);
+-        this.addBeaconButton(new BeaconScreen.BeaconConfirmButton(this.leftPos + 164, this.topPos + 107));
+-        this.addBeaconButton(new BeaconScreen.BeaconCancelButton(this.leftPos + 190, this.topPos + 107));
+     }
+ 
+     @Override
+@@ -290,7 +_,6 @@
+ 
+         protected BeaconSpriteScreenButton(int p_169663_, int p_169664_, ResourceLocation p_294501_, Component p_169667_) {
+             super(p_169663_, p_169664_, p_169667_);
+-            this.setTooltip(Tooltip.create(p_169667_));
+             this.sprite = p_294501_;
+         }
+ 

@@ -1,0 +1,23 @@
+--- a/net/minecraft/client/gui/screens/inventory/BookEditScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/BookEditScreen.java
+@@ -165,11 +_,6 @@
+     }
+ 
+     @Override
+-    public boolean isInGameUi() {
+-        return true;
+-    }
+-
+-    @Override
+     public boolean keyPressed(int p_98100_, int p_98101_, int p_98102_) {
+         switch (p_98100_) {
+             case 266:
+@@ -194,7 +_,7 @@
+ 
+     @Override
+     public void renderBackground(GuiGraphics p_294860_, int p_295019_, int p_294307_, float p_295562_) {
+-        super.renderBackground(p_294860_, p_295019_, p_294307_, p_295562_);
++        this.renderTransparentBackground(p_294860_);
+         p_294860_.blit(RenderPipelines.GUI_TEXTURED, BookViewScreen.BOOK_LOCATION, (this.width - 192) / 2, 2, 0.0F, 0.0F, 192, 192, 256, 256);
+     }
+ }

@@ -1,6 +1,48 @@
 --- a/net/minecraft/server/commands/TeleportCommand.java
 +++ b/net/minecraft/server/commands/TeleportCommand.java
-@@ -278,6 +_,14 @@
+@@ -229,10 +_,37 @@
+     }
+ 
+     private static Set<Relative> getRelatives(Coordinates p_374290_, @Nullable Coordinates p_374529_, boolean p_381166_) {
+-        Set<Relative> set = Relative.direction(p_374290_.isXRelative(), p_374290_.isYRelative(), p_374290_.isZRelative());
+-        Set<Relative> set1 = !p_381166_ ? Relative.position(p_374290_.isXRelative(), p_374290_.isYRelative(), p_374290_.isZRelative()) : Set.of();
+-        Set<Relative> set2 = p_374529_ == null ? Relative.ROTATION : Relative.rotation(p_374529_.isYRelative(), p_374529_.isXRelative());
+-        return Relative.union(set, set1, set2);
++        Set<Relative> set = EnumSet.noneOf(Relative.class);
++        if (p_374290_.isXRelative()) {
++            set.add(Relative.DELTA_X);
++            if (p_381166_) {
++                set.add(Relative.X);
++            }
++        }
++
++        if (p_374290_.isYRelative()) {
++            set.add(Relative.DELTA_Y);
++            if (p_381166_) {
++                set.add(Relative.Y);
++            }
++        }
++
++        if (p_374290_.isZRelative()) {
++            set.add(Relative.DELTA_Z);
++            if (p_381166_) {
++                set.add(Relative.Z);
++            }
++        }
++
++        if (p_374529_ == null || p_374529_.isXRelative()) {
++            set.add(Relative.X_ROT);
++        }
++
++        if (p_374529_ == null || p_374529_.isYRelative()) {
++            set.add(Relative.Y_ROT);
++        }
++
++        return set;
+     }
+ 
+     private static String formatDouble(double p_142776_) {
+@@ -251,6 +_,14 @@
          float p_139023_,
          @Nullable LookAt p_380216_
      ) throws CommandSyntaxException {

@@ -1,0 +1,35 @@
+--- a/net/minecraft/world/entity/item/PrimedTnt.java
++++ b/net/minecraft/world/entity/item/PrimedTnt.java
+@@ -71,7 +_,7 @@
+         this.xo = p_32080_;
+         this.yo = p_32081_;
+         this.zo = p_32082_;
+-        this.owner = EntityReference.of(p_32083_);
++        this.owner = p_32083_ != null ? new EntityReference<>(p_32083_) : null;
+     }
+ 
+     @Override
+@@ -110,12 +_,12 @@
+         this.setFuse(i);
+         if (i <= 0) {
+             this.discard();
+-            if (!this.level().isClientSide()) {
++            if (!this.level().isClientSide) {
+                 this.explode();
+             }
+         } else {
+             this.updateInWaterStateAndDoFluidPushing();
+-            if (this.level().isClientSide()) {
++            if (this.level().isClientSide) {
+                 this.level().addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0);
+             }
+         }
+@@ -159,7 +_,7 @@
+ 
+     @Nullable
+     public LivingEntity getOwner() {
+-        return EntityReference.getLivingEntity(this.owner, this.level());
++        return EntityReference.get(this.owner, this.level(), LivingEntity.class);
+     }
+ 
+     @Override

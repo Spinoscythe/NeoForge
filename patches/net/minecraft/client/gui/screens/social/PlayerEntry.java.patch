@@ -1,0 +1,80 @@
+--- a/net/minecraft/client/gui/screens/social/PlayerEntry.java
++++ b/net/minecraft/client/gui/screens/social/PlayerEntry.java
+@@ -161,45 +_,56 @@
+     }
+ 
+     @Override
+-    public void renderContent(GuiGraphics p_440555_, int p_439697_, int p_439605_, boolean p_439685_, float p_440124_) {
+-        int i = this.getContentX() + 4;
+-        int j = this.getContentY() + (this.getContentHeight() - 24) / 2;
++    public void render(
++        GuiGraphics p_282434_,
++        int p_283281_,
++        int p_281503_,
++        int p_282112_,
++        int p_282838_,
++        int p_282747_,
++        int p_282231_,
++        int p_282048_,
++        boolean p_281660_,
++        float p_283055_
++    ) {
++        int i = p_282112_ + 4;
++        int j = p_281503_ + (p_282747_ - 24) / 2;
+         int k = i + 24 + 4;
+         Component component = this.getStatusComponent();
+         int l;
+         if (component == CommonComponents.EMPTY) {
+-            p_440555_.fill(this.getContentX(), this.getContentY(), this.getContentRight(), this.getContentBottom(), BG_FILL);
+-            l = this.getContentY() + (this.getContentHeight() - 9) / 2;
++            p_282434_.fill(p_282112_, p_281503_, p_282112_ + p_282838_, p_281503_ + p_282747_, BG_FILL);
++            l = p_281503_ + (p_282747_ - 9) / 2;
+         } else {
+-            p_440555_.fill(this.getContentX(), this.getContentY(), this.getContentRight(), this.getContentBottom(), BG_FILL_REMOVED);
+-            l = this.getContentY() + (this.getContentHeight() - (9 + 9)) / 2;
+-            p_440555_.drawString(this.minecraft.font, component, k, l + 12, PLAYER_STATUS_COLOR);
++            p_282434_.fill(p_282112_, p_281503_, p_282112_ + p_282838_, p_281503_ + p_282747_, BG_FILL_REMOVED);
++            l = p_281503_ + (p_282747_ - (9 + 9)) / 2;
++            p_282434_.drawString(this.minecraft.font, component, k, l + 12, PLAYER_STATUS_COLOR);
+         }
+ 
+-        PlayerFaceRenderer.draw(p_440555_, this.skinGetter.get(), i, j, 24);
+-        p_440555_.drawString(this.minecraft.font, this.playerName, k, l, PLAYERNAME_COLOR);
++        PlayerFaceRenderer.draw(p_282434_, this.skinGetter.get(), i, j, 24);
++        p_282434_.drawString(this.minecraft.font, this.playerName, k, l, PLAYERNAME_COLOR);
+         if (this.isRemoved) {
+-            p_440555_.fill(i, j, i + 24, j + 24, SKIN_SHADE);
++            p_282434_.fill(i, j, i + 24, j + 24, SKIN_SHADE);
+         }
+ 
+         if (this.hideButton != null && this.showButton != null && this.reportButton != null) {
+             float f = this.tooltipHoverTime;
+-            this.hideButton.setX(this.getContentX() + (this.getContentWidth() - this.hideButton.getWidth() - 4) - 20 - 4);
+-            this.hideButton.setY(this.getContentY() + (this.getContentHeight() - this.hideButton.getHeight()) / 2);
+-            this.hideButton.render(p_440555_, p_439697_, p_439605_, p_440124_);
+-            this.showButton.setX(this.getContentX() + (this.getContentWidth() - this.showButton.getWidth() - 4) - 20 - 4);
+-            this.showButton.setY(this.getContentY() + (this.getContentHeight() - this.showButton.getHeight()) / 2);
+-            this.showButton.render(p_440555_, p_439697_, p_439605_, p_440124_);
+-            this.reportButton.setX(this.getContentX() + (this.getContentWidth() - this.showButton.getWidth() - 4));
+-            this.reportButton.setY(this.getContentY() + (this.getContentHeight() - this.showButton.getHeight()) / 2);
+-            this.reportButton.render(p_440555_, p_439697_, p_439605_, p_440124_);
++            this.hideButton.setX(p_282112_ + (p_282838_ - this.hideButton.getWidth() - 4) - 20 - 4);
++            this.hideButton.setY(p_281503_ + (p_282747_ - this.hideButton.getHeight()) / 2);
++            this.hideButton.render(p_282434_, p_282231_, p_282048_, p_283055_);
++            this.showButton.setX(p_282112_ + (p_282838_ - this.showButton.getWidth() - 4) - 20 - 4);
++            this.showButton.setY(p_281503_ + (p_282747_ - this.showButton.getHeight()) / 2);
++            this.showButton.render(p_282434_, p_282231_, p_282048_, p_283055_);
++            this.reportButton.setX(p_282112_ + (p_282838_ - this.showButton.getWidth() - 4));
++            this.reportButton.setY(p_281503_ + (p_282747_ - this.showButton.getHeight()) / 2);
++            this.reportButton.render(p_282434_, p_282231_, p_282048_, p_283055_);
+             if (f == this.tooltipHoverTime) {
+                 this.tooltipHoverTime = 0.0F;
+             }
+         }
+ 
+         if (this.hasDraftReport && this.reportButton != null) {
+-            p_440555_.blitSprite(RenderPipelines.GUI_TEXTURED, DRAFT_REPORT_SPRITE, this.reportButton.getX() + 5, this.reportButton.getY() + 1, 15, 15);
++            p_282434_.blitSprite(RenderPipelines.GUI_TEXTURED, DRAFT_REPORT_SPRITE, this.reportButton.getX() + 5, this.reportButton.getY() + 1, 15, 15);
+         }
+     }
+ 

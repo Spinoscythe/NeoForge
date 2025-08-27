@@ -1,0 +1,23 @@
+--- a/net/minecraft/data/worldgen/DimensionTypes.java
++++ b/net/minecraft/data/worldgen/DimensionTypes.java
+@@ -56,7 +_,7 @@
+             BuiltinDimensionTypes.END,
+             new DimensionType(
+                 OptionalLong.of(6000L),
+-                true,
++                false,
+                 false,
+                 false,
+                 false,
+@@ -68,9 +_,9 @@
+                 256,
+                 BlockTags.INFINIBURN_END,
+                 BuiltinDimensionTypes.END_EFFECTS,
+-                0.25F,
++                0.0F,
+                 Optional.empty(),
+-                new DimensionType.MonsterSettings(false, true, ConstantInt.of(15), 0)
++                new DimensionType.MonsterSettings(false, true, UniformInt.of(0, 7), 0)
+             )
+         );
+         p_321848_.register(

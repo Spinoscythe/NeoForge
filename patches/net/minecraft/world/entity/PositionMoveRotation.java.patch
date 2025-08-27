@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/entity/PositionMoveRotation.java
++++ b/net/minecraft/world/entity/PositionMoveRotation.java
+@@ -29,10 +_,6 @@
+             : new PositionMoveRotation(p_371737_.position(), p_371737_.getKnownMovement(), p_371737_.getYRot(), p_371737_.getXRot());
+     }
+ 
+-    public PositionMoveRotation withRotation(float p_436804_, float p_436575_) {
+-        return new PositionMoveRotation(this.position(), this.deltaMovement(), p_436804_, p_436575_);
+-    }
+-
+     public static PositionMoveRotation of(TeleportTransition p_379436_) {
+         return new PositionMoveRotation(p_379436_.position(), p_379436_.deltaMovement(), p_379436_.yRot(), p_379436_.xRot());
+     }

@@ -1,13 +1,115 @@
 --- a/net/minecraft/client/renderer/blockentity/PistonHeadRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/PistonHeadRenderer.java
-@@ -70,14 +_,18 @@
-     private void renderBlock(
-         BlockPos p_112459_, BlockState p_112460_, PoseStack p_112461_, MultiBufferSource p_112462_, Level p_112463_, boolean p_112464_, int p_112465_
+@@ -1,15 +_,17 @@
+ package net.minecraft.client.renderer.blockentity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+-import javax.annotation.Nullable;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import com.mojang.blaze3d.vertex.VertexConsumer;
++import java.util.List;
++import net.minecraft.client.renderer.ItemBlockRenderTypes;
++import net.minecraft.client.renderer.MultiBufferSource;
++import net.minecraft.client.renderer.RenderType;
++import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+ import net.minecraft.client.renderer.block.ModelBlockRenderer;
+-import net.minecraft.client.renderer.block.MovingBlockRenderState;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
++import net.minecraft.client.renderer.block.model.BlockModelPart;
+ import net.minecraft.core.BlockPos;
+-import net.minecraft.core.Holder;
++import net.minecraft.util.RandomSource;
+ import net.minecraft.world.level.Level;
+-import net.minecraft.world.level.biome.Biome;
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.piston.PistonBaseBlock;
+ import net.minecraft.world.level.block.piston.PistonHeadBlock;
+@@ -22,68 +_,64 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class PistonHeadRenderer implements BlockEntityRenderer<PistonMovingBlockEntity> {
++    private final BlockRenderDispatcher blockRenderer;
++
+     public PistonHeadRenderer(BlockEntityRendererProvider.Context p_173623_) {
++        this.blockRenderer = p_173623_.getBlockRenderDispatcher();
+     }
+ 
+-    public void submit(
+-        PistonMovingBlockEntity p_440440_,
+-        float p_440279_,
+-        PoseStack p_439539_,
+-        int p_440224_,
+-        int p_438870_,
+-        Vec3 p_439630_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_439518_,
+-        SubmitNodeCollector p_439987_
++    public void render(
++        PistonMovingBlockEntity p_112452_, float p_112453_, PoseStack p_112454_, MultiBufferSource p_112455_, int p_112456_, int p_112457_, Vec3 p_401129_
      ) {
--        RenderType rendertype = ItemBlockRenderTypes.getMovingBlockRenderType(p_112460_);
--        VertexConsumer vertexconsumer = p_112462_.getBuffer(rendertype);
--        List<BlockModelPart> list = this.blockRenderer.getBlockModel(p_112460_).collectParts(RandomSource.create(p_112460_.getSeed(p_112459_)));
--        this.blockRenderer.getModelRenderer().tesselateBlock(p_112463_, list, p_112460_, p_112459_, p_112461_, vertexconsumer, p_112464_, p_112465_);
+-        Level level = p_440440_.getLevel();
++        Level level = p_112452_.getLevel();
+         if (level != null) {
+-            BlockPos blockpos = p_440440_.getBlockPos().relative(p_440440_.getMovementDirection().getOpposite());
+-            BlockState blockstate = p_440440_.getMovedState();
++            BlockPos blockpos = p_112452_.getBlockPos().relative(p_112452_.getMovementDirection().getOpposite());
++            BlockState blockstate = p_112452_.getMovedState();
+             if (!blockstate.isAir()) {
+                 ModelBlockRenderer.enableCaching();
+-                p_439539_.pushPose();
+-                p_439539_.translate(p_440440_.getXOff(p_440279_), p_440440_.getYOff(p_440279_), p_440440_.getZOff(p_440279_));
+-                Holder<Biome> holder = level.getBiome(blockpos);
+-                if (blockstate.is(Blocks.PISTON_HEAD) && p_440440_.getProgress(p_440279_) <= 4.0F) {
+-                    blockstate = blockstate.setValue(PistonHeadBlock.SHORT, p_440440_.getProgress(p_440279_) <= 0.5F);
+-                    submitMovingBlock(p_439539_, p_439987_, blockpos, blockstate, holder, level);
+-                } else if (p_440440_.isSourcePiston() && !p_440440_.isExtending()) {
++                p_112454_.pushPose();
++                p_112454_.translate(p_112452_.getXOff(p_112453_), p_112452_.getYOff(p_112453_), p_112452_.getZOff(p_112453_));
++                if (blockstate.is(Blocks.PISTON_HEAD) && p_112452_.getProgress(p_112453_) <= 4.0F) {
++                    blockstate = blockstate.setValue(PistonHeadBlock.SHORT, p_112452_.getProgress(p_112453_) <= 0.5F);
++                    this.renderBlock(blockpos, blockstate, p_112454_, p_112455_, level, false, p_112457_);
++                } else if (p_112452_.isSourcePiston() && !p_112452_.isExtending()) {
+                     PistonType pistontype = blockstate.is(Blocks.STICKY_PISTON) ? PistonType.STICKY : PistonType.DEFAULT;
+                     BlockState blockstate1 = Blocks.PISTON_HEAD
+                         .defaultBlockState()
+                         .setValue(PistonHeadBlock.TYPE, pistontype)
+                         .setValue(PistonHeadBlock.FACING, blockstate.getValue(PistonBaseBlock.FACING));
+-                    blockstate1 = blockstate1.setValue(PistonHeadBlock.SHORT, p_440440_.getProgress(p_440279_) >= 0.5F);
+-                    submitMovingBlock(p_439539_, p_439987_, blockpos, blockstate1, holder, level);
+-                    BlockPos blockpos1 = blockpos.relative(p_440440_.getMovementDirection());
+-                    p_439539_.popPose();
+-                    p_439539_.pushPose();
++                    blockstate1 = blockstate1.setValue(PistonHeadBlock.SHORT, p_112452_.getProgress(p_112453_) >= 0.5F);
++                    this.renderBlock(blockpos, blockstate1, p_112454_, p_112455_, level, false, p_112457_);
++                    BlockPos blockpos1 = blockpos.relative(p_112452_.getMovementDirection());
++                    p_112454_.popPose();
++                    p_112454_.pushPose();
+                     blockstate = blockstate.setValue(PistonBaseBlock.EXTENDED, true);
+-                    submitMovingBlock(p_439539_, p_439987_, blockpos1, blockstate, holder, level);
++                    this.renderBlock(blockpos1, blockstate, p_112454_, p_112455_, level, true, p_112457_);
+                 } else {
+-                    submitMovingBlock(p_439539_, p_439987_, blockpos, blockstate, holder, level);
++                    this.renderBlock(blockpos, blockstate, p_112454_, p_112455_, level, false, p_112457_);
+                 }
+ 
+-                p_439539_.popPose();
++                p_112454_.popPose();
+                 ModelBlockRenderer.clearCache();
+             }
+         }
+     }
+ 
+-    private static void submitMovingBlock(
+-        PoseStack p_439268_, SubmitNodeCollector p_439183_, BlockPos p_439969_, BlockState p_440280_, Holder<Biome> p_439786_, Level p_439493_
++    private void renderBlock(
++        BlockPos p_112459_, BlockState p_112460_, PoseStack p_112461_, MultiBufferSource p_112462_, Level p_112463_, boolean p_112464_, int p_112465_
+     ) {
+-        MovingBlockRenderState movingblockrenderstate = new MovingBlockRenderState();
+-        movingblockrenderstate.randomSeedPos = p_439969_;
+-        movingblockrenderstate.blockPos = p_439969_;
+-        movingblockrenderstate.blockState = p_440280_;
+-        movingblockrenderstate.biome = p_439786_;
+-        movingblockrenderstate.level = p_439493_;
+-        p_439183_.submitMovingBlock(p_439268_, movingblockrenderstate);
 +        java.util.function.Function<net.minecraft.client.renderer.chunk.ChunkSectionLayer, VertexConsumer> bufferLookup = renderType -> p_112462_.getBuffer(net.neoforged.neoforge.client.RenderTypeHelper.getMovingBlockRenderType(renderType));
 +        List<BlockModelPart> list = this.blockRenderer.getBlockModel(p_112460_).collectParts(p_112463_, p_112459_, p_112460_, RandomSource.create(p_112460_.getSeed(p_112459_)));
 +        this.blockRenderer.getModelRenderer().tesselateBlock(p_112463_, list, p_112460_, p_112459_, p_112461_, bufferLookup, p_112464_, p_112465_);

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/StructureBlock.java
++++ b/net/minecraft/world/level/block/StructureBlock.java
+@@ -51,7 +_,7 @@
+ 
+     @Override
+     public void setPlacedBy(Level p_57122_, BlockPos p_57123_, BlockState p_57124_, @Nullable LivingEntity p_57125_, ItemStack p_57126_) {
+-        if (!p_57122_.isClientSide()) {
++        if (!p_57122_.isClientSide) {
+             if (p_57125_ != null) {
+                 BlockEntity blockentity = p_57122_.getBlockEntity(p_57123_);
+                 if (blockentity instanceof StructureBlockEntity) {

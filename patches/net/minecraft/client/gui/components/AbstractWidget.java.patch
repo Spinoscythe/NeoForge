@@ -1,23 +1,60 @@
 --- a/net/minecraft/client/gui/components/AbstractWidget.java
 +++ b/net/minecraft/client/gui/components/AbstractWidget.java
-@@ -114,6 +_,8 @@
+@@ -114,7 +_,9 @@
          renderScrollingString(p_281857_, p_282790_, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), p_282944_);
      }
  
+-    public void onClick(double p_93634_, double p_93635_, boolean p_434599_) {
 +    /** @deprecated Neo: Use {@link #onClick(double, double, int)} instead. */
 +    @Deprecated
-     public void onClick(double p_93634_, double p_93635_) {
++    public void onClick(double p_93634_, double p_93635_) {
      }
  
-@@ -130,7 +_,7 @@
+     public void onRelease(double p_93669_, double p_93670_) {
+@@ -124,20 +_,20 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_93641_, double p_93642_, int p_93643_, boolean p_434606_) {
+-        if (!this.isActive()) {
+-            return false;
+-        } else {
++    public boolean mouseClicked(double p_93641_, double p_93642_, int p_93643_) {
++        if (this.active && this.visible) {
+             if (this.isValidClickButton(p_93643_)) {
                  boolean flag = this.isMouseOver(p_93641_, p_93642_);
                  if (flag) {
                      this.playDownSound(Minecraft.getInstance().getSoundManager());
--                    this.onClick(p_93641_, p_93642_);
+-                    this.onClick(p_93641_, p_93642_, p_434606_);
 +                    this.onClick(p_93641_, p_93642_, p_93643_);
                      return true;
                  }
              }
+ 
+             return false;
++        } else {
++            return false;
+         }
+     }
+ 
+@@ -168,7 +_,7 @@
+     @Nullable
+     @Override
+     public ComponentPath nextFocusPath(FocusNavigationEvent p_265640_) {
+-        if (!this.isActive()) {
++        if (!this.active || !this.visible) {
+             return null;
+         } else {
+             return !this.isFocused() ? ComponentPath.leaf(this) : null;
+@@ -177,7 +_,7 @@
+ 
+     @Override
+     public boolean isMouseOver(double p_93672_, double p_93673_) {
+-        return this.isActive() && this.areCoordinatesInRectangle(p_93672_, p_93673_);
++        return this.active && this.visible && this.areCoordinatesInRectangle(p_93672_, p_93673_);
+     }
+ 
+     public void playDownSound(SoundManager p_93665_) {
 @@ -234,6 +_,19 @@
      @Override
      public void setFocused(boolean p_93693_) {

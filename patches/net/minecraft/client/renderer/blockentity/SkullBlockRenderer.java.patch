@@ -1,6 +1,39 @@
 --- a/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/SkullBlockRenderer.java
-@@ -58,7 +_,7 @@
+@@ -2,21 +_,21 @@
+ 
+ import com.google.common.collect.Maps;
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import java.util.HashMap;
+ import java.util.Map;
+ import java.util.function.Function;
+ import javax.annotation.Nullable;
+ import net.minecraft.Util;
++import net.minecraft.client.Minecraft;
+ import net.minecraft.client.model.PiglinHeadModel;
+ import net.minecraft.client.model.SkullModel;
+ import net.minecraft.client.model.SkullModelBase;
+ import net.minecraft.client.model.dragon.DragonHeadModel;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.PlayerSkinRenderCache;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.client.resources.DefaultPlayerSkin;
+ import net.minecraft.core.Direction;
+@@ -44,7 +_,6 @@
+         p_349877_.put(SkullBlock.Types.PIGLIN, ResourceLocation.withDefaultNamespace("textures/entity/piglin/piglin.png"));
+         p_349877_.put(SkullBlock.Types.PLAYER, DefaultPlayerSkin.getDefaultTexture());
+     });
+-    private final PlayerSkinRenderCache playerSkinRenderCache;
+ 
+     @Nullable
+     public static SkullModelBase createModel(EntityModelSet p_387840_, SkullBlock.Type p_388801_) {
+@@ -59,74 +_,59 @@
                  case PIGLIN -> new PiglinHeadModel(p_387840_.bakeLayer(ModelLayers.PIGLIN_HEAD));
              });
          } else {
@@ -9,7 +42,103 @@
          }
      }
  
-@@ -119,5 +_,15 @@
+     public SkullBlockRenderer(BlockEntityRendererProvider.Context p_173660_) {
+-        EntityModelSet entitymodelset = p_173660_.entityModelSet();
+-        this.playerSkinRenderCache = p_173660_.playerSkinRenderCache();
++        EntityModelSet entitymodelset = p_173660_.getModelSet();
+         this.modelByType = Util.memoize(p_386232_ -> createModel(entitymodelset, p_386232_));
+     }
+ 
+-    public void submit(
+-        SkullBlockEntity p_440664_,
+-        float p_440672_,
+-        PoseStack p_439979_,
+-        int p_439091_,
+-        int p_439255_,
+-        Vec3 p_440362_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440149_,
+-        SubmitNodeCollector p_439560_
++    public void render(
++        SkullBlockEntity p_112534_, float p_112535_, PoseStack p_112536_, MultiBufferSource p_112537_, int p_112538_, int p_112539_, Vec3 p_401159_
+     ) {
+-        float f = p_440664_.getAnimation(p_440672_);
+-        BlockState blockstate = p_440664_.getBlockState();
++        float f = p_112534_.getAnimation(p_112535_);
++        BlockState blockstate = p_112534_.getBlockState();
+         boolean flag = blockstate.getBlock() instanceof WallSkullBlock;
+         Direction direction = flag ? blockstate.getValue(WallSkullBlock.FACING) : null;
+         int i = flag ? RotationSegment.convertToSegment(direction.getOpposite()) : blockstate.getValue(SkullBlock.ROTATION);
+         float f1 = RotationSegment.convertToDegrees(i);
+         SkullBlock.Type skullblock$type = ((AbstractSkullBlock)blockstate.getBlock()).getType();
+         SkullModelBase skullmodelbase = this.modelByType.apply(skullblock$type);
+-        RenderType rendertype = this.resolveSkullRenderType(skullblock$type, p_440664_);
+-        submitSkull(direction, f1, f, p_439979_, p_439560_, p_439091_, skullmodelbase, rendertype, 0);
++        RenderType rendertype = getRenderType(skullblock$type, p_112534_.getOwnerProfile());
++        renderSkull(direction, f1, f, p_112536_, p_112537_, p_112538_, skullmodelbase, rendertype);
+     }
+ 
+-    public static void submitSkull(
+-        @Nullable Direction p_440001_,
+-        float p_432798_,
+-        float p_434724_,
+-        PoseStack p_433744_,
+-        SubmitNodeCollector p_434108_,
+-        int p_433427_,
+-        SkullModelBase p_433444_,
+-        RenderType p_434430_,
+-        int p_433497_
++    public static void renderSkull(
++        @Nullable Direction p_173664_,
++        float p_173665_,
++        float p_173666_,
++        PoseStack p_173667_,
++        MultiBufferSource p_173668_,
++        int p_173669_,
++        SkullModelBase p_173670_,
++        RenderType p_173671_
+     ) {
+-        p_433744_.pushPose();
+-        if (p_440001_ == null) {
+-            p_433744_.translate(0.5F, 0.0F, 0.5F);
++        p_173667_.pushPose();
++        if (p_173664_ == null) {
++            p_173667_.translate(0.5F, 0.0F, 0.5F);
+         } else {
+             float f = 0.25F;
+-            p_433744_.translate(0.5F - p_440001_.getStepX() * 0.25F, 0.25F, 0.5F - p_440001_.getStepZ() * 0.25F);
++            p_173667_.translate(0.5F - p_173664_.getStepX() * 0.25F, 0.25F, 0.5F - p_173664_.getStepZ() * 0.25F);
+         }
+ 
+-        p_433744_.scale(-1.0F, -1.0F, 1.0F);
+-        SkullModelBase.State skullmodelbase$state = new SkullModelBase.State();
+-        skullmodelbase$state.animationPos = p_434724_;
+-        skullmodelbase$state.yRot = p_432798_;
+-        p_434108_.submitModel(p_433444_, skullmodelbase$state, p_433744_, p_434430_, p_433427_, OverlayTexture.NO_OVERLAY, p_433497_, null);
+-        p_433744_.popPose();
++        p_173667_.scale(-1.0F, -1.0F, 1.0F);
++        VertexConsumer vertexconsumer = p_173668_.getBuffer(p_173671_);
++        p_173670_.setupAnim(p_173666_, p_173665_, 0.0F);
++        p_173670_.renderToBuffer(p_173667_, vertexconsumer, p_173669_, OverlayTexture.NO_OVERLAY);
++        p_173667_.popPose();
+     }
+ 
+-    private RenderType resolveSkullRenderType(SkullBlock.Type p_439442_, SkullBlockEntity p_439775_) {
+-        if (p_439442_ == SkullBlock.Types.PLAYER) {
+-            ResolvableProfile resolvableprofile = p_439775_.getOwnerProfile();
+-            if (resolvableprofile != null) {
+-                return this.playerSkinRenderCache.getOrDefault(resolvableprofile).renderType();
+-            }
+-        }
+-
+-        return getSkullRenderType(p_439442_, null);
++    public static RenderType getRenderType(SkullBlock.Type p_112524_, @Nullable ResolvableProfile p_332722_) {
++        return p_112524_ == SkullBlock.Types.PLAYER && p_332722_ != null
++            ? getPlayerSkinRenderType(Minecraft.getInstance().getSkinManager().getInsecureSkin(p_332722_.gameProfile()).texture())
++            : getSkullRenderType(p_112524_, null);
+     }
+ 
+     public static RenderType getSkullRenderType(SkullBlock.Type p_428198_, @Nullable ResourceLocation p_428351_) {
+@@ -135,5 +_,15 @@
  
      public static RenderType getPlayerSkinRenderType(ResourceLocation p_428466_) {
          return RenderType.entityTranslucent(p_428466_);

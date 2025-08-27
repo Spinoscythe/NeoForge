@@ -1,0 +1,60 @@
+--- a/net/minecraft/client/renderer/entity/ExperienceOrbRenderer.java
++++ b/net/minecraft/client/renderer/entity/ExperienceOrbRenderer.java
+@@ -2,8 +_,8 @@
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.blaze3d.vertex.VertexConsumer;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.state.ExperienceOrbRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.core.BlockPos;
+@@ -28,9 +_,9 @@
+         return Mth.clamp(super.getBlockLightLevel(p_114606_, p_114607_) + 7, 0, 15);
+     }
+ 
+-    public void submit(ExperienceOrbRenderState p_434261_, PoseStack p_435689_, SubmitNodeCollector p_434053_) {
+-        p_435689_.pushPose();
+-        int i = p_434261_.icon;
++    public void render(ExperienceOrbRenderState p_363334_, PoseStack p_114602_, MultiBufferSource p_114603_, int p_114604_) {
++        p_114602_.pushPose();
++        int i = p_363334_.icon;
+         float f = (i % 4 * 16 + 0) / 64.0F;
+         float f1 = (i % 4 * 16 + 16) / 64.0F;
+         float f2 = (i / 4 * 16 + 0) / 64.0F;
+@@ -39,22 +_,22 @@
+         float f5 = 0.5F;
+         float f6 = 0.25F;
+         float f7 = 255.0F;
+-        float f8 = p_434261_.ageInTicks / 2.0F;
++        float f8 = p_363334_.ageInTicks / 2.0F;
+         int j = (int)((Mth.sin(f8 + 0.0F) + 1.0F) * 0.5F * 255.0F);
+         int k = 255;
+         int l = (int)((Mth.sin(f8 + (float) (Math.PI * 4.0 / 3.0)) + 1.0F) * 0.1F * 255.0F);
+-        p_435689_.translate(0.0F, 0.1F, 0.0F);
+-        p_435689_.mulPose(this.entityRenderDispatcher.cameraOrientation());
++        p_114602_.translate(0.0F, 0.1F, 0.0F);
++        p_114602_.mulPose(this.entityRenderDispatcher.cameraOrientation());
+         float f9 = 0.3F;
+-        p_435689_.scale(0.3F, 0.3F, 0.3F);
+-        p_434053_.submitCustomGeometry(p_435689_, RENDER_TYPE, (p_433894_, p_433372_) -> {
+-            vertex(p_433372_, p_433894_, -0.5F, -0.25F, j, 255, l, f, f3, p_434261_.lightCoords);
+-            vertex(p_433372_, p_433894_, 0.5F, -0.25F, j, 255, l, f1, f3, p_434261_.lightCoords);
+-            vertex(p_433372_, p_433894_, 0.5F, 0.75F, j, 255, l, f1, f2, p_434261_.lightCoords);
+-            vertex(p_433372_, p_433894_, -0.5F, 0.75F, j, 255, l, f, f2, p_434261_.lightCoords);
+-        });
+-        p_435689_.popPose();
+-        super.submit(p_434261_, p_435689_, p_434053_);
++        p_114602_.scale(0.3F, 0.3F, 0.3F);
++        VertexConsumer vertexconsumer = p_114603_.getBuffer(RENDER_TYPE);
++        PoseStack.Pose posestack$pose = p_114602_.last();
++        vertex(vertexconsumer, posestack$pose, -0.5F, -0.25F, j, 255, l, f, f3, p_114604_);
++        vertex(vertexconsumer, posestack$pose, 0.5F, -0.25F, j, 255, l, f1, f3, p_114604_);
++        vertex(vertexconsumer, posestack$pose, 0.5F, 0.75F, j, 255, l, f1, f2, p_114604_);
++        vertex(vertexconsumer, posestack$pose, -0.5F, 0.75F, j, 255, l, f, f2, p_114604_);
++        p_114602_.popPose();
++        super.render(p_363334_, p_114602_, p_114603_, p_114604_);
+     }
+ 
+     private static void vertex(

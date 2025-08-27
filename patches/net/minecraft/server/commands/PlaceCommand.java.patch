@@ -1,0 +1,29 @@
+--- a/net/minecraft/server/commands/PlaceCommand.java
++++ b/net/minecraft/server/commands/PlaceCommand.java
+@@ -311,20 +_,20 @@
+             checkLoaded(serverlevel, chunkpos, chunkpos1);
+             ChunkPos.rangeClosed(chunkpos, chunkpos1)
+                 .forEach(
+-                    p_432421_ -> structurestart.placeInChunk(
++                    p_428126_ -> structurestart.placeInChunk(
+                         serverlevel,
+                         serverlevel.structureManager(),
+                         chunkgenerator,
+                         serverlevel.getRandom(),
+                         new BoundingBox(
+-                            p_432421_.getMinBlockX(),
++                            p_428126_.getMinBlockX(),
+                             serverlevel.getMinY(),
+-                            p_432421_.getMinBlockZ(),
+-                            p_432421_.getMaxBlockX(),
++                            p_428126_.getMinBlockZ(),
++                            p_428126_.getMaxBlockX(),
+                             serverlevel.getMaxY() + 1,
+-                            p_432421_.getMaxBlockZ()
++                            p_428126_.getMaxBlockZ()
+                         ),
+-                        p_432421_
++                        p_428126_
+                     )
+                 );
+             String s = p_251799_.key().location().toString();

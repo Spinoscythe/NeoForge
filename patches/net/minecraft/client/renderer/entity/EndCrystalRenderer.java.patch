@@ -1,0 +1,48 @@
+--- a/net/minecraft/client/renderer/entity/EndCrystalRenderer.java
++++ b/net/minecraft/client/renderer/entity/EndCrystalRenderer.java
+@@ -3,8 +_,8 @@
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import net.minecraft.client.model.EndCrystalModel;
+ import net.minecraft.client.model.geom.ModelLayers;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.culling.Frustum;
+ import net.minecraft.client.renderer.entity.state.EndCrystalRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+@@ -28,23 +_,24 @@
+         this.model = new EndCrystalModel(p_173970_.bakeLayer(ModelLayers.END_CRYSTAL));
+     }
+ 
+-    public void submit(EndCrystalRenderState p_433044_, PoseStack p_435546_, SubmitNodeCollector p_434595_) {
+-        p_435546_.pushPose();
+-        p_435546_.scale(2.0F, 2.0F, 2.0F);
+-        p_435546_.translate(0.0F, -0.5F, 0.0F);
+-        p_434595_.submitModel(this.model, p_433044_, p_435546_, RENDER_TYPE, p_433044_.lightCoords, OverlayTexture.NO_OVERLAY, p_433044_.outlineColor, null);
+-        p_435546_.popPose();
+-        Vec3 vec3 = p_433044_.beamOffset;
++    public void render(EndCrystalRenderState p_362403_, PoseStack p_114147_, MultiBufferSource p_114148_, int p_114149_) {
++        p_114147_.pushPose();
++        p_114147_.scale(2.0F, 2.0F, 2.0F);
++        p_114147_.translate(0.0F, -0.5F, 0.0F);
++        this.model.setupAnim(p_362403_);
++        this.model.renderToBuffer(p_114147_, p_114148_.getBuffer(RENDER_TYPE), p_114149_, OverlayTexture.NO_OVERLAY);
++        p_114147_.popPose();
++        Vec3 vec3 = p_362403_.beamOffset;
+         if (vec3 != null) {
+-            float f = getY(p_433044_.ageInTicks);
++            float f = getY(p_362403_.ageInTicks);
+             float f1 = (float)vec3.x;
+             float f2 = (float)vec3.y;
+             float f3 = (float)vec3.z;
+-            p_435546_.translate(vec3);
+-            EnderDragonRenderer.submitCrystalBeams(-f1, -f2 + f, -f3, p_433044_.ageInTicks, p_435546_, p_434595_, p_433044_.lightCoords);
++            p_114147_.translate(vec3);
++            EnderDragonRenderer.renderCrystalBeams(-f1, -f2 + f, -f3, p_362403_.ageInTicks, p_114147_, p_114148_, p_114149_);
+         }
+ 
+-        super.submit(p_433044_, p_435546_, p_434595_);
++        super.render(p_362403_, p_114147_, p_114148_, p_114149_);
+     }
+ 
+     public static float getY(float p_114160_) {

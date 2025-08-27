@@ -1,5 +1,51 @@
 --- a/net/minecraft/world/level/block/piston/PistonBaseBlock.java
 +++ b/net/minecraft/world/level/block/piston/PistonBaseBlock.java
+@@ -45,8 +_,8 @@
+ 
+ public class PistonBaseBlock extends DirectionalBlock {
+     public static final MapCodec<PistonBaseBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432718_ -> p_432718_.group(Codec.BOOL.fieldOf("sticky").forGetter(p_304492_ -> p_304492_.isSticky), propertiesCodec())
+-            .apply(p_432718_, PistonBaseBlock::new)
++        p_368476_ -> p_368476_.group(Codec.BOOL.fieldOf("sticky").forGetter(p_304492_ -> p_304492_.isSticky), propertiesCodec())
++            .apply(p_368476_, PistonBaseBlock::new)
+     );
+     public static final BooleanProperty EXTENDED = BlockStateProperties.EXTENDED;
+     public static final int TRIGGER_EXTEND = 0;
+@@ -74,14 +_,14 @@
+ 
+     @Override
+     public void setPlacedBy(Level p_60172_, BlockPos p_60173_, BlockState p_60174_, LivingEntity p_60175_, ItemStack p_60176_) {
+-        if (!p_60172_.isClientSide()) {
++        if (!p_60172_.isClientSide) {
+             this.checkIfExtend(p_60172_, p_60173_, p_60174_);
+         }
+     }
+ 
+     @Override
+     protected void neighborChanged(BlockState p_60198_, Level p_60199_, BlockPos p_60200_, Block p_60201_, @Nullable Orientation p_363070_, boolean p_60203_) {
+-        if (!p_60199_.isClientSide()) {
++        if (!p_60199_.isClientSide) {
+             this.checkIfExtend(p_60199_, p_60200_, p_60198_);
+         }
+     }
+@@ -89,7 +_,7 @@
+     @Override
+     protected void onPlace(BlockState p_60225_, Level p_60226_, BlockPos p_60227_, BlockState p_60228_, boolean p_60229_) {
+         if (!p_60228_.is(p_60225_.getBlock())) {
+-            if (!p_60226_.isClientSide() && p_60226_.getBlockEntity(p_60227_) == null) {
++            if (!p_60226_.isClientSide && p_60226_.getBlockEntity(p_60227_) == null) {
+                 this.checkIfExtend(p_60226_, p_60227_, p_60225_);
+             }
+         }
+@@ -153,7 +_,7 @@
+     protected boolean triggerEvent(BlockState p_60192_, Level p_60193_, BlockPos p_60194_, int p_60195_, int p_60196_) {
+         Direction direction = p_60192_.getValue(FACING);
+         BlockState blockstate = p_60192_.setValue(EXTENDED, true);
+-        if (!p_60193_.isClientSide()) {
++        if (!p_60193_.isClientSide) {
+             boolean flag = this.getNeighborSignal(p_60193_, p_60194_, direction);
+             if (flag && (p_60195_ == 1 || p_60195_ == 2)) {
+                 p_60193_.setBlock(p_60194_, blockstate, 2);
 @@ -166,6 +_,7 @@
          }
  

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/projectile/Arrow.java
++++ b/net/minecraft/world/entity/projectile/Arrow.java
+@@ -73,7 +_,7 @@
+     @Override
+     public void tick() {
+         super.tick();
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             if (this.isInGround()) {
+                 if (this.inGroundTime % 5 == 0) {
+                     this.makeParticle(1);

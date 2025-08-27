@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/model/WindChargeModel.java
++++ b/net/minecraft/client/model/WindChargeModel.java
+@@ -47,6 +_,7 @@
+         return LayerDefinition.create(meshdefinition, 64, 32);
+     }
+ 
++    @Override
+     public void setupAnim(EntityRenderState p_362619_) {
+         super.setupAnim(p_362619_);
+         this.windCharge.yRot = -p_362619_.ageInTicks * 16.0F * (float) (Math.PI / 180.0);

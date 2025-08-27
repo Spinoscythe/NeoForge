@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/model/SkeletonModel.java
++++ b/net/minecraft/client/model/SkeletonModel.java
+@@ -60,7 +_,8 @@
+         }
+     }
+ 
+-    public void translateToHand(SkeletonRenderState p_435818_, HumanoidArm p_103778_, PoseStack p_103779_) {
++    @Override
++    public void translateToHand(HumanoidArm p_103778_, PoseStack p_103779_) {
+         this.root().translateAndRotate(p_103779_);
+         float f = p_103778_ == HumanoidArm.RIGHT ? 1.0F : -1.0F;
+         ModelPart modelpart = this.getArm(p_103778_);

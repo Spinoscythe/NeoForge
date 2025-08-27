@@ -1,5 +1,32 @@
 --- a/net/minecraft/world/level/block/CrafterBlock.java
 +++ b/net/minecraft/world/level/block/CrafterBlock.java
+@@ -65,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_307633_, Level p_307264_, BlockPos p_307557_, Direction p_433394_) {
++    protected int getAnalogOutputSignal(BlockState p_307633_, Level p_307264_, BlockPos p_307557_) {
+         return p_307264_.getBlockEntity(p_307557_) instanceof CrafterBlockEntity crafterblockentity ? crafterblockentity.getRedstoneSignal() : 0;
+     }
+ 
+@@ -94,7 +_,7 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_307308_, BlockState p_307639_, BlockEntityType<T> p_307651_) {
+-        return p_307308_.isClientSide() ? null : createTickerHelper(p_307651_, BlockEntityType.CRAFTER, CrafterBlockEntity::serverTick);
++        return p_307308_.isClientSide ? null : createTickerHelper(p_307651_, BlockEntityType.CRAFTER, CrafterBlockEntity::serverTick);
+     }
+ 
+     private void setBlockEntityTriggered(@Nullable BlockEntity p_307610_, boolean p_307577_) {
+@@ -138,7 +_,7 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_307454_, Level p_307255_, BlockPos p_307303_, Player p_307670_, BlockHitResult p_307546_) {
+-        if (!p_307255_.isClientSide() && p_307255_.getBlockEntity(p_307303_) instanceof CrafterBlockEntity crafterblockentity) {
++        if (!p_307255_.isClientSide && p_307255_.getBlockEntity(p_307303_) instanceof CrafterBlockEntity crafterblockentity) {
+             p_307670_.openMenu(crafterblockentity);
+         }
+ 
 @@ -187,7 +_,8 @@
          ServerLevel p_335887_, BlockPos p_307620_, CrafterBlockEntity p_307387_, ItemStack p_307296_, BlockState p_307501_, RecipeHolder<?> p_335494_
      ) {

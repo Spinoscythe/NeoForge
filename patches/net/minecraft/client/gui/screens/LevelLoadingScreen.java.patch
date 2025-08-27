@@ -1,0 +1,213 @@
+--- a/net/minecraft/client/gui/screens/LevelLoadingScreen.java
++++ b/net/minecraft/client/gui/screens/LevelLoadingScreen.java
+@@ -2,40 +_,25 @@
+ 
+ import it.unimi.dsi.fastutil.objects.Object2IntMap;
+ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+-import javax.annotation.Nullable;
+ import net.minecraft.Util;
+ import net.minecraft.client.GameNarrator;
+-import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.GuiGraphics;
+ import net.minecraft.client.gui.narration.NarratedElementType;
+ import net.minecraft.client.gui.narration.NarrationElementOutput;
+-import net.minecraft.client.gui.render.TextureSetup;
+-import net.minecraft.client.multiplayer.LevelLoadTracker;
+-import net.minecraft.client.renderer.RenderPipelines;
+-import net.minecraft.client.renderer.blockentity.TheEndPortalRenderer;
+-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+-import net.minecraft.client.renderer.texture.TextureManager;
+ import net.minecraft.network.chat.Component;
+-import net.minecraft.server.level.progress.ChunkLoadStatusView;
++import net.minecraft.server.level.progress.StoringChunkProgressListener;
+ import net.minecraft.util.ARGB;
+ import net.minecraft.util.Mth;
+-import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.chunk.status.ChunkStatus;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class LevelLoadingScreen extends Screen {
+-    private static final Component DOWNLOADING_TERRAIN_TEXT = Component.translatable("multiplayer.downloadingTerrain");
+-    private static final Component READY_TO_PLAY_TEXT = Component.translatable("narrator.ready_to_play");
+     private static final long NARRATION_DELAY_MS = 2000L;
+-    private static final int PROGRESS_BAR_WIDTH = 200;
+-    private LevelLoadTracker loadTracker;
+-    private float smoothedProgress;
++    private final StoringChunkProgressListener progressListener;
+     private long lastNarration = -1L;
+-    private LevelLoadingScreen.Reason reason;
+-    @Nullable
+-    private TextureAtlasSprite cachedNetherPortalSprite;
++    private boolean done;
+     private static final Object2IntMap<ChunkStatus> COLORS = Util.make(new Object2IntOpenHashMap<>(), p_280803_ -> {
+         p_280803_.defaultReturnValue(0);
+         p_280803_.put(ChunkStatus.EMPTY, 5526612);
+@@ -52,15 +_,9 @@
+         p_280803_.put(ChunkStatus.FULL, 16777215);
+     });
+ 
+-    public LevelLoadingScreen(LevelLoadTracker p_433191_, LevelLoadingScreen.Reason p_435031_) {
++    public LevelLoadingScreen(StoringChunkProgressListener p_96143_) {
+         super(GameNarrator.NO_TITLE);
+-        this.loadTracker = p_433191_;
+-        this.reason = p_435031_;
+-    }
+-
+-    public void update(LevelLoadTracker p_434525_, LevelLoadingScreen.Reason p_435414_) {
+-        this.loadTracker = p_434525_;
+-        this.reason = p_435414_;
++        this.progressListener = p_96143_;
+     }
+ 
+     @Override
+@@ -74,19 +_,22 @@
+     }
+ 
+     @Override
++    public void removed() {
++        this.done = true;
++        this.triggerImmediateNarration(true);
++    }
++
++    @Override
+     protected void updateNarratedWidget(NarrationElementOutput p_169312_) {
+-        if (this.loadTracker.hasProgress()) {
+-            p_169312_.add(NarratedElementType.TITLE, Component.translatable("loading.progress", Mth.floor(this.loadTracker.serverProgress() * 100.0F)));
++        if (this.done) {
++            p_169312_.add(NarratedElementType.TITLE, Component.translatable("narrator.loading.done"));
++        } else {
++            p_169312_.add(NarratedElementType.TITLE, this.getFormattedProgress());
+         }
+     }
+ 
+-    @Override
+-    public void tick() {
+-        super.tick();
+-        this.smoothedProgress = this.smoothedProgress + (this.loadTracker.serverProgress() - this.smoothedProgress) * 0.2F;
+-        if (this.loadTracker.isLevelReady()) {
+-            this.onClose();
+-        }
++    private Component getFormattedProgress() {
++        return Component.translatable("loading.progress", Mth.clamp(this.progressListener.getProgress(), 0, 100));
+     }
+ 
+     @Override
+@@ -100,91 +_,35 @@
+ 
+         int j = this.width / 2;
+         int k = this.height / 2;
+-        ChunkLoadStatusView chunkloadstatusview = this.loadTracker.statusView();
+-        int l;
+-        if (chunkloadstatusview != null) {
+-            int i1 = 2;
+-            renderChunks(p_283534_, j, k, 2, 0, chunkloadstatusview);
+-            l = k - chunkloadstatusview.radius() * 2 - 9 * 3;
+-        } else {
+-            l = k - 50;
+-        }
+-
+-        p_283534_.drawCenteredString(this.font, DOWNLOADING_TERRAIN_TEXT, j, l, -1);
+-        if (this.loadTracker.hasProgress()) {
+-            this.drawProgressBar(p_283534_, j - 100, l + 9 + 3, 200, 2, this.smoothedProgress);
+-        }
+-    }
+-
+-    private void drawProgressBar(GuiGraphics p_433901_, int p_433815_, int p_434324_, int p_433974_, int p_433800_, float p_433827_) {
+-        p_433901_.fill(p_433815_, p_434324_, p_433815_ + p_433974_, p_434324_ + p_433800_, -16777216);
+-        p_433901_.fill(p_433815_, p_434324_, p_433815_ + Math.round(p_433827_ * p_433974_), p_434324_ + p_433800_, -16711936);
+-    }
+-
+-    public static void renderChunks(GuiGraphics p_283467_, int p_96152_, int p_96153_, int p_96154_, int p_96155_, ChunkLoadStatusView p_435378_) {
++        renderChunks(p_283534_, this.progressListener, j, k, 2, 0);
++        int l = this.progressListener.getDiameter() + 9 + 2;
++        p_283534_.drawCenteredString(this.font, this.getFormattedProgress(), j, k - l, -1);
++    }
++
++    public static void renderChunks(GuiGraphics p_283467_, StoringChunkProgressListener p_96151_, int p_96152_, int p_96153_, int p_96154_, int p_96155_) {
+         int i = p_96154_ + p_96155_;
+-        int j = p_435378_.radius() * 2 + 1;
++        int j = p_96151_.getFullDiameter();
+         int k = j * i - p_96155_;
+-        int l = p_96152_ - k / 2;
+-        int i1 = p_96153_ - k / 2;
++        int l = p_96151_.getDiameter();
++        int i1 = l * i - p_96155_;
++        int j1 = p_96152_ - i1 / 2;
++        int k1 = p_96153_ - i1 / 2;
++        int l1 = k / 2 + 1;
++        int i2 = -16772609;
++        if (p_96155_ != 0) {
++            p_283467_.fill(p_96152_ - l1, p_96153_ - l1, p_96152_ - l1 + 1, p_96153_ + l1, -16772609);
++            p_283467_.fill(p_96152_ + l1 - 1, p_96153_ - l1, p_96152_ + l1, p_96153_ + l1, -16772609);
++            p_283467_.fill(p_96152_ - l1, p_96153_ - l1, p_96152_ + l1, p_96153_ - l1 + 1, -16772609);
++            p_283467_.fill(p_96152_ - l1, p_96153_ + l1 - 1, p_96152_ + l1, p_96153_ + l1, -16772609);
++        }
+ 
+-        for (int j1 = 0; j1 < j; j1++) {
+-            for (int k1 = 0; k1 < j; k1++) {
+-                ChunkStatus chunkstatus = p_435378_.get(j1, k1);
+-                int l1 = l + j1 * i;
+-                int i2 = i1 + k1 * i;
+-                p_283467_.fill(l1, i2, l1 + p_96154_, i2 + p_96154_, ARGB.opaque(COLORS.getInt(chunkstatus)));
++        for (int j2 = 0; j2 < l; j2++) {
++            for (int k2 = 0; k2 < l; k2++) {
++                ChunkStatus chunkstatus = p_96151_.getStatus(j2, k2);
++                int l2 = j1 + j2 * i;
++                int i3 = k1 + k2 * i;
++                p_283467_.fill(l2, i3, l2 + p_96154_, i3 + p_96154_, ARGB.opaque(COLORS.getInt(chunkstatus)));
+             }
+         }
+-    }
+-
+-    @Override
+-    public void renderBackground(GuiGraphics p_433649_, int p_434938_, int p_434020_, float p_432747_) {
+-        switch (this.reason) {
+-            case NETHER_PORTAL:
+-                p_433649_.blitSprite(
+-                    RenderPipelines.GUI_OPAQUE_TEXTURED_BACKGROUND, this.getNetherPortalSprite(), 0, 0, p_433649_.guiWidth(), p_433649_.guiHeight()
+-                );
+-                break;
+-            case END_PORTAL:
+-                TextureManager texturemanager = Minecraft.getInstance().getTextureManager();
+-                TextureSetup texturesetup = TextureSetup.doubleTexture(
+-                    texturemanager.getTexture(TheEndPortalRenderer.END_SKY_LOCATION).getTextureView(),
+-                    texturemanager.getTexture(TheEndPortalRenderer.END_PORTAL_LOCATION).getTextureView()
+-                );
+-                p_433649_.fill(RenderPipelines.END_PORTAL, texturesetup, 0, 0, this.width, this.height);
+-                break;
+-            case OTHER:
+-                this.renderPanorama(p_433649_, p_432747_);
+-                this.renderBlurredBackground(p_433649_);
+-                this.renderMenuBackground(p_433649_);
+-        }
+-    }
+-
+-    private TextureAtlasSprite getNetherPortalSprite() {
+-        if (this.cachedNetherPortalSprite != null) {
+-            return this.cachedNetherPortalSprite;
+-        } else {
+-            this.cachedNetherPortalSprite = this.minecraft.getBlockRenderer().getBlockModelShaper().getParticleIcon(Blocks.NETHER_PORTAL.defaultBlockState());
+-            return this.cachedNetherPortalSprite;
+-        }
+-    }
+-
+-    @Override
+-    public void onClose() {
+-        this.minecraft.getNarrator().saySystemNow(READY_TO_PLAY_TEXT);
+-        super.onClose();
+-    }
+-
+-    @Override
+-    public boolean isPauseScreen() {
+-        return false;
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    public static enum Reason {
+-        NETHER_PORTAL,
+-        END_PORTAL,
+-        OTHER;
+     }
+ }

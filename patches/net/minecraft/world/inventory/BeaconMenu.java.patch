@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/inventory/BeaconMenu.java
 +++ b/net/minecraft/world/inventory/BeaconMenu.java
+@@ -55,7 +_,7 @@
+     @Override
+     public void removed(Player p_39049_) {
+         super.removed(p_39049_);
+-        if (!p_39049_.level().isClientSide()) {
++        if (!p_39049_.level().isClientSide) {
+             ItemStack itemstack = this.paymentSlot.remove(this.paymentSlot.getMaxStackSize());
+             if (!itemstack.isEmpty()) {
+                 p_39049_.drop(itemstack, false);
 @@ -87,10 +_,8 @@
                  }
  

@@ -1,0 +1,23 @@
+--- a/net/minecraft/client/renderer/debug/LightSectionDebugRenderer.java
++++ b/net/minecraft/client/renderer/debug/LightSectionDebugRenderer.java
+@@ -111,19 +_,7 @@
+         float f1 = (float)(SectionPos.sectionToBlockCoord(p_282270_) - p_282440_);
+         float f2 = (float)(SectionPos.sectionToBlockCoord(p_282159_) - p_282235_);
+         ShapeRenderer.renderFace(
+-            p_283612_.last().pose(),
+-            p_281996_,
+-            p_282340_,
+-            f,
+-            f1,
+-            f2,
+-            f + 16.0F,
+-            f1 + 16.0F,
+-            f2 + 16.0F,
+-            p_283316_.x(),
+-            p_283316_.y(),
+-            p_283316_.z(),
+-            p_283316_.w()
++            p_283612_, p_281996_, p_282340_, f, f1, f2, f + 16.0F, f1 + 16.0F, f2 + 16.0F, p_283316_.x(), p_283316_.y(), p_283316_.z(), p_283316_.w()
+         );
+     }
+ 

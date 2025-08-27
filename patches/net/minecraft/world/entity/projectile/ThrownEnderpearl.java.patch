@@ -1,6 +1,39 @@
 --- a/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
 +++ b/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
-@@ -119,6 +_,8 @@
+@@ -66,13 +_,28 @@
+     @Nullable
+     @Override
+     public Entity getOwner() {
+-        return this.owner != null && this.level() instanceof ServerLevel serverlevel ? this.owner.getEntity(serverlevel, Entity.class) : super.getOwner();
++        return this.owner != null && this.level() instanceof ServerLevel serverlevel
++            ? this.owner.getEntity(p_423605_ -> findOwnerInAnyDimension(serverlevel, p_423605_), Entity.class)
++            : super.getOwner();
+     }
+ 
+     @Nullable
+-    private static Entity findOwnerIncludingDeadPlayer(ServerLevel p_439450_, UUID p_440680_) {
+-        Entity entity = p_439450_.getEntityInAnyDimension(p_440680_);
+-        return (Entity)(entity != null ? entity : p_439450_.getServer().getPlayerList().getPlayer(p_440680_));
++    private static Entity findOwnerInAnyDimension(ServerLevel p_423441_, UUID p_423474_) {
++        Entity entity = p_423441_.getEntity(p_423474_);
++        if (entity != null) {
++            return entity;
++        } else {
++            for (ServerLevel serverlevel : p_423441_.getServer().getAllLevels()) {
++                if (serverlevel != p_423441_) {
++                    entity = serverlevel.getEntity(p_423474_);
++                    if (entity != null) {
++                        return entity;
++                    }
++                }
++            }
++
++            return null;
++        }
+     }
+ 
+     @Override
+@@ -104,6 +_,8 @@
                  Vec3 vec3 = this.oldPosition();
                  if (entity instanceof ServerPlayer serverplayer) {
                      if (serverplayer.connection.isAcceptingMessages()) {
@@ -9,7 +42,7 @@
                          if (this.random.nextFloat() < 0.05F && serverlevel.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
                              Endermite endermite = EntityType.ENDERMITE.create(serverlevel, EntitySpawnReason.TRIGGERED);
                              if (endermite != null) {
-@@ -133,16 +_,17 @@
+@@ -118,16 +_,17 @@
  
                          ServerPlayer serverplayer1 = serverplayer.teleport(
                              new TeleportTransition(
@@ -29,3 +62,47 @@
                      }
                  } else {
                      Entity entity1 = entity.teleport(
+@@ -157,28 +_,23 @@
+ 
+     @Override
+     public void tick() {
+-        if (this.level() instanceof ServerLevel serverlevel) {
+-            int j = SectionPos.blockToSectionCoord(this.position().x());
+-            int $$3 = SectionPos.blockToSectionCoord(this.position().z());
+-            Entity entity = this.owner != null ? findOwnerIncludingDeadPlayer(serverlevel, this.owner.getUUID()) : null;
+-            if (entity instanceof ServerPlayer serverplayer
+-                && !entity.isAlive()
+-                && !serverplayer.wonGame
+-                && serverplayer.level().getGameRules().getBoolean(GameRules.RULE_ENDER_PEARLS_VANISH_ON_DEATH)) {
+-                this.discard();
+-            } else {
+-                super.tick();
+-            }
+-
+-            if (this.isAlive()) {
+-                BlockPos blockpos = BlockPos.containing(this.position());
+-                if ((--this.ticketTimer <= 0L || j != SectionPos.blockToSectionCoord(blockpos.getX()) || $$3 != SectionPos.blockToSectionCoord(blockpos.getZ()))
+-                    && entity instanceof ServerPlayer serverplayer1) {
+-                    this.ticketTimer = serverplayer1.registerAndUpdateEnderPearlTicket(this);
+-                }
+-            }
++        int i = SectionPos.blockToSectionCoord(this.position().x());
++        int j = SectionPos.blockToSectionCoord(this.position().z());
++        Entity entity = this.getOwner();
++        if (entity instanceof ServerPlayer serverplayer
++            && !entity.isAlive()
++            && serverplayer.level().getGameRules().getBoolean(GameRules.RULE_ENDER_PEARLS_VANISH_ON_DEATH)) {
++            this.discard();
+         } else {
+             super.tick();
++        }
++
++        if (this.isAlive()) {
++            BlockPos blockpos = BlockPos.containing(this.position());
++            if ((--this.ticketTimer <= 0L || i != SectionPos.blockToSectionCoord(blockpos.getX()) || j != SectionPos.blockToSectionCoord(blockpos.getZ()))
++                && entity instanceof ServerPlayer serverplayer1) {
++                this.ticketTimer = serverplayer1.registerAndUpdateEnderPearlTicket(this);
++            }
+         }
+     }
+ 

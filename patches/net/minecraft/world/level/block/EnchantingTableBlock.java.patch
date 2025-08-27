@@ -9,3 +9,18 @@
              && p_340976_.getBlockState(p_340984_.offset(p_341294_.getX() / 2, p_341294_.getY(), p_341294_.getZ() / 2))
                  .is(BlockTags.ENCHANTMENT_POWER_TRANSMITTER);
      }
+@@ -89,12 +_,12 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_340880_, BlockState p_341416_, BlockEntityType<T> p_341078_) {
+-        return p_340880_.isClientSide() ? createTickerHelper(p_341078_, BlockEntityType.ENCHANTING_TABLE, EnchantingTableBlockEntity::bookAnimationTick) : null;
++        return p_340880_.isClientSide ? createTickerHelper(p_341078_, BlockEntityType.ENCHANTING_TABLE, EnchantingTableBlockEntity::bookAnimationTick) : null;
+     }
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_341077_, Level p_341293_, BlockPos p_341394_, Player p_340990_, BlockHitResult p_341300_) {
+-        if (!p_341293_.isClientSide()) {
++        if (!p_341293_.isClientSide) {
+             p_340990_.openMenu(p_341077_.getMenuProvider(p_341293_, p_341394_));
+         }
+ 

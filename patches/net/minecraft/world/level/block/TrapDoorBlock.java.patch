@@ -1,9 +1,31 @@
 --- a/net/minecraft/world/level/block/TrapDoorBlock.java
 +++ b/net/minecraft/world/level/block/TrapDoorBlock.java
-@@ -197,6 +_,17 @@
-         return super.updateShape(p_57554_, p_374386_, p_374038_, p_57558_, p_57555_, p_57559_, p_57556_, p_374093_);
-     }
+@@ -40,8 +_,8 @@
  
+ public class TrapDoorBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock {
+     public static final MapCodec<TrapDoorBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432687_ -> p_432687_.group(BlockSetType.CODEC.fieldOf("block_set_type").forGetter(p_304735_ -> p_304735_.type), propertiesCodec())
+-            .apply(p_432687_, TrapDoorBlock::new)
++        p_368443_ -> p_368443_.group(BlockSetType.CODEC.fieldOf("block_set_type").forGetter(p_304735_ -> p_304735_.type), propertiesCodec())
++            .apply(p_368443_, TrapDoorBlock::new)
+     );
+     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
+     public static final EnumProperty<Half> HALF = BlockStateProperties.HALF;
+@@ -133,7 +_,7 @@
+ 
+     @Override
+     protected void neighborChanged(BlockState p_57547_, Level p_57548_, BlockPos p_57549_, Block p_57550_, @Nullable Orientation p_364404_, boolean p_57552_) {
+-        if (!p_57548_.isClientSide()) {
++        if (!p_57548_.isClientSide) {
+             boolean flag = p_57548_.hasNeighborSignal(p_57549_);
+             if (flag != p_57547_.getValue(POWERED)) {
+                 if (p_57547_.getValue(OPEN) != flag) {
+@@ -195,6 +_,17 @@
+         }
+ 
+         return super.updateShape(p_57554_, p_374386_, p_374038_, p_57558_, p_57555_, p_57559_, p_57556_, p_374093_);
++    }
++
 +    // Neo: Allows Trapdoors to be climbable if any ladder, even modded ladders, is below Trapdoor
 +    @Override
 +    public boolean isLadder(BlockState state, net.minecraft.world.level.LevelReader world, BlockPos pos, net.minecraft.world.entity.LivingEntity entity) {
@@ -13,8 +35,6 @@
 +            return down.getBlock().makesOpenTrapdoorAboveClimbable(down, world, downPos, state);
 +        }
 +        return false;
-+    }
-+
-     protected BlockSetType getType() {
-         return this.type;
      }
+ 
+     protected BlockSetType getType() {

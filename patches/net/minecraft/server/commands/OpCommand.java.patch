@@ -1,0 +1,47 @@
+--- a/net/minecraft/server/commands/OpCommand.java
++++ b/net/minecraft/server/commands/OpCommand.java
+@@ -1,5 +_,6 @@
+ package net.minecraft.server.commands;
+ 
++import com.mojang.authlib.GameProfile;
+ import com.mojang.brigadier.CommandDispatcher;
+ import com.mojang.brigadier.context.CommandContext;
+ import com.mojang.brigadier.exceptions.CommandSyntaxException;
+@@ -12,7 +_,6 @@
+ import net.minecraft.commands.arguments.GameProfileArgument;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.server.level.ServerPlayer;
+-import net.minecraft.server.players.NameAndId;
+ import net.minecraft.server.players.PlayerList;
+ 
+ public class OpCommand {
+@@ -30,7 +_,7 @@
+                                 return SharedSuggestionProvider.suggest(
+                                     playerlist.getPlayers()
+                                         .stream()
+-                                        .filter(p_432416_ -> !playerlist.isOp(p_432416_.nameAndId()))
++                                        .filter(p_426953_ -> !playerlist.isOp(p_426953_.getGameProfile()))
+                                         .map(p_426951_ -> p_426951_.getGameProfile().getName()),
+                                     p_138085_
+                                 );
+@@ -41,15 +_,15 @@
+         );
+     }
+ 
+-    private static int opPlayers(CommandSourceStack p_138089_, Collection<NameAndId> p_138090_) throws CommandSyntaxException {
++    private static int opPlayers(CommandSourceStack p_138089_, Collection<GameProfile> p_138090_) throws CommandSyntaxException {
+         PlayerList playerlist = p_138089_.getServer().getPlayerList();
+         int i = 0;
+ 
+-        for (NameAndId nameandid : p_138090_) {
+-            if (!playerlist.isOp(nameandid)) {
+-                playerlist.op(nameandid);
++        for (GameProfile gameprofile : p_138090_) {
++            if (!playerlist.isOp(gameprofile)) {
++                playerlist.op(gameprofile);
+                 i++;
+-                p_138089_.sendSuccess(() -> Component.translatable("commands.op.success", nameandid.name()), true);
++                p_138089_.sendSuccess(() -> Component.translatable("commands.op.success", gameprofile.getName()), true);
+             }
+         }
+ 

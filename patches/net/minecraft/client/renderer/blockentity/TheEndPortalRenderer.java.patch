@@ -1,0 +1,35 @@
+--- a/net/minecraft/client/renderer/blockentity/TheEndPortalRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/TheEndPortalRenderer.java
+@@ -2,10 +_,8 @@
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.blaze3d.vertex.VertexConsumer;
+-import javax.annotation.Nullable;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+ import net.minecraft.core.Direction;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.world.level.block.entity.TheEndPortalBlockEntity;
+@@ -22,17 +_,9 @@
+     public TheEndPortalRenderer(BlockEntityRendererProvider.Context p_173689_) {
+     }
+ 
+-    public void submit(
+-        T p_440596_,
+-        float p_440047_,
+-        PoseStack p_439650_,
+-        int p_439210_,
+-        int p_439821_,
+-        Vec3 p_440580_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440173_,
+-        SubmitNodeCollector p_439370_
+-    ) {
+-        p_439370_.submitCustomGeometry(p_439650_, this.renderType(), (p_439991_, p_439788_) -> this.renderCube(p_440596_, p_439991_.pose(), p_439788_));
++    public void render(T p_112650_, float p_112651_, PoseStack p_112652_, MultiBufferSource p_112653_, int p_112654_, int p_112655_, Vec3 p_401153_) {
++        Matrix4f matrix4f = p_112652_.last().pose();
++        this.renderCube(p_112650_, matrix4f, p_112653_.getBuffer(this.renderType()));
+     }
+ 
+     private void renderCube(T p_173691_, Matrix4f p_254024_, VertexConsumer p_173693_) {

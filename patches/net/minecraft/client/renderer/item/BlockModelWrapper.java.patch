@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/renderer/item/BlockModelWrapper.java
 +++ b/net/minecraft/client/renderer/item/BlockModelWrapper.java
+@@ -22,7 +_,7 @@
+ import net.minecraft.client.resources.model.ResolvedModel;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.tags.ItemTags;
+-import net.minecraft.world.entity.ItemOwner;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.Items;
 @@ -37,8 +_,14 @@
      private final Supplier<Vector3f[]> extents;
      private final ModelRenderProperties properties;
@@ -15,7 +24,15 @@
          this.tints = p_388185_;
          this.quads = p_405671_;
          this.properties = p_404871_;
-@@ -53,6 +_,7 @@
+@@ -46,13 +_,14 @@
+         boolean flag = false;
+ 
+         for (BakedQuad bakedquad : p_405671_) {
+-            if (bakedquad.sprite().contents().isAnimated()) {
++            if (bakedquad.sprite().isAnimated()) {
+                 flag = true;
+                 break;
+             }
          }
  
          this.animated = flag;
@@ -23,7 +40,23 @@
      }
  
      public static Vector3f[] computeExtents(List<BakedQuad> p_404655_) {
-@@ -96,7 +_,7 @@
+@@ -72,7 +_,7 @@
+         ItemModelResolver p_388726_,
+         ItemDisplayContext p_388231_,
+         @Nullable ClientLevel p_387522_,
+-        @Nullable ItemOwner p_434975_,
++        @Nullable LivingEntity p_387263_,
+         int p_388300_
+     ) {
+         p_386488_.appendModelIdentityElement(this);
+@@ -90,13 +_,13 @@
+         int[] aint = itemstackrenderstate$layerrenderstate.prepareTintLayers(k);
+ 
+         for (int i = 0; i < k; i++) {
+-            int j = this.tints.get(i).calculate(p_386443_, p_387522_, p_434975_ == null ? null : p_434975_.asLivingEntity());
++            int j = this.tints.get(i).calculate(p_386443_, p_387522_, p_387263_);
+             aint[i] = j;
+             p_386488_.appendModelIdentityElement(j);
          }
  
          itemstackrenderstate$layerrenderstate.setExtents(this.extents);

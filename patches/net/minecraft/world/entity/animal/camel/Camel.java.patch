@@ -8,3 +8,21 @@
      }
  
      public boolean isDashing() {
+@@ -415,7 +_,7 @@
+             boolean flag2 = this.isBaby();
+             if (flag2) {
+                 this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0), this.getRandomY() + 0.5, this.getRandomZ(1.0), 0.0, 0.0, 0.0);
+-                if (!this.level().isClientSide()) {
++                if (!this.level().isClientSide) {
+                     this.ageUp(10);
+                 }
+             }
+@@ -628,7 +_,7 @@
+ 
+     @Override
+     public void openCustomInventoryScreen(Player p_248613_) {
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             p_248613_.openHorseInventory(this, this.inventory);
+         }
+     }

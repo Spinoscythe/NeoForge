@@ -1,0 +1,84 @@
+--- a/net/minecraft/client/model/ZombieVillagerModel.java
++++ b/net/minecraft/client/model/ZombieVillagerModel.java
+@@ -8,14 +_,15 @@
+ import net.minecraft.client.model.geom.builders.LayerDefinition;
+ import net.minecraft.client.model.geom.builders.MeshDefinition;
+ import net.minecraft.client.model.geom.builders.PartDefinition;
+-import net.minecraft.client.renderer.entity.ArmorModelSet;
+ import net.minecraft.client.renderer.entity.state.ZombieVillagerRenderState;
+ import net.minecraft.world.entity.HumanoidArm;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class ZombieVillagerModel<S extends ZombieVillagerRenderState> extends HumanoidModel<S> implements VillagerLikeModel<S> {
++public class ZombieVillagerModel<S extends ZombieVillagerRenderState> extends HumanoidModel<S> implements VillagerLikeModel {
++    private final ModelPart hatRim = this.hat.getChild("hat_rim");
++
+     public ZombieVillagerModel(ModelPart p_171092_) {
+         super(p_171092_);
+     }
+@@ -60,38 +_,27 @@
+         return LayerDefinition.create(meshdefinition, 64, 64);
+     }
+ 
+-    public static LayerDefinition createNoHatLayer() {
+-        return createBodyLayer().apply(p_433788_ -> {
+-            p_433788_.getRoot().clearChild("head").clearRecursively();
+-            return p_433788_;
+-        });
+-    }
+-
+-    public static ArmorModelSet<LayerDefinition> createArmorLayerSet(CubeDeformation p_434360_, CubeDeformation p_433101_) {
+-        return createArmorMeshSet(ZombieVillagerModel::createBaseArmorMesh, p_434360_, p_433101_).map(p_435239_ -> LayerDefinition.create(p_435239_, 64, 32));
+-    }
+-
+-    private static MeshDefinition createBaseArmorMesh(CubeDeformation p_435525_) {
+-        MeshDefinition meshdefinition = HumanoidModel.createMesh(p_435525_, 0.0F);
++    public static LayerDefinition createArmorLayer(CubeDeformation p_171094_) {
++        MeshDefinition meshdefinition = HumanoidModel.createMesh(p_171094_, 0.0F);
+         PartDefinition partdefinition = meshdefinition.getRoot();
+         PartDefinition partdefinition1 = partdefinition.addOrReplaceChild(
+-            "head", CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -10.0F, -4.0F, 8.0F, 8.0F, 8.0F, p_435525_), PartPose.ZERO
++            "head", CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -10.0F, -4.0F, 8.0F, 8.0F, 8.0F, p_171094_), PartPose.ZERO
+         );
+         partdefinition.addOrReplaceChild(
+-            "body", CubeListBuilder.create().texOffs(16, 16).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, p_435525_.extend(0.1F)), PartPose.ZERO
++            "body", CubeListBuilder.create().texOffs(16, 16).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, p_171094_.extend(0.1F)), PartPose.ZERO
+         );
+         partdefinition.addOrReplaceChild(
+             "right_leg",
+-            CubeListBuilder.create().texOffs(0, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, p_435525_.extend(0.1F)),
++            CubeListBuilder.create().texOffs(0, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, p_171094_.extend(0.1F)),
+             PartPose.offset(-2.0F, 12.0F, 0.0F)
+         );
+         partdefinition.addOrReplaceChild(
+             "left_leg",
+-            CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, p_435525_.extend(0.1F)),
++            CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, p_171094_.extend(0.1F)),
+             PartPose.offset(2.0F, 12.0F, 0.0F)
+         );
+         partdefinition1.getChild("hat").addOrReplaceChild("hat_rim", CubeListBuilder.create(), PartPose.ZERO);
+-        return meshdefinition;
++        return LayerDefinition.create(meshdefinition, 64, 32);
+     }
+ 
+     public void setupAnim(S p_362651_) {
+@@ -100,7 +_,15 @@
+         AnimationUtils.animateZombieArms(this.leftArm, this.rightArm, p_362651_.isAggressive, f, p_362651_.ageInTicks);
+     }
+ 
+-    public void translateToArms(ZombieVillagerRenderState p_433288_, PoseStack p_382975_) {
+-        this.translateToHand(p_433288_, HumanoidArm.RIGHT, p_382975_);
++    @Override
++    public void hatVisible(boolean p_104182_) {
++        this.head.visible = p_104182_;
++        this.hat.visible = p_104182_;
++        this.hatRim.visible = p_104182_;
++    }
++
++    @Override
++    public void translateToArms(PoseStack p_382975_) {
++        this.translateToHand(HumanoidArm.RIGHT, p_382975_);
+     }
+ }

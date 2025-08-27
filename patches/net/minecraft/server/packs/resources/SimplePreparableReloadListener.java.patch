@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/packs/resources/SimplePreparableReloadListener.java
 +++ b/net/minecraft/server/packs/resources/SimplePreparableReloadListener.java
-@@ -5,7 +_,7 @@
+@@ -5,15 +_,14 @@
  import net.minecraft.util.profiling.Profiler;
  import net.minecraft.util.profiling.ProfilerFiller;
  
@@ -8,4 +8,15 @@
 +public abstract class SimplePreparableReloadListener<T> extends net.neoforged.neoforge.resource.ContextAwareReloadListener implements PreparableReloadListener {
      @Override
      public final CompletableFuture<Void> reload(
-         PreparableReloadListener.PreparationBarrier p_10780_, ResourceManager p_10781_, Executor p_10784_, Executor p_10785_
+-        PreparableReloadListener.SharedState p_434245_, Executor p_10784_, PreparableReloadListener.PreparationBarrier p_10780_, Executor p_10785_
++        PreparableReloadListener.PreparationBarrier p_10780_, ResourceManager p_10781_, Executor p_10784_, Executor p_10785_
+     ) {
+-        ResourceManager resourcemanager = p_434245_.resourceManager();
+-        return CompletableFuture.<T>supplyAsync(() -> this.prepare(resourcemanager, Profiler.get()), p_10784_)
++        return CompletableFuture.<T>supplyAsync(() -> this.prepare(p_10781_, Profiler.get()), p_10784_)
+             .thenCompose(p_10780_::wait)
+-            .thenAcceptAsync(p_372693_ -> this.apply((T)p_372693_, resourcemanager, Profiler.get()), p_10785_);
++            .thenAcceptAsync(p_372693_ -> this.apply((T)p_372693_, p_10781_, Profiler.get()), p_10785_);
+     }
+ 
+     protected abstract T prepare(ResourceManager p_10796_, ProfilerFiller p_10797_);

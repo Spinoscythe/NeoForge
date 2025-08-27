@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/StonecutterBlock.java
++++ b/net/minecraft/world/level/block/StonecutterBlock.java
+@@ -48,7 +_,7 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_57083_, Level p_57084_, BlockPos p_57085_, Player p_57086_, BlockHitResult p_57088_) {
+-        if (!p_57084_.isClientSide()) {
++        if (!p_57084_.isClientSide) {
+             p_57086_.openMenu(p_57083_.getMenuProvider(p_57084_, p_57085_));
+             p_57086_.awardStat(Stats.INTERACT_WITH_STONECUTTER);
+         }

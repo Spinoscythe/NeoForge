@@ -1,0 +1,28 @@
+--- a/net/minecraft/client/renderer/entity/layers/SheepWoolUndercoatLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/SheepWoolUndercoatLayer.java
+@@ -6,7 +_,7 @@
+ import net.minecraft.client.model.SheepModel;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.SheepRenderState;
+ import net.minecraft.resources.ResourceLocation;
+@@ -28,12 +_,10 @@
+         this.babyModel = new SheepFurModel(p_406361_.bakeLayer(ModelLayers.SHEEP_BABY_WOOL_UNDERCOAT));
+     }
+ 
+-    public void submit(PoseStack p_435426_, SubmitNodeCollector p_434288_, int p_433434_, SheepRenderState p_433460_, float p_433323_, float p_435925_) {
+-        if (!p_433460_.isInvisible && (p_433460_.isJebSheep() || p_433460_.woolColor != DyeColor.WHITE)) {
+-            EntityModel<SheepRenderState> entitymodel = p_433460_.isBaby ? this.babyModel : this.adultModel;
+-            coloredCutoutModelCopyLayerRender(
+-                entitymodel, SHEEP_WOOL_UNDERCOAT_LOCATION, p_435426_, p_434288_, p_433434_, p_433460_, p_433460_.getWoolColor(), 1
+-            );
++    public void render(PoseStack p_406212_, MultiBufferSource p_406331_, int p_406201_, SheepRenderState p_406356_, float p_406239_, float p_406245_) {
++        if (!p_406356_.isInvisible && (p_406356_.isJebSheep() || p_406356_.woolColor != DyeColor.WHITE)) {
++            EntityModel<SheepRenderState> entitymodel = p_406356_.isBaby ? this.babyModel : this.adultModel;
++            coloredCutoutModelCopyLayerRender(entitymodel, SHEEP_WOOL_UNDERCOAT_LOCATION, p_406212_, p_406331_, p_406201_, p_406356_, p_406356_.getWoolColor());
+         }
+     }
+ }

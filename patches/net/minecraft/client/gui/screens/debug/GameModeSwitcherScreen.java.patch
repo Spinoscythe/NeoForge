@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen.java
++++ b/net/minecraft/client/gui/screens/debug/GameModeSwitcherScreen.java
+@@ -63,7 +_,6 @@
+     @Override
+     protected void init() {
+         super.init();
+-        this.slots.clear();
+         this.currentlyHovered = this.previousHovered;
+ 
+         for (int i = 0; i < GameModeSwitcherScreen.GameModeIcon.VALUES.length; i++) {
+@@ -112,7 +_,7 @@
+     }
+ 
+     private static void switchToHoveredGameMode(Minecraft p_281340_, GameModeSwitcherScreen.GameModeIcon p_281358_) {
+-        if (p_281340_.canSwitchGameMode()) {
++        if (p_281340_.gameMode != null && p_281340_.player != null) {
+             GameModeSwitcherScreen.GameModeIcon gamemodeswitcherscreen$gamemodeicon = GameModeSwitcherScreen.GameModeIcon.getFromGameType(
+                 p_281340_.gameMode.getPlayerMode()
+             );

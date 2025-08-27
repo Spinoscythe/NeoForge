@@ -1,0 +1,244 @@
+--- a/net/minecraft/client/renderer/ShapeRenderer.java
++++ b/net/minecraft/client/renderer/ShapeRenderer.java
+@@ -31,50 +_,17 @@
+     }
+ 
+     public static void renderLineBox(
+-        PoseStack.Pose p_440122_, VertexConsumer p_363124_, AABB p_440509_, float p_364758_, float p_361439_, float p_363962_, float p_361434_
+-    ) {
+-        renderLineBox(
+-            p_440122_,
+-            p_363124_,
+-            p_440509_.minX,
+-            p_440509_.minY,
+-            p_440509_.minZ,
+-            p_440509_.maxX,
+-            p_440509_.maxY,
+-            p_440509_.maxZ,
+-            p_364758_,
+-            p_361439_,
+-            p_363962_,
+-            p_361434_,
+-            p_364758_,
+-            p_361439_,
+-            p_363962_
+-        );
+-    }
+-
+-    public static void renderLineBox(
+-        PoseStack.Pose p_439614_,
+-        VertexConsumer p_363209_,
+-        double p_439087_,
+-        double p_439115_,
+-        double p_440387_,
+-        double p_439675_,
+-        double p_438967_,
+-        double p_439294_,
+-        float p_360487_,
+-        float p_364782_,
+-        float p_364984_,
+-        float p_362275_
+-    ) {
+-        renderLineBox(
+-            p_439614_,
++        PoseStack p_362266_, VertexConsumer p_363209_, AABB p_360496_, float p_360487_, float p_364782_, float p_364984_, float p_362275_
++    ) {
++        renderLineBox(
++            p_362266_,
+             p_363209_,
+-            p_439087_,
+-            p_439115_,
+-            p_440387_,
+-            p_439675_,
+-            p_438967_,
+-            p_439294_,
++            p_360496_.minX,
++            p_360496_.minY,
++            p_360496_.minZ,
++            p_360496_.maxX,
++            p_360496_.maxY,
++            p_360496_.maxZ,
+             p_360487_,
+             p_364782_,
+             p_364984_,
+@@ -86,7 +_,40 @@
+     }
+ 
+     public static void renderLineBox(
+-        PoseStack.Pose p_439941_,
++        PoseStack p_362875_,
++        VertexConsumer p_363124_,
++        double p_363833_,
++        double p_364766_,
++        double p_361321_,
++        double p_363898_,
++        double p_364838_,
++        double p_362511_,
++        float p_364758_,
++        float p_361439_,
++        float p_363962_,
++        float p_361434_
++    ) {
++        renderLineBox(
++            p_362875_,
++            p_363124_,
++            p_363833_,
++            p_364766_,
++            p_361321_,
++            p_363898_,
++            p_364838_,
++            p_362511_,
++            p_364758_,
++            p_361439_,
++            p_363962_,
++            p_361434_,
++            p_364758_,
++            p_361439_,
++            p_363962_
++        );
++    }
++
++    public static void renderLineBox(
++        PoseStack p_361633_,
+         VertexConsumer p_362155_,
+         double p_363670_,
+         double p_363313_,
+@@ -102,36 +_,37 @@
+         float p_360384_,
+         float p_363766_
+     ) {
++        PoseStack.Pose posestack$pose = p_361633_.last();
+         float f = (float)p_363670_;
+         float f1 = (float)p_363313_;
+         float f2 = (float)p_360539_;
+         float f3 = (float)p_361143_;
+         float f4 = (float)p_360876_;
+         float f5 = (float)p_362174_;
+-        p_362155_.addVertex(p_439941_, f, f1, f2).setColor(p_360474_, p_360384_, p_363766_, p_361868_).setNormal(p_439941_, 1.0F, 0.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f3, f1, f2).setColor(p_360474_, p_360384_, p_363766_, p_361868_).setNormal(p_439941_, 1.0F, 0.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f, f1, f2).setColor(p_364627_, p_362269_, p_363766_, p_361868_).setNormal(p_439941_, 0.0F, 1.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f, f4, f2).setColor(p_364627_, p_362269_, p_363766_, p_361868_).setNormal(p_439941_, 0.0F, 1.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f, f1, f2).setColor(p_364627_, p_360384_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, 0.0F, 1.0F);
+-        p_362155_.addVertex(p_439941_, f, f1, f5).setColor(p_364627_, p_360384_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, 0.0F, 1.0F);
+-        p_362155_.addVertex(p_439941_, f3, f1, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, 1.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f3, f4, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, 1.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f3, f4, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, -1.0F, 0.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f, f4, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, -1.0F, 0.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f, f4, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, 0.0F, 1.0F);
+-        p_362155_.addVertex(p_439941_, f, f4, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, 0.0F, 1.0F);
+-        p_362155_.addVertex(p_439941_, f, f4, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, -1.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f, f1, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, -1.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f, f1, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 1.0F, 0.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f3, f1, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 1.0F, 0.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f3, f1, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, 0.0F, -1.0F);
+-        p_362155_.addVertex(p_439941_, f3, f1, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, 0.0F, -1.0F);
+-        p_362155_.addVertex(p_439941_, f, f4, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 1.0F, 0.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f3, f4, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 1.0F, 0.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f3, f1, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, 1.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f3, f4, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, 1.0F, 0.0F);
+-        p_362155_.addVertex(p_439941_, f3, f4, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, 0.0F, 1.0F);
+-        p_362155_.addVertex(p_439941_, f3, f4, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(p_439941_, 0.0F, 0.0F, 1.0F);
++        p_362155_.addVertex(posestack$pose, f, f1, f2).setColor(p_360474_, p_360384_, p_363766_, p_361868_).setNormal(posestack$pose, 1.0F, 0.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f3, f1, f2).setColor(p_360474_, p_360384_, p_363766_, p_361868_).setNormal(posestack$pose, 1.0F, 0.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f, f1, f2).setColor(p_364627_, p_362269_, p_363766_, p_361868_).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f, f4, f2).setColor(p_364627_, p_362269_, p_363766_, p_361868_).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f, f1, f2).setColor(p_364627_, p_360384_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, 0.0F, 1.0F);
++        p_362155_.addVertex(posestack$pose, f, f1, f5).setColor(p_364627_, p_360384_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, 0.0F, 1.0F);
++        p_362155_.addVertex(posestack$pose, f3, f1, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f3, f4, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f3, f4, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, -1.0F, 0.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f, f4, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, -1.0F, 0.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f, f4, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, 0.0F, 1.0F);
++        p_362155_.addVertex(posestack$pose, f, f4, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, 0.0F, 1.0F);
++        p_362155_.addVertex(posestack$pose, f, f4, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f, f1, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, -1.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f, f1, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 1.0F, 0.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f3, f1, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 1.0F, 0.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f3, f1, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, 0.0F, -1.0F);
++        p_362155_.addVertex(posestack$pose, f3, f1, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, 0.0F, -1.0F);
++        p_362155_.addVertex(posestack$pose, f, f4, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 1.0F, 0.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f3, f4, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 1.0F, 0.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f3, f1, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f3, f4, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, 1.0F, 0.0F);
++        p_362155_.addVertex(posestack$pose, f3, f4, f2).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, 0.0F, 1.0F);
++        p_362155_.addVertex(posestack$pose, f3, f4, f5).setColor(p_360474_, p_362269_, p_363641_, p_361868_).setNormal(posestack$pose, 0.0F, 0.0F, 1.0F);
+     }
+ 
+     public static void addChainedFilledBoxVertices(
+@@ -212,7 +_,7 @@
+     }
+ 
+     public static void renderFace(
+-        Matrix4f p_440513_,
++        PoseStack p_364593_,
+         VertexConsumer p_364615_,
+         Direction p_362455_,
+         float p_360745_,
+@@ -226,42 +_,43 @@
+         float p_363881_,
+         float p_360670_
+     ) {
++        Matrix4f matrix4f = p_364593_.last().pose();
+         switch (p_362455_) {
+             case DOWN:
+-                p_364615_.addVertex(p_440513_, p_360745_, p_364472_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_362107_, p_364472_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_362107_, p_364472_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_360745_, p_364472_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_360745_, p_364472_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_362107_, p_364472_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_362107_, p_364472_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_360745_, p_364472_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+                 break;
+             case UP:
+-                p_364615_.addVertex(p_440513_, p_360745_, p_362819_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_360745_, p_362819_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_362107_, p_362819_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_362107_, p_362819_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_360745_, p_362819_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_360745_, p_362819_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_362107_, p_362819_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_362107_, p_362819_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+                 break;
+             case NORTH:
+-                p_364615_.addVertex(p_440513_, p_360745_, p_364472_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_360745_, p_362819_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_362107_, p_362819_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_362107_, p_364472_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_360745_, p_364472_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_360745_, p_362819_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_362107_, p_362819_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_362107_, p_364472_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+                 break;
+             case SOUTH:
+-                p_364615_.addVertex(p_440513_, p_360745_, p_364472_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_362107_, p_364472_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_362107_, p_362819_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_360745_, p_362819_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_360745_, p_364472_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_362107_, p_364472_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_362107_, p_362819_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_360745_, p_362819_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+                 break;
+             case WEST:
+-                p_364615_.addVertex(p_440513_, p_360745_, p_364472_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_360745_, p_364472_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_360745_, p_362819_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_360745_, p_362819_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_360745_, p_364472_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_360745_, p_364472_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_360745_, p_362819_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_360745_, p_362819_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+                 break;
+             case EAST:
+-                p_364615_.addVertex(p_440513_, p_362107_, p_364472_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_362107_, p_362819_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_362107_, p_362819_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+-                p_364615_.addVertex(p_440513_, p_362107_, p_364472_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_362107_, p_364472_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_362107_, p_362819_, p_361704_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_362107_, p_362819_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
++                p_364615_.addVertex(matrix4f, p_362107_, p_364472_, p_362959_).setColor(p_364620_, p_362074_, p_363881_, p_360670_);
+         }
+     }
+ 

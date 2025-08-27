@@ -1,0 +1,44 @@
+--- a/net/minecraft/client/resources/model/Material.java
++++ b/net/minecraft/client/resources/model/Material.java
+@@ -5,9 +_,11 @@
+ import java.util.Objects;
+ import java.util.function.Function;
+ import javax.annotation.Nullable;
++import net.minecraft.client.Minecraft;
+ import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+ import net.minecraft.client.renderer.entity.ItemRenderer;
++import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+ import net.minecraft.resources.ResourceLocation;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -33,6 +_,10 @@
+         return this.texture;
+     }
+ 
++    public TextureAtlasSprite sprite() {
++        return Minecraft.getInstance().getTextureAtlas(this.atlasLocation()).apply(this.texture());
++    }
++
+     public RenderType renderType(Function<ResourceLocation, RenderType> p_119202_) {
+         if (this.renderType == null) {
+             this.renderType = p_119202_.apply(this.atlasLocation);
+@@ -41,14 +_,12 @@
+         return this.renderType;
+     }
+ 
+-    public VertexConsumer buffer(MaterialSet p_433736_, MultiBufferSource p_119195_, Function<ResourceLocation, RenderType> p_119196_) {
+-        return p_433736_.get(this).wrap(p_119195_.getBuffer(this.renderType(p_119196_)));
++    public VertexConsumer buffer(MultiBufferSource p_119195_, Function<ResourceLocation, RenderType> p_119196_) {
++        return this.sprite().wrap(p_119195_.getBuffer(this.renderType(p_119196_)));
+     }
+ 
+-    public VertexConsumer buffer(
+-        MaterialSet p_433991_, MultiBufferSource p_119198_, Function<ResourceLocation, RenderType> p_119199_, boolean p_119200_, boolean p_361164_
+-    ) {
+-        return p_433991_.get(this).wrap(ItemRenderer.getFoilBuffer(p_119198_, this.renderType(p_119199_), p_119200_, p_361164_));
++    public VertexConsumer buffer(MultiBufferSource p_119198_, Function<ResourceLocation, RenderType> p_119199_, boolean p_119200_, boolean p_361164_) {
++        return this.sprite().wrap(ItemRenderer.getFoilBuffer(p_119198_, this.renderType(p_119199_), p_119200_, p_361164_));
+     }
+ 
+     @Override

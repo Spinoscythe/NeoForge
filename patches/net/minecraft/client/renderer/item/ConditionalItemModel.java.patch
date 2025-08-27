@@ -1,0 +1,26 @@
+--- a/net/minecraft/client/renderer/item/ConditionalItemModel.java
++++ b/net/minecraft/client/renderer/item/ConditionalItemModel.java
+@@ -11,7 +_,6 @@
+ import net.minecraft.client.renderer.item.properties.conditional.ItemModelPropertyTest;
+ import net.minecraft.client.resources.model.ResolvableModel;
+ import net.minecraft.util.RegistryContextSwapper;
+-import net.minecraft.world.entity.ItemOwner;
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.minecraft.world.item.ItemStack;
+@@ -37,12 +_,12 @@
+         ItemModelResolver p_386644_,
+         ItemDisplayContext p_387754_,
+         @Nullable ClientLevel p_388301_,
+-        @Nullable ItemOwner p_435949_,
++        @Nullable LivingEntity p_387078_,
+         int p_387025_
+     ) {
+         p_387756_.appendModelIdentityElement(this);
+-        (this.property.get(p_387286_, p_388301_, p_435949_ == null ? null : p_435949_.asLivingEntity(), p_387025_, p_387754_) ? this.onTrue : this.onFalse)
+-            .update(p_387756_, p_387286_, p_386644_, p_387754_, p_388301_, p_435949_, p_387025_);
++        (this.property.get(p_387286_, p_388301_, p_387078_, p_387025_, p_387754_) ? this.onTrue : this.onFalse)
++            .update(p_387756_, p_387286_, p_386644_, p_387754_, p_388301_, p_387078_, p_387025_);
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

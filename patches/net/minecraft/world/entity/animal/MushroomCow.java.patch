@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/animal/MushroomCow.java
 +++ b/net/minecraft/world/entity/animal/MushroomCow.java
+@@ -119,7 +_,7 @@
+             if (this.level() instanceof ServerLevel serverlevel) {
+                 this.shear(serverlevel, SoundSource.PLAYERS, itemstack);
+                 this.gameEvent(GameEvent.SHEAR, p_28941_);
+-                itemstack.hurtAndBreak(1, p_28941_, p_28942_.asEquipmentSlot());
++                itemstack.hurtAndBreak(1, p_28941_, getSlotForHand(p_28942_));
+             }
+ 
+             return InteractionResult.SUCCESS;
 @@ -171,11 +_,19 @@
      @Override
      public void shear(ServerLevel p_376375_, SoundSource p_28924_, ItemStack p_373092_) {

@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
+@@ -113,7 +_,7 @@
+     }
+ 
+     public static void triggerCooldown(Level p_155850_, BlockPos p_155851_, BlockState p_155852_, TheEndGatewayBlockEntity p_155853_) {
+-        if (!p_155850_.isClientSide()) {
++        if (!p_155850_.isClientSide) {
+             p_155853_.teleportCooldown = 40;
+             p_155850_.blockEvent(p_155851_, p_155852_.getBlock(), 1, 0);
+             setChanged(p_155850_, p_155851_, p_155852_);
 @@ -255,7 +_,7 @@
  
      @Override

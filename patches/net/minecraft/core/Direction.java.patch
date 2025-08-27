@@ -1,0 +1,29 @@
+--- a/net/minecraft/core/Direction.java
++++ b/net/minecraft/core/Direction.java
+@@ -1,6 +_,5 @@
+ package net.minecraft.core;
+ 
+-import com.google.common.collect.ImmutableList;
+ import com.google.common.collect.Iterators;
+ import com.mojang.serialization.Codec;
+ import com.mojang.serialization.DataResult;
+@@ -45,8 +_,6 @@
+     public static final Codec<Direction> LEGACY_ID_CODEC = Codec.BYTE.xmap(Direction::from3DDataValue, p_404165_ -> (byte)p_404165_.get3DDataValue());
+     @Deprecated
+     public static final Codec<Direction> LEGACY_ID_CODEC_2D = Codec.BYTE.xmap(Direction::from2DDataValue, p_404164_ -> (byte)p_404164_.get2DDataValue());
+-    private static final ImmutableList<Direction.Axis> YXZ_AXIS_ORDER = ImmutableList.of(Direction.Axis.Y, Direction.Axis.X, Direction.Axis.Z);
+-    private static final ImmutableList<Direction.Axis> YZX_AXIS_ORDER = ImmutableList.of(Direction.Axis.Y, Direction.Axis.Z, Direction.Axis.X);
+     private final int data3d;
+     private final int oppositeIndex;
+     private final int data2d;
+@@ -373,10 +_,6 @@
+         }
+ 
+         throw new IllegalArgumentException("No such direction: " + p_122391_ + " " + p_122392_);
+-    }
+-
+-    public static ImmutableList<Direction.Axis> axisStepOrder(Vec3 p_436702_) {
+-        return Math.abs(p_436702_.x) < Math.abs(p_436702_.z) ? YZX_AXIS_ORDER : YXZ_AXIS_ORDER;
+     }
+ 
+     public Vec3i getUnitVec3i() {

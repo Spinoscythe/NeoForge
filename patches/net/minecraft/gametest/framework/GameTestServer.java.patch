@@ -1,6 +1,43 @@
 --- a/net/minecraft/gametest/framework/GameTestServer.java
 +++ b/net/minecraft/gametest/framework/GameTestServer.java
-@@ -75,6 +_,11 @@
+@@ -9,11 +_,8 @@
+ import java.net.Proxy;
+ import java.util.ArrayList;
+ import java.util.Collection;
+-import java.util.HashSet;
+ import java.util.List;
+ import java.util.Optional;
+-import java.util.Set;
+-import java.util.UUID;
+ import java.util.concurrent.Executor;
+ import java.util.concurrent.TimeUnit;
+ import java.util.function.BooleanSupplier;
+@@ -39,12 +_,9 @@
+ import net.minecraft.server.WorldLoader;
+ import net.minecraft.server.WorldStem;
+ import net.minecraft.server.level.ServerLevel;
+-import net.minecraft.server.level.progress.LoggingLevelLoadListener;
++import net.minecraft.server.level.progress.LoggerChunkProgressListener;
+ import net.minecraft.server.packs.repository.PackRepository;
+-import net.minecraft.server.players.NameAndId;
+ import net.minecraft.server.players.PlayerList;
+-import net.minecraft.server.players.ProfileResolver;
+-import net.minecraft.server.players.UserNameToIdResolver;
+ import net.minecraft.util.datafix.DataFixers;
+ import net.minecraft.util.debugchart.LocalSampleLogger;
+ import net.minecraft.util.debugchart.SampleLogger;
+@@ -69,9 +_,7 @@
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final int PROGRESS_REPORT_INTERVAL = 20;
+     private static final int TEST_POSITION_RANGE = 14999992;
+-    private static final Services NO_SERVICES = new Services(
+-        null, ServicesKeySet.EMPTY, null, new GameTestServer.MockUserNameToIdResolver(), new GameTestServer.MockProfileResolver()
+-    );
++    private static final Services NO_SERVICES = new Services(null, ServicesKeySet.EMPTY, null, null);
+     private static final FeatureFlagSet ENABLED_FEATURES = FeatureFlags.REGISTRY
+         .allFlags()
+         .subtract(FeatureFlagSet.of(FeatureFlags.REDSTONE_EXPERIMENTS, FeatureFlags.MINECART_IMPROVEMENTS));
+@@ -83,6 +_,11 @@
      private static final WorldOptions WORLD_OPTIONS = new WorldOptions(0L, false, false);
      @Nullable
      private MultipleTestTracker testTracker;
@@ -12,7 +49,7 @@
  
      public static GameTestServer create(
          Thread p_206607_, LevelStorageSource.LevelStorageAccess p_206608_, PackRepository p_206609_, Optional<String> p_397118_, boolean p_397698_
-@@ -85,7 +_,7 @@
+@@ -93,7 +_,7 @@
          arraylist.addFirst("vanilla");
          WorldDataConfiguration worlddataconfiguration = new WorldDataConfiguration(new DataPackConfig(arraylist, List.of()), ENABLED_FEATURES);
          LevelSettings levelsettings = new LevelSettings(
@@ -21,7 +58,25 @@
          );
          WorldLoader.PackConfig worldloader$packconfig = new WorldLoader.PackConfig(p_206609_, worlddataconfiguration, false, true);
          WorldLoader.InitConfig worldloader$initconfig = new WorldLoader.InitConfig(worldloader$packconfig, Commands.CommandSelection.DEDICATED, 4);
-@@ -152,10 +_,12 @@
+@@ -143,7 +_,16 @@
+         Optional<String> p_397483_,
+         boolean p_397578_
+     ) {
+-        super(p_206597_, p_206598_, p_206599_, p_206600_, Proxy.NO_PROXY, DataFixers.getDataFixer(), NO_SERVICES, LoggingLevelLoadListener.forDedicatedServer());
++        super(
++            p_206597_,
++            p_206598_,
++            p_206599_,
++            p_206600_,
++            Proxy.NO_PROXY,
++            DataFixers.getDataFixer(),
++            NO_SERVICES,
++            LoggerChunkProgressListener::createFromGameruleRadius
++        );
+         this.testSelection = p_397483_;
+         this.verify = p_397578_;
+     }
+@@ -151,10 +_,12 @@
      @Override
      public boolean initServer() {
          this.setPlayerList(new PlayerList(this, this.registries(), this.playerDataStorage, 1) {});
@@ -34,7 +89,7 @@
          return true;
      }
  
-@@ -216,8 +_,14 @@
+@@ -215,8 +_,14 @@
              GlobalTestReporter.finish();
              LOGGER.info("========= {} GAME TESTS COMPLETE IN {} ======================", this.testTracker.getTotalCount(), this.stopwatch.stop());
              if (this.testTracker.hasFailedRequired()) {
@@ -50,7 +105,7 @@
              } else {
                  LOGGER.info("All {} required tests passed :)", this.testTracker.getTotalCount());
              }
-@@ -233,11 +_,11 @@
+@@ -232,11 +_,11 @@
  
      private static void logFailedTest(GameTestInfo p_401161_) {
          if (p_401161_.getRotation() != Rotation.NONE) {
@@ -64,3 +119,55 @@
          }
      }
  
+@@ -346,50 +_,7 @@
+     }
+ 
+     @Override
+-    public boolean isSingleplayerOwner(NameAndId p_436045_) {
++    public boolean isSingleplayerOwner(GameProfile p_177617_) {
+         return false;
+-    }
+-
+-    static class MockProfileResolver implements ProfileResolver {
+-        @Override
+-        public Optional<GameProfile> fetchByName(String p_440569_) {
+-            return Optional.empty();
+-        }
+-
+-        @Override
+-        public Optional<GameProfile> fetchById(UUID p_439458_) {
+-            return Optional.empty();
+-        }
+-    }
+-
+-    static class MockUserNameToIdResolver implements UserNameToIdResolver {
+-        private final Set<NameAndId> savedIds = new HashSet<>();
+-
+-        @Override
+-        public void add(NameAndId p_434475_) {
+-            this.savedIds.add(p_434475_);
+-        }
+-
+-        @Override
+-        public Optional<NameAndId> get(String p_433921_) {
+-            return this.savedIds
+-                .stream()
+-                .filter(p_433633_ -> p_433633_.name().equals(p_433921_))
+-                .findFirst()
+-                .or(() -> Optional.of(NameAndId.createOffline(p_433921_)));
+-        }
+-
+-        @Override
+-        public Optional<NameAndId> get(UUID p_433513_) {
+-            return this.savedIds.stream().filter(p_435750_ -> p_435750_.id().equals(p_433513_)).findFirst();
+-        }
+-
+-        @Override
+-        public void resolveOfflineUsers(boolean p_435278_) {
+-        }
+-
+-        @Override
+-        public void save() {
+-        }
+     }
+ }

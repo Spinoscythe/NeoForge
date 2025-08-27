@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/level/levelgen/NoiseRouter.java
++++ b/net/minecraft/world/level/levelgen/NoiseRouter.java
+@@ -16,7 +_,7 @@
+     DensityFunction erosion,
+     DensityFunction depth,
+     DensityFunction ridges,
+-    DensityFunction preliminarySurfaceLevel,
++    DensityFunction initialDensityWithoutJaggedness,
+     DensityFunction finalDensity,
+     DensityFunction veinToggle,
+     DensityFunction veinRidged,
+@@ -34,7 +_,7 @@
+                 field("erosion", NoiseRouter::erosion),
+                 field("depth", NoiseRouter::depth),
+                 field("ridges", NoiseRouter::ridges),
+-                field("preliminary_surface_level", NoiseRouter::preliminarySurfaceLevel),
++                field("initial_density_without_jaggedness", NoiseRouter::initialDensityWithoutJaggedness),
+                 field("final_density", NoiseRouter::finalDensity),
+                 field("vein_toggle", NoiseRouter::veinToggle),
+                 field("vein_ridged", NoiseRouter::veinRidged),
+@@ -59,7 +_,7 @@
+             this.erosion.mapAll(p_224413_),
+             this.depth.mapAll(p_224413_),
+             this.ridges.mapAll(p_224413_),
+-            this.preliminarySurfaceLevel.mapAll(p_224413_),
++            this.initialDensityWithoutJaggedness.mapAll(p_224413_),
+             this.finalDensity.mapAll(p_224413_),
+             this.veinToggle.mapAll(p_224413_),
+             this.veinRidged.mapAll(p_224413_),

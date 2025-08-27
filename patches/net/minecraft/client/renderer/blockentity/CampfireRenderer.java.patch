@@ -1,0 +1,73 @@
+--- a/net/minecraft/client/renderer/blockentity/CampfireRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/CampfireRenderer.java
+@@ -2,11 +_,8 @@
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.math.Axis;
+-import javax.annotation.Nullable;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+-import net.minecraft.client.renderer.item.ItemModelResolver;
+-import net.minecraft.client.renderer.item.ItemStackRenderState;
++import net.minecraft.client.renderer.MultiBufferSource;
++import net.minecraft.client.renderer.entity.ItemRenderer;
+ import net.minecraft.core.Direction;
+ import net.minecraft.core.NonNullList;
+ import net.minecraft.world.item.ItemDisplayContext;
+@@ -20,41 +_,32 @@
+ @OnlyIn(Dist.CLIENT)
+ public class CampfireRenderer implements BlockEntityRenderer<CampfireBlockEntity> {
+     private static final float SIZE = 0.375F;
+-    private final ItemModelResolver itemModelResolver;
++    private final ItemRenderer itemRenderer;
+ 
+     public CampfireRenderer(BlockEntityRendererProvider.Context p_173602_) {
+-        this.itemModelResolver = p_173602_.itemModelResolver();
++        this.itemRenderer = p_173602_.getItemRenderer();
+     }
+ 
+-    public void submit(
+-        CampfireBlockEntity p_439130_,
+-        float p_440487_,
+-        PoseStack p_439950_,
+-        int p_439347_,
+-        int p_439798_,
+-        Vec3 p_439683_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440159_,
+-        SubmitNodeCollector p_439432_
++    public void render(
++        CampfireBlockEntity p_112344_, float p_112345_, PoseStack p_112346_, MultiBufferSource p_112347_, int p_112348_, int p_112349_, Vec3 p_401331_
+     ) {
+-        Direction direction = p_439130_.getBlockState().getValue(CampfireBlock.FACING);
+-        NonNullList<ItemStack> nonnulllist = p_439130_.getItems();
+-        int i = (int)p_439130_.getBlockPos().asLong();
++        Direction direction = p_112344_.getBlockState().getValue(CampfireBlock.FACING);
++        NonNullList<ItemStack> nonnulllist = p_112344_.getItems();
++        int i = (int)p_112344_.getBlockPos().asLong();
+ 
+         for (int j = 0; j < nonnulllist.size(); j++) {
+             ItemStack itemstack = nonnulllist.get(j);
+             if (itemstack != ItemStack.EMPTY) {
+-                p_439950_.pushPose();
+-                p_439950_.translate(0.5F, 0.44921875F, 0.5F);
++                p_112346_.pushPose();
++                p_112346_.translate(0.5F, 0.44921875F, 0.5F);
+                 Direction direction1 = Direction.from2DDataValue((j + direction.get2DDataValue()) % 4);
+                 float f = -direction1.toYRot();
+-                p_439950_.mulPose(Axis.YP.rotationDegrees(f));
+-                p_439950_.mulPose(Axis.XP.rotationDegrees(90.0F));
+-                p_439950_.translate(-0.3125F, -0.3125F, 0.0F);
+-                p_439950_.scale(0.375F, 0.375F, 0.375F);
+-                ItemStackRenderState itemstackrenderstate = new ItemStackRenderState();
+-                this.itemModelResolver.updateForTopItem(itemstackrenderstate, itemstack, ItemDisplayContext.FIXED, p_439130_.getLevel(), null, i + j);
+-                itemstackrenderstate.submit(p_439950_, p_439432_, p_439347_, p_439798_, 0);
+-                p_439950_.popPose();
++                p_112346_.mulPose(Axis.YP.rotationDegrees(f));
++                p_112346_.mulPose(Axis.XP.rotationDegrees(90.0F));
++                p_112346_.translate(-0.3125F, -0.3125F, 0.0F);
++                p_112346_.scale(0.375F, 0.375F, 0.375F);
++                this.itemRenderer.renderStatic(itemstack, ItemDisplayContext.FIXED, p_112348_, p_112349_, p_112346_, p_112347_, p_112344_.getLevel(), i + j);
++                p_112346_.popPose();
+             }
+         }
+     }

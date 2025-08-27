@@ -1,0 +1,40 @@
+--- a/net/minecraft/client/renderer/item/ItemModel.java
++++ b/net/minecraft/client/renderer/item/ItemModel.java
+@@ -4,13 +_,10 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.multiplayer.ClientLevel;
+-import net.minecraft.client.renderer.PlayerSkinRenderCache;
+-import net.minecraft.client.renderer.special.SpecialModelRenderer;
+-import net.minecraft.client.resources.model.MaterialSet;
+ import net.minecraft.client.resources.model.ModelBaker;
+ import net.minecraft.client.resources.model.ResolvableModel;
+ import net.minecraft.util.RegistryContextSwapper;
+-import net.minecraft.world.entity.ItemOwner;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.minecraft.world.item.ItemStack;
+ import net.neoforged.api.distmarker.Dist;
+@@ -24,19 +_,14 @@
+         ItemModelResolver p_387767_,
+         ItemDisplayContext p_388857_,
+         @Nullable ClientLevel p_387982_,
+-        @Nullable ItemOwner p_433644_,
++        @Nullable LivingEntity p_386606_,
+         int p_387820_
+     );
+ 
+     @OnlyIn(Dist.CLIENT)
+     public record BakingContext(
+-        ModelBaker blockModelBaker,
+-        EntityModelSet entityModelSet,
+-        MaterialSet materials,
+-        PlayerSkinRenderCache playerSkinRenderCache,
+-        ItemModel missingItemModel,
+-        @Nullable RegistryContextSwapper contextSwapper
+-    ) implements SpecialModelRenderer.BakingContext {
++        ModelBaker blockModelBaker, EntityModelSet entityModelSet, ItemModel missingItemModel, @Nullable RegistryContextSwapper contextSwapper
++    ) {
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

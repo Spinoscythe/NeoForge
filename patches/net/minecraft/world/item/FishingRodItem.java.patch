@@ -1,18 +1,30 @@
 --- a/net/minecraft/world/item/FishingRodItem.java
 +++ b/net/minecraft/world/item/FishingRodItem.java
-@@ -25,7 +_,11 @@
+@@ -6,6 +_,7 @@
+ import net.minecraft.stats.Stats;
+ import net.minecraft.world.InteractionHand;
+ import net.minecraft.world.InteractionResult;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.entity.projectile.FishingHook;
+ import net.minecraft.world.entity.projectile.Projectile;
+@@ -22,9 +_,13 @@
+     public InteractionResult use(Level p_41290_, Player p_41291_, InteractionHand p_41292_) {
+         ItemStack itemstack = p_41291_.getItemInHand(p_41292_);
          if (p_41291_.fishing != null) {
-             if (!p_41290_.isClientSide) {
+-            if (!p_41290_.isClientSide()) {
++            if (!p_41290_.isClientSide) {
                  int i = p_41291_.fishing.retrieve(itemstack);
+-                itemstack.hurtAndBreak(i, p_41291_, p_41292_.asEquipmentSlot());
 +                ItemStack original = itemstack.copy();
-                 itemstack.hurtAndBreak(i, p_41291_, LivingEntity.getSlotForHand(p_41292_));
++                itemstack.hurtAndBreak(i, p_41291_, LivingEntity.getSlotForHand(p_41292_));
 +                if(itemstack.isEmpty()) {
 +                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(p_41291_, original, p_41292_);
 +                }
              }
  
              p_41290_.playSound(
-@@ -61,5 +_,10 @@
+@@ -60,5 +_,10 @@
          }
  
          return InteractionResult.SUCCESS;

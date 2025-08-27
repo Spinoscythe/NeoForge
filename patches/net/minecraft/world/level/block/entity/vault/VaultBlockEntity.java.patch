@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/entity/vault/VaultBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/vault/VaultBlockEntity.java
+@@ -81,7 +_,7 @@
+ 
+     @Nullable
+     public VaultServerData getServerData() {
+-        return this.level != null && !this.level.isClientSide() ? this.serverData : null;
++        return this.level != null && !this.level.isClientSide ? this.serverData : null;
+     }
+ 
+     public VaultSharedData getSharedData() {

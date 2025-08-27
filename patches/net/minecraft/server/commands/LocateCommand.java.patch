@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/LocateCommand.java
++++ b/net/minecraft/server/commands/LocateCommand.java
+@@ -197,7 +_,7 @@
+                     .withHoverEvent(new HoverEvent.ShowText(Component.translatable("chat.coordinates.tooltip")))
+             );
+         p_262983_.sendSuccess(() -> Component.translatable(p_263083_, p_263048_, component, i), false);
+-        LOGGER.info("Locating element {} took {} ms", p_263048_, p_263040_.toMillis());
++        LOGGER.info("Locating element " + p_263048_ + " took " + p_263040_.toMillis() + " ms");
+         return i;
+     }
+ 

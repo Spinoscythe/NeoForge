@@ -9,3 +9,11 @@
  
      public static <T extends BlockEntity> void register(BlockEntityType<? extends T> p_173591_, BlockEntityRendererProvider<T> p_173592_) {
          PROVIDERS.put(p_173591_, p_173592_);
+@@ -60,7 +_,5 @@
+         register(BlockEntityType.DECORATED_POT, DecoratedPotRenderer::new);
+         register(BlockEntityType.TRIAL_SPAWNER, TrialSpawnerRenderer::new);
+         register(BlockEntityType.VAULT, VaultRenderer::new);
+-        register(BlockEntityType.COPPER_GOLEM_STATUE, CopperGolemStatueBlockRenderer::new);
+-        register(BlockEntityType.SHELF, ShelfRenderer::new);
+     }
+ }

@@ -1,0 +1,38 @@
+--- a/net/minecraft/server/commands/DeOpCommands.java
++++ b/net/minecraft/server/commands/DeOpCommands.java
+@@ -1,5 +_,6 @@
+ package net.minecraft.server.commands;
+ 
++import com.mojang.authlib.GameProfile;
+ import com.mojang.brigadier.CommandDispatcher;
+ import com.mojang.brigadier.context.CommandContext;
+ import com.mojang.brigadier.exceptions.CommandSyntaxException;
+@@ -11,7 +_,6 @@
+ import net.minecraft.commands.SharedSuggestionProvider;
+ import net.minecraft.commands.arguments.GameProfileArgument;
+ import net.minecraft.network.chat.Component;
+-import net.minecraft.server.players.NameAndId;
+ import net.minecraft.server.players.PlayerList;
+ 
+ public class DeOpCommands {
+@@ -33,15 +_,15 @@
+         );
+     }
+ 
+-    private static int deopPlayers(CommandSourceStack p_136898_, Collection<NameAndId> p_136899_) throws CommandSyntaxException {
++    private static int deopPlayers(CommandSourceStack p_136898_, Collection<GameProfile> p_136899_) throws CommandSyntaxException {
+         PlayerList playerlist = p_136898_.getServer().getPlayerList();
+         int i = 0;
+ 
+-        for (NameAndId nameandid : p_136899_) {
+-            if (playerlist.isOp(nameandid)) {
+-                playerlist.deop(nameandid);
++        for (GameProfile gameprofile : p_136899_) {
++            if (playerlist.isOp(gameprofile)) {
++                playerlist.deop(gameprofile);
+                 i++;
+-                p_136898_.sendSuccess(() -> Component.translatable("commands.deop.success", p_136899_.iterator().next().name()), true);
++                p_136898_.sendSuccess(() -> Component.translatable("commands.deop.success", p_136899_.iterator().next().getName()), true);
+             }
+         }
+ 

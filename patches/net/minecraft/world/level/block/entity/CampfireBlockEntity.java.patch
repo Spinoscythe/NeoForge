@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
+@@ -67,7 +_,7 @@
+                 if (p_155310_.cookingProgress[i] >= p_155310_.cookingTime[i]) {
+                     SingleRecipeInput singlerecipeinput = new SingleRecipeInput(itemstack);
+                     ItemStack itemstack1 = p_380193_.getRecipeFor(singlerecipeinput, p_380207_)
+-                        .map(p_432708_ -> p_432708_.value().assemble(singlerecipeinput, p_380207_.registryAccess()))
++                        .map(p_425492_ -> p_425492_.value().assemble(singlerecipeinput, p_380207_.registryAccess()))
+                         .orElse(itemstack);
+                     if (itemstack1.isItemEnabled(p_380207_.enabledFeatures())) {
+                         Containers.dropItemStack(p_380207_, p_155308_.getX(), p_155308_.getY(), p_155308_.getZ(), itemstack1);

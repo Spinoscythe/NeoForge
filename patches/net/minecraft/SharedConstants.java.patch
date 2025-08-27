@@ -1,6 +1,54 @@
 --- a/net/minecraft/SharedConstants.java
 +++ b/net/minecraft/SharedConstants.java
-@@ -122,7 +_,8 @@
+@@ -10,26 +_,24 @@
+ 
+ public class SharedConstants {
+     @Deprecated
+-    public static final boolean SNAPSHOT = true;
++    public static final boolean SNAPSHOT = false;
+     @Deprecated
+-    public static final int WORLD_VERSION = 4540;
++    public static final int WORLD_VERSION = 4440;
+     @Deprecated
+     public static final String SERIES = "main";
+     @Deprecated
+-    public static final int RELEASE_NETWORK_PROTOCOL_VERSION = 773;
+-    @Deprecated
+-    public static final int SNAPSHOT_NETWORK_PROTOCOL_VERSION = 264;
+-    public static final int SNBT_NAG_VERSION = 4531;
++    public static final String VERSION_STRING = "1.21.8";
++    @Deprecated
++    public static final int RELEASE_NETWORK_PROTOCOL_VERSION = 772;
++    @Deprecated
++    public static final int SNAPSHOT_NETWORK_PROTOCOL_VERSION = 259;
++    public static final int SNBT_NAG_VERSION = 4420;
+     private static final int SNAPSHOT_PROTOCOL_BIT = 30;
+-    public static final boolean CRASH_EAGERLY = true;
+-    @Deprecated
+-    public static final int RESOURCE_PACK_FORMAT_MAJOR = 66;
+-    @Deprecated
+-    public static final int RESOURCE_PACK_FORMAT_MINOR = 0;
+-    @Deprecated
+-    public static final int DATA_PACK_FORMAT_MAJOR = 84;
+-    @Deprecated
+-    public static final int DATA_PACK_FORMAT_MINOR = 0;
++    public static final boolean CRASH_EAGERLY = false;
++    @Deprecated
++    public static final int RESOURCE_PACK_FORMAT = 64;
++    @Deprecated
++    public static final int DATA_PACK_FORMAT = 81;
+     @Deprecated
+     public static final int LANGUAGE_FORMAT = 1;
+     public static final int REPORT_FORMAT_VERSION = 1;
+@@ -43,7 +_,6 @@
+     public static final boolean DEBUG_UI_NARRATION = false;
+     public static final boolean DEBUG_RENDER = false;
+     public static final boolean DEBUG_SHUFFLE_UI_RENDERING_ORDER = false;
+-    public static final boolean DEBUG_SHUFFLE_MODELS = false;
+     public static final boolean DEBUG_RENDER_UI_LAYERING_RECTANGLES = false;
+     public static final boolean DEBUG_PATHFINDING = false;
+     public static final boolean DEBUG_WATER = false;
+@@ -125,7 +_,8 @@
      public static final boolean USE_WORKFLOWS_HOOKS = false;
      public static final boolean USE_DEVONLY = false;
      public static boolean CHECK_DATA_FIXER_SCHEMA = true;
@@ -10,7 +58,16 @@
      public static final int WORLD_RESOLUTION = 16;
      public static final int MAX_CHAT_LENGTH = 256;
      public static final int MAX_USER_INPUT_COMMAND_LENGTH = 32500;
-@@ -175,6 +_,7 @@
+@@ -168,7 +_,7 @@
+     }
+ 
+     public static int getProtocolVersion() {
+-        return 1073742088;
++        return 772;
+     }
+ 
+     public static boolean debugVoidTerrain(ChunkPos p_183708_) {
+@@ -178,6 +_,7 @@
      }
  
      static {

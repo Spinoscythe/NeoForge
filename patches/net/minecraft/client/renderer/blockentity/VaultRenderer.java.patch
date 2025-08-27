@@ -1,0 +1,61 @@
+--- a/net/minecraft/client/renderer/blockentity/VaultRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/VaultRenderer.java
+@@ -2,11 +_,9 @@
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.math.Axis;
+-import javax.annotation.Nullable;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.ItemEntityRenderer;
+ import net.minecraft.client.renderer.entity.state.ItemClusterRenderState;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+ import net.minecraft.client.renderer.item.ItemModelResolver;
+ import net.minecraft.util.Mth;
+ import net.minecraft.util.RandomSource;
+@@ -26,33 +_,26 @@
+     private final ItemClusterRenderState renderState = new ItemClusterRenderState();
+ 
+     public VaultRenderer(BlockEntityRendererProvider.Context p_324525_) {
+-        this.itemModelResolver = p_324525_.itemModelResolver();
++        this.itemModelResolver = p_324525_.getItemModelResolver();
+     }
+ 
+-    public void submit(
+-        VaultBlockEntity p_439633_,
+-        float p_440459_,
+-        PoseStack p_440572_,
+-        int p_439420_,
+-        int p_438896_,
+-        Vec3 p_439485_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_439621_,
+-        SubmitNodeCollector p_440256_
++    public void render(
++        VaultBlockEntity p_323921_, float p_324166_, PoseStack p_324316_, MultiBufferSource p_323716_, int p_324311_, int p_324178_, Vec3 p_401121_
+     ) {
+-        if (VaultBlockEntity.Client.shouldDisplayActiveEffects(p_439633_.getSharedData())) {
+-            Level level = p_439633_.getLevel();
++        if (VaultBlockEntity.Client.shouldDisplayActiveEffects(p_323921_.getSharedData())) {
++            Level level = p_323921_.getLevel();
+             if (level != null) {
+-                ItemStack itemstack = p_439633_.getSharedData().getDisplayItem();
++                ItemStack itemstack = p_323921_.getSharedData().getDisplayItem();
+                 if (!itemstack.isEmpty()) {
+                     this.itemModelResolver.updateForTopItem(this.renderState.item, itemstack, ItemDisplayContext.GROUND, level, null, 0);
+                     this.renderState.count = ItemClusterRenderState.getRenderedAmount(itemstack.getCount());
+                     this.renderState.seed = ItemClusterRenderState.getSeedForItemStack(itemstack);
+-                    VaultClientData vaultclientdata = p_439633_.getClientData();
+-                    p_440572_.pushPose();
+-                    p_440572_.translate(0.5F, 0.4F, 0.5F);
+-                    p_440572_.mulPose(Axis.YP.rotationDegrees(Mth.rotLerp(p_440459_, vaultclientdata.previousSpin(), vaultclientdata.currentSpin())));
+-                    ItemEntityRenderer.renderMultipleFromCount(p_440572_, p_440256_, p_439420_, this.renderState, this.random);
+-                    p_440572_.popPose();
++                    VaultClientData vaultclientdata = p_323921_.getClientData();
++                    p_324316_.pushPose();
++                    p_324316_.translate(0.5F, 0.4F, 0.5F);
++                    p_324316_.mulPose(Axis.YP.rotationDegrees(Mth.rotLerp(p_324166_, vaultclientdata.previousSpin(), vaultclientdata.currentSpin())));
++                    ItemEntityRenderer.renderMultipleFromCount(p_324316_, p_323716_, p_324311_, this.renderState, this.random);
++                    p_324316_.popPose();
+                 }
+             }
+         }

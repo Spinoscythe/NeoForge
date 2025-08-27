@@ -1,0 +1,94 @@
+--- a/net/minecraft/client/renderer/entity/layers/ParrotOnShoulderLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/ParrotOnShoulderLayer.java
+@@ -5,7 +_,7 @@
+ import net.minecraft.client.model.PlayerModel;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.ParrotRenderer;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.ParrotRenderState;
+@@ -18,53 +_,48 @@
+ @OnlyIn(Dist.CLIENT)
+ public class ParrotOnShoulderLayer extends RenderLayer<PlayerRenderState, PlayerModel> {
+     private final ParrotModel model;
++    private final ParrotRenderState parrotState = new ParrotRenderState();
+ 
+     public ParrotOnShoulderLayer(RenderLayerParent<PlayerRenderState, PlayerModel> p_174511_, EntityModelSet p_174512_) {
+         super(p_174511_);
+         this.model = new ParrotModel(p_174512_.bakeLayer(ModelLayers.PARROT));
++        this.parrotState.pose = ParrotModel.Pose.ON_SHOULDER;
+     }
+ 
+-    public void submit(PoseStack p_434235_, SubmitNodeCollector p_434714_, int p_434156_, PlayerRenderState p_435011_, float p_433591_, float p_433688_) {
+-        Parrot.Variant parrot$variant = p_435011_.parrotOnLeftShoulder;
++    public void render(PoseStack p_117307_, MultiBufferSource p_117308_, int p_117309_, PlayerRenderState p_360723_, float p_117311_, float p_117312_) {
++        Parrot.Variant parrot$variant = p_360723_.parrotOnLeftShoulder;
+         if (parrot$variant != null) {
+-            this.submitOnShoulder(p_434235_, p_434714_, p_434156_, p_435011_, parrot$variant, p_433591_, p_433688_, true);
++            this.renderOnShoulder(p_117307_, p_117308_, p_117309_, p_360723_, parrot$variant, p_117311_, p_117312_, true);
+         }
+ 
+-        Parrot.Variant parrot$variant1 = p_435011_.parrotOnRightShoulder;
++        Parrot.Variant parrot$variant1 = p_360723_.parrotOnRightShoulder;
+         if (parrot$variant1 != null) {
+-            this.submitOnShoulder(p_434235_, p_434714_, p_434156_, p_435011_, parrot$variant1, p_433591_, p_433688_, false);
++            this.renderOnShoulder(p_117307_, p_117308_, p_117309_, p_360723_, parrot$variant1, p_117311_, p_117312_, false);
+         }
+     }
+ 
+-    private void submitOnShoulder(
+-        PoseStack p_434521_,
+-        SubmitNodeCollector p_432918_,
+-        int p_434486_,
+-        PlayerRenderState p_434128_,
+-        Parrot.Variant p_435522_,
+-        float p_435558_,
+-        float p_433589_,
+-        boolean p_434700_
++    private void renderOnShoulder(
++        PoseStack p_361619_,
++        MultiBufferSource p_364834_,
++        int p_364239_,
++        PlayerRenderState p_364485_,
++        Parrot.Variant p_365484_,
++        float p_360279_,
++        float p_363980_,
++        boolean p_365529_
+     ) {
+-        p_434521_.pushPose();
+-        p_434521_.translate(p_434700_ ? 0.4F : -0.4F, p_434128_.isCrouching ? -1.3F : -1.5F, 0.0F);
+-        ParrotRenderState parrotrenderstate = new ParrotRenderState();
+-        parrotrenderstate.pose = ParrotModel.Pose.ON_SHOULDER;
+-        parrotrenderstate.ageInTicks = p_434128_.ageInTicks;
+-        parrotrenderstate.walkAnimationPos = p_434128_.walkAnimationPos;
+-        parrotrenderstate.walkAnimationSpeed = p_434128_.walkAnimationSpeed;
+-        parrotrenderstate.yRot = p_435558_;
+-        parrotrenderstate.xRot = p_433589_;
+-        p_432918_.submitModel(
+-            this.model,
+-            parrotrenderstate,
+-            p_434521_,
+-            this.model.renderType(ParrotRenderer.getVariantTexture(p_435522_)),
+-            p_434486_,
+-            OverlayTexture.NO_OVERLAY,
+-            p_434128_.outlineColor,
+-            null
+-        );
+-        p_434521_.popPose();
++        p_361619_.pushPose();
++        p_361619_.translate(p_365529_ ? 0.4F : -0.4F, p_364485_.isCrouching ? -1.3F : -1.5F, 0.0F);
++        this.parrotState.ageInTicks = p_364485_.ageInTicks;
++        this.parrotState.walkAnimationPos = p_364485_.walkAnimationPos;
++        this.parrotState.walkAnimationSpeed = p_364485_.walkAnimationSpeed;
++        this.parrotState.yRot = p_360279_;
++        this.parrotState.xRot = p_363980_;
++        this.model.setupAnim(this.parrotState);
++        this.model
++            .renderToBuffer(
++                p_361619_, p_364834_.getBuffer(this.model.renderType(ParrotRenderer.getVariantTexture(p_365484_))), p_364239_, OverlayTexture.NO_OVERLAY
++            );
++        p_361619_.popPose();
+     }
+ }

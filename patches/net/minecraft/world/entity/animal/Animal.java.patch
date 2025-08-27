@@ -1,6 +1,66 @@
 --- a/net/minecraft/world/entity/animal/Animal.java
 +++ b/net/minecraft/world/entity/animal/Animal.java
-@@ -216,6 +_,17 @@
+@@ -4,6 +_,7 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.advancements.CriteriaTriggers;
+ import net.minecraft.core.BlockPos;
++import net.minecraft.core.component.DataComponents;
+ import net.minecraft.core.particles.ParticleTypes;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.server.level.ServerPlayer;
+@@ -23,6 +_,7 @@
+ import net.minecraft.world.entity.ai.attributes.Attributes;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.ItemStack;
++import net.minecraft.world.item.component.UseRemainder;
+ import net.minecraft.world.level.BlockAndTintGetter;
+ import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.Level;
+@@ -149,7 +_,7 @@
+                 return InteractionResult.SUCCESS;
+             }
+ 
+-            if (this.level().isClientSide()) {
++            if (this.level().isClientSide) {
+                 return InteractionResult.CONSUME;
+             }
+         }
+@@ -160,6 +_,16 @@
+     protected void playEatingSound() {
+     }
+ 
++    protected void usePlayerItem(Player p_148715_, InteractionHand p_148716_, ItemStack p_148717_) {
++        int i = p_148717_.getCount();
++        UseRemainder useremainder = p_148717_.get(DataComponents.USE_REMAINDER);
++        p_148717_.consume(1, p_148715_);
++        if (useremainder != null) {
++            ItemStack itemstack = useremainder.convertIntoRemainder(p_148717_, i, p_148715_.hasInfiniteMaterials(), p_148715_::handleExtraItemsCreatedOnUse);
++            p_148715_.setItemInHand(p_148716_, itemstack);
++        }
++    }
++
+     public boolean canFallInLove() {
+         return this.inLove <= 0;
+     }
+@@ -167,7 +_,7 @@
+     public void setInLove(@Nullable Player p_27596_) {
+         this.inLove = 600;
+         if (p_27596_ instanceof ServerPlayer serverplayer) {
+-            this.loveCause = EntityReference.of(serverplayer);
++            this.loveCause = new EntityReference<>(serverplayer);
+         }
+ 
+         this.level().broadcastEntityEvent(this, (byte)18);
+@@ -183,7 +_,7 @@
+ 
+     @Nullable
+     public ServerPlayer getLoveCause() {
+-        return EntityReference.get(this.loveCause, this.level(), ServerPlayer.class);
++        return EntityReference.get(this.loveCause, (net.minecraft.world.level.entity.UUIDLookup<Player>)this.level()::getPlayerByUUID, ServerPlayer.class);
+     }
+ 
+     public boolean isInLove() {
+@@ -204,6 +_,17 @@
  
      public void spawnChildFromBreeding(ServerLevel p_27564_, Animal p_27565_) {
          AgeableMob ageablemob = this.getBreedOffspring(p_27564_, p_27565_);

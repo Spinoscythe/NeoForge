@@ -1,0 +1,235 @@
+--- a/net/minecraft/world/level/levelgen/Aquifer.java
++++ b/net/minecraft/world/level/levelgen/Aquifer.java
+@@ -66,19 +_,8 @@
+         private static final int X_SPACING = 16;
+         private static final int Y_SPACING = 12;
+         private static final int Z_SPACING = 16;
+-        private static final int X_SPACING_SHIFT = 4;
+-        private static final int Z_SPACING_SHIFT = 4;
+         private static final int MAX_REASONABLE_DISTANCE_TO_AQUIFER_CENTER = 11;
+         private static final double FLOWING_UPDATE_SIMULARITY = similarity(Mth.square(10), Mth.square(12));
+-        private static final int SAMPLE_OFFSET_X = -5;
+-        private static final int SAMPLE_OFFSET_Y = 1;
+-        private static final int SAMPLE_OFFSET_Z = -5;
+-        private static final int MIN_CELL_SAMPLE_X = 0;
+-        private static final int MIN_CELL_SAMPLE_Y = -1;
+-        private static final int MIN_CELL_SAMPLE_Z = 0;
+-        private static final int MAX_CELL_SAMPLE_X = 1;
+-        private static final int MAX_CELL_SAMPLE_Y = 1;
+-        private static final int MAX_CELL_SAMPLE_Z = 1;
+         private final NoiseChunk noiseChunk;
+         protected final DensityFunction barrierNoise;
+         private final DensityFunction fluidLevelFloodednessNoise;
+@@ -91,7 +_,6 @@
+         private final DensityFunction erosion;
+         private final DensityFunction depth;
+         protected boolean shouldScheduleFluidUpdate;
+-        private final int skipSamplingAboveY;
+         protected final int minGridX;
+         protected final int minGridY;
+         protected final int minGridZ;
+@@ -118,25 +_,20 @@
+             this.erosion = p_223893_.erosion();
+             this.depth = p_223893_.depth();
+             this.positionalRandomFactory = p_223894_;
+-            this.minGridX = gridX(p_223892_.getMinBlockX() + -5) + 0;
++            this.minGridX = this.gridX(p_223892_.getMinBlockX()) - 1;
+             this.globalFluidPicker = p_223897_;
+-            int i = gridX(p_223892_.getMaxBlockX() + -5) + 1;
++            int i = this.gridX(p_223892_.getMaxBlockX()) + 1;
+             this.gridSizeX = i - this.minGridX + 1;
+-            this.minGridY = gridY(p_223895_ + 1) + -1;
+-            int j = gridY(p_223895_ + p_223896_ + 1) + 1;
++            this.minGridY = this.gridY(p_223895_) - 1;
++            int j = this.gridY(p_223895_ + p_223896_) + 1;
+             int k = j - this.minGridY + 1;
+-            this.minGridZ = gridZ(p_223892_.getMinBlockZ() + -5) + 0;
+-            int l = gridZ(p_223892_.getMaxBlockZ() + -5) + 1;
++            this.minGridZ = this.gridZ(p_223892_.getMinBlockZ()) - 1;
++            int l = this.gridZ(p_223892_.getMaxBlockZ()) + 1;
+             this.gridSizeZ = l - this.minGridZ + 1;
+             int i1 = this.gridSizeX * k * this.gridSizeZ;
+             this.aquiferCache = new Aquifer.FluidStatus[i1];
+             this.aquiferLocationCache = new long[i1];
+             Arrays.fill(this.aquiferLocationCache, Long.MAX_VALUE);
+-            int j1 = this.adjustSurfaceLevel(
+-                p_223891_.maxPreliminarySurfaceLevel(fromGridX(this.minGridX, 0), fromGridZ(this.minGridZ, 0), fromGridX(i, 9), fromGridZ(l, 9))
+-            );
+-            int k1 = gridY(j1 + 12) - -1;
+-            this.skipSamplingAboveY = fromGridY(k1, 11) - 1;
+         }
+ 
+         protected int getIndex(int p_158028_, int p_158029_, int p_158030_) {
+@@ -149,32 +_,29 @@
+         @Nullable
+         @Override
+         public BlockState computeSubstance(DensityFunction.FunctionContext p_208186_, double p_208187_) {
++            int i = p_208186_.blockX();
++            int j = p_208186_.blockY();
++            int k = p_208186_.blockZ();
+             if (p_208187_ > 0.0) {
+                 this.shouldScheduleFluidUpdate = false;
+                 return null;
+             } else {
+-                int i = p_208186_.blockX();
+-                int j = p_208186_.blockY();
+-                int k = p_208186_.blockZ();
+                 Aquifer.FluidStatus aquifer$fluidstatus = this.globalFluidPicker.computeFluid(i, j, k);
+-                if (j > this.skipSamplingAboveY) {
+-                    this.shouldScheduleFluidUpdate = false;
+-                    return aquifer$fluidstatus.at(j);
+-                } else if (aquifer$fluidstatus.at(j).is(Blocks.LAVA)) {
++                if (aquifer$fluidstatus.at(j).is(Blocks.LAVA)) {
+                     this.shouldScheduleFluidUpdate = false;
+                     return Blocks.LAVA.defaultBlockState();
+                 } else {
+-                    int l = gridX(i + -5);
+-                    int i1 = gridY(j + 1);
+-                    int j1 = gridZ(k + -5);
++                    int l = Math.floorDiv(i - 5, 16);
++                    int i1 = Math.floorDiv(j + 1, 12);
++                    int j1 = Math.floorDiv(k - 5, 16);
+                     int k1 = Integer.MAX_VALUE;
+                     int l1 = Integer.MAX_VALUE;
+                     int i2 = Integer.MAX_VALUE;
+                     int j2 = Integer.MAX_VALUE;
+-                    int k2 = 0;
+-                    int l2 = 0;
+-                    int i3 = 0;
+-                    int j3 = 0;
++                    long k2 = 0L;
++                    long l2 = 0L;
++                    long i3 = 0L;
++                    long j3 = 0L;
+ 
+                     for (int k3 = 0; k3 <= 1; k3++) {
+                         for (int l3 = -1; l3 <= 1; l3++) {
+@@ -190,9 +_,7 @@
+                                 } else {
+                                     RandomSource randomsource = this.positionalRandomFactory.at(j4, k4, l4);
+                                     j5 = BlockPos.asLong(
+-                                        fromGridX(j4, randomsource.nextInt(10)),
+-                                        fromGridY(k4, randomsource.nextInt(9)),
+-                                        fromGridZ(l4, randomsource.nextInt(10))
++                                        j4 * 16 + randomsource.nextInt(10), k4 * 12 + randomsource.nextInt(9), l4 * 16 + randomsource.nextInt(10)
+                                     );
+                                     this.aquiferLocationCache[i5] = j5;
+                                 }
+@@ -205,7 +_,7 @@
+                                     j3 = i3;
+                                     i3 = l2;
+                                     l2 = k2;
+-                                    k2 = i5;
++                                    k2 = j5;
+                                     j2 = i2;
+                                     i2 = l1;
+                                     l1 = k1;
+@@ -213,17 +_,17 @@
+                                 } else if (l1 >= j6) {
+                                     j3 = i3;
+                                     i3 = l2;
+-                                    l2 = i5;
++                                    l2 = j5;
+                                     j2 = i2;
+                                     i2 = l1;
+                                     l1 = j6;
+                                 } else if (i2 >= j6) {
+                                     j3 = i3;
+-                                    i3 = i5;
++                                    i3 = j5;
+                                     j2 = i2;
+                                     i2 = j6;
+                                 } else if (j2 >= j6) {
+-                                    j3 = i5;
++                                    j3 = j5;
+                                     j2 = j6;
+                                 }
+                             }
+@@ -297,7 +_,7 @@
+ 
+         protected static double similarity(int p_158025_, int p_158026_) {
+             double d0 = 25.0;
+-            return 1.0 - (p_158026_ - p_158025_) / 25.0;
++            return 1.0 - Math.abs(p_158026_ - p_158025_) / 25.0;
+         }
+ 
+         private double calculatePressure(
+@@ -360,38 +_,32 @@
+             }
+         }
+ 
+-        protected static int gridX(int p_158040_) {
+-            return p_158040_ >> 4;
+-        }
+-
+-        private static int fromGridX(int p_433799_, int p_434140_) {
+-            return (p_433799_ << 4) + p_434140_;
+-        }
+-
+-        protected static int gridY(int p_158046_) {
++        protected int gridX(int p_158040_) {
++            return Math.floorDiv(p_158040_, 16);
++        }
++
++        protected int gridY(int p_158046_) {
+             return Math.floorDiv(p_158046_, 12);
+         }
+ 
+-        private static int fromGridY(int p_436049_, int p_435666_) {
+-            return p_436049_ * 12 + p_435666_;
+-        }
+-
+-        protected static int gridZ(int p_158048_) {
+-            return p_158048_ >> 4;
+-        }
+-
+-        private static int fromGridZ(int p_435702_, int p_433958_) {
+-            return (p_435702_ << 4) + p_433958_;
+-        }
+-
+-        private Aquifer.FluidStatus getAquiferStatus(int p_434487_) {
+-            Aquifer.FluidStatus aquifer$fluidstatus = this.aquiferCache[p_434487_];
++        protected int gridZ(int p_158048_) {
++            return Math.floorDiv(p_158048_, 16);
++        }
++
++        private Aquifer.FluidStatus getAquiferStatus(long p_188446_) {
++            int i = BlockPos.getX(p_188446_);
++            int j = BlockPos.getY(p_188446_);
++            int k = BlockPos.getZ(p_188446_);
++            int l = this.gridX(i);
++            int i1 = this.gridY(j);
++            int j1 = this.gridZ(k);
++            int k1 = this.getIndex(l, i1, j1);
++            Aquifer.FluidStatus aquifer$fluidstatus = this.aquiferCache[k1];
+             if (aquifer$fluidstatus != null) {
+                 return aquifer$fluidstatus;
+             } else {
+-                long i = this.aquiferLocationCache[p_434487_];
+-                Aquifer.FluidStatus aquifer$fluidstatus1 = this.computeFluid(BlockPos.getX(i), BlockPos.getY(i), BlockPos.getZ(i));
+-                this.aquiferCache[p_434487_] = aquifer$fluidstatus1;
++                Aquifer.FluidStatus aquifer$fluidstatus1 = this.computeFluid(i, j, k);
++                this.aquiferCache[k1] = aquifer$fluidstatus1;
+                 return aquifer$fluidstatus1;
+             }
+         }
+@@ -407,7 +_,7 @@
+                 int l = p_188448_ + SectionPos.sectionToBlockCoord(aint[0]);
+                 int i1 = p_188450_ + SectionPos.sectionToBlockCoord(aint[1]);
+                 int j1 = this.noiseChunk.preliminarySurfaceLevel(l, i1);
+-                int k1 = this.adjustSurfaceLevel(j1);
++                int k1 = j1 + 8;
+                 boolean flag1 = aint[0] == 0 && aint[1] == 0;
+                 if (flag1 && k > k1) {
+                     return aquifer$fluidstatus;
+@@ -432,10 +_,6 @@
+ 
+             int l1 = this.computeSurfaceLevel(p_188448_, p_188449_, p_188450_, aquifer$fluidstatus, i, flag);
+             return new Aquifer.FluidStatus(l1, this.computeFluidType(p_188448_, p_188449_, p_188450_, aquifer$fluidstatus, l1));
+-        }
+-
+-        private int adjustSurfaceLevel(int p_435127_) {
+-            return p_435127_ + 8;
+         }
+ 
+         private int computeSurfaceLevel(int p_223910_, int p_223911_, int p_223912_, Aquifer.FluidStatus p_223913_, int p_223914_, boolean p_223915_) {

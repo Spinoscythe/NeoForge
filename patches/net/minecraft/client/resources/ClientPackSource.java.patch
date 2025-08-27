@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/resources/ClientPackSource.java
++++ b/net/minecraft/client/resources/ClientPackSource.java
+@@ -30,9 +_,11 @@
+ @OnlyIn(Dist.CLIENT)
+ public class ClientPackSource extends BuiltInPackSource {
+     private static final PackMetadataSection VERSION_METADATA_SECTION = new PackMetadataSection(
+-        Component.translatable("resourcePack.vanilla.description"), SharedConstants.getCurrentVersion().packVersion(PackType.CLIENT_RESOURCES).minorRange()
++        Component.translatable("resourcePack.vanilla.description"),
++        SharedConstants.getCurrentVersion().packVersion(PackType.CLIENT_RESOURCES),
++        Optional.empty()
+     );
+-    private static final BuiltInMetadata BUILT_IN_METADATA = BuiltInMetadata.of(PackMetadataSection.CLIENT_TYPE, VERSION_METADATA_SECTION);
++    private static final BuiltInMetadata BUILT_IN_METADATA = BuiltInMetadata.of(PackMetadataSection.TYPE, VERSION_METADATA_SECTION);
+     public static final String HIGH_CONTRAST_PACK = "high_contrast";
+     private static final Map<String, Component> SPECIAL_PACK_NAMES = Map.of(
+         "programmer_art",

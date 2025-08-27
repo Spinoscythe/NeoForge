@@ -1,0 +1,17 @@
+--- a/net/minecraft/world/level/block/WeatheringCopperDoorBlock.java
++++ b/net/minecraft/world/level/block/WeatheringCopperDoorBlock.java
+@@ -13,12 +_,12 @@
+ 
+ public class WeatheringCopperDoorBlock extends DoorBlock implements WeatheringCopper {
+     public static final MapCodec<WeatheringCopperDoorBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432696_ -> p_432696_.group(
++        p_368451_ -> p_368451_.group(
+                 BlockSetType.CODEC.fieldOf("block_set_type").forGetter(DoorBlock::type),
+                 WeatheringCopper.WeatherState.CODEC.fieldOf("weathering_state").forGetter(WeatheringCopperDoorBlock::getAge),
+                 propertiesCodec()
+             )
+-            .apply(p_432696_, WeatheringCopperDoorBlock::new)
++            .apply(p_368451_, WeatheringCopperDoorBlock::new)
+     );
+     private final WeatheringCopper.WeatherState weatherState;
+ 

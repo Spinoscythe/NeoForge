@@ -1,0 +1,113 @@
+--- a/com/mojang/blaze3d/font/TrueTypeGlyphProvider.java
++++ b/com/mojang/blaze3d/font/TrueTypeGlyphProvider.java
+@@ -8,10 +_,10 @@
+ import java.nio.ByteBuffer;
+ import java.nio.IntBuffer;
+ import java.util.Locale;
++import java.util.function.Function;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.gui.font.CodepointMap;
+ import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+-import net.minecraft.client.gui.font.glyphs.EmptyGlyph;
+ import net.minecraft.client.gui.font.providers.FreeTypeUtil;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -68,28 +_,28 @@
+ 
+     @Nullable
+     @Override
+-    public UnbakedGlyph getGlyph(int p_231116_) {
++    public GlyphInfo getGlyph(int p_231116_) {
+         TrueTypeGlyphProvider.GlyphEntry truetypeglyphprovider$glyphentry = this.glyphs.get(p_231116_);
+         return truetypeglyphprovider$glyphentry != null ? this.getOrLoadGlyphInfo(p_231116_, truetypeglyphprovider$glyphentry) : null;
+     }
+ 
+-    private UnbakedGlyph getOrLoadGlyphInfo(int p_365358_, TrueTypeGlyphProvider.GlyphEntry p_360879_) {
+-        UnbakedGlyph unbakedglyph = p_360879_.glyph;
+-        if (unbakedglyph == null) {
++    private GlyphInfo getOrLoadGlyphInfo(int p_365358_, TrueTypeGlyphProvider.GlyphEntry p_360879_) {
++        GlyphInfo glyphinfo = p_360879_.glyph;
++        if (glyphinfo == null) {
+             FT_Face ft_face = this.validateFontOpen();
+             synchronized (ft_face) {
+-                unbakedglyph = p_360879_.glyph;
+-                if (unbakedglyph == null) {
+-                    unbakedglyph = this.loadGlyph(p_365358_, ft_face, p_360879_.index);
+-                    p_360879_.glyph = unbakedglyph;
++                glyphinfo = p_360879_.glyph;
++                if (glyphinfo == null) {
++                    glyphinfo = this.loadGlyph(p_365358_, ft_face, p_360879_.index);
++                    p_360879_.glyph = glyphinfo;
+                 }
+             }
+         }
+ 
+-        return unbakedglyph;
++        return glyphinfo;
+     }
+ 
+-    private UnbakedGlyph loadGlyph(int p_361822_, FT_Face p_360350_, int p_362748_) {
++    private GlyphInfo loadGlyph(int p_361822_, FT_Face p_360350_, int p_362748_) {
+         int i = FreeType.FT_Load_Glyph(p_360350_, p_362748_, 4194312);
+         if (i != 0) {
+             FreeTypeUtil.assertError(i, String.format(Locale.ROOT, "Loading glyph U+%06X", p_361822_));
+@@ -105,7 +_,7 @@
+             int k = ft_glyphslot.bitmap_top();
+             int l = ft_bitmap.width();
+             int i1 = ft_bitmap.rows();
+-            return (UnbakedGlyph)(l > 0 && i1 > 0 ? new TrueTypeGlyphProvider.Glyph(j, k, l, i1, f, p_362748_) : new EmptyGlyph(f / this.oversample));
++            return (GlyphInfo)(l > 0 && i1 > 0 ? new TrueTypeGlyphProvider.Glyph(j, k, l, i1, f, p_362748_) : (GlyphInfo.SpaceGlyphInfo)() -> f / this.oversample);
+         }
+     }
+ 
+@@ -137,33 +_,32 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    class Glyph implements UnbakedGlyph {
++    class Glyph implements GlyphInfo {
+         final int width;
+         final int height;
+         final float bearingX;
+         final float bearingY;
+-        private final GlyphInfo info;
++        private final float advance;
+         final int index;
+ 
+         Glyph(float p_83886_, float p_83887_, int p_83882_, int p_83883_, float p_320408_, int p_83884_) {
+             this.width = p_83882_;
+             this.height = p_83883_;
+-            this.info = GlyphInfo.simple(p_320408_);
++            this.advance = p_320408_ / TrueTypeGlyphProvider.this.oversample;
+             this.bearingX = p_83886_ / TrueTypeGlyphProvider.this.oversample;
+             this.bearingY = p_83887_ / TrueTypeGlyphProvider.this.oversample;
+             this.index = p_83884_;
+         }
+ 
+         @Override
+-        public GlyphInfo info() {
+-            return this.info;
++        public float getAdvance() {
++            return this.advance;
+         }
+ 
+         @Override
+-        public BakedGlyph bake(UnbakedGlyph.Stitcher p_440645_) {
+-            return p_440645_.stitch(
+-                this.info,
+-                new GlyphBitmap() {
++        public BakedGlyph bake(Function<SheetGlyphInfo, BakedGlyph> p_231120_) {
++            return p_231120_.apply(
++                new SheetGlyphInfo() {
+                     @Override
+                     public int getPixelWidth() {
+                         return Glyph.this.width;
+@@ -215,7 +_,7 @@
+     static class GlyphEntry {
+         final int index;
+         @Nullable
+-        volatile UnbakedGlyph glyph;
++        volatile GlyphInfo glyph;
+ 
+         GlyphEntry(int p_360519_) {
+             this.index = p_360519_;

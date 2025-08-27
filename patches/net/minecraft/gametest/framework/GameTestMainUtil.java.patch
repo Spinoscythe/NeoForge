@@ -8,3 +8,20 @@
              String s = optionset.valueOf(universe);
              createOrResetDir(s);
              p_397859_.accept(s);
+@@ -81,9 +_,13 @@
+                 .createAccess("gametestworld");
+             PackRepository packrepository = ServerPacksSource.createPackRepository(levelstoragesource$levelstorageaccess);
+             MinecraftServer.spin(
+-                p_432361_ -> GameTestServer.create(
+-                    p_432361_, levelstoragesource$levelstorageaccess, packrepository, optionalFromOption(optionset, tests), optionset.has(verify)
+-                )
++                p_423187_ -> {
++                    GameTestServer gametestserver = GameTestServer.create(
++                        p_423187_, levelstoragesource$levelstorageaccess, packrepository, optionalFromOption(optionset, tests), optionset.has(verify)
++                    );
++                    GameTestTicker.SINGLETON.startTicking();
++                    return gametestserver;
++                }
+             );
+         }
+     }

@@ -1,0 +1,36 @@
+--- a/net/minecraft/client/renderer/blockentity/TestInstanceRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/TestInstanceRenderer.java
+@@ -1,9 +_,7 @@
+ package net.minecraft.client.renderer.blockentity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+-import javax.annotation.Nullable;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.world.level.block.entity.TestInstanceBlockEntity;
+ import net.minecraft.world.phys.Vec3;
+ import net.neoforged.api.distmarker.Dist;
+@@ -19,18 +_,11 @@
+         this.box = new BlockEntityWithBoundingBoxRenderer<>(p_397450_);
+     }
+ 
+-    public void submit(
+-        TestInstanceBlockEntity p_439538_,
+-        float p_439833_,
+-        PoseStack p_440574_,
+-        int p_439329_,
+-        int p_439301_,
+-        Vec3 p_440136_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440394_,
+-        SubmitNodeCollector p_440446_
++    public void render(
++        TestInstanceBlockEntity p_397390_, float p_397164_, PoseStack p_397714_, MultiBufferSource p_397845_, int p_397115_, int p_397818_, Vec3 p_401004_
+     ) {
+-        this.beacon.submit(p_439538_, p_439833_, p_440574_, p_439329_, p_439301_, p_440136_, p_440394_, p_440446_);
+-        this.box.submit(p_439538_, p_439833_, p_440574_, p_439329_, p_439301_, p_440136_, p_440394_, p_440446_);
++        this.beacon.render(p_397390_, p_397164_, p_397714_, p_397845_, p_397115_, p_397818_, p_401004_);
++        this.box.render(p_397390_, p_397164_, p_397714_, p_397845_, p_397115_, p_397818_, p_401004_);
+     }
+ 
+     @Override

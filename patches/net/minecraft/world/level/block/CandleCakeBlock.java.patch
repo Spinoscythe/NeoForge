@@ -1,0 +1,22 @@
+--- a/net/minecraft/world/level/block/CandleCakeBlock.java
++++ b/net/minecraft/world/level/block/CandleCakeBlock.java
+@@ -33,8 +_,8 @@
+ 
+ public class CandleCakeBlock extends AbstractCandleBlock {
+     public static final MapCodec<CandleCakeBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432640_ -> p_432640_.group(BuiltInRegistries.BLOCK.byNameCodec().fieldOf("candle").forGetter(p_316072_ -> p_316072_.candleBlock), propertiesCodec())
+-            .apply(p_432640_, CandleCakeBlock::new)
++        p_368409_ -> p_368409_.group(BuiltInRegistries.BLOCK.byNameCodec().fieldOf("candle").forGetter(p_316072_ -> p_316072_.candleBlock), propertiesCodec())
++            .apply(p_368409_, CandleCakeBlock::new)
+     );
+     public static final BooleanProperty LIT = AbstractCandleBlock.LIT;
+     private static final VoxelShape SHAPE = Shapes.or(Block.column(2.0, 8.0, 14.0), Block.column(14.0, 0.0, 8.0));
+@@ -128,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_152880_, Level p_152881_, BlockPos p_152882_, Direction p_435090_) {
++    protected int getAnalogOutputSignal(BlockState p_152880_, Level p_152881_, BlockPos p_152882_) {
+         return CakeBlock.FULL_CAKE_SIGNAL;
+     }
+ 

@@ -1,6 +1,6 @@
 --- a/com/mojang/realmsclient/gui/screens/RealmsGenericErrorScreen.java
 +++ b/com/mojang/realmsclient/gui/screens/RealmsGenericErrorScreen.java
-@@ -69,6 +_,15 @@
+@@ -69,10 +_,19 @@
      }
  
      @Override
@@ -16,3 +16,8 @@
      public void render(GuiGraphics p_283497_, int p_88680_, int p_88681_, float p_88682_) {
          super.render(p_283497_, p_88680_, p_88681_, p_88682_);
          p_283497_.drawCenteredString(this.font, this.lines.title, this.width / 2, 80, -1);
+-        this.line2Split.render(p_283497_, MultiLineLabel.Align.CENTER, this.width / 2, 100, 9, true, -2142128);
++        this.line2Split.renderCentered(p_283497_, this.width / 2, 100, 9, -2142128);
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

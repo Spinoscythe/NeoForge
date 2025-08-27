@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/projectile/ThrownTrident.java
++++ b/net/minecraft/world/entity/projectile/ThrownTrident.java
+@@ -136,7 +_,7 @@
+             }
+         }
+ 
+-        this.deflect(ProjectileDeflection.REVERSE, entity, this.owner, false);
++        this.deflect(ProjectileDeflection.REVERSE, entity, this.getOwner(), false);
+         this.setDeltaMovement(this.getDeltaMovement().multiply(0.02, 0.2, 0.02));
+         this.playSound(SoundEvents.TRIDENT_HIT, 1.0F, 1.0F);
+     }

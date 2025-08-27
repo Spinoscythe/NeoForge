@@ -1,14 +1,140 @@
 --- a/net/minecraft/client/gui/GuiGraphics.java
 +++ b/net/minecraft/client/gui/GuiGraphics.java
-@@ -81,6 +_,7 @@
+@@ -3,7 +_,6 @@
+ import com.mojang.blaze3d.pipeline.RenderPipeline;
+ import com.mojang.blaze3d.textures.GpuTextureView;
+ import java.util.ArrayDeque;
+-import java.util.ArrayList;
+ import java.util.Deque;
+ import java.util.List;
+ import java.util.Objects;
+@@ -42,16 +_,10 @@
+ import net.minecraft.client.renderer.entity.state.EntityRenderState;
+ import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
+ import net.minecraft.client.renderer.state.MapRenderState;
+-import net.minecraft.client.renderer.texture.TextureAtlas;
+ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+ import net.minecraft.client.renderer.texture.TextureManager;
+-import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
+ import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
+-import net.minecraft.client.resources.model.AtlasManager;
+-import net.minecraft.client.resources.model.Material;
+-import net.minecraft.client.resources.model.MaterialSet;
+ import net.minecraft.core.component.DataComponents;
+-import net.minecraft.data.AtlasIds;
+ import net.minecraft.locale.Language;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.chat.FormattedText;
+@@ -84,19 +_,16 @@
+     private final Minecraft minecraft;
+     private final Matrix3x2fStack pose;
+     private final GuiGraphics.ScissorStack scissorStack = new GuiGraphics.ScissorStack();
+-    private final MaterialSet materials;
+-    private final TextureAtlas guiSprites;
++    private final GuiSpriteManager sprites;
      private final GuiRenderState guiRenderState;
      @Nullable
      private Runnable deferredTooltip;
+-    private final List<GuiGraphics.OutlineBox> deferredOutlines = new ArrayList<>();
 +    private ItemStack tooltipStack = ItemStack.EMPTY;
  
      private GuiGraphics(Minecraft p_282144_, Matrix3x2fStack p_415937_, GuiRenderState p_415955_) {
          this.minecraft = p_282144_;
-@@ -874,6 +_,8 @@
+         this.pose = p_415937_;
+-        AtlasManager atlasmanager = p_282144_.getAtlasManager();
+-        this.materials = atlasmanager;
+-        this.guiSprites = atlasmanager.getAtlasOrThrow(AtlasIds.GUI);
++        this.sprites = p_282144_.getGuiSprites();
+         this.guiRenderState = p_415955_;
+     }
+ 
+@@ -285,8 +_,11 @@
+         this.drawString(p_348650_, p_348614_, p_348465_, p_348495_, p_348666_, true);
+     }
+ 
+-    public void submitOutline(int p_437200_, int p_437425_, int p_437270_, int p_437412_, int p_437361_) {
+-        this.deferredOutlines.add(new GuiGraphics.OutlineBox(p_437200_, p_437425_, p_437270_, p_437412_, p_437361_));
++    public void renderOutline(int p_281496_, int p_282076_, int p_281334_, int p_283576_, int p_283618_) {
++        this.fill(p_281496_, p_282076_, p_281496_ + p_281334_, p_282076_ + 1, p_283618_);
++        this.fill(p_281496_, p_282076_ + p_283576_ - 1, p_281496_ + p_281334_, p_282076_ + p_283576_, p_283618_);
++        this.fill(p_281496_, p_282076_ + 1, p_281496_ + 1, p_282076_ + p_283576_ - 1, p_283618_);
++        this.fill(p_281496_ + p_281334_ - 1, p_282076_ + 1, p_281496_ + p_281334_, p_282076_ + p_283576_ - 1, p_283618_);
+     }
+ 
+     public void blitSprite(RenderPipeline p_415703_, ResourceLocation p_294915_, int p_295058_, int p_294415_, int p_294535_, int p_295510_) {
+@@ -297,38 +_,29 @@
+         this.blitSprite(p_421916_, p_422348_, p_422055_, p_421599_, p_422343_, p_422460_, ARGB.color(p_422508_, -1));
+     }
+ 
+-    private static GuiSpriteScaling getSpriteScaling(TextureAtlasSprite p_434667_) {
+-        return p_434667_.contents().getAdditionalMetadata(GuiMetadataSection.TYPE).orElse(GuiMetadataSection.DEFAULT).scaling();
+-    }
+-
+     public void blitSprite(RenderPipeline p_415593_, ResourceLocation p_365379_, int p_294695_, int p_296458_, int p_294279_, int p_295235_, int p_295034_) {
+-        TextureAtlasSprite textureatlassprite = this.guiSprites.getSprite(p_365379_);
+-        GuiSpriteScaling guispritescaling = getSpriteScaling(textureatlassprite);
+-        switch (guispritescaling) {
+-            case GuiSpriteScaling.Stretch guispritescaling$stretch:
+-                this.blitSprite(p_415593_, textureatlassprite, p_294695_, p_296458_, p_294279_, p_295235_, p_295034_);
+-                break;
+-            case GuiSpriteScaling.Tile guispritescaling$tile:
+-                this.blitTiledSprite(
+-                    p_415593_,
+-                    textureatlassprite,
+-                    p_294695_,
+-                    p_296458_,
+-                    p_294279_,
+-                    p_295235_,
+-                    0,
+-                    0,
+-                    guispritescaling$tile.width(),
+-                    guispritescaling$tile.height(),
+-                    guispritescaling$tile.width(),
+-                    guispritescaling$tile.height(),
+-                    p_295034_
+-                );
+-                break;
+-            case GuiSpriteScaling.NineSlice guispritescaling$nineslice:
+-                this.blitNineSlicedSprite(p_415593_, textureatlassprite, guispritescaling$nineslice, p_294695_, p_296458_, p_294279_, p_295235_, p_295034_);
+-                break;
+-            default:
++        TextureAtlasSprite textureatlassprite = this.sprites.getSprite(p_365379_);
++        GuiSpriteScaling guispritescaling = this.sprites.getSpriteScaling(textureatlassprite);
++        if (guispritescaling instanceof GuiSpriteScaling.Stretch) {
++            this.blitSprite(p_415593_, textureatlassprite, p_294695_, p_296458_, p_294279_, p_295235_, p_295034_);
++        } else if (guispritescaling instanceof GuiSpriteScaling.Tile guispritescaling$tile) {
++            this.blitTiledSprite(
++                p_415593_,
++                textureatlassprite,
++                p_294695_,
++                p_296458_,
++                p_294279_,
++                p_295235_,
++                0,
++                0,
++                guispritescaling$tile.width(),
++                guispritescaling$tile.height(),
++                guispritescaling$tile.width(),
++                guispritescaling$tile.height(),
++                p_295034_
++            );
++        } else if (guispritescaling instanceof GuiSpriteScaling.NineSlice guispritescaling$nineslice) {
++            this.blitNineSlicedSprite(p_415593_, textureatlassprite, guispritescaling$nineslice, p_294695_, p_296458_, p_294279_, p_295235_, p_295034_);
+         }
+     }
+ 
+@@ -360,8 +_,8 @@
+         int p_365523_,
+         int p_416361_
+     ) {
+-        TextureAtlasSprite textureatlassprite = this.guiSprites.getSprite(p_294549_);
+-        GuiSpriteScaling guispritescaling = getSpriteScaling(textureatlassprite);
++        TextureAtlasSprite textureatlassprite = this.sprites.getSprite(p_294549_);
++        GuiSpriteScaling guispritescaling = this.sprites.getSpriteScaling(textureatlassprite);
+         if (guispritescaling instanceof GuiSpriteScaling.Stretch) {
+             this.blitSprite(p_416106_, textureatlassprite, p_294560_, p_295075_, p_294098_, p_295872_, p_294414_, p_362199_, p_363608_, p_365523_, p_416361_);
+         } else {
+@@ -891,6 +_,8 @@
              this.renderItemCooldown(p_283349_, p_282641_, p_282146_);
              this.renderItemCount(p_282005_, p_283349_, p_282641_, p_282146_, p_282803_);
              this.pose.popMatrix();
@@ -17,7 +143,7 @@
          }
      }
  
-@@ -886,6 +_,7 @@
+@@ -903,6 +_,7 @@
      }
  
      public void setTooltipForNextFrame(Font p_419878_, ItemStack p_419655_, int p_419935_, int p_419559_) {
@@ -25,7 +151,7 @@
          this.setTooltipForNextFrame(
              p_419878_,
              Screen.getTooltipFromItem(this.minecraft, p_419655_),
-@@ -894,6 +_,17 @@
+@@ -911,6 +_,17 @@
              p_419559_,
              p_419655_.get(DataComponents.TOOLTIP_STYLE)
          );
@@ -43,7 +169,7 @@
      }
  
      public void setTooltipForNextFrame(Font p_419603_, List<Component> p_419948_, Optional<TooltipComponent> p_419787_, int p_419566_, int p_420005_) {
-@@ -903,11 +_,7 @@
+@@ -920,11 +_,7 @@
      public void setTooltipForNextFrame(
          Font p_420034_, List<Component> p_419494_, Optional<TooltipComponent> p_419637_, int p_419571_, int p_419535_, @Nullable ResourceLocation p_419579_
      ) {
@@ -56,7 +182,7 @@
          this.setTooltipForNextFrameInternal(p_420034_, list, p_419571_, p_419535_, DefaultTooltipPositioner.INSTANCE, p_419579_, false);
      }
  
-@@ -920,13 +_,14 @@
+@@ -937,13 +_,14 @@
      }
  
      public void setComponentTooltipForNextFrame(Font p_419927_, List<Component> p_419807_, int p_419887_, int p_420035_) {
@@ -73,7 +199,7 @@
              p_419554_,
              p_419672_,
              DefaultTooltipPositioner.INSTANCE,
-@@ -935,6 +_,28 @@
+@@ -952,6 +_,28 @@
          );
      }
  
@@ -102,7 +228,7 @@
      public void setTooltipForNextFrame(Font p_419718_, List<? extends FormattedCharSequence> p_419502_, int p_419583_, int p_419996_) {
          this.setTooltipForNextFrame(p_419718_, p_419502_, p_419583_, p_419996_, null);
      }
-@@ -972,7 +_,8 @@
+@@ -989,7 +_,8 @@
      ) {
          if (!p_419687_.isEmpty()) {
              if (this.deferredTooltip == null || p_419788_) {
@@ -112,7 +238,7 @@
              }
          }
      }
-@@ -985,6 +_,25 @@
+@@ -1002,6 +_,25 @@
          ClientTooltipPositioner p_419610_,
          @Nullable ResourceLocation p_371766_
      ) {
@@ -138,7 +264,7 @@
          int i = 0;
          int j = p_371741_.size() == 1 ? -2 : 0;
  
-@@ -1003,7 +_,8 @@
+@@ -1020,7 +_,8 @@
          int l = vector2ic.x();
          int i1 = vector2ic.y();
          this.pose.pushMatrix();
@@ -148,12 +274,54 @@
          int j1 = i1;
  
          for (int k1 = 0; k1 < p_371741_.size(); k1++) {
-@@ -1219,6 +_,31 @@
-     public void submitProfilerChartRenderState(List<ResultField> p_415873_, int p_415651_, int p_416392_, int p_415782_, int p_416254_) {
+@@ -1040,17 +_,7 @@
+         this.pose.popMatrix();
+     }
+ 
+-    public void renderDeferredElements() {
+-        if (!this.deferredOutlines.isEmpty()) {
+-            this.nextStratum();
+-
+-            for (GuiGraphics.OutlineBox guigraphics$outlinebox : this.deferredOutlines) {
+-                guigraphics$outlinebox.render(this);
+-            }
+-
+-            this.deferredOutlines.clear();
+-        }
+-
++    public void renderDeferredTooltip() {
+         if (this.deferredTooltip != null) {
+             this.nextStratum();
+             this.deferredTooltip.run();
+@@ -1236,10 +_,10 @@
+             );
+     }
+ 
+-    public void submitSignRenderState(Model.Simple p_434494_, float p_416226_, WoodType p_416002_, int p_415719_, int p_416488_, int p_416444_, int p_416195_) {
++    public void submitSignRenderState(Model p_415997_, float p_416226_, WoodType p_416002_, int p_415719_, int p_416488_, int p_416444_, int p_416195_) {
          this.guiRenderState
+             .submitPicturesInPictureState(
+-                new GuiSignRenderState(p_434494_, p_416002_, p_415719_, p_416488_, p_416444_, p_416195_, p_416226_, this.scissorStack.peek())
++                new GuiSignRenderState(p_415997_, p_416002_, p_415719_, p_416488_, p_416444_, p_416195_, p_416226_, this.scissorStack.peek())
+             );
+     }
+ 
+@@ -1248,18 +_,29 @@
              .submitPicturesInPictureState(new GuiProfilerChartRenderState(p_415873_, p_415651_, p_416392_, p_415782_, p_416254_, this.scissorStack.peek()));
-+    }
-+
+     }
+ 
+-    public TextureAtlasSprite getSprite(Material p_433908_) {
+-        return this.materials.get(p_433908_);
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    record OutlineBox(int x, int y, int width, int height, int color) {
+-        public void render(GuiGraphics p_437363_) {
+-            p_437363_.fill(this.x, this.y, this.x + this.width, this.y + 1, this.color);
+-            p_437363_.fill(this.x, this.y + this.height - 1, this.x + this.width, this.y + this.height, this.color);
+-            p_437363_.fill(this.x, this.y + 1, this.x + 1, this.y + this.height - 1, this.color);
+-            p_437363_.fill(this.x + this.width - 1, this.y + 1, this.x + this.width, this.y + this.height - 1, this.color);
+-        }
 +    /**
 +     * Neo: Submit a custom {@link net.minecraft.client.gui.render.state.GuiElementRenderState} for rendering
 +     */

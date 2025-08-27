@@ -17,3 +17,12 @@
          MapId mapid = p_42854_.get(DataComponents.MAP_ID);
          return getSavedData(mapid, p_42855_);
      }
+@@ -322,7 +_,7 @@
+     public InteractionResult useOn(UseOnContext p_42885_) {
+         BlockState blockstate = p_42885_.getLevel().getBlockState(p_42885_.getClickedPos());
+         if (blockstate.is(BlockTags.BANNERS)) {
+-            if (!p_42885_.getLevel().isClientSide()) {
++            if (!p_42885_.getLevel().isClientSide) {
+                 MapItemSavedData mapitemsaveddata = getSavedData(p_42885_.getItemInHand(), p_42885_.getLevel());
+                 if (mapitemsaveddata != null && !mapitemsaveddata.toggleBanner(p_42885_.getLevel(), p_42885_.getClickedPos())) {
+                     return InteractionResult.FAIL;

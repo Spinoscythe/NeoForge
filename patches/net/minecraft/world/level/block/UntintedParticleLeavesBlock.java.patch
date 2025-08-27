@@ -1,0 +1,17 @@
+--- a/net/minecraft/world/level/block/UntintedParticleLeavesBlock.java
++++ b/net/minecraft/world/level/block/UntintedParticleLeavesBlock.java
+@@ -14,12 +_,12 @@
+ 
+ public class UntintedParticleLeavesBlock extends LeavesBlock {
+     public static final MapCodec<UntintedParticleLeavesBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432689_ -> p_432689_.group(
++        p_399854_ -> p_399854_.group(
+                 ExtraCodecs.floatRange(0.0F, 1.0F).fieldOf("leaf_particle_chance").forGetter(p_399708_ -> p_399708_.leafParticleChance),
+                 ParticleTypes.CODEC.fieldOf("leaf_particle").forGetter(p_399817_ -> p_399817_.leafParticle),
+                 propertiesCodec()
+             )
+-            .apply(p_432689_, UntintedParticleLeavesBlock::new)
++            .apply(p_399854_, UntintedParticleLeavesBlock::new)
+     );
+     protected final ParticleOptions leafParticle;
+ 

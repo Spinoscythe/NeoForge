@@ -8,3 +8,12 @@
              ChargedProjectiles chargedprojectiles = p_40891_.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
              if (chargedprojectiles != null && !chargedprojectiles.isEmpty()) {
                  this.shoot(serverlevel, p_40889_, p_40890_, p_40891_, chargedprojectiles.getItems(), p_40892_, p_40893_, p_40889_ instanceof Player, p_331602_);
+@@ -184,7 +_,7 @@
+ 
+     @Override
+     public void onUseTick(Level p_40910_, LivingEntity p_40911_, ItemStack p_40912_, int p_40913_) {
+-        if (!p_40910_.isClientSide()) {
++        if (!p_40910_.isClientSide) {
+             CrossbowItem.ChargingSounds crossbowitem$chargingsounds = this.getChargingSounds(p_40912_);
+             float f = (float)(p_40912_.getUseDuration(p_40911_) - p_40913_) / getChargeDuration(p_40912_, p_40911_);
+             if (f < 0.2F) {

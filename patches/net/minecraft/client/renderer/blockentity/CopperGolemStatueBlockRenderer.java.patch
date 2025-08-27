@@ -1,0 +1,60 @@
+--- a/net/minecraft/client/renderer/blockentity/CopperGolemStatueBlockRenderer.java
++++ /dev/null
+@@ -1,57 +_,0 @@
+-package net.minecraft.client.renderer.blockentity;
+-
+-import com.mojang.blaze3d.vertex.PoseStack;
+-import java.util.HashMap;
+-import java.util.Map;
+-import javax.annotation.Nullable;
+-import net.minecraft.client.model.CopperGolemStatueModel;
+-import net.minecraft.client.model.geom.EntityModelSet;
+-import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+-import net.minecraft.client.renderer.texture.OverlayTexture;
+-import net.minecraft.core.Direction;
+-import net.minecraft.world.entity.animal.coppergolem.CopperGolemOxidationLevels;
+-import net.minecraft.world.level.block.CopperGolemStatueBlock;
+-import net.minecraft.world.level.block.entity.CopperGolemStatueBlockEntity;
+-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+-import net.minecraft.world.phys.Vec3;
+-import net.neoforged.api.distmarker.Dist;
+-import net.neoforged.api.distmarker.OnlyIn;
+-
+-@OnlyIn(Dist.CLIENT)
+-public class CopperGolemStatueBlockRenderer implements BlockEntityRenderer<CopperGolemStatueBlockEntity> {
+-    private final Map<CopperGolemStatueBlock.Pose, CopperGolemStatueModel> models = new HashMap<>();
+-
+-    public CopperGolemStatueBlockRenderer(BlockEntityRendererProvider.Context p_433755_) {
+-        EntityModelSet entitymodelset = p_433755_.entityModelSet();
+-        this.models.put(CopperGolemStatueBlock.Pose.STANDING, new CopperGolemStatueModel(entitymodelset.bakeLayer(ModelLayers.COPPER_GOLEM)));
+-        this.models.put(CopperGolemStatueBlock.Pose.RUNNING, new CopperGolemStatueModel(entitymodelset.bakeLayer(ModelLayers.COPPER_GOLEM_RUNNING)));
+-        this.models.put(CopperGolemStatueBlock.Pose.SITTING, new CopperGolemStatueModel(entitymodelset.bakeLayer(ModelLayers.COPPER_GOLEM_SITTING)));
+-        this.models.put(CopperGolemStatueBlock.Pose.STAR, new CopperGolemStatueModel(entitymodelset.bakeLayer(ModelLayers.COPPER_GOLEM_STAR)));
+-    }
+-
+-    public void submit(
+-        CopperGolemStatueBlockEntity p_439223_,
+-        float p_439901_,
+-        PoseStack p_438983_,
+-        int p_440550_,
+-        int p_438878_,
+-        Vec3 p_440225_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_439399_,
+-        SubmitNodeCollector p_439995_
+-    ) {
+-        if (p_439223_.getBlockState().getBlock() instanceof CopperGolemStatueBlock coppergolemstatueblock) {
+-            p_438983_.pushPose();
+-            p_438983_.translate(0.5F, 0.0F, 0.5F);
+-            CopperGolemStatueModel coppergolemstatuemodel = this.models.get(p_439223_.getBlockState().getValue(BlockStateProperties.COPPER_GOLEM_POSE));
+-            Direction direction = p_439223_.getBlockState().getValue(CopperGolemStatueBlock.FACING);
+-            RenderType rendertype = RenderType.entityCutoutNoCull(
+-                CopperGolemOxidationLevels.getOxidationLevel(coppergolemstatueblock.getWeatheringState()).texture()
+-            );
+-            p_439995_.submitModel(coppergolemstatuemodel, direction, p_438983_, rendertype, p_440550_, OverlayTexture.NO_OVERLAY, 0, p_439399_);
+-            p_438983_.popPose();
+-        }
+-    }
+-}

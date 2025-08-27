@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/WallBannerBlock.java
++++ b/net/minecraft/world/level/block/WallBannerBlock.java
+@@ -22,8 +_,8 @@
+ 
+ public class WallBannerBlock extends AbstractBannerBlock {
+     public static final MapCodec<WallBannerBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432690_ -> p_432690_.group(DyeColor.CODEC.fieldOf("color").forGetter(AbstractBannerBlock::getColor), propertiesCodec())
+-            .apply(p_432690_, WallBannerBlock::new)
++        p_368445_ -> p_368445_.group(DyeColor.CODEC.fieldOf("color").forGetter(AbstractBannerBlock::getColor), propertiesCodec())
++            .apply(p_368445_, WallBannerBlock::new)
+     );
+     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
+     private static final Map<Direction, VoxelShape> SHAPES = Shapes.rotateHorizontal(Block.boxZ(16.0, 0.0, 12.5, 14.0, 16.0));

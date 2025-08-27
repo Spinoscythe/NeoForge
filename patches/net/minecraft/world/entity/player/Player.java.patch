@@ -1,14 +1,46 @@
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -127,6 +_,7 @@
+@@ -38,7 +_,6 @@
+ import net.minecraft.server.dialog.Dialog;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.server.level.ServerPlayer;
+-import net.minecraft.server.players.NameAndId;
+ import net.minecraft.sounds.SoundEvent;
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.sounds.SoundSource;
+@@ -62,13 +_,11 @@
+ import net.minecraft.world.effect.MobEffectInstance;
+ import net.minecraft.world.effect.MobEffectUtil;
+ import net.minecraft.world.effect.MobEffects;
+-import net.minecraft.world.entity.ContainerUser;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityAttachment;
+ import net.minecraft.world.entity.EntityAttachments;
+ import net.minecraft.world.entity.EntityDimensions;
+ import net.minecraft.world.entity.EntityEquipment;
+-import net.minecraft.world.entity.EntityReference;
+ import net.minecraft.world.entity.EntitySpawnReason;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.EquipmentSlot;
+@@ -111,7 +_,6 @@
+ import net.minecraft.world.level.GameType;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.entity.CommandBlockEntity;
+-import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
+ import net.minecraft.world.level.block.entity.JigsawBlockEntity;
+ import net.minecraft.world.level.block.entity.SignBlockEntity;
+ import net.minecraft.world.level.block.entity.StructureBlockEntity;
+@@ -130,7 +_,8 @@
+ import net.minecraft.world.scores.Team;
  import org.slf4j.Logger;
  
- public abstract class Player extends LivingEntity implements net.neoforged.neoforge.common.extensions.IPlayerExtension {
+-public abstract class Player extends LivingEntity implements ContainerUser, net.neoforged.neoforge.common.extensions.IPlayerExtension {
++public abstract class Player extends LivingEntity implements net.neoforged.neoforge.common.extensions.IPlayerExtension {
 +    public static final String PERSISTED_NBT_TAG = "PlayerPersisted";
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final HumanoidArm DEFAULT_MAIN_HAND = HumanoidArm.RIGHT;
      public static final int DEFAULT_MODEL_CUSTOMIZATION = 0;
-@@ -218,6 +_,11 @@
+@@ -222,13 +_,18 @@
      public Entity currentExplosionCause;
      private boolean ignoreFallDamageFromCurrentImpulse = false;
      private int currentImpulseContextResetGraceTime = 0;
@@ -20,7 +52,15 @@
  
      public Player(Level p_250508_, GameProfile p_252153_) {
          super(EntityType.PLAYER, p_250508_);
-@@ -260,7 +_,8 @@
+         this.setUUID(p_252153_.getId());
+         this.gameProfile = p_252153_;
+         this.inventory = new Inventory(this, this.equipment);
+-        this.inventoryMenu = new InventoryMenu(this.inventory, !p_250508_.isClientSide(), this);
++        this.inventoryMenu = new InventoryMenu(this.inventory, !p_250508_.isClientSide, this);
+         this.containerMenu = this.inventoryMenu;
+     }
+ 
+@@ -264,7 +_,8 @@
              .add(Attributes.MINING_EFFICIENCY)
              .add(Attributes.SWEEPING_DAMAGE_RATIO)
              .add(Attributes.WAYPOINT_TRANSMIT_RANGE, 6.0E7)
@@ -30,7 +70,7 @@
      }
  
      @Override
-@@ -276,6 +_,7 @@
+@@ -280,6 +_,7 @@
  
      @Override
      public void tick() {
@@ -38,16 +78,25 @@
          this.noPhysics = this.isSpectator();
          if (this.isSpectator() || this.isPassenger()) {
              this.setOnGround(false);
-@@ -291,7 +_,7 @@
+@@ -295,7 +_,7 @@
                  this.sleepCounter = 100;
              }
  
--            if (!this.level().isClientSide && this.level().isBrightOutside()) {
+-            if (!this.level().isClientSide() && this.level().isBrightOutside()) {
 +            if (!this.level().isClientSide && !net.neoforged.neoforge.event.EventHooks.canEntityContinueSleeping(this, this.level().isBrightOutside() ? BedSleepingProblem.NOT_POSSIBLE_NOW : null)) {
                  this.stopSleepInBed(false, true);
              }
          } else if (this.sleepCounter > 0) {
-@@ -322,7 +_,11 @@
+@@ -307,7 +_,7 @@
+ 
+         this.updateIsUnderwater();
+         super.tick();
+-        if (!this.level().isClientSide() && this.containerMenu != null && !this.containerMenu.stillValid(this)) {
++        if (!this.level().isClientSide && this.containerMenu != null && !this.containerMenu.stillValid(this)) {
+             this.closeContainer();
+             this.containerMenu = this.inventoryMenu;
+         }
+@@ -326,7 +_,11 @@
              }
  
              if (!this.isSleeping()) {
@@ -60,7 +109,7 @@
              }
          }
  
-@@ -352,6 +_,7 @@
+@@ -356,6 +_,7 @@
          if (this.currentImpulseContextResetGraceTime > 0) {
              this.currentImpulseContextResetGraceTime--;
          }
@@ -68,7 +117,7 @@
      }
  
      @Override
-@@ -454,6 +_,10 @@
+@@ -458,6 +_,10 @@
      }
  
      protected void updatePlayerPose() {
@@ -79,7 +128,46 @@
          if (this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.SWIMMING)) {
              Pose pose = this.getDesiredPose();
              Pose pose1;
-@@ -672,6 +_,7 @@
+@@ -534,9 +_,9 @@
+         if (p_36120_ == 9) {
+             this.completeUsingItem();
+         } else if (p_36120_ == 23) {
+-            this.setReducedDebugInfo(false);
++            this.reducedDebugInfo = false;
+         } else if (p_36120_ == 22) {
+-            this.setReducedDebugInfo(true);
++            this.reducedDebugInfo = true;
+         } else {
+             super.handleEntityEvent(p_36120_);
+         }
+@@ -551,7 +_,7 @@
+ 
+     @Override
+     public void rideTick() {
+-        if (!this.level().isClientSide() && this.wantsToStopRiding() && this.isPassenger()) {
++        if (!this.level().isClientSide && this.wantsToStopRiding() && this.isPassenger()) {
+             this.stopRiding();
+             this.setShiftKeyDown(false);
+         } else {
+@@ -612,7 +_,7 @@
+ 
+         this.playShoulderEntityAmbientSound(this.getShoulderEntityLeft());
+         this.playShoulderEntityAmbientSound(this.getShoulderEntityRight());
+-        if (!this.level().isClientSide() && (this.fallDistance > 0.5 || this.isInWater()) || this.abilities.flying || this.isSleeping() || this.isInPowderSnow) {
++        if (!this.level().isClientSide && (this.fallDistance > 0.5 || this.isInWater()) || this.abilities.flying || this.isSleeping() || this.isInPowderSnow) {
+             this.removeEntitiesOnShoulder();
+         }
+     }
+@@ -662,7 +_,7 @@
+         this.autoSpinAttackTicks = p_204080_;
+         this.autoSpinAttackDmg = p_346316_;
+         this.autoSpinAttackItemStack = p_345401_;
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.removeEntitiesOnShoulder();
+             this.setLivingEntityFlag(4, true);
+         }
+@@ -676,6 +_,7 @@
  
      @Override
      public void die(DamageSource p_36152_) {
@@ -87,7 +175,7 @@
          super.die(p_36152_);
          this.reapplyPosition();
          if (!this.isSpectator() && this.level() instanceof ServerLevel serverlevel) {
-@@ -729,10 +_,18 @@
+@@ -733,10 +_,18 @@
  
      @Nullable
      public ItemEntity drop(ItemStack p_36177_, boolean p_36178_) {
@@ -107,7 +195,7 @@
          float f = this.inventory.getSelectedItem().getDestroySpeed(p_36282_);
          if (f > 1.0F) {
              f += (float)this.getAttributeValue(Attributes.MINING_EFFICIENCY);
-@@ -761,13 +_,19 @@
+@@ -765,13 +_,19 @@
              f /= 5.0F;
          }
  
@@ -127,7 +215,7 @@
      @Override
      protected void readAdditionalSaveData(ValueInput p_422427_) {
          super.readAdditionalSaveData(p_422427_);
-@@ -852,7 +_,8 @@
+@@ -856,7 +_,8 @@
                  return false;
              } else {
                  this.removeEntitiesOnShoulder();
@@ -137,7 +225,7 @@
                      if (p_376451_.getDifficulty() == Difficulty.PEACEFUL) {
                          p_376389_ = 0.0F;
                      }
-@@ -910,11 +_,14 @@
+@@ -914,11 +_,14 @@
      @Override
      protected void actuallyHurt(ServerLevel p_376500_, DamageSource p_36312_, float p_36313_) {
          if (!this.isInvulnerableTo(p_376500_, p_36312_)) {
@@ -157,7 +245,7 @@
              if (f > 0.0F && f < 3.4028235E37F) {
                  this.awardStat(Stats.DAMAGE_ABSORBED, Math.round(f * 10.0F));
              }
-@@ -928,7 +_,9 @@
+@@ -932,7 +_,9 @@
                  }
  
                  this.gameEvent(GameEvent.ENTITY_DAMAGE);
@@ -167,7 +255,7 @@
          }
      }
  
-@@ -981,6 +_,8 @@
+@@ -985,6 +_,8 @@
  
              return InteractionResult.PASS;
          } else {
@@ -176,7 +264,7 @@
              ItemStack itemstack = this.getItemInHand(p_36159_);
              ItemStack itemstack1 = itemstack.copy();
              InteractionResult interactionresult = p_36158_.interact(this, p_36159_);
-@@ -989,6 +_,9 @@
+@@ -993,6 +_,9 @@
                      itemstack.setCount(itemstack1.getCount());
                  }
  
@@ -186,7 +274,7 @@
                  return interactionresult;
              } else {
                  if (!itemstack.isEmpty() && p_36158_ instanceof LivingEntity) {
-@@ -1000,6 +_,7 @@
+@@ -1004,6 +_,7 @@
                      if (interactionresult1.consumesAction()) {
                          this.level().gameEvent(GameEvent.ENTITY_INTERACT, p_36158_.position(), GameEvent.Context.of(this));
                          if (itemstack.isEmpty() && !this.hasInfiniteMaterials()) {
@@ -194,7 +282,7 @@
                              this.setItemInHand(p_36159_, ItemStack.EMPTY);
                          }
  
-@@ -1029,6 +_,7 @@
+@@ -1033,6 +_,7 @@
      }
  
      @Override
@@ -202,7 +290,7 @@
      protected Vec3 maybeBackOffFromEdge(Vec3 p_36201_, MoverType p_36202_) {
          float f = this.maxUpStep();
          if (!this.abilities.flying
-@@ -1078,6 +_,7 @@
+@@ -1082,6 +_,7 @@
          }
      }
  
@@ -210,7 +298,7 @@
      private boolean isAboveGround(float p_341626_) {
          return this.onGround() || this.fallDistance < p_341626_ && !this.canFallAtLeast(0.0, 0.0, p_341626_ - this.fallDistance);
      }
-@@ -1099,6 +_,7 @@
+@@ -1103,6 +_,7 @@
      }
  
      public void attack(Entity p_36347_) {
@@ -218,15 +306,19 @@
          if (p_36347_.isAttackable()) {
              if (!p_36347_.skipAttackInteraction(this)) {
                  float f = this.isAutoSpinAttack() ? this.autoSpinAttackDmg : (float)this.getAttributeValue(Attributes.ATTACK_DAMAGE);
-@@ -1108,7 +_,6 @@
+@@ -1112,10 +_,9 @@
                  float f2 = this.getAttackStrengthScale(0.5F);
                  f *= 0.2F + f2 * f2 * 0.8F;
                  f1 *= f2;
 -                this.resetAttackStrengthTicker();
                  if (p_36347_.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE)
                      && p_36347_ instanceof Projectile projectile
-                     && projectile.deflect(ProjectileDeflection.AIM_DEFLECT, this, this, true)) {
-@@ -1135,20 +_,31 @@
+-                    && projectile.deflect(ProjectileDeflection.AIM_DEFLECT, this, EntityReference.of(this), true)) {
++                    && projectile.deflect(ProjectileDeflection.AIM_DEFLECT, this, this, true)) {
+                     this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_ATTACK_NODAMAGE, this.getSoundSource());
+                 } else {
+                     if (f > 0.0F || f1 > 0.0F) {
+@@ -1139,20 +_,31 @@
                              && !this.isPassenger()
                              && p_36347_ instanceof LivingEntity
                              && !this.isSprinting();
@@ -261,7 +353,7 @@
                          float f5 = 0.0F;
                          if (p_36347_ instanceof LivingEntity livingentity) {
                              f5 = livingentity.getHealth();
-@@ -1179,12 +_,13 @@
+@@ -1183,12 +_,13 @@
                                  float f6 = 1.0F + (float)this.getAttributeValue(Attributes.SWEEPING_DAMAGE_RATIO) * f;
  
                                  for (LivingEntity livingentity2 : this.level()
@@ -277,7 +369,7 @@
                                          float f8 = this.getEnchantedDamage(livingentity2, f6, damagesource) * f2;
                                          if (this.level() instanceof ServerLevel serverlevel && livingentity2.hurtServer(serverlevel, damagesource, f8)) {
                                              livingentity2.knockback(
-@@ -1232,11 +_,12 @@
+@@ -1236,11 +_,12 @@
  
                              this.setLastHurtMob(p_36347_);
                              Entity entity = p_36347_;
@@ -292,7 +384,14 @@
                              if (this.level() instanceof ServerLevel serverlevel1) {
                                  if (entity instanceof LivingEntity livingentity3) {
                                      flag5 = itemstack.hurtEnemy(livingentity3, this);
-@@ -1251,6 +_,7 @@
+@@ -1249,12 +_,13 @@
+                                 EnchantmentHelper.doPostAttackEffects(serverlevel1, p_36347_, damagesource);
+                             }
+ 
+-                            if (!this.level().isClientSide() && !itemstack.isEmpty() && entity instanceof LivingEntity) {
++                            if (!this.level().isClientSide && !itemstack.isEmpty() && entity instanceof LivingEntity) {
+                                 if (flag5) {
+                                     itemstack.postHurtEnemy((LivingEntity)entity, this);
                                  }
  
                                  if (itemstack.isEmpty()) {
@@ -300,7 +399,7 @@
                                      if (itemstack == this.getMainHandItem()) {
                                          this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                                      } else {
-@@ -1278,6 +_,7 @@
+@@ -1282,6 +_,7 @@
                          }
                      }
                  }
@@ -308,7 +407,32 @@
              }
          }
      }
-@@ -1380,6 +_,7 @@
+@@ -1337,22 +_,18 @@
+ 
+     @Override
+     public boolean canSimulateMovement() {
+-        return !this.level().isClientSide() || this.isLocalPlayer();
++        return !this.level().isClientSide || this.isLocalPlayer();
+     }
+ 
+     @Override
+     public boolean isEffectiveAi() {
+-        return !this.level().isClientSide() || this.isLocalPlayer();
++        return !this.level().isClientSide || this.isLocalPlayer();
+     }
+ 
+     public GameProfile getGameProfile() {
+         return this.gameProfile;
+     }
+ 
+-    public NameAndId nameAndId() {
+-        return new NameAndId(this.gameProfile);
+-    }
+-
+     public Inventory getInventory() {
+         return this.inventory;
+     }
+@@ -1388,6 +_,7 @@
      }
  
      public void stopSleepInBed(boolean p_36226_, boolean p_36227_) {
@@ -316,7 +440,7 @@
          super.stopSleeping();
          if (this.level() instanceof ServerLevel && p_36227_) {
              ((ServerLevel)this.level()).updateSleepingPlayerList();
-@@ -1485,7 +_,8 @@
+@@ -1493,7 +_,8 @@
  
      @Override
      public boolean causeFallDamage(double p_397701_, float p_150093_, DamageSource p_150095_) {
@@ -326,7 +450,7 @@
              return false;
          } else {
              if (p_397701_ >= 2.0) {
-@@ -1540,13 +_,13 @@
+@@ -1548,13 +_,13 @@
      protected void playStepSound(BlockPos p_282121_, BlockState p_282194_) {
          if (this.isInWater()) {
              this.waterSwimSound();
@@ -342,7 +466,16 @@
                  } else {
                      super.playStepSound(blockpos, blockstate);
                  }
-@@ -1577,6 +_,10 @@
+@@ -1570,7 +_,7 @@
+     }
+ 
+     @Override
+-    public boolean killedEntity(ServerLevel p_219735_, LivingEntity p_219736_, DamageSource p_435371_) {
++    public boolean killedEntity(ServerLevel p_219735_, LivingEntity p_219736_) {
+         this.awardStat(Stats.ENTITY_KILLED.get(p_219736_.getType()));
+         return true;
+     }
+@@ -1585,6 +_,10 @@
      }
  
      public void giveExperiencePoints(int p_36291_) {
@@ -353,7 +486,7 @@
          this.increaseScore(p_36291_);
          this.experienceProgress = this.experienceProgress + (float)p_36291_ / this.getXpNeededForNextLevel();
          this.totalExperience = Mth.clamp(this.totalExperience + p_36291_, 0, Integer.MAX_VALUE);
-@@ -1604,7 +_,7 @@
+@@ -1612,7 +_,7 @@
      }
  
      public void onEnchantmentPerformed(ItemStack p_36172_, int p_36173_) {
@@ -362,7 +495,7 @@
          if (this.experienceLevel < 0) {
              this.experienceLevel = 0;
              this.experienceProgress = 0.0F;
-@@ -1615,6 +_,10 @@
+@@ -1623,6 +_,10 @@
      }
  
      public void giveExperienceLevels(int p_36276_) {
@@ -373,7 +506,16 @@
          this.experienceLevel = IntMath.saturatedAdd(this.experienceLevel, p_36276_);
          if (this.experienceLevel < 0) {
              this.experienceLevel = 0;
-@@ -1794,7 +_,11 @@
+@@ -1647,7 +_,7 @@
+ 
+     public void causeFoodExhaustion(float p_36400_) {
+         if (!this.abilities.invulnerable) {
+-            if (!this.level().isClientSide()) {
++            if (!this.level().isClientSide) {
+                 this.foodData.addExhaustion(p_36400_);
+             }
+         }
+@@ -1802,7 +_,11 @@
  
      @Override
      public Component getDisplayName() {
@@ -386,7 +528,7 @@
          return this.decorateDisplayNameComponent(mutablecomponent);
      }
  
-@@ -1957,21 +_,21 @@
+@@ -1965,21 +_,21 @@
          if (!(p_36349_.getItem() instanceof ProjectileWeaponItem)) {
              return ItemStack.EMPTY;
          } else {
@@ -413,16 +555,24 @@
              }
          }
      }
-@@ -2011,7 +_,7 @@
+@@ -2077,16 +_,6 @@
+         }
      }
  
-     public boolean isScoping() {
--        return this.isUsingItem() && this.getUseItem().is(Items.SPYGLASS);
-+        return this.isUsingItem() && this.getUseItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SPYGLASS_SCOPE);
+-    @Override
+-    public boolean hasContainerOpen(ContainerOpenersCounter p_434660_, BlockPos p_432903_) {
+-        return p_434660_.isOwnContainer(this);
+-    }
+-
+-    @Override
+-    public double getContainerInteractionRange() {
+-        return this.blockInteractionRange();
+-    }
+-
+     public double blockInteractionRange() {
+         return this.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE);
      }
- 
-     @Override
-@@ -2159,5 +_,41 @@
+@@ -2177,5 +_,41 @@
          public Component getMessage() {
              return this.message;
          }

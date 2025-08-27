@@ -40,6 +40,15 @@
      }
  
      public boolean hasPrecipitation() {
+@@ -175,7 +_,7 @@
+     }
+ 
+     public boolean shouldSnow(LevelReader p_47520_, BlockPos p_47521_) {
+-        if (this.getPrecipitationAt(p_47521_, p_47520_.getSeaLevel()) != Biome.Precipitation.SNOW) {
++        if (this.warmEnoughToRain(p_47521_, p_47520_.getSeaLevel())) {
+             return false;
+         } else {
+             if (p_47520_.isInsideBuildHeight(p_47521_.getY()) && p_47520_.getBrightness(LightLayer.BLOCK, p_47521_) < 10) {
 @@ -190,7 +_,7 @@
      }
  

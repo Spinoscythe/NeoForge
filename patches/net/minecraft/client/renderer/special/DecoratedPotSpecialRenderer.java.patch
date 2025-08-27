@@ -1,0 +1,49 @@
+--- a/net/minecraft/client/renderer/special/DecoratedPotSpecialRenderer.java
++++ b/net/minecraft/client/renderer/special/DecoratedPotSpecialRenderer.java
+@@ -5,7 +_,8 @@
+ import java.util.Objects;
+ import java.util.Set;
+ import javax.annotation.Nullable;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.model.geom.EntityModelSet;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.blockentity.DecoratedPotRenderer;
+ import net.minecraft.core.component.DataComponents;
+ import net.minecraft.world.item.ItemDisplayContext;
+@@ -28,16 +_,16 @@
+         return p_386678_.get(DataComponents.POT_DECORATIONS);
+     }
+ 
+-    public void submit(
+-        @Nullable PotDecorations p_439761_,
+-        ItemDisplayContext p_440174_,
+-        PoseStack p_439942_,
+-        SubmitNodeCollector p_439680_,
+-        int p_439898_,
+-        int p_439427_,
+-        boolean p_439976_
++    public void render(
++        @Nullable PotDecorations p_387830_,
++        ItemDisplayContext p_388378_,
++        PoseStack p_387712_,
++        MultiBufferSource p_386487_,
++        int p_388845_,
++        int p_388255_,
++        boolean p_386498_
+     ) {
+-        this.decoratedPotRenderer.submit(p_439942_, p_439680_, p_439898_, p_439427_, Objects.requireNonNullElse(p_439761_, PotDecorations.EMPTY));
++        this.decoratedPotRenderer.renderInHand(p_387712_, p_386487_, p_388845_, p_388255_, Objects.requireNonNullElse(p_387830_, PotDecorations.EMPTY));
+     }
+ 
+     @Override
+@@ -55,8 +_,8 @@
+         }
+ 
+         @Override
+-        public SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext p_435515_) {
+-            return new DecoratedPotSpecialRenderer(new DecoratedPotRenderer(p_435515_));
++        public SpecialModelRenderer<?> bake(EntityModelSet p_387186_) {
++            return new DecoratedPotSpecialRenderer(new DecoratedPotRenderer(p_387186_));
+         }
+     }
+ }

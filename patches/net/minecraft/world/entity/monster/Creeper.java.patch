@@ -1,0 +1,70 @@
+--- a/net/minecraft/world/entity/monster/Creeper.java
++++ b/net/minecraft/world/entity/monster/Creeper.java
+@@ -40,7 +_,6 @@
+ import net.minecraft.world.level.gameevent.GameEvent;
+ import net.minecraft.world.level.storage.ValueInput;
+ import net.minecraft.world.level.storage.ValueOutput;
+-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+ 
+ public class Creeper extends Monster {
+     private static final EntityDataAccessor<Integer> DATA_SWELL_DIR = SynchedEntityData.defineId(Creeper.class, EntityDataSerializers.INT);
+@@ -54,7 +_,7 @@
+     private int swell;
+     private int maxSwell = 30;
+     private int explosionRadius = 3;
+-    private boolean droppedSkulls;
++    private int droppedSkulls;
+ 
+     public Creeper(EntityType<? extends Creeper> p_32278_, Level p_32279_) {
+         super(p_32278_, p_32279_);
+@@ -168,15 +_,13 @@
+     }
+ 
+     @Override
+-    public boolean killedEntity(ServerLevel p_434380_, LivingEntity p_434918_, DamageSource p_435170_) {
+-        if (this.shouldDropLoot(p_434380_) && this.isPowered() && !this.droppedSkulls) {
+-            p_434918_.dropFromLootTable(p_434380_, p_435170_, false, BuiltInLootTables.CHARGED_CREEPER, p_436012_ -> {
+-                p_434918_.spawnAtLocation(p_434380_, p_436012_);
+-                this.droppedSkulls = true;
+-            });
++    protected void dropCustomDeathLoot(ServerLevel p_348566_, DamageSource p_32292_, boolean p_32294_) {
++        super.dropCustomDeathLoot(p_348566_, p_32292_, p_32294_);
++        Entity entity = p_32292_.getEntity();
++        if (entity != this && entity instanceof Creeper creeper && creeper.canDropMobsSkull()) {
++            creeper.increaseDroppedSkulls();
++            this.spawnAtLocation(p_348566_, Items.CREEPER_HEAD);
+         }
+-
+-        return super.killedEntity(p_434380_, p_434918_, p_435170_);
+     }
+ 
+     @Override
+@@ -213,12 +_,12 @@
+             SoundEvent soundevent = itemstack.is(Items.FIRE_CHARGE) ? SoundEvents.FIRECHARGE_USE : SoundEvents.FLINTANDSTEEL_USE;
+             this.level()
+                 .playSound(p_32301_, this.getX(), this.getY(), this.getZ(), soundevent, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+-            if (!this.level().isClientSide()) {
++            if (!this.level().isClientSide) {
+                 this.ignite();
+                 if (!itemstack.isDamageableItem()) {
+                     itemstack.shrink(1);
+                 } else {
+-                    itemstack.hurtAndBreak(1, p_32301_, p_32302_.asEquipmentSlot());
++                    itemstack.hurtAndBreak(1, p_32301_, getSlotForHand(p_32302_));
+                 }
+             }
+ 
+@@ -264,5 +_,13 @@
+ 
+     public void ignite() {
+         this.entityData.set(DATA_IS_IGNITED, true);
++    }
++
++    public boolean canDropMobsSkull() {
++        return this.isPowered() && this.droppedSkulls < 1;
++    }
++
++    public void increaseDroppedSkulls() {
++        this.droppedSkulls++;
+     }
+ }

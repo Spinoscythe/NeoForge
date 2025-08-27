@@ -1,6 +1,38 @@
 --- a/net/minecraft/world/level/block/LiquidBlock.java
 +++ b/net/minecraft/world/level/block/LiquidBlock.java
-@@ -137,7 +_,7 @@
+@@ -50,8 +_,8 @@
+             p_304608_ -> (Fluid)p_304608_
+         );
+     public static final MapCodec<LiquidBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432671_ -> p_432671_.group(FLOWING_FLUID.fieldOf("fluid").forGetter(p_304898_ -> p_304898_.fluid), propertiesCodec())
+-            .apply(p_432671_, LiquidBlock::new)
++        p_368429_ -> p_368429_.group(FLOWING_FLUID.fieldOf("fluid").forGetter(p_304898_ -> p_304898_.fluid), propertiesCodec())
++            .apply(p_368429_, LiquidBlock::new)
+     );
+     public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL;
+     public final FlowingFluid fluid;
+@@ -82,15 +_,11 @@
+ 
+     @Override
+     protected VoxelShape getCollisionShape(BlockState p_54760_, BlockGetter p_54761_, BlockPos p_54762_, CollisionContext p_54763_) {
+-        if (p_54763_.alwaysCollideWithFluid()) {
+-            return Shapes.block();
+-        } else {
+-            return p_54763_.isAbove(SHAPE_STABLE, p_54762_, true)
+-                    && p_54760_.getValue(LEVEL) == 0
+-                    && p_54763_.canStandOnFluid(p_54761_.getFluidState(p_54762_.above()), p_54760_.getFluidState())
+-                ? SHAPE_STABLE
+-                : Shapes.empty();
+-        }
++        return p_54763_.isAbove(SHAPE_STABLE, p_54762_, true)
++                && p_54760_.getValue(LEVEL) == 0
++                && p_54763_.canStandOnFluid(p_54761_.getFluidState(p_54762_.above()), p_54760_.getFluidState())
++            ? SHAPE_STABLE
++            : Shapes.empty();
+     }
+ 
+     @Override
+@@ -141,7 +_,7 @@
  
      @Override
      protected void onPlace(BlockState p_54754_, Level p_54755_, BlockPos p_54756_, BlockState p_54757_, boolean p_54758_) {
@@ -9,7 +41,7 @@
              p_54755_.scheduleTick(p_54756_, p_54754_.getFluidState().getType(), this.fluid.getTickDelay(p_54755_));
          }
      }
-@@ -162,11 +_,12 @@
+@@ -166,11 +_,12 @@
  
      @Override
      protected void neighborChanged(BlockState p_54709_, Level p_54710_, BlockPos p_54711_, Block p_54712_, @Nullable Orientation p_361226_, boolean p_54714_) {

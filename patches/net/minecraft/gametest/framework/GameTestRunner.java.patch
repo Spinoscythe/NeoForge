@@ -1,0 +1,146 @@
+--- a/net/minecraft/gametest/framework/GameTestRunner.java
++++ b/net/minecraft/gametest/framework/GameTestRunner.java
+@@ -15,7 +_,6 @@
+ import net.minecraft.network.protocol.game.DebugPackets;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.world.level.ChunkPos;
+-import net.minecraft.world.level.block.entity.TestInstanceBlockEntity;
+ import org.slf4j.Logger;
+ 
+ public class GameTestRunner {
+@@ -34,7 +_,6 @@
+     private final GameTestRunner.StructureSpawner existingStructureSpawner;
+     private final GameTestRunner.StructureSpawner newStructureSpawner;
+     final boolean haltOnError;
+-    private final boolean clearBetweenBatches;
+ 
+     protected GameTestRunner(
+         GameTestRunner.GameTestBatcher p_320713_,
+@@ -43,8 +_,7 @@
+         GameTestTicker p_320736_,
+         GameTestRunner.StructureSpawner p_320336_,
+         GameTestRunner.StructureSpawner p_320643_,
+-        boolean p_352218_,
+-        boolean p_433114_
++        boolean p_352218_
+     ) {
+         this.level = p_320570_;
+         this.testTicker = p_320736_;
+@@ -53,7 +_,6 @@
+         this.newStructureSpawner = p_320643_;
+         this.batches = ImmutableList.copyOf(p_320022_);
+         this.haltOnError = p_352218_;
+-        this.clearBetweenBatches = p_433114_;
+         this.allTestInfos = this.batches.stream().flatMap(p_319468_ -> p_319468_.gameTestInfos().stream()).collect(Util.toMutableList());
+         p_320736_.setRunner(this);
+         this.allTestInfos.forEach(p_319464_ -> p_319464_.addListener(new ReportGameListener()));
+@@ -90,36 +_,29 @@
+             this.endCurrentEnvironment();
+             this.runScheduledRerunTests();
+         } else {
+-            if (p_319917_ > 0 && this.clearBetweenBatches) {
+-                GameTestBatch gametestbatch = this.batches.get(p_319917_ - 1);
+-                gametestbatch.gameTestInfos().forEach(p_432362_ -> {
+-                    TestInstanceBlockEntity testinstanceblockentity = p_432362_.getTestInstanceBlockEntity();
+-                    StructureUtils.clearSpaceForStructure(testinstanceblockentity.getStructureBoundingBox(), this.level);
+-                    this.level.destroyBlock(testinstanceblockentity.getBlockPos(), false);
+-                });
+-            }
+-
+-            final GameTestBatch gametestbatch1 = this.batches.get(p_319917_);
++            final GameTestBatch gametestbatch = this.batches.get(p_319917_);
+             this.existingStructureSpawner.onBatchStart(this.level);
+             this.newStructureSpawner.onBatchStart(this.level);
+-            Collection<GameTestInfo> collection = this.createStructuresForBatch(gametestbatch1.gameTestInfos());
++            Collection<GameTestInfo> collection = this.createStructuresForBatch(gametestbatch.gameTestInfos());
+             LOGGER.info(
+                 "Running test environment '{}' batch {} ({} tests)...",
+-                gametestbatch1.environment().getRegisteredName(),
+-                gametestbatch1.index(),
++                gametestbatch.environment().getRegisteredName(),
++                gametestbatch.index(),
+                 collection.size()
+             );
+-            this.endCurrentEnvironment();
+-            this.currentEnvironment = gametestbatch1.environment();
+-            this.currentEnvironment.value().setup(this.level);
+-            this.batchListeners.forEach(p_396390_ -> p_396390_.testBatchStarting(gametestbatch1));
++            if (this.currentEnvironment != gametestbatch.environment()) {
++                this.endCurrentEnvironment();
++                this.currentEnvironment = gametestbatch.environment();
++                this.currentEnvironment.value().setup(this.level);
++            }
++
++            this.batchListeners.forEach(p_396390_ -> p_396390_.testBatchStarting(gametestbatch));
+             final MultipleTestTracker multipletesttracker = new MultipleTestTracker();
+             collection.forEach(multipletesttracker::addTestToTrack);
+             multipletesttracker.addListener(new GameTestListener() {
+-                private void testCompleted(GameTestInfo p_435385_) {
+-                    p_435385_.getTestInstanceBlockEntity().removeBarriers();
++                private void testCompleted() {
+                     if (multipletesttracker.isDone()) {
+-                        GameTestRunner.this.batchListeners.forEach(p_396393_ -> p_396393_.testBatchFinished(gametestbatch1));
++                        GameTestRunner.this.batchListeners.forEach(p_396393_ -> p_396393_.testBatchFinished(gametestbatch));
+                         LongSet longset = new LongArraySet(GameTestRunner.this.level.getForceLoadedChunks());
+                         longset.forEach(p_319954_ -> GameTestRunner.this.level.setChunkForced(ChunkPos.getX(p_319954_), ChunkPos.getZ(p_319954_), false));
+                         GameTestRunner.this.runBatch(p_319917_ + 1);
+@@ -132,7 +_,7 @@
+ 
+                 @Override
+                 public void testPassed(GameTestInfo p_320625_, GameTestRunner p_320879_) {
+-                    this.testCompleted(p_320625_);
++                    this.testCompleted();
+                 }
+ 
+                 @Override
+@@ -142,9 +_,8 @@
+                         LongSet longset = new LongArraySet(GameTestRunner.this.level.getForceLoadedChunks());
+                         longset.forEach(p_351713_ -> GameTestRunner.this.level.setChunkForced(ChunkPos.getX(p_351713_), ChunkPos.getZ(p_351713_), false));
+                         GameTestTicker.SINGLETON.clear();
+-                        p_320900_.getTestInstanceBlockEntity().removeBarriers();
+                     } else {
+-                        this.testCompleted(p_320900_);
++                        this.testCompleted();
+                     }
+                 }
+ 
+@@ -204,7 +_,6 @@
+         private GameTestRunner.StructureSpawner newStructureSpawner = GameTestRunner.StructureSpawner.NOT_SET;
+         private final Collection<GameTestBatch> batches;
+         private boolean haltOnError = false;
+-        private boolean clearBetweenBatches = false;
+ 
+         private Builder(Collection<GameTestBatch> p_320127_, ServerLevel p_320437_) {
+             this.batches = p_320127_;
+@@ -219,13 +_,8 @@
+             return fromBatches(GameTestBatchFactory.fromGameTestInfo().batch(p_319878_), p_320046_);
+         }
+ 
+-        public GameTestRunner.Builder haltOnError() {
+-            this.haltOnError = true;
+-            return this;
+-        }
+-
+-        public GameTestRunner.Builder clearBetweenBatches() {
+-            this.clearBetweenBatches = true;
++        public GameTestRunner.Builder haltOnError(boolean p_352186_) {
++            this.haltOnError = p_352186_;
+             return this;
+         }
+ 
+@@ -246,14 +_,7 @@
+ 
+         public GameTestRunner build() {
+             return new GameTestRunner(
+-                this.batcher,
+-                this.batches,
+-                this.level,
+-                this.testTicker,
+-                this.existingStructureSpawner,
+-                this.newStructureSpawner,
+-                this.haltOnError,
+-                this.clearBetweenBatches
++                this.batcher, this.batches, this.level, this.testTicker, this.existingStructureSpawner, this.newStructureSpawner, this.haltOnError
+             );
+         }
+     }

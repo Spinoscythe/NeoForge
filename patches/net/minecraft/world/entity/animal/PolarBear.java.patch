@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/animal/PolarBear.java
++++ b/net/minecraft/world/entity/animal/PolarBear.java
+@@ -186,7 +_,7 @@
+     @Override
+     public void tick() {
+         super.tick();
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             if (this.clientSideStandAnimation != this.clientSideStandAnimationO) {
+                 this.refreshDimensions();
+             }
+@@ -203,7 +_,7 @@
+             this.warningSoundTicks--;
+         }
+ 
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.updatePersistentAnger((ServerLevel)this.level(), true);
+         }
+     }

@@ -1,0 +1,11 @@
+--- a/net/minecraft/data/advancements/packs/VanillaHusbandryAdvancements.java
++++ b/net/minecraft/data/advancements/packs/VanillaHusbandryAdvancements.java
+@@ -130,7 +_,7 @@
+         Items.GLOW_BERRIES
+     };
+     public static final Item[] WAX_SCRAPING_TOOLS = new Item[]{
+-        Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.COPPER_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE
++        Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE
+     };
+     private static final Comparator<Holder.Reference<?>> HOLDER_KEY_COMPARATOR = Comparator.comparing(p_335187_ -> p_335187_.key().location());
+ 

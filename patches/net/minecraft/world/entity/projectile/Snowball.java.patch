@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/projectile/Snowball.java
++++ b/net/minecraft/world/entity/projectile/Snowball.java
+@@ -59,7 +_,7 @@
+     @Override
+     protected void onHit(HitResult p_37406_) {
+         super.onHit(p_37406_);
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.level().broadcastEntityEvent(this, (byte)3);
+             this.discard();
+         }

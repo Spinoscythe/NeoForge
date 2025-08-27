@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/LeverBlock.java
++++ b/net/minecraft/world/level/block/LeverBlock.java
+@@ -62,7 +_,7 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_54640_, Level p_54641_, BlockPos p_54642_, Player p_54643_, BlockHitResult p_54645_) {
+-        if (p_54641_.isClientSide()) {
++        if (p_54641_.isClientSide) {
+             BlockState blockstate = p_54640_.cycle(POWERED);
+             if (blockstate.getValue(POWERED)) {
+                 makeParticle(blockstate, p_54641_, p_54642_, 1.0F);

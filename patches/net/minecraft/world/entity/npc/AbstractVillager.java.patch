@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/npc/AbstractVillager.java
 +++ b/net/minecraft/world/entity/npc/AbstractVillager.java
+@@ -97,7 +_,7 @@
+ 
+     @Override
+     public MerchantOffers getOffers() {
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             throw new IllegalStateException("Cannot load Villager offers on the client");
+         } else {
+             if (this.offers == null) {
 @@ -125,6 +_,7 @@
          if (this.tradingPlayer instanceof ServerPlayer) {
              CriteriaTriggers.TRADE.trigger((ServerPlayer)this.tradingPlayer, this, p_35274_.getResult());
@@ -8,3 +17,30 @@
      }
  
      protected abstract void rewardTradeXp(MerchantOffer p_35299_);
+@@ -136,7 +_,7 @@
+ 
+     @Override
+     public void notifyTradeUpdated(ItemStack p_35316_) {
+-        if (!this.level().isClientSide() && this.ambientSoundTime > -this.getAmbientSoundInterval() + 20) {
++        if (!this.level().isClientSide && this.ambientSoundTime > -this.getAmbientSoundInterval() + 20) {
+             this.ambientSoundTime = -this.getAmbientSoundInterval();
+             this.makeSound(this.getTradeUpdatedSound(!p_35316_.isEmpty()));
+         }
+@@ -158,7 +_,7 @@
+     @Override
+     protected void addAdditionalSaveData(ValueOutput p_421528_) {
+         super.addAdditionalSaveData(p_421528_);
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             MerchantOffers merchantoffers = this.getOffers();
+             if (!merchantoffers.isEmpty()) {
+                 p_421528_.store("Offers", MerchantOffers.CODEC, merchantoffers);
+@@ -241,7 +_,7 @@
+ 
+     @Override
+     public boolean isClientSide() {
+-        return this.level().isClientSide();
++        return this.level().isClientSide;
+     }
+ 
+     @Override

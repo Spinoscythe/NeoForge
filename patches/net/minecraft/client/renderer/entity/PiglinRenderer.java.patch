@@ -1,0 +1,33 @@
+--- a/net/minecraft/client/renderer/entity/PiglinRenderer.java
++++ b/net/minecraft/client/renderer/entity/PiglinRenderer.java
+@@ -1,5 +_,6 @@
+ package net.minecraft.client.renderer.entity;
+ 
++import net.minecraft.client.model.HumanoidArmorModel;
+ import net.minecraft.client.model.PiglinModel;
+ import net.minecraft.client.model.geom.ModelLayerLocation;
+ import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
+@@ -22,15 +_,19 @@
+         EntityRendererProvider.Context p_174344_,
+         ModelLayerLocation p_174345_,
+         ModelLayerLocation p_174346_,
+-        ArmorModelSet<ModelLayerLocation> p_434909_,
+-        ArmorModelSet<ModelLayerLocation> p_433216_
++        ModelLayerLocation p_174347_,
++        ModelLayerLocation p_361802_,
++        ModelLayerLocation p_360639_,
++        ModelLayerLocation p_362581_
+     ) {
+         super(p_174344_, new PiglinModel(p_174344_.bakeLayer(p_174345_)), new PiglinModel(p_174344_.bakeLayer(p_174346_)), 0.5F, PIGLIN_CUSTOM_HEAD_TRANSFORMS);
+         this.addLayer(
+             new HumanoidArmorLayer<>(
+                 this,
+-                ArmorModelSet.bake(p_434909_, p_174344_.getModelSet(), PiglinModel::new),
+-                ArmorModelSet.bake(p_433216_, p_174344_.getModelSet(), PiglinModel::new),
++                new HumanoidArmorModel(p_174344_.bakeLayer(p_174347_)),
++                new HumanoidArmorModel(p_174344_.bakeLayer(p_361802_)),
++                new HumanoidArmorModel(p_174344_.bakeLayer(p_360639_)),
++                new HumanoidArmorModel(p_174344_.bakeLayer(p_362581_)),
+                 p_174344_.getEquipmentRenderer()
+             )
+         );

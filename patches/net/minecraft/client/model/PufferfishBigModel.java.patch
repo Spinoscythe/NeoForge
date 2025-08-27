@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/model/PufferfishBigModel.java
++++ b/net/minecraft/client/model/PufferfishBigModel.java
+@@ -84,6 +_,7 @@
+         return LayerDefinition.create(meshdefinition, 32, 32);
+     }
+ 
++    @Override
+     public void setupAnim(EntityRenderState p_363774_) {
+         super.setupAnim(p_363774_);
+         this.rightBlueFin.zRot = -0.2F + 0.4F * Mth.sin(p_363774_.ageInTicks * 0.2F);

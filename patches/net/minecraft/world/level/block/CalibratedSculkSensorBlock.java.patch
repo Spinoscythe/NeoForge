@@ -1,0 +1,18 @@
+--- a/net/minecraft/world/level/block/CalibratedSculkSensorBlock.java
++++ b/net/minecraft/world/level/block/CalibratedSculkSensorBlock.java
+@@ -41,12 +_,12 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_277645_, BlockState p_278033_, BlockEntityType<T> p_277641_) {
+-        return !p_277645_.isClientSide()
++        return !p_277645_.isClientSide
+             ? createTickerHelper(
+                 p_277641_,
+                 BlockEntityType.CALIBRATED_SCULK_SENSOR,
+-                (p_432635_, p_432636_, p_432637_, p_432638_) -> VibrationSystem.Ticker.tick(
+-                    p_432635_, p_432638_.getVibrationData(), p_432638_.getVibrationUser()
++                (p_427184_, p_427185_, p_427186_, p_427187_) -> VibrationSystem.Ticker.tick(
++                    p_427184_, p_427187_.getVibrationData(), p_427187_.getVibrationUser()
+                 )
+             )
+             : null;

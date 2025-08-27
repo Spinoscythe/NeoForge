@@ -1,0 +1,20 @@
+--- a/net/minecraft/data/worldgen/Structures.java
++++ b/net/minecraft/data/worldgen/Structures.java
+@@ -347,7 +_,7 @@
+                 ConstantHeight.of(VerticalAnchor.absolute(-27)),
+                 false,
+                 Optional.empty(),
+-                new JigsawStructure.MaxDistance(116),
++                116,
+                 List.of(),
+                 JigsawStructure.DEFAULT_DIMENSION_PADDING,
+                 JigsawStructure.DEFAULT_LIQUID_SETTINGS
+@@ -389,7 +_,7 @@
+                 UniformHeight.of(VerticalAnchor.absolute(-40), VerticalAnchor.absolute(-20)),
+                 false,
+                 Optional.empty(),
+-                new JigsawStructure.MaxDistance(116),
++                116,
+                 TrialChambersStructurePools.ALIAS_BINDINGS,
+                 new DimensionPadding(10),
+                 LiquidSettings.IGNORE_WATERLOGGING

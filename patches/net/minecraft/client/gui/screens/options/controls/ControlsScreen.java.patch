@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/gui/screens/options/controls/ControlsScreen.java
++++ b/net/minecraft/client/gui/screens/options/controls/ControlsScreen.java
+@@ -15,15 +_,7 @@
+     private static final Component TITLE = Component.translatable("controls.title");
+ 
+     private static OptionInstance<?>[] options(Options p_346138_) {
+-        return new OptionInstance[]{
+-            p_346138_.toggleCrouch(),
+-            p_346138_.toggleSprint(),
+-            p_346138_.toggleAttack(),
+-            p_346138_.toggleUse(),
+-            p_346138_.autoJump(),
+-            p_346138_.sprintWindow(),
+-            p_346138_.operatorItemsTab()
+-        };
++        return new OptionInstance[]{p_346138_.toggleCrouch(), p_346138_.toggleSprint(), p_346138_.autoJump(), p_346138_.operatorItemsTab()};
+     }
+ 
+     public ControlsScreen(Screen p_345870_, Options p_345150_) {

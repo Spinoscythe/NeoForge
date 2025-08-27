@@ -1,0 +1,9 @@
+--- a/net/minecraft/world/level/entity/UUIDLookup.java
++++ b/net/minecraft/world/level/entity/UUIDLookup.java
+@@ -5,5 +_,5 @@
+ 
+ public interface UUIDLookup<IdentifiedType extends UniquelyIdentifyable> {
+     @Nullable
+-    IdentifiedType lookup(UUID p_393911_);
++    IdentifiedType getEntity(UUID p_393911_);
+ }

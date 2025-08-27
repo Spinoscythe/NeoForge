@@ -1,0 +1,37 @@
+--- a/net/minecraft/client/renderer/PostPass.java
++++ b/net/minecraft/client/renderer/PostPass.java
+@@ -15,6 +_,7 @@
+ import com.mojang.blaze3d.systems.RenderSystem;
+ import com.mojang.blaze3d.textures.FilterMode;
+ import com.mojang.blaze3d.textures.GpuTextureView;
++import com.mojang.blaze3d.vertex.VertexFormat;
+ import com.mojang.datafixers.util.Pair;
+ import java.util.HashMap;
+ import java.util.List;
+@@ -104,6 +_,10 @@
+                         }
+                     }
+ 
++                    GpuBuffer gpubuffer = RenderSystem.getQuadVertexBuffer();
++                    RenderSystem.AutoStorageIndexBuffer rendersystem$autostorageindexbuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
++                    GpuBuffer gpubuffer1 = rendersystem$autostorageindexbuffer.getBuffer(6);
++
+                     try (RenderPass renderpass = commandencoder.createRenderPass(
+                             () -> "Post pass " + this.name,
+                             rendertarget.getColorTextureView(),
+@@ -119,11 +_,14 @@
+                             renderpass.setUniform(entry.getKey(), entry.getValue());
+                         }
+ 
++                        renderpass.setVertexBuffer(0, gpubuffer);
++                        renderpass.setIndexBuffer(gpubuffer1, rendersystem$autostorageindexbuffer.type());
++
+                         for (Pair<String, GpuTextureView> pair1 : list) {
+                             renderpass.bindSampler(pair1.getFirst() + "Sampler", pair1.getSecond());
+                         }
+ 
+-                        renderpass.draw(0, 3);
++                        renderpass.drawIndexed(0, 0, 6, 1);
+                     }
+ 
+                     this.infoUbo.rotate();

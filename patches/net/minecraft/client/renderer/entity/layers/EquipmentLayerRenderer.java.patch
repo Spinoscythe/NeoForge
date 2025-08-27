@@ -1,8 +1,63 @@
 --- a/net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer.java
 +++ b/net/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer.java
-@@ -63,21 +_,26 @@
+@@ -1,15 +_,17 @@
+ package net.minecraft.client.renderer.entity.layers;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import java.util.List;
+ import java.util.Optional;
+ import java.util.function.Function;
+ import javax.annotation.Nullable;
+ import net.minecraft.Util;
+ import net.minecraft.client.model.Model;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+ import net.minecraft.client.renderer.Sheets;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.entity.ItemRenderer;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.client.renderer.texture.TextureAtlas;
+ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+@@ -39,75 +_,55 @@
+         this.trimSpriteLookup = Util.memoize(p_399319_ -> p_371221_.getSprite(p_399319_.spriteId()));
+     }
+ 
+-    public <S> void renderLayers(
++    public void renderLayers(
+         EquipmentClientInfo.LayerType p_388694_,
+         ResourceKey<EquipmentAsset> p_386937_,
+-        Model<? super S> p_371498_,
+-        S p_435837_,
++        Model p_371498_,
+         ItemStack p_371902_,
+         PoseStack p_371937_,
+-        SubmitNodeCollector p_434165_,
+-        int p_371495_,
+-        int p_434452_
++        MultiBufferSource p_371457_,
++        int p_371495_
+     ) {
+-        this.renderLayers(p_388694_, p_386937_, p_371498_, p_435837_, p_371902_, p_371937_, p_434165_, p_371495_, null, p_434452_, 1);
++        this.renderLayers(p_388694_, p_386937_, p_371498_, p_371902_, p_371937_, p_371457_, p_371495_, null);
+     }
+ 
+-    public <S> void renderLayers(
++    public void renderLayers(
+         EquipmentClientInfo.LayerType p_387484_,
+         ResourceKey<EquipmentAsset> p_387603_,
+-        Model<? super S> p_371731_,
+-        S p_435806_,
++        Model p_371731_,
+         ItemStack p_371670_,
+         PoseStack p_371767_,
+-        SubmitNodeCollector p_435795_,
++        MultiBufferSource p_371286_,
          int p_371309_,
-         @Nullable ResourceLocation p_371639_
+-        @Nullable ResourceLocation p_371639_,
+-        int p_435821_,
+-        int p_436591_
++        @Nullable ResourceLocation p_371639_
      ) {
 +        net.neoforged.neoforge.client.extensions.common.IClientItemExtensions extensions = net.neoforged.neoforge.client.extensions.common.IClientItemExtensions.of(p_371670_);
 +        p_371731_ = extensions.getGenericArmorModel(p_371670_, p_387484_, p_371731_);
@@ -11,21 +66,53 @@
 -            int i = DyedItemColor.getOrDefault(p_371670_, 0);
 +            int i = extensions.getDefaultDyeColor(p_371670_);
              boolean flag = p_371670_.hasFoil();
+-            int j = p_436591_;
  
 +            int idx = 0;
              for (EquipmentClientInfo.Layer equipmentclientinfo$layer : list) {
--                int j = getColorForLayer(equipmentclientinfo$layer, i);
+-                int k = getColorForLayer(equipmentclientinfo$layer, i);
+-                if (k != 0) {
 +                int j = extensions.getArmorLayerTintColor(p_371670_, equipmentclientinfo$layer, idx, i);
-                 if (j != 0) {
++                if (j != 0) {
                      ResourceLocation resourcelocation = equipmentclientinfo$layer.usePlayerTexture() && p_371639_ != null
                          ? p_371639_
                          : this.layerTextureLookup.apply(new EquipmentLayerRenderer.LayerTextureKey(p_387484_, equipmentclientinfo$layer));
+-                    p_435795_.order(j++)
+-                        .submitModel(
+-                            p_371731_,
+-                            p_435806_,
+-                            p_371767_,
+-                            RenderType.armorCutoutNoCull(resourcelocation),
+-                            p_371309_,
+-                            OverlayTexture.NO_OVERLAY,
+-                            k,
+-                            null,
+-                            p_435821_,
+-                            null
+-                        );
+-                    if (flag) {
+-                        p_435795_.order(j++)
+-                            .submitModel(
+-                                p_371731_, p_435806_, p_371767_, RenderType.armorEntityGlint(), p_371309_, OverlayTexture.NO_OVERLAY, k, null, p_435821_, null
+-                            );
+-                    }
+-
 +                    resourcelocation = net.neoforged.neoforge.client.ClientHooks.getArmorTexture(p_371670_, p_387484_, equipmentclientinfo$layer, resourcelocation);
-                     VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(p_371286_, RenderType.armorCutoutNoCull(resourcelocation), flag);
-                     p_371731_.renderToBuffer(p_371767_, vertexconsumer, p_371309_, OverlayTexture.NO_OVERLAY, j);
++                    VertexConsumer vertexconsumer = ItemRenderer.getArmorFoilBuffer(p_371286_, RenderType.armorCutoutNoCull(resourcelocation), flag);
++                    p_371731_.renderToBuffer(p_371767_, vertexconsumer, p_371309_, OverlayTexture.NO_OVERLAY, j);
                      flag = false;
                  }
 +                idx++;
              }
  
              ArmorTrim armortrim = p_371670_.get(DataComponents.TRIM);
+             if (armortrim != null) {
+                 TextureAtlasSprite textureatlassprite = this.trimSpriteLookup.apply(new EquipmentLayerRenderer.TrimSpriteKey(armortrim, p_387484_, p_387603_));
+-                RenderType rendertype = Sheets.armorTrimsSheet(armortrim.pattern().value().decal());
+-                p_435795_.order(j++)
+-                    .submitModel(p_371731_, p_435806_, p_371767_, rendertype, p_371309_, OverlayTexture.NO_OVERLAY, -1, textureatlassprite, p_435821_, null);
++                VertexConsumer vertexconsumer1 = textureatlassprite.wrap(p_371286_.getBuffer(Sheets.armorTrimsSheet(armortrim.pattern().value().decal())));
++                p_371731_.renderToBuffer(p_371767_, vertexconsumer1, p_371309_, OverlayTexture.NO_OVERLAY);
+             }
+         }
+     }

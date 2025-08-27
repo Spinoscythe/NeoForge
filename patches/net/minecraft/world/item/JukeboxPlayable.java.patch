@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/JukeboxPlayable.java
++++ b/net/minecraft/world/item/JukeboxPlayable.java
+@@ -52,7 +_,7 @@
+         } else {
+             BlockState blockstate = p_350560_.getBlockState(p_350567_);
+             if (blockstate.is(Blocks.JUKEBOX) && !blockstate.getValue(JukeboxBlock.HAS_RECORD)) {
+-                if (!p_350560_.isClientSide()) {
++                if (!p_350560_.isClientSide) {
+                     ItemStack itemstack = p_350531_.consumeAndReturn(1, p_350807_);
+                     if (p_350560_.getBlockEntity(p_350567_) instanceof JukeboxBlockEntity jukeboxblockentity) {
+                         jukeboxblockentity.setTheItem(itemstack);

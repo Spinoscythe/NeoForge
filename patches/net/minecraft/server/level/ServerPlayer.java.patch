@@ -1,6 +1,46 @@
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -310,6 +_,10 @@
+@@ -10,7 +_,6 @@
+ import com.mojang.logging.LogUtils;
+ import com.mojang.serialization.Codec;
+ import com.mojang.serialization.DynamicOps;
+-import com.mojang.serialization.MapCodec;
+ import com.mojang.serialization.codecs.RecordCodecBuilder;
+ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+ import java.net.InetSocketAddress;
+@@ -21,7 +_,6 @@
+ import java.util.OptionalInt;
+ import java.util.Set;
+ import java.util.UUID;
+-import java.util.concurrent.CompletableFuture;
+ import java.util.function.Consumer;
+ import java.util.stream.Collectors;
+ import javax.annotation.Nonnull;
+@@ -109,6 +_,7 @@
+ import net.minecraft.tags.FluidTags;
+ import net.minecraft.util.HashOps;
+ import net.minecraft.util.Mth;
++import net.minecraft.util.RandomSource;
+ import net.minecraft.util.Unit;
+ import net.minecraft.util.profiling.Profiler;
+ import net.minecraft.util.profiling.ProfilerFiller;
+@@ -129,6 +_,7 @@
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.Mob;
+ import net.minecraft.world.entity.NeutralMob;
++import net.minecraft.world.entity.Pose;
+ import net.minecraft.world.entity.PositionMoveRotation;
+ import net.minecraft.world.entity.Relative;
+ import net.minecraft.world.entity.ai.attributes.Attribute;
+@@ -188,7 +_,6 @@
+ import net.minecraft.world.level.storage.ValueInput;
+ import net.minecraft.world.level.storage.ValueOutput;
+ import net.minecraft.world.phys.AABB;
+-import net.minecraft.world.phys.Vec2;
+ import net.minecraft.world.phys.Vec3;
+ import net.minecraft.world.scores.PlayerTeam;
+ import net.minecraft.world.scores.ScoreAccess;
+@@ -311,6 +_,10 @@
          }
  
          private void broadcastDataValue(AbstractContainerMenu p_143455_, int p_143456_, int p_143457_) {
@@ -11,7 +51,119 @@
              ServerPlayer.this.connection.send(new ClientboundContainerSetDataPacket(p_143455_.containerId, p_143456_, p_143457_));
          }
  
-@@ -735,6 +_,11 @@
+@@ -364,11 +_,10 @@
+ 
+     public ServerPlayer(MinecraftServer p_254143_, ServerLevel p_254435_, GameProfile p_253651_, ClientInformation p_301997_) {
+         super(p_254435_, p_253651_);
+-        this.server = p_254143_;
+         this.textFilter = p_254143_.createTextFilterForPlayer(this);
+         this.gameMode = p_254143_.createGameModeForPlayer(this);
+-        this.gameMode.setGameModeForPlayer(this.calculateGameModeForNewPlayer(null), null);
+         this.recipeBook = new ServerRecipeBook((p_379044_, p_379045_) -> p_254143_.getRecipeManager().listDisplaysForRecipe(p_379044_, p_379045_));
++        this.server = p_254143_;
+         this.stats = p_254143_.getPlayerList().getPlayerStats(this);
+         this.advancements = p_254143_.getPlayerList().getPlayerAdvancements(this);
+         this.updateOptions(p_301997_);
+@@ -377,9 +_,70 @@
+ 
+     @Override
+     public BlockPos adjustSpawnLocation(ServerLevel p_352206_, BlockPos p_352202_) {
+-        CompletableFuture<Vec3> completablefuture = PlayerSpawnFinder.findSpawn(p_352206_, p_352202_);
+-        this.server.managedBlock(completablefuture::isDone);
+-        return BlockPos.containing(completablefuture.join());
++        AABB aabb = this.getDimensions(Pose.STANDING).makeBoundingBox(Vec3.ZERO);
++        BlockPos blockpos = p_352202_;
++        if (p_352206_.dimensionType().hasSkyLight() && p_352206_.getServer().getWorldData().getGameType() != GameType.ADVENTURE) {
++            int i = Math.max(0, this.server.getSpawnRadius(p_352206_));
++            int j = Mth.floor(p_352206_.getWorldBorder().getDistanceToBorder(p_352202_.getX(), p_352202_.getZ()));
++            if (j < i) {
++                i = j;
++            }
++
++            if (j <= 1) {
++                i = 1;
++            }
++
++            long k = i * 2 + 1;
++            long l = k * k;
++            int i1 = l > 2147483647L ? Integer.MAX_VALUE : (int)l;
++            int j1 = this.getCoprime(i1);
++            int k1 = RandomSource.create().nextInt(i1);
++
++            for (int l1 = 0; l1 < i1; l1++) {
++                int i2 = (k1 + j1 * l1) % i1;
++                int j2 = i2 % (i * 2 + 1);
++                int k2 = i2 / (i * 2 + 1);
++                int l2 = p_352202_.getX() + j2 - i;
++                int i3 = p_352202_.getZ() + k2 - i;
++
++                try {
++                    blockpos = PlayerRespawnLogic.getOverworldRespawnPos(p_352206_, l2, i3);
++                    if (blockpos != null && this.noCollisionNoLiquid(p_352206_, aabb.move(blockpos.getBottomCenter()))) {
++                        return blockpos;
++                    }
++                } catch (Exception exception) {
++                    int j3 = l1;
++                    int k3 = i;
++                    CrashReport crashreport = CrashReport.forThrowable(exception, "Searching for spawn");
++                    CrashReportCategory crashreportcategory = crashreport.addCategory("Spawn Lookup");
++                    crashreportcategory.setDetail("Origin", p_352202_::toString);
++                    crashreportcategory.setDetail("Radius", () -> Integer.toString(k3));
++                    crashreportcategory.setDetail("Candidate", () -> "[" + l2 + "," + i3 + "]");
++                    crashreportcategory.setDetail("Progress", () -> j3 + " out of " + i1);
++                    throw new ReportedException(crashreport);
++                }
++            }
++
++            blockpos = p_352202_;
++        }
++
++        while (!this.noCollisionNoLiquid(p_352206_, aabb.move(blockpos.getBottomCenter())) && blockpos.getY() < p_352206_.getMaxY()) {
++            blockpos = blockpos.above();
++        }
++
++        while (this.noCollisionNoLiquid(p_352206_, aabb.move(blockpos.below().getBottomCenter())) && blockpos.getY() > p_352206_.getMinY() + 1) {
++            blockpos = blockpos.below();
++        }
++
++        return blockpos;
++    }
++
++    private boolean noCollisionNoLiquid(ServerLevel p_364183_, AABB p_362915_) {
++        return p_364183_.noCollision(this, p_362915_, true);
++    }
++
++    private int getCoprime(int p_9238_) {
++        return p_9238_ <= 16 ? p_9238_ - 1 : 17;
+     }
+ 
+     @Override
+@@ -397,10 +_,6 @@
+         this.respawnConfig = p_422091_.read("respawn", ServerPlayer.RespawnConfig.CODEC).orElse(null);
+         this.spawnExtraParticlesOnFall = p_422091_.getBooleanOr("spawn_extra_particles_on_fall", false);
+         this.raidOmenPosition = p_422091_.read("raid_omen_position", BlockPos.CODEC).orElse(null);
+-        this.gameMode
+-            .setGameModeForPlayer(
+-                this.calculateGameModeForNewPlayer(readPlayerMode(p_422091_, "playerGameType")), readPlayerMode(p_422091_, "previousPlayerGameType")
+-            );
+     }
+ 
+     @Override
+@@ -439,11 +_,11 @@
+             if (entity != null) {
+                 UUID uuid = optional.get().read("Attach", UUIDUtil.CODEC).orElse(null);
+                 if (entity.getUUID().equals(uuid)) {
+-                    this.startRiding(entity, true, false);
++                    this.startRiding(entity, true);
+                 } else {
+                     for (Entity entity1 : entity.getIndirectPassengers()) {
+                         if (entity1.getUUID().equals(uuid)) {
+-                            this.startRiding(entity1, true, false);
++                            this.startRiding(entity1, true);
+                             break;
+                         }
+                     }
+@@ -680,6 +_,11 @@
                  this.connection.send(new ClientboundSetExperiencePacket(this.experienceProgress, this.totalExperience, this.experienceLevel));
              }
  
@@ -23,7 +175,7 @@
              if (this.tickCount % 20 == 0) {
                  CriteriaTriggers.LOCATION.trigger(this);
              }
-@@ -748,7 +_,7 @@
+@@ -693,7 +_,7 @@
  
      private void synchronizeSpecialItemUpdates(ItemStack p_372884_) {
          MapId mapid = p_372884_.get(DataComponents.MAP_ID);
@@ -32,7 +184,7 @@
          if (mapitemsaveddata != null) {
              Packet<?> packet = mapitemsaveddata.getUpdatePacket(mapid, this);
              if (packet != null) {
-@@ -817,6 +_,7 @@
+@@ -762,6 +_,7 @@
      @Override
      public void die(DamageSource p_9035_) {
          this.gameEvent(GameEvent.ENTITY_DIE);
@@ -40,7 +192,7 @@
          boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES);
          if (flag) {
              Component component = this.getCombatTracker().getDeathMessage();
-@@ -994,7 +_,7 @@
+@@ -939,7 +_,7 @@
              return BedBlock.findStandUpPosition(EntityType.PLAYER, p_348505_, blockpos, blockstate.getValue(BedBlock.FACING), f)
                  .map(p_348148_ -> ServerPlayer.RespawnPosAngle.of(p_348148_, blockpos));
          } else if (!flag) {
@@ -49,7 +201,7 @@
          } else {
              boolean flag1 = block.isPossibleToRespawnInThis(blockstate);
              BlockState blockstate1 = p_348505_.getBlockState(blockpos.above());
-@@ -1017,6 +_,7 @@
+@@ -962,6 +_,7 @@
  
      @Nullable
      public ServerPlayer teleport(TeleportTransition p_379854_) {
@@ -57,7 +209,7 @@
          if (this.isRemoved()) {
              return null;
          } else {
-@@ -1044,7 +_,7 @@
+@@ -989,7 +_,7 @@
                  PlayerList playerlist = this.server.getPlayerList();
                  playerlist.sendPlayerPermissionLevel(this);
                  serverlevel1.removePlayerImmediately(this, Entity.RemovalReason.CHANGED_DIMENSION);
@@ -66,7 +218,7 @@
                  ProfilerFiller profilerfiller = Profiler.get();
                  profilerfiller.push("moving");
                  if (resourcekey == Level.OVERWORLD && serverlevel.dimension() == Level.NETHER) {
-@@ -1064,11 +_,15 @@
+@@ -1009,20 +_,23 @@
                  playerlist.sendLevelInfo(this, serverlevel);
                  playerlist.sendAllPlayerInfo(this);
                  playerlist.sendActivePlayerEffects(this);
@@ -82,7 +234,18 @@
                  return this;
              }
          }
-@@ -1109,6 +_,15 @@
+     }
+ 
+     @Override
+-    public void forceSetRotation(float p_380337_, boolean p_436584_, float p_380190_, boolean p_436692_) {
+-        super.forceSetRotation(p_380337_, p_436584_, p_380190_, p_436692_);
+-        this.connection.send(new ClientboundPlayerRotationPacket(p_380337_, p_436584_, p_380190_, p_436692_));
++    public void forceSetRotation(float p_380337_, float p_380190_) {
++        this.connection.send(new ClientboundPlayerRotationPacket(p_380337_, p_380190_));
+     }
+ 
+     private void triggerDimensionChangeTriggers(ServerLevel p_9210_) {
+@@ -1055,6 +_,15 @@
  
      @Override
      public Either<Player.BedSleepingProblem, Unit> startSleepInBed(BlockPos p_9115_) {
@@ -98,7 +261,7 @@
          Direction direction = this.level().getBlockState(p_9115_).getValue(HorizontalDirectionalBlock.FACING);
          if (this.isSleeping() || !this.isAlive()) {
              return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM);
-@@ -1137,7 +_,21 @@
+@@ -1083,7 +_,21 @@
                          return Either.left(Player.BedSleepingProblem.NOT_SAFE);
                      }
                  }
@@ -121,7 +284,7 @@
                  Either<Player.BedSleepingProblem, Unit> either = super.startSleepInBed(p_9115_).ifRight(p_9029_ -> {
                      this.awardStat(Stats.SLEEP_IN_BED);
                      CriteriaTriggers.SLEPT_IN_BED.trigger(this);
-@@ -1159,6 +_,7 @@
+@@ -1105,6 +_,7 @@
      }
  
      private boolean bedInRange(BlockPos p_9117_, Direction p_9118_) {
@@ -129,7 +292,7 @@
          return this.isReachableBedBlock(p_9117_) || this.isReachableBedBlock(p_9117_.relative(p_9118_.getOpposite()));
      }
  
-@@ -1240,11 +_,19 @@
+@@ -1186,11 +_,19 @@
  
      @Override
      public OptionalInt openMenu(@Nullable MenuProvider p_9033_) {
@@ -149,7 +312,7 @@
              }
  
              this.nextContainerCounter();
-@@ -1256,10 +_,32 @@
+@@ -1202,10 +_,32 @@
  
                  return OptionalInt.empty();
              } else {
@@ -182,7 +345,7 @@
                  return OptionalInt.of(this.containerCounter);
              }
          }
-@@ -1281,6 +_,7 @@
+@@ -1227,6 +_,7 @@
          this.connection.send(new ClientboundHorseScreenOpenPacket(this.containerCounter, i, p_9059_.getId()));
          this.containerMenu = new HorseInventoryMenu(this.containerCounter, this.getInventory(), p_9060_, p_9059_, i);
          this.initMenu(this.containerMenu);
@@ -190,7 +353,7 @@
      }
  
      @Override
-@@ -1309,6 +_,7 @@
+@@ -1255,6 +_,7 @@
      public void doCloseContainer() {
          this.containerMenu.removed(this);
          this.inventoryMenu.transferState(this.containerMenu);
@@ -198,7 +361,7 @@
          this.containerMenu = this.inventoryMenu;
      }
  
-@@ -1534,6 +_,15 @@
+@@ -1480,6 +_,15 @@
          this.setShoulderEntityLeft(p_9016_.getShoulderEntityLeft());
          this.setShoulderEntityRight(p_9016_.getShoulderEntityRight());
          this.setLastDeathLocation(p_9016_.getLastDeathLocation());
@@ -214,7 +377,7 @@
      }
  
      @Override
-@@ -1637,6 +_,8 @@
+@@ -1583,6 +_,8 @@
  
      public boolean setGameMode(GameType p_143404_) {
          boolean flag = this.isSpectator();
@@ -223,7 +386,16 @@
          if (!this.gameMode.changeGameModeForPlayer(p_143404_)) {
              return false;
          } else {
-@@ -1807,6 +_,7 @@
+@@ -1721,7 +_,7 @@
+ 
+     @Override
+     public int getPermissionLevel() {
+-        return this.server.getProfilePermissions(this.nameAndId());
++        return this.server.getProfilePermissions(this.getGameProfile());
+     }
+ 
+     public void resetLastActionTime() {
+@@ -1753,6 +_,7 @@
      public void setCamera(@Nullable Entity p_9214_) {
          Entity entity = this.getCamera();
          this.camera = (Entity)(p_9214_ == null ? this : p_9214_);
@@ -231,7 +403,7 @@
          if (entity != this.camera) {
              if (this.camera.level() instanceof ServerLevel serverlevel) {
                  this.teleportTo(serverlevel, this.camera.getX(), this.camera.getY(), this.camera.getZ(), Set.of(), this.getYRot(), this.getXRot(), false);
-@@ -1843,7 +_,11 @@
+@@ -1789,7 +_,11 @@
  
      @Nullable
      public Component getTabListDisplayName() {
@@ -244,7 +416,7 @@
      }
  
      public int getTabListOrder() {
-@@ -1878,6 +_,7 @@
+@@ -1824,6 +_,7 @@
      }
  
      public void setRespawnPosition(@Nullable ServerPlayer.RespawnConfig p_405460_, boolean p_9162_) {
@@ -252,7 +424,7 @@
          if (p_9162_ && p_405460_ != null && !p_405460_.isSamePosition(this.respawnConfig)) {
              this.sendSystemMessage(SPAWN_SET_MESSAGE);
          }
-@@ -1932,6 +_,75 @@
+@@ -1878,6 +_,75 @@
          return itementity;
      }
  
@@ -328,7 +500,32 @@
      public TextFilter getTextFilter() {
          return this.textFilter;
      }
-@@ -1990,11 +_,14 @@
+@@ -1888,8 +_,8 @@
+     }
+ 
+     @Nullable
+-    private static GameType readPlayerMode(ValueInput p_422110_, String p_143415_) {
+-        return p_422110_.read(p_143415_, GameType.LEGACY_ID_CODEC).orElse(null);
++    private static GameType readPlayerMode(@Nullable ValueInput p_422110_, String p_143415_) {
++        return p_422110_ != null ? p_422110_.read(p_143415_, GameType.LEGACY_ID_CODEC).orElse(null) : null;
+     }
+ 
+     private GameType calculateGameModeForNewPlayer(@Nullable GameType p_143424_) {
+@@ -1901,6 +_,13 @@
+         }
+     }
+ 
++    public void loadGameTypes(@Nullable ValueInput p_421945_) {
++        this.gameMode
++            .setGameModeForPlayer(
++                this.calculateGameModeForNewPlayer(readPlayerMode(p_421945_, "playerGameType")), readPlayerMode(p_421945_, "previousPlayerGameType")
++            );
++    }
++
+     private void storeGameTypes(ValueOutput p_422626_) {
+         p_422626_.store("playerGameType", GameType.LEGACY_ID_CODEC, this.gameMode.getGameModeForPlayer());
+         GameType gametype = this.gameMode.getPreviousGameModeForPlayer();
+@@ -1929,11 +_,14 @@
  
      public boolean drop(boolean p_182295_) {
          Inventory inventory = this.getInventory();
@@ -344,3 +541,32 @@
      }
  
      @Override
+@@ -1981,8 +_,8 @@
+     }
+ 
+     @Override
+-    public boolean startRiding(Entity p_277395_, boolean p_278062_, boolean p_434333_) {
+-        if (super.startRiding(p_277395_, p_278062_, p_434333_)) {
++    public boolean startRiding(Entity p_277395_, boolean p_278062_) {
++        if (super.startRiding(p_277395_, p_278062_)) {
+             p_277395_.positionRider(this);
+             this.connection.teleport(new PositionMoveRotation(this.position(), Vec3.ZERO, 0.0F, 0.0F), Relative.ROTATION);
+             if (p_277395_ instanceof LivingEntity livingentity) {
+@@ -2131,17 +_,5 @@
+             Vec3 vec3 = Vec3.atBottomCenterOf(p_348467_).subtract(p_348686_).normalize();
+             return (float)Mth.wrapDegrees(Mth.atan2(vec3.z, vec3.x) * 180.0F / (float)Math.PI - 90.0);
+         }
+-    }
+-
+-    public record SavedPosition(Optional<ResourceKey<Level>> dimension, Optional<Vec3> position, Optional<Vec2> rotation) {
+-        public static final MapCodec<ServerPlayer.SavedPosition> MAP_CODEC = RecordCodecBuilder.mapCodec(
+-            p_433952_ -> p_433952_.group(
+-                    Level.RESOURCE_KEY_CODEC.optionalFieldOf("Dimension").forGetter(ServerPlayer.SavedPosition::dimension),
+-                    Vec3.CODEC.optionalFieldOf("Pos").forGetter(ServerPlayer.SavedPosition::position),
+-                    Vec2.CODEC.optionalFieldOf("Rotation").forGetter(ServerPlayer.SavedPosition::rotation)
+-                )
+-                .apply(p_433952_, ServerPlayer.SavedPosition::new)
+-        );
+-        public static final ServerPlayer.SavedPosition EMPTY = new ServerPlayer.SavedPosition(Optional.empty(), Optional.empty(), Optional.empty());
+     }
+ }

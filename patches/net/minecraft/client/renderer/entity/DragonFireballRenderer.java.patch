@@ -1,0 +1,43 @@
+--- a/net/minecraft/client/renderer/entity/DragonFireballRenderer.java
++++ b/net/minecraft/client/renderer/entity/DragonFireballRenderer.java
+@@ -2,8 +_,8 @@
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.blaze3d.vertex.VertexConsumer;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.state.EntityRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.core.BlockPos;
+@@ -26,18 +_,18 @@
+     }
+ 
+     @Override
+-    public void submit(EntityRenderState p_433003_, PoseStack p_435136_, SubmitNodeCollector p_435206_) {
+-        p_435136_.pushPose();
+-        p_435136_.scale(2.0F, 2.0F, 2.0F);
+-        p_435136_.mulPose(this.entityRenderDispatcher.cameraOrientation());
+-        p_435206_.submitCustomGeometry(p_435136_, RENDER_TYPE, (p_433881_, p_433014_) -> {
+-            vertex(p_433014_, p_433881_, p_433003_.lightCoords, 0.0F, 0, 0, 1);
+-            vertex(p_433014_, p_433881_, p_433003_.lightCoords, 1.0F, 0, 1, 1);
+-            vertex(p_433014_, p_433881_, p_433003_.lightCoords, 1.0F, 1, 1, 0);
+-            vertex(p_433014_, p_433881_, p_433003_.lightCoords, 0.0F, 1, 0, 0);
+-        });
+-        p_435136_.popPose();
+-        super.submit(p_433003_, p_435136_, p_435206_);
++    public void render(EntityRenderState p_363899_, PoseStack p_114071_, MultiBufferSource p_114072_, int p_114073_) {
++        p_114071_.pushPose();
++        p_114071_.scale(2.0F, 2.0F, 2.0F);
++        p_114071_.mulPose(this.entityRenderDispatcher.cameraOrientation());
++        PoseStack.Pose posestack$pose = p_114071_.last();
++        VertexConsumer vertexconsumer = p_114072_.getBuffer(RENDER_TYPE);
++        vertex(vertexconsumer, posestack$pose, p_114073_, 0.0F, 0, 0, 1);
++        vertex(vertexconsumer, posestack$pose, p_114073_, 1.0F, 0, 1, 1);
++        vertex(vertexconsumer, posestack$pose, p_114073_, 1.0F, 1, 1, 0);
++        vertex(vertexconsumer, posestack$pose, p_114073_, 0.0F, 1, 0, 0);
++        p_114071_.popPose();
++        super.render(p_363899_, p_114071_, p_114072_, p_114073_);
+     }
+ 
+     private static void vertex(VertexConsumer p_254095_, PoseStack.Pose p_324420_, int p_253829_, float p_253995_, int p_254031_, int p_253641_, int p_254243_) {

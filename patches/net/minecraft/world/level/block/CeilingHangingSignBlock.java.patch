@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/CeilingHangingSignBlock.java
++++ b/net/minecraft/world/level/block/CeilingHangingSignBlock.java
+@@ -44,8 +_,8 @@
+ 
+ public class CeilingHangingSignBlock extends SignBlock {
+     public static final MapCodec<CeilingHangingSignBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432648_ -> p_432648_.group(WoodType.CODEC.fieldOf("wood_type").forGetter(SignBlock::type), propertiesCodec())
+-            .apply(p_432648_, CeilingHangingSignBlock::new)
++        p_368410_ -> p_368410_.group(WoodType.CODEC.fieldOf("wood_type").forGetter(SignBlock::type), propertiesCodec())
++            .apply(p_368410_, CeilingHangingSignBlock::new)
+     );
+     public static final IntegerProperty ROTATION = BlockStateProperties.ROTATION_16;
+     public static final BooleanProperty ATTACHED = BlockStateProperties.ATTACHED;

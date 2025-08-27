@@ -1,5 +1,16 @@
 --- a/net/minecraft/world/level/block/MangrovePropaguleBlock.java
 +++ b/net/minecraft/world/level/block/MangrovePropaguleBlock.java
+@@ -27,8 +_,8 @@
+ 
+ public class MangrovePropaguleBlock extends SaplingBlock implements SimpleWaterloggedBlock {
+     public static final MapCodec<MangrovePropaguleBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432673_ -> p_432673_.group(TreeGrower.CODEC.fieldOf("tree").forGetter(p_304527_ -> p_304527_.treeGrower), propertiesCodec())
+-            .apply(p_432673_, MangrovePropaguleBlock::new)
++        p_368430_ -> p_368430_.group(TreeGrower.CODEC.fieldOf("tree").forGetter(p_304527_ -> p_304527_.treeGrower), propertiesCodec())
++            .apply(p_368430_, MangrovePropaguleBlock::new)
+     );
+     public static final IntegerProperty AGE = BlockStateProperties.AGE_4;
+     public static final int MAX_AGE = 4;
 @@ -73,7 +_,12 @@
  
      @Override

@@ -1,6 +1,32 @@
 --- a/net/minecraft/world/level/block/SoundType.java
 +++ b/net/minecraft/world/level/block/SoundType.java
-@@ -819,6 +_,7 @@
+@@ -388,15 +_,6 @@
+         SoundEvents.COPPER_GRATE_HIT,
+         SoundEvents.COPPER_GRATE_FALL
+     );
+-    public static final SoundType COPPER_GOLEM_STATUE = new SoundType(
+-        1.0F,
+-        1.0F,
+-        SoundEvents.COPPER_GOLEM_STATUE_BREAK,
+-        SoundEvents.COPPER_GOLEM_STATUE_STEP,
+-        SoundEvents.COPPER_GOLEM_STATUE_PLACE,
+-        SoundEvents.COPPER_GOLEM_STATUE_HIT,
+-        SoundEvents.COPPER_GOLEM_STATUE_FALL
+-    );
+     public static final SoundType CAVE_VINES = new SoundType(
+         1.0F,
+         1.0F,
+@@ -718,9 +_,6 @@
+         SoundEvents.CHISELED_BOOKSHELF_HIT,
+         SoundEvents.CHISELED_BOOKSHELF_FALL
+     );
+-    public static final SoundType SHELF = new SoundType(
+-        1.0F, 1.0F, SoundEvents.SHELF_BREAK, SoundEvents.SHELF_STEP, SoundEvents.SHELF_PLACE, SoundEvents.SHELF_HIT, SoundEvents.SHELF_FALL
+-    );
+     public static final SoundType SUSPICIOUS_SAND = new SoundType(
+         1.0F,
+         1.0F,
+@@ -831,6 +_,7 @@
      private final SoundEvent hitSound;
      private final SoundEvent fallSound;
  

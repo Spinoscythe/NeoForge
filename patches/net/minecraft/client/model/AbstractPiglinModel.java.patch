@@ -1,0 +1,27 @@
+--- a/net/minecraft/client/model/AbstractPiglinModel.java
++++ b/net/minecraft/client/model/AbstractPiglinModel.java
+@@ -7,7 +_,6 @@
+ import net.minecraft.client.model.geom.builders.MeshDefinition;
+ import net.minecraft.client.model.geom.builders.PartDefinition;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.entity.ArmorModelSet;
+ import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+ import net.minecraft.util.Mth;
+ import net.neoforged.api.distmarker.Dist;
+@@ -40,16 +_,6 @@
+         PartDefinition partdefinition1 = addHead(p_363071_, meshdefinition);
+         partdefinition1.clearChild("hat");
+         return meshdefinition;
+-    }
+-
+-    public static ArmorModelSet<MeshDefinition> createArmorMeshSet(CubeDeformation p_435053_, CubeDeformation p_434848_) {
+-        return PlayerModel.createArmorMeshSet(p_435053_, p_434848_).map(p_436064_ -> {
+-            PartDefinition partdefinition = p_436064_.getRoot();
+-            PartDefinition partdefinition1 = partdefinition.getChild("head");
+-            partdefinition1.addOrReplaceChild("left_ear", CubeListBuilder.create(), PartPose.ZERO);
+-            partdefinition1.addOrReplaceChild("right_ear", CubeListBuilder.create(), PartPose.ZERO);
+-            return (MeshDefinition)p_436064_;
+-        });
+     }
+ 
+     public static PartDefinition addHead(CubeDeformation p_362117_, MeshDefinition p_365125_) {

@@ -1,6 +1,28 @@
 --- a/net/minecraft/client/gui/screens/LoadingOverlay.java
 +++ b/net/minecraft/client/gui/screens/LoadingOverlay.java
-@@ -120,6 +_,7 @@
+@@ -77,9 +_,7 @@
+         float f2;
+         if (f >= 1.0F) {
+             if (this.minecraft.screen != null) {
+-                this.minecraft.screen.renderWithTooltipAndSubtitles(p_281839_, 0, 0, p_283394_);
+-            } else {
+-                this.minecraft.gui.renderDeferredSubtitles();
++                this.minecraft.screen.renderWithTooltip(p_281839_, 0, 0, p_283394_);
+             }
+ 
+             int l = Mth.ceil((1.0F - Mth.clamp(f - 1.0F, 0.0F, 1.0F)) * 255.0F);
+@@ -88,9 +_,7 @@
+             f2 = 1.0F - Mth.clamp(f - 1.0F, 0.0F, 1.0F);
+         } else if (this.fadeIn) {
+             if (this.minecraft.screen != null && f1 < 1.0F) {
+-                this.minecraft.screen.renderWithTooltipAndSubtitles(p_281839_, p_282704_, p_283650_, p_283394_);
+-            } else {
+-                this.minecraft.gui.renderDeferredSubtitles();
++                this.minecraft.screen.renderWithTooltip(p_281839_, p_282704_, p_283650_, p_283394_);
+             }
+ 
+             int j2 = Mth.ceil(Mth.clamp((double)f1, 0.15, 1.0) * 255.0);
+@@ -124,6 +_,7 @@
          }
  
          if (this.fadeOutStart == -1L && this.reload.isDone() && (!this.fadeIn || f1 >= 2.0F)) {
@@ -8,7 +30,7 @@
              try {
                  this.reload.checkExceptions();
                  this.onFinish.accept(Optional.empty());
-@@ -127,7 +_,6 @@
+@@ -131,7 +_,6 @@
                  this.onFinish.accept(Optional.of(throwable));
              }
  

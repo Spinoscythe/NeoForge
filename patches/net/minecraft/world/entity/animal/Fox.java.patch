@@ -1,5 +1,32 @@
 --- a/net/minecraft/world/entity/animal/Fox.java
 +++ b/net/minecraft/world/entity/animal/Fox.java
+@@ -198,7 +_,7 @@
+ 
+     @Override
+     public void aiStep() {
+-        if (!this.level().isClientSide() && this.isAlive() && this.isEffectiveAi()) {
++        if (!this.level().isClientSide && this.isAlive() && this.isEffectiveAi()) {
+             this.ticksSinceEaten++;
+             ItemStack itemstack = this.getItemBySlot(EquipmentSlot.MAINHAND);
+             if (this.canEat(itemstack)) {
+@@ -404,7 +_,7 @@
+     }
+ 
+     void addTrustedEntity(LivingEntity p_393835_) {
+-        this.addTrustedEntity(EntityReference.of(p_393835_));
++        this.addTrustedEntity(new EntityReference<>(p_393835_));
+     }
+ 
+     private void addTrustedEntity(EntityReference<LivingEntity> p_393599_) {
+@@ -501,7 +_,7 @@
+     }
+ 
+     private void spitOutItem(ItemStack p_28602_) {
+-        if (!p_28602_.isEmpty() && !this.level().isClientSide()) {
++        if (!p_28602_.isEmpty() && !this.level().isClientSide) {
+             ItemEntity itementity = new ItemEntity(
+                 this.level(), this.getX() + this.getLookAngle().x, this.getY() + 1.0, this.getZ() + this.getLookAngle().z, p_28602_
+             );
 @@ -693,13 +_,18 @@
  
      @Override

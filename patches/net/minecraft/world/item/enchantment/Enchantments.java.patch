@@ -1,0 +1,40 @@
+--- a/net/minecraft/world/item/enchantment/Enchantments.java
++++ b/net/minecraft/world/item/enchantment/Enchantments.java
+@@ -26,7 +_,6 @@
+ import net.minecraft.tags.EnchantmentTags;
+ import net.minecraft.tags.EntityTypeTags;
+ import net.minecraft.tags.ItemTags;
+-import net.minecraft.util.random.WeightedList;
+ import net.minecraft.util.valueproviders.ConstantFloat;
+ import net.minecraft.util.valueproviders.UniformFloat;
+ import net.minecraft.world.damagesource.DamageType;
+@@ -69,6 +_,7 @@
+ import net.minecraft.world.level.storage.loot.predicates.EnchantmentActiveCheck;
+ import net.minecraft.world.level.storage.loot.predicates.InvertedLootItemCondition;
+ import net.minecraft.world.level.storage.loot.predicates.LocationCheck;
++import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
+ import net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition;
+ import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
+ import net.minecraft.world.level.storage.loot.predicates.MatchTool;
+@@ -1056,11 +_,8 @@
+                         LootItemEntityPropertyCondition.hasProperties(
+                             LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().of(holdergetter4, EntityType.TRIDENT)
+                         ),
+-                        LocationCheck.checkLocation(
+-                            LocationPredicate.Builder.location()
+-                                .setCanSeeSky(true)
+-                                .setBlock(net.minecraft.advancements.critereon.BlockPredicate.Builder.block().of(holdergetter3, BlockTags.LIGHTNING_RODS))
+-                        )
++                        LocationCheck.checkLocation(LocationPredicate.Builder.location().setCanSeeSky(true)),
++                        LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.LIGHTNING_ROD)
+                     )
+                 )
+         );
+@@ -1193,7 +_,6 @@
+                         Level.ExplosionInteraction.TRIGGER,
+                         ParticleTypes.GUST_EMITTER_SMALL,
+                         ParticleTypes.GUST_EMITTER_LARGE,
+-                        WeightedList.of(),
+                         SoundEvents.WIND_CHARGE_BURST
+                     ),
+                     LootItemEntityPropertyCondition.hasProperties(

@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/entity/monster/Ghast.java
++++ b/net/minecraft/world/entity/monster/Ghast.java
+@@ -78,6 +_,11 @@
+         return this.explosionPower;
+     }
+ 
++    @Override
++    protected boolean shouldDespawnInPeaceful() {
++        return true;
++    }
++
+     private static boolean isReflectedFireball(DamageSource p_238408_) {
+         return p_238408_.getDirectEntity() instanceof LargeFireball && p_238408_.getEntity() instanceof Player;
+     }

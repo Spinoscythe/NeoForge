@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/CoralWallFanBlock.java
++++ b/net/minecraft/world/level/block/CoralWallFanBlock.java
+@@ -16,8 +_,8 @@
+ 
+ public class CoralWallFanBlock extends BaseCoralWallFanBlock {
+     public static final MapCodec<CoralWallFanBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432660_ -> p_432660_.group(CoralBlock.DEAD_CORAL_FIELD.forGetter(p_304706_ -> p_304706_.deadBlock), propertiesCodec())
+-            .apply(p_432660_, CoralWallFanBlock::new)
++        p_368419_ -> p_368419_.group(CoralBlock.DEAD_CORAL_FIELD.forGetter(p_304706_ -> p_304706_.deadBlock), propertiesCodec())
++            .apply(p_368419_, CoralWallFanBlock::new)
+     );
+     private final Block deadBlock;
+ 

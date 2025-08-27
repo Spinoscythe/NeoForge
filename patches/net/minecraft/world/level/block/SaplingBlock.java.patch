@@ -1,5 +1,16 @@
 --- a/net/minecraft/world/level/block/SaplingBlock.java
 +++ b/net/minecraft/world/level/block/SaplingBlock.java
+@@ -20,8 +_,8 @@
+ 
+ public class SaplingBlock extends VegetationBlock implements BonemealableBlock {
+     public static final MapCodec<SaplingBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432677_ -> p_432677_.group(TreeGrower.CODEC.fieldOf("tree").forGetter(p_304391_ -> p_304391_.treeGrower), propertiesCodec())
+-            .apply(p_432677_, SaplingBlock::new)
++        p_368434_ -> p_368434_.group(TreeGrower.CODEC.fieldOf("tree").forGetter(p_304391_ -> p_304391_.treeGrower), propertiesCodec())
++            .apply(p_368434_, SaplingBlock::new)
+     );
+     public static final IntegerProperty STAGE = BlockStateProperties.STAGE;
+     private static final VoxelShape SHAPE = Block.column(12.0, 0.0, 12.0);
 @@ -45,6 +_,7 @@
  
      @Override

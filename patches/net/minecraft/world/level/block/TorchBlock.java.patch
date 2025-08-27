@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/TorchBlock.java
++++ b/net/minecraft/world/level/block/TorchBlock.java
+@@ -25,8 +_,8 @@
+         )
+         .fieldOf("particle_options");
+     public static final MapCodec<TorchBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432686_ -> p_432686_.group(PARTICLE_OPTIONS_FIELD.forGetter(p_304762_ -> p_304762_.flameParticle), propertiesCodec())
+-            .apply(p_432686_, TorchBlock::new)
++        p_368442_ -> p_368442_.group(PARTICLE_OPTIONS_FIELD.forGetter(p_304762_ -> p_304762_.flameParticle), propertiesCodec())
++            .apply(p_368442_, TorchBlock::new)
+     );
+     protected final SimpleParticleType flameParticle;
+ 

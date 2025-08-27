@@ -1,6 +1,14 @@
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
-@@ -42,6 +_,7 @@
+@@ -14,7 +_,6 @@
+ import net.minecraft.nbt.NbtAccounter;
+ import net.minecraft.nbt.NbtIo;
+ import net.minecraft.nbt.NbtUtils;
+-import net.minecraft.server.players.NameAndId;
+ import net.minecraft.util.ProblemReporter;
+ import net.minecraft.util.datafix.DataFixTypes;
+ import net.minecraft.world.entity.player.Player;
+@@ -43,47 +_,55 @@
              Path path2 = path.resolve(p_78434_.getStringUUID() + ".dat");
              Path path3 = path.resolve(p_78434_.getStringUUID() + ".dat_old");
              Util.safeReplaceFile(path2, path1, path3);
@@ -8,12 +16,61 @@
          } catch (Exception exception) {
              LOGGER.warn("Failed to save player data for {}", p_78434_.getName().getString());
          }
-@@ -84,7 +_,12 @@
-             p_427223_ = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, p_427223_, i);
-             ValueInput valueinput = TagValueInput.create(p_421744_, p_78436_.registryAccess(), p_427223_);
-             p_78436_.load(valueinput);
+     }
+ 
+-    private void backup(NameAndId p_435829_, String p_316776_) {
++    private void backup(Player p_316529_, String p_316776_) {
+         Path path = this.playerDir.toPath();
+-        String s = p_435829_.id().toString();
+-        Path path1 = path.resolve(s + p_316776_);
+-        Path path2 = path.resolve(s + "_corrupted_" + LocalDateTime.now().format(FORMATTER) + p_316776_);
++        Path path1 = path.resolve(p_316529_.getStringUUID() + p_316776_);
++        Path path2 = path.resolve(p_316529_.getStringUUID() + "_corrupted_" + LocalDateTime.now().format(FORMATTER) + p_316776_);
+         if (Files.isRegularFile(path1)) {
+             try {
+                 Files.copy(path1, path2, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+             } catch (Exception exception) {
+-                LOGGER.warn("Failed to copy the player.dat file for {}", p_435829_.name(), exception);
++                LOGGER.warn("Failed to copy the player.dat file for {}", p_316529_.getName().getString(), exception);
+             }
+         }
+     }
+ 
+-    private Optional<CompoundTag> load(NameAndId p_433756_, String p_434046_) {
+-        File file1 = new File(this.playerDir, p_433756_.id().toString() + p_434046_);
++    private Optional<CompoundTag> load(Player p_316534_, String p_316666_) {
++        File file1 = new File(this.playerDir, p_316534_.getStringUUID() + p_316666_);
+         if (file1.exists() && file1.isFile()) {
+             try {
+                 return Optional.of(NbtIo.readCompressed(file1.toPath(), NbtAccounter.unlimitedHeap()));
+             } catch (Exception exception) {
+-                LOGGER.warn("Failed to load player data for {}", p_433756_.name());
++                LOGGER.warn("Failed to load player data for {}", p_316534_.getName().getString());
+             }
+         }
+ 
+         return Optional.empty();
+     }
+ 
+-    public Optional<CompoundTag> load(NameAndId p_433996_) {
+-        Optional<CompoundTag> optional = this.load(p_433996_, ".dat");
++    public Optional<ValueInput> load(Player p_78436_, ProblemReporter p_421744_) {
++        Optional<CompoundTag> optional = this.load(p_78436_, ".dat");
+         if (optional.isEmpty()) {
+-            this.backup(p_433996_, ".dat");
++            this.backup(p_78436_, ".dat");
+         }
+ 
+-        return optional.or(() -> this.load(p_433996_, ".dat_old")).map(p_432736_ -> {
+-            int i = NbtUtils.getDataVersion(p_432736_, -1);
+-            return DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, p_432736_, i);
++        return optional.or(() -> this.load(p_78436_, ".dat_old")).map(p_427223_ -> {
++            int i = NbtUtils.getDataVersion(p_427223_, -1);
++            p_427223_ = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, p_427223_, i);
++            ValueInput valueinput = TagValueInput.create(p_421744_, p_78436_.registryAccess(), p_427223_);
++            p_78436_.load(valueinput);
 +            net.neoforged.neoforge.event.EventHooks.firePlayerLoadingEvent(p_78436_, playerDir, p_78436_.getStringUUID());
-             return valueinput;
++            return valueinput;
          });
 +    }
 +

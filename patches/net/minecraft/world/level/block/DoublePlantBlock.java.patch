@@ -8,3 +8,12 @@
              return blockstate.is(this) && blockstate.getValue(HALF) == DoubleBlockHalf.LOWER;
          }
      }
+@@ -98,7 +_,7 @@
+ 
+     @Override
+     public BlockState playerWillDestroy(Level p_52878_, BlockPos p_52879_, BlockState p_52880_, Player p_52881_) {
+-        if (!p_52878_.isClientSide()) {
++        if (!p_52878_.isClientSide) {
+             if (p_52881_.preventsBlockDrops()) {
+                 preventDropFromBottomPart(p_52878_, p_52879_, p_52880_, p_52881_);
+             } else {

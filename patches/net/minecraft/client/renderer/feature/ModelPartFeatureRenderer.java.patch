@@ -1,0 +1,57 @@
+--- a/net/minecraft/client/renderer/feature/ModelPartFeatureRenderer.java
++++ /dev/null
+@@ -1,54 +_,0 @@
+-package net.minecraft.client.renderer.feature;
+-
+-import com.mojang.blaze3d.vertex.PoseStack;
+-import com.mojang.blaze3d.vertex.VertexConsumer;
+-import java.util.List;
+-import java.util.Map.Entry;
+-import net.minecraft.client.renderer.MultiBufferSource;
+-import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollection;
+-import net.minecraft.client.renderer.SubmitNodeStorage;
+-import net.minecraft.client.renderer.entity.ItemRenderer;
+-import net.neoforged.api.distmarker.Dist;
+-import net.neoforged.api.distmarker.OnlyIn;
+-
+-@OnlyIn(Dist.CLIENT)
+-public class ModelPartFeatureRenderer {
+-    private final PoseStack poseStack = new PoseStack();
+-
+-    public void render(SubmitNodeCollection p_440707_, MultiBufferSource.BufferSource p_440416_) {
+-        for (Entry<RenderType, List<SubmitNodeStorage.ModelPartSubmit>> entry : p_440707_.getModelPartSubmits().entrySet()) {
+-            RenderType rendertype = entry.getKey();
+-            List<SubmitNodeStorage.ModelPartSubmit> list = entry.getValue();
+-            VertexConsumer vertexconsumer = p_440416_.getBuffer(rendertype);
+-
+-            for (SubmitNodeStorage.ModelPartSubmit submitnodestorage$modelpartsubmit : list) {
+-                VertexConsumer vertexconsumer1;
+-                if (submitnodestorage$modelpartsubmit.sprite() != null) {
+-                    if (submitnodestorage$modelpartsubmit.hasFoil()) {
+-                        vertexconsumer1 = submitnodestorage$modelpartsubmit.sprite()
+-                            .wrap(
+-                                ItemRenderer.getFoilBuffer(
+-                                    p_440416_, rendertype, submitnodestorage$modelpartsubmit.sheeted(), submitnodestorage$modelpartsubmit.hasFoil()
+-                                )
+-                            );
+-                    } else {
+-                        vertexconsumer1 = submitnodestorage$modelpartsubmit.sprite().wrap(vertexconsumer);
+-                    }
+-                } else {
+-                    vertexconsumer1 = vertexconsumer;
+-                }
+-
+-                this.poseStack.last().set(submitnodestorage$modelpartsubmit.pose());
+-                submitnodestorage$modelpartsubmit.modelPart()
+-                    .render(
+-                        this.poseStack,
+-                        vertexconsumer1,
+-                        submitnodestorage$modelpartsubmit.lightCoords(),
+-                        submitnodestorage$modelpartsubmit.overlayCoords(),
+-                        submitnodestorage$modelpartsubmit.tintedColor()
+-                    );
+-            }
+-        }
+-    }
+-}

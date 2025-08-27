@@ -1,0 +1,38 @@
+--- a/net/minecraft/client/gui/render/state/GlyphRenderState.java
++++ b/net/minecraft/client/gui/render/state/GlyphRenderState.java
+@@ -4,7 +_,7 @@
+ import com.mojang.blaze3d.vertex.VertexConsumer;
+ import java.util.Objects;
+ import javax.annotation.Nullable;
+-import net.minecraft.client.gui.font.TextRenderable;
++import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+ import net.minecraft.client.gui.navigation.ScreenRectangle;
+ import net.minecraft.client.gui.render.TextureSetup;
+ import net.neoforged.api.distmarker.Dist;
+@@ -13,20 +_,21 @@
+ import org.joml.Matrix4f;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public record GlyphRenderState(Matrix3x2f pose, TextRenderable renderable, @Nullable ScreenRectangle scissorArea) implements GuiElementRenderState {
++public record GlyphRenderState(Matrix3x2f pose, BakedGlyph.GlyphInstance instance, @Nullable ScreenRectangle scissorArea) implements GuiElementRenderState {
+     @Override
+-    public void buildVertices(VertexConsumer p_415880_) {
+-        this.renderable.render(new Matrix4f().mul(this.pose), p_415880_, 15728880, true);
++    public void buildVertices(VertexConsumer p_415880_, float p_418251_) {
++        Matrix4f matrix4f = new Matrix4f().mul(this.pose).translate(0.0F, 0.0F, p_418251_);
++        this.instance.glyph().renderChar(this.instance, matrix4f, p_415880_, 15728880, true);
+     }
+ 
+     @Override
+     public RenderPipeline pipeline() {
+-        return this.renderable.guiPipeline();
++        return this.instance.glyph().guiPipeline();
+     }
+ 
+     @Override
+     public TextureSetup textureSetup() {
+-        return TextureSetup.singleTextureWithLightmap(Objects.requireNonNull(this.renderable.textureView()));
++        return TextureSetup.singleTextureWithLightmap(Objects.requireNonNull(this.instance.glyph().textureView()));
+     }
+ 
+     @Nullable

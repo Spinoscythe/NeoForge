@@ -1,0 +1,27 @@
+--- a/net/minecraft/client/renderer/entity/AbstractSkeletonRenderer.java
++++ b/net/minecraft/client/renderer/entity/AbstractSkeletonRenderer.java
+@@ -13,14 +_,20 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public abstract class AbstractSkeletonRenderer<T extends AbstractSkeleton, S extends SkeletonRenderState> extends HumanoidMobRenderer<T, S, SkeletonModel<S>> {
+-    public AbstractSkeletonRenderer(EntityRendererProvider.Context p_365063_, ModelLayerLocation p_364353_, ArmorModelSet<ModelLayerLocation> p_433992_) {
+-        this(p_365063_, p_433992_, new SkeletonModel<>(p_365063_.bakeLayer(p_364353_)));
++    public AbstractSkeletonRenderer(
++        EntityRendererProvider.Context p_365063_, ModelLayerLocation p_364353_, ModelLayerLocation p_361271_, ModelLayerLocation p_360962_
++    ) {
++        this(p_365063_, p_361271_, p_360962_, new SkeletonModel<>(p_365063_.bakeLayer(p_364353_)));
+     }
+ 
+-    public AbstractSkeletonRenderer(EntityRendererProvider.Context p_360948_, ArmorModelSet<ModelLayerLocation> p_433462_, SkeletonModel<S> p_361394_) {
++    public AbstractSkeletonRenderer(
++        EntityRendererProvider.Context p_360948_, ModelLayerLocation p_364416_, ModelLayerLocation p_360716_, SkeletonModel<S> p_361394_
++    ) {
+         super(p_360948_, p_361394_, 0.5F);
+         this.addLayer(
+-            new HumanoidArmorLayer<>(this, ArmorModelSet.bake(p_433462_, p_360948_.getModelSet(), SkeletonModel::new), p_360948_.getEquipmentRenderer())
++            new HumanoidArmorLayer<>(
++                this, new SkeletonModel(p_360948_.bakeLayer(p_364416_)), new SkeletonModel(p_360948_.bakeLayer(p_360716_)), p_360948_.getEquipmentRenderer()
++            )
+         );
+     }
+ 

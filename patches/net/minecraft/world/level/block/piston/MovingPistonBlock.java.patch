@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/piston/MovingPistonBlock.java
++++ b/net/minecraft/world/level/block/piston/MovingPistonBlock.java
+@@ -78,7 +_,7 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_60070_, Level p_60071_, BlockPos p_60072_, Player p_60073_, BlockHitResult p_60075_) {
+-        if (!p_60071_.isClientSide() && p_60071_.getBlockEntity(p_60072_) == null) {
++        if (!p_60071_.isClientSide && p_60071_.getBlockEntity(p_60072_) == null) {
+             p_60071_.removeBlock(p_60072_, false);
+             return InteractionResult.CONSUME;
+         } else {

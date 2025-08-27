@@ -8,6 +8,15 @@
      private final Set<String> cachesToWrite = new HashSet<>();
      final Set<Path> cachePaths = new HashSet<>();
      private final int initialCount;
+@@ -49,7 +_,7 @@
+     }
+ 
+     public HashCache(Path p_236087_, Collection<String> p_253748_, WorldVersion p_236089_) throws IOException {
+-        this.versionId = p_236089_.id();
++        this.versionId = p_236089_.name();
+         this.rootDir = p_236087_;
+         this.cacheDir = p_236087_.resolve(".cache");
+         Files.createDirectories(this.cacheDir);
 @@ -65,6 +_,7 @@
          }
  

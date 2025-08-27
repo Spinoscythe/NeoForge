@@ -24,3 +24,11 @@
              .add(Items.LAVA_BUCKET, p_363365_ * 100)
              .add(Blocks.COAL_BLOCK, p_363365_ * 8 * 10)
              .add(Items.BLAZE_ROD, p_363365_ * 12)
+@@ -57,7 +_,6 @@
+             .add(Blocks.BAMBOO_MOSAIC_SLAB, p_363365_ * 3 / 4)
+             .add(ItemTags.WOODEN_TRAPDOORS, p_363365_ * 3 / 2)
+             .add(ItemTags.WOODEN_PRESSURE_PLATES, p_363365_ * 3 / 2)
+-            .add(ItemTags.WOODEN_SHELVES, p_363365_ * 3 / 2)
+             .add(ItemTags.WOODEN_FENCES, p_363365_ * 3 / 2)
+             .add(ItemTags.FENCE_GATES, p_363365_ * 3 / 2)
+             .add(Blocks.NOTE_BLOCK, p_363365_ * 3 / 2)

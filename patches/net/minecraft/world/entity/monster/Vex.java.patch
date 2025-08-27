@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/monster/Vex.java
++++ b/net/minecraft/world/entity/monster/Vex.java
+@@ -171,7 +_,7 @@
+     }
+ 
+     public void setOwner(Mob p_33995_) {
+-        this.owner = EntityReference.of(p_33995_);
++        this.owner = new EntityReference<>(p_33995_);
+     }
+ 
+     public void setLimitedLife(int p_33988_) {

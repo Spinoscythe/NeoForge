@@ -18,6 +18,15 @@
                      Raider raider1 = null;
                      if (i == this.getNumGroups(Difficulty.NORMAL)) {
                          raider1 = EntityType.PILLAGER.create(p_401196_, EntitySpawnReason.EVENT);
+@@ -531,7 +_,7 @@
+                     if (raider1 != null) {
+                         this.joinRaid(p_401196_, i, raider1, p_37756_, false);
+                         raider1.snapTo(p_37756_, 0.0F, 0.0F);
+-                        raider1.startRiding(raider, false, false);
++                        raider1.startRiding(raider);
+                     }
+                 }
+             }
 @@ -808,12 +_,26 @@
          RAVAGER(EntityType.RAVAGER, new int[]{0, 0, 0, 1, 0, 1, 0, 2});
  

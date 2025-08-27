@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/level/block/LavaCauldronBlock.java
++++ b/net/minecraft/world/level/block/LavaCauldronBlock.java
+@@ -2,7 +_,6 @@
+ 
+ import com.mojang.serialization.MapCodec;
+ import net.minecraft.core.BlockPos;
+-import net.minecraft.core.Direction;
+ import net.minecraft.core.cauldron.CauldronInteraction;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.InsideBlockEffectApplier;
+@@ -45,13 +_,12 @@
+ 
+     @Override
+     protected void entityInside(BlockState p_153506_, Level p_153507_, BlockPos p_153508_, Entity p_153509_, InsideBlockEffectApplier p_404841_) {
+-        p_404841_.apply(InsideBlockEffectType.CLEAR_FREEZE);
+         p_404841_.apply(InsideBlockEffectType.LAVA_IGNITE);
+         p_404841_.runAfter(InsideBlockEffectType.LAVA_IGNITE, Entity::lavaHurt);
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_153502_, Level p_153503_, BlockPos p_153504_, Direction p_433415_) {
++    protected int getAnalogOutputSignal(BlockState p_153502_, Level p_153503_, BlockPos p_153504_) {
+         return 3;
+     }
+ }

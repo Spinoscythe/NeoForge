@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/animal/Dolphin.java
++++ b/net/minecraft/world/entity/animal/Dolphin.java
+@@ -248,7 +_,7 @@
+                 }
+             }
+ 
+-            if (this.level().isClientSide() && this.isInWater() && this.getDeltaMovement().lengthSqr() > 0.03) {
++            if (this.level().isClientSide && this.isInWater() && this.getDeltaMovement().lengthSqr() > 0.03) {
+                 Vec3 vec3 = this.getViewVector(0.0F);
+                 float f = Mth.cos(this.getYRot() * (float) (Math.PI / 180.0)) * 0.3F;
+                 float f1 = Mth.sin(this.getYRot() * (float) (Math.PI / 180.0)) * 0.3F;
+@@ -286,7 +_,7 @@
+     protected InteractionResult mobInteract(Player p_28359_, InteractionHand p_28360_) {
+         ItemStack itemstack = p_28359_.getItemInHand(p_28360_);
+         if (!itemstack.isEmpty() && itemstack.is(ItemTags.FISHES)) {
+-            if (!this.level().isClientSide()) {
++            if (!this.level().isClientSide) {
+                 this.playSound(SoundEvents.DOLPHIN_EAT, 1.0F, 1.0F);
+             }
+ 

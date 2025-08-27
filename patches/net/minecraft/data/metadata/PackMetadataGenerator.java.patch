@@ -1,0 +1,19 @@
+--- a/net/minecraft/data/metadata/PackMetadataGenerator.java
++++ b/net/minecraft/data/metadata/PackMetadataGenerator.java
+@@ -5,6 +_,7 @@
+ import com.mojang.serialization.JsonOps;
+ import java.util.HashMap;
+ import java.util.Map;
++import java.util.Optional;
+ import java.util.concurrent.CompletableFuture;
+ import java.util.function.Supplier;
+ import net.minecraft.DetectedVersion;
+@@ -46,7 +_,7 @@
+ 
+     public static PackMetadataGenerator forFeaturePack(PackOutput p_256281_, Component p_255661_) {
+         return new PackMetadataGenerator(p_256281_)
+-            .add(PackMetadataSection.SERVER_TYPE, new PackMetadataSection(p_255661_, DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA).minorRange()));
++            .add(PackMetadataSection.TYPE, new PackMetadataSection(p_255661_, DetectedVersion.BUILT_IN.packVersion(PackType.SERVER_DATA), Optional.empty()));
+     }
+ 
+     public static PackMetadataGenerator forFeaturePack(PackOutput p_253903_, Component p_254497_, FeatureFlagSet p_253848_) {

@@ -1,0 +1,38 @@
+--- a/net/minecraft/client/renderer/entity/layers/Deadmau5EarsLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/Deadmau5EarsLayer.java
+@@ -1,13 +_,14 @@
+ package net.minecraft.client.renderer.entity.layers;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.model.HumanoidModel;
+ import net.minecraft.client.model.PlayerEarsModel;
+ import net.minecraft.client.model.PlayerModel;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+@@ -23,12 +_,13 @@
+         this.model = new PlayerEarsModel(p_360915_.bakeLayer(ModelLayers.PLAYER_EARS));
+     }
+ 
+-    public void submit(PoseStack p_433932_, SubmitNodeCollector p_435533_, int p_434365_, PlayerRenderState p_433357_, float p_435134_, float p_435800_) {
+-        if ("deadmau5".equals(p_433357_.name) && !p_433357_.isInvisible) {
+-            int i = LivingEntityRenderer.getOverlayCoords(p_433357_, 0.0F);
+-            p_435533_.submitModel(
+-                this.model, p_433357_, p_433932_, RenderType.entitySolid(p_433357_.skin.texture()), p_434365_, i, p_433357_.outlineColor, null
+-            );
++    public void render(PoseStack p_116873_, MultiBufferSource p_116874_, int p_116875_, PlayerRenderState p_361714_, float p_116877_, float p_116878_) {
++        if ("deadmau5".equals(p_361714_.name) && !p_361714_.isInvisible) {
++            VertexConsumer vertexconsumer = p_116874_.getBuffer(RenderType.entitySolid(p_361714_.skin.texture()));
++            int i = LivingEntityRenderer.getOverlayCoords(p_361714_, 0.0F);
++            this.getParentModel().copyPropertiesTo(this.model);
++            this.model.setupAnim(p_361714_);
++            this.model.renderToBuffer(p_116873_, vertexconsumer, p_116875_, i);
+         }
+     }
+ }

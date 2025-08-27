@@ -1,0 +1,28 @@
+--- a/net/minecraft/client/renderer/item/CompositeModel.java
++++ b/net/minecraft/client/renderer/item/CompositeModel.java
+@@ -7,7 +_,7 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.client.multiplayer.ClientLevel;
+ import net.minecraft.client.resources.model.ResolvableModel;
+-import net.minecraft.world.entity.ItemOwner;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.minecraft.world.item.ItemStack;
+ import net.neoforged.api.distmarker.Dist;
+@@ -28,14 +_,14 @@
+         ItemModelResolver p_388412_,
+         ItemDisplayContext p_388059_,
+         @Nullable ClientLevel p_388484_,
+-        @Nullable ItemOwner p_433106_,
++        @Nullable LivingEntity p_388840_,
+         int p_387330_
+     ) {
+         p_386893_.appendModelIdentityElement(this);
+         p_386893_.ensureCapacity(this.models.size());
+ 
+         for (ItemModel itemmodel : this.models) {
+-            itemmodel.update(p_386893_, p_387281_, p_388412_, p_388059_, p_388484_, p_433106_, p_387330_);
++            itemmodel.update(p_386893_, p_387281_, p_388412_, p_388059_, p_388484_, p_388840_, p_387330_);
+         }
+     }
+ 

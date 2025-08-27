@@ -1,0 +1,38 @@
+--- a/net/minecraft/world/level/block/BedBlock.java
++++ b/net/minecraft/world/level/block/BedBlock.java
+@@ -50,7 +_,7 @@
+ 
+ public class BedBlock extends HorizontalDirectionalBlock implements EntityBlock {
+     public static final MapCodec<BedBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432602_ -> p_432602_.group(DyeColor.CODEC.fieldOf("color").forGetter(BedBlock::getColor), propertiesCodec()).apply(p_432602_, BedBlock::new)
++        p_367980_ -> p_367980_.group(DyeColor.CODEC.fieldOf("color").forGetter(BedBlock::getColor), propertiesCodec()).apply(p_367980_, BedBlock::new)
+     );
+     public static final EnumProperty<BedPart> PART = BlockStateProperties.BED_PART;
+     public static final BooleanProperty OCCUPIED = BlockStateProperties.OCCUPIED;
+@@ -80,7 +_,7 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_49515_, Level p_49516_, BlockPos p_49517_, Player p_49518_, BlockHitResult p_49520_) {
+-        if (p_49516_.isClientSide()) {
++        if (p_49516_.isClientSide) {
+             return InteractionResult.SUCCESS_SERVER;
+         } else {
+             if (p_49515_.getValue(PART) != BedPart.HEAD) {
+@@ -180,7 +_,7 @@
+ 
+     @Override
+     public BlockState playerWillDestroy(Level p_49505_, BlockPos p_49506_, BlockState p_49507_, Player p_49508_) {
+-        if (!p_49505_.isClientSide() && p_49508_.preventsBlockDrops()) {
++        if (!p_49505_.isClientSide && p_49508_.preventsBlockDrops()) {
+             BedPart bedpart = p_49507_.getValue(PART);
+             if (bedpart == BedPart.FOOT) {
+                 BlockPos blockpos = p_49506_.relative(getNeighbourDirection(bedpart, p_49507_.getValue(FACING)));
+@@ -299,7 +_,7 @@
+     @Override
+     public void setPlacedBy(Level p_49499_, BlockPos p_49500_, BlockState p_49501_, @Nullable LivingEntity p_49502_, ItemStack p_49503_) {
+         super.setPlacedBy(p_49499_, p_49500_, p_49501_, p_49502_, p_49503_);
+-        if (!p_49499_.isClientSide()) {
++        if (!p_49499_.isClientSide) {
+             BlockPos blockpos = p_49500_.relative(p_49501_.getValue(FACING));
+             p_49499_.setBlock(blockpos, p_49501_.setValue(PART, BedPart.HEAD), 3);
+             p_49499_.updateNeighborsAt(p_49500_, Blocks.AIR);

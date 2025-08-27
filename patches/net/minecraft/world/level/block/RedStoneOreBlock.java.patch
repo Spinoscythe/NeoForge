@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/RedStoneOreBlock.java
 +++ b/net/minecraft/world/level/block/RedStoneOreBlock.java
+@@ -54,7 +_,7 @@
+     protected InteractionResult useItemOn(
+         ItemStack p_316235_, BlockState p_316208_, Level p_316432_, BlockPos p_316592_, Player p_316564_, InteractionHand p_316389_, BlockHitResult p_316390_
+     ) {
+-        if (p_316432_.isClientSide()) {
++        if (p_316432_.isClientSide) {
+             spawnParticles(p_316432_, p_316592_);
+         } else {
+             interact(p_316208_, p_316432_, p_316592_);
 @@ -87,9 +_,14 @@
      @Override
      protected void spawnAfterBreak(BlockState p_221907_, ServerLevel p_221908_, BlockPos p_221909_, ItemStack p_221910_, boolean p_221911_) {

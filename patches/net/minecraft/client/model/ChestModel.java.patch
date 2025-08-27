@@ -1,0 +1,23 @@
+--- a/net/minecraft/client/model/ChestModel.java
++++ b/net/minecraft/client/model/ChestModel.java
+@@ -11,7 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class ChestModel extends Model<Float> {
++public class ChestModel extends Model {
+     private static final String BOTTOM = "bottom";
+     private static final String LID = "lid";
+     private static final String LOCK = "lock";
+@@ -63,9 +_,8 @@
+         return LayerDefinition.create(meshdefinition, 64, 64);
+     }
+ 
+-    public void setupAnim(Float p_435135_) {
+-        super.setupAnim(p_435135_);
+-        this.lid.xRot = -(p_435135_ * (float) (Math.PI / 2));
++    public void setupAnim(float p_363974_) {
++        this.lid.xRot = -(p_363974_ * (float) (Math.PI / 2));
+         this.lock.xRot = this.lid.xRot;
+     }
+ }

@@ -1,5 +1,16 @@
 --- a/net/minecraft/world/entity/vehicle/OldMinecartBehavior.java
 +++ b/net/minecraft/world/entity/vehicle/OldMinecartBehavior.java
+@@ -47,8 +_,8 @@
+     }
+ 
+     @Override
+-    public void lerpMotion(Vec3 p_436664_) {
+-        this.targetDeltaMovement = p_436664_;
++    public void lerpMotion(double p_361614_, double p_365497_, double p_360324_) {
++        this.targetDeltaMovement = new Vec3(p_361614_, p_365497_, p_360324_);
+         this.setDeltaMovement(this.targetDeltaMovement);
+     }
+ 
 @@ -62,7 +_,7 @@
              this.minecart.setOnRails($$4);
              if ($$4) {

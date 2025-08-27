@@ -1,0 +1,15 @@
+--- a/net/minecraft/client/renderer/entity/DrownedRenderer.java
++++ b/net/minecraft/client/renderer/entity/DrownedRenderer.java
+@@ -25,8 +_,10 @@
+             p_173964_,
+             new DrownedModel(p_173964_.bakeLayer(ModelLayers.DROWNED)),
+             new DrownedModel(p_173964_.bakeLayer(ModelLayers.DROWNED_BABY)),
+-            ArmorModelSet.bake(ModelLayers.DROWNED_ARMOR, p_173964_.getModelSet(), DrownedModel::new),
+-            ArmorModelSet.bake(ModelLayers.DROWNED_BABY_ARMOR, p_173964_.getModelSet(), DrownedModel::new)
++            new DrownedModel(p_173964_.bakeLayer(ModelLayers.DROWNED_INNER_ARMOR)),
++            new DrownedModel(p_173964_.bakeLayer(ModelLayers.DROWNED_OUTER_ARMOR)),
++            new DrownedModel(p_173964_.bakeLayer(ModelLayers.DROWNED_BABY_INNER_ARMOR)),
++            new DrownedModel(p_173964_.bakeLayer(ModelLayers.DROWNED_BABY_OUTER_ARMOR))
+         );
+         this.addLayer(new DrownedOuterLayer(this, p_173964_.getModelSet()));
+     }

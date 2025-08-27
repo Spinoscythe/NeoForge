@@ -1,0 +1,44 @@
+--- a/net/minecraft/world/entity/projectile/ProjectileDeflection.java
++++ b/net/minecraft/world/entity/projectile/ProjectileDeflection.java
+@@ -8,25 +_,25 @@
+ @FunctionalInterface
+ public interface ProjectileDeflection {
+     ProjectileDeflection NONE = (p_320379_, p_320626_, p_320122_) -> {};
+-    ProjectileDeflection REVERSE = (p_436549_, p_436550_, p_436551_) -> {
+-        float f = 170.0F + p_436551_.nextFloat() * 20.0F;
+-        p_436549_.setDeltaMovement(p_436549_.getDeltaMovement().scale(-0.5));
+-        p_436549_.setYRot(p_436549_.getYRot() + f);
+-        p_436549_.yRotO += f;
+-        p_436549_.hasImpulse = true;
++    ProjectileDeflection REVERSE = (p_427138_, p_427139_, p_427140_) -> {
++        float f = 170.0F + p_427140_.nextFloat() * 20.0F;
++        p_427138_.setDeltaMovement(p_427138_.getDeltaMovement().scale(-0.5));
++        p_427138_.setYRot(p_427138_.getYRot() + f);
++        p_427138_.yRotO += f;
++        p_427138_.hasImpulse = true;
+     };
+-    ProjectileDeflection AIM_DEFLECT = (p_436555_, p_436556_, p_436557_) -> {
+-        if (p_436556_ != null) {
+-            Vec3 vec3 = p_436556_.getLookAngle().normalize();
+-            p_436555_.setDeltaMovement(vec3);
+-            p_436555_.hasImpulse = true;
++    ProjectileDeflection AIM_DEFLECT = (p_390282_, p_390283_, p_390284_) -> {
++        if (p_390283_ != null) {
++            Vec3 vec3 = p_390283_.getLookAngle().normalize();
++            p_390282_.setDeltaMovement(vec3);
++            p_390282_.hasImpulse = true;
+         }
+     };
+-    ProjectileDeflection MOMENTUM_DEFLECT = (p_436552_, p_436553_, p_436554_) -> {
+-        if (p_436553_ != null) {
+-            Vec3 vec3 = p_436553_.getDeltaMovement().normalize();
+-            p_436552_.setDeltaMovement(vec3);
+-            p_436552_.hasImpulse = true;
++    ProjectileDeflection MOMENTUM_DEFLECT = (p_390288_, p_390289_, p_390290_) -> {
++        if (p_390289_ != null) {
++            Vec3 vec3 = p_390289_.getDeltaMovement().normalize();
++            p_390288_.setDeltaMovement(vec3);
++            p_390288_.hasImpulse = true;
+         }
+     };
+ 

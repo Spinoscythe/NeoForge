@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/model/SkullModel.java
++++ b/net/minecraft/client/model/SkullModel.java
+@@ -41,9 +_,9 @@
+         return LayerDefinition.create(meshdefinition, 64, 32);
+     }
+ 
+-    public void setupAnim(SkullModelBase.State p_435673_) {
+-        super.setupAnim(p_435673_);
+-        this.head.yRot = p_435673_.yRot * (float) (Math.PI / 180.0);
+-        this.head.xRot = p_435673_.xRot * (float) (Math.PI / 180.0);
++    @Override
++    public void setupAnim(float p_103811_, float p_103812_, float p_103813_) {
++        this.head.yRot = p_103812_ * (float) (Math.PI / 180.0);
++        this.head.xRot = p_103813_ * (float) (Math.PI / 180.0);
+     }
+ }

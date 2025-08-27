@@ -1,0 +1,52 @@
+--- a/com/mojang/blaze3d/opengl/BufferStorage.java
++++ b/com/mojang/blaze3d/opengl/BufferStorage.java
+@@ -31,7 +_,7 @@
+         @Override
+         public GlBuffer createBuffer(DirectStateAccess p_418138_, @Nullable Supplier<String> p_418472_, int p_418304_, int p_418442_) {
+             int i = p_418138_.createBuffer();
+-            p_418138_.bufferStorage(i, p_418442_, p_418304_);
++            p_418138_.bufferStorage(i, p_418442_, GlConst.bufferUsageToGlFlag(p_418304_));
+             ByteBuffer bytebuffer = this.tryMapBufferPersistent(p_418138_, p_418304_, i, p_418442_);
+             return new GlBuffer(p_418472_, p_418138_, p_418304_, p_418442_, i, bytebuffer);
+         }
+@@ -40,7 +_,7 @@
+         public GlBuffer createBuffer(DirectStateAccess p_418437_, @Nullable Supplier<String> p_418106_, int p_418386_, ByteBuffer p_418383_) {
+             int i = p_418437_.createBuffer();
+             int j = p_418383_.remaining();
+-            p_418437_.bufferStorage(i, p_418383_, p_418386_);
++            p_418437_.bufferStorage(i, p_418383_, GlConst.bufferUsageToGlFlag(p_418386_));
+             ByteBuffer bytebuffer = this.tryMapBufferPersistent(p_418437_, p_418386_, i, j);
+             return new GlBuffer(p_418106_, p_418437_, p_418386_, j, i, bytebuffer);
+         }
+@@ -59,7 +_,7 @@
+             ByteBuffer bytebuffer;
+             if (i != 0) {
+                 GlStateManager.clearGlErrors();
+-                bytebuffer = p_418410_.mapBufferRange(p_418147_, 0, p_418508_, i | 64, p_418039_);
++                bytebuffer = p_418410_.mapBufferRange(p_418147_, 0, p_418508_, i | 64);
+                 if (bytebuffer == null) {
+                     throw new IllegalStateException("Can't persistently map buffer, opengl error " + GlStateManager._getError());
+                 }
+@@ -77,7 +_,7 @@
+             } else {
+                 return new GlBuffer.GlMappedView(() -> {
+                     if ((p_418237_ & 2) != 0) {
+-                        p_418435_.flushMappedBufferRange(p_418399_.handle, p_418357_, p_418353_, p_418399_.usage());
++                        p_418435_.flushMappedBufferRange(p_418399_.handle, p_418357_, p_418353_);
+                     }
+                 }, p_418399_, MemoryUtil.memSlice(p_418399_.persistentBuffer, p_418357_, p_418353_));
+             }
+@@ -104,11 +_,11 @@
+         @Override
+         public GlBuffer.GlMappedView mapBuffer(DirectStateAccess p_418209_, GlBuffer p_418012_, int p_418273_, int p_418050_, int p_418422_) {
+             GlStateManager.clearGlErrors();
+-            ByteBuffer bytebuffer = p_418209_.mapBufferRange(p_418012_.handle, p_418273_, p_418050_, p_418422_, p_418012_.usage());
++            ByteBuffer bytebuffer = p_418209_.mapBufferRange(p_418012_.handle, p_418273_, p_418050_, p_418422_);
+             if (bytebuffer == null) {
+                 throw new IllegalStateException("Can't map buffer, opengl error " + GlStateManager._getError());
+             } else {
+-                return new GlBuffer.GlMappedView(() -> p_418209_.unmapBuffer(p_418012_.handle, p_418012_.usage()), p_418012_, bytebuffer);
++                return new GlBuffer.GlMappedView(() -> p_418209_.unmapBuffer(p_418012_.handle), p_418012_, bytebuffer);
+             }
+         }
+     }

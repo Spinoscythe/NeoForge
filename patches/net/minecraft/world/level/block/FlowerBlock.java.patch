@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/FlowerBlock.java
++++ b/net/minecraft/world/level/block/FlowerBlock.java
+@@ -20,7 +_,7 @@
+ public class FlowerBlock extends VegetationBlock implements SuspiciousEffectHolder {
+     protected static final MapCodec<SuspiciousStewEffects> EFFECTS_FIELD = SuspiciousStewEffects.CODEC.fieldOf("suspicious_stew_effects");
+     public static final MapCodec<FlowerBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432665_ -> p_432665_.group(EFFECTS_FIELD.forGetter(FlowerBlock::getSuspiciousEffects), propertiesCodec()).apply(p_432665_, FlowerBlock::new)
++        p_368423_ -> p_368423_.group(EFFECTS_FIELD.forGetter(FlowerBlock::getSuspiciousEffects), propertiesCodec()).apply(p_368423_, FlowerBlock::new)
+     );
+     private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 10.0);
+     private final SuspiciousStewEffects suspiciousStewEffects;

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/piston/PistonHeadBlock.java
++++ b/net/minecraft/world/level/block/piston/PistonHeadBlock.java
+@@ -68,7 +_,7 @@
+ 
+     @Override
+     public BlockState playerWillDestroy(Level p_60265_, BlockPos p_60266_, BlockState p_60267_, Player p_60268_) {
+-        if (!p_60265_.isClientSide() && p_60268_.preventsBlockDrops()) {
++        if (!p_60265_.isClientSide && p_60268_.preventsBlockDrops()) {
+             BlockPos blockpos = p_60266_.relative(p_60267_.getValue(FACING).getOpposite());
+             if (this.isFittingBase(p_60267_, p_60265_.getBlockState(blockpos))) {
+                 p_60265_.destroyBlock(blockpos, false);

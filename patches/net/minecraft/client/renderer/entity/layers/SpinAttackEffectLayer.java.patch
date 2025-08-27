@@ -1,0 +1,33 @@
+--- a/net/minecraft/client/renderer/entity/layers/SpinAttackEffectLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/SpinAttackEffectLayer.java
+@@ -1,11 +_,12 @@
+ package net.minecraft.client.renderer.entity.layers;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.model.PlayerModel;
+ import net.minecraft.client.model.SpinAttackEffectModel;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+@@ -23,11 +_,11 @@
+         this.model = new SpinAttackEffectModel(p_174541_.bakeLayer(ModelLayers.PLAYER_SPIN_ATTACK));
+     }
+ 
+-    public void submit(PoseStack p_435069_, SubmitNodeCollector p_434630_, int p_435590_, PlayerRenderState p_435379_, float p_434497_, float p_433905_) {
+-        if (p_435379_.isAutoSpinAttack) {
+-            p_434630_.submitModel(
+-                this.model, p_435379_, p_435069_, this.model.renderType(TEXTURE), p_435590_, OverlayTexture.NO_OVERLAY, p_435379_.outlineColor, null
+-            );
++    public void render(PoseStack p_117515_, MultiBufferSource p_117516_, int p_117517_, PlayerRenderState p_362202_, float p_117519_, float p_117520_) {
++        if (p_362202_.isAutoSpinAttack) {
++            VertexConsumer vertexconsumer = p_117516_.getBuffer(this.model.renderType(TEXTURE));
++            this.model.setupAnim(p_362202_);
++            this.model.renderToBuffer(p_117515_, vertexconsumer, p_117517_, OverlayTexture.NO_OVERLAY);
+         }
+     }
+ }

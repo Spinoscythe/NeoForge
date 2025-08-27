@@ -1,0 +1,23 @@
+--- a/net/minecraft/world/entity/monster/Drowned.java
++++ b/net/minecraft/world/entity/monster/Drowned.java
+@@ -161,6 +_,11 @@
+     }
+ 
+     @Override
++    protected ItemStack getSkull() {
++        return ItemStack.EMPTY;
++    }
++
++    @Override
+     protected void populateDefaultEquipmentSlots(RandomSource p_218953_, DifficultyInstance p_218954_) {
+         if (p_218953_.nextFloat() > 0.9) {
+             int i = p_218953_.nextInt(16);
+@@ -218,7 +_,7 @@
+ 
+     @Override
+     public void updateSwimming() {
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.setSwimming(this.isEffectiveAi() && this.isUnderWater() && this.wantsToSwim());
+         }
+     }

@@ -1,0 +1,59 @@
+--- a/net/minecraft/client/model/PlayerModel.java
++++ b/net/minecraft/client/model/PlayerModel.java
+@@ -10,7 +_,6 @@
+ import net.minecraft.client.model.geom.builders.MeshDefinition;
+ import net.minecraft.client.model.geom.builders.PartDefinition;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.entity.ArmorModelSet;
+ import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+ import net.minecraft.util.RandomSource;
+ import net.minecraft.world.entity.HumanoidArm;
+@@ -19,10 +_,10 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class PlayerModel extends HumanoidModel<PlayerRenderState> {
+-    protected static final String LEFT_SLEEVE = "left_sleeve";
+-    protected static final String RIGHT_SLEEVE = "right_sleeve";
+-    protected static final String LEFT_PANTS = "left_pants";
+-    protected static final String RIGHT_PANTS = "right_pants";
++    private static final String LEFT_SLEEVE = "left_sleeve";
++    private static final String RIGHT_SLEEVE = "right_sleeve";
++    private static final String LEFT_PANTS = "left_pants";
++    private static final String RIGHT_PANTS = "right_pants";
+     private final List<ModelPart> bodyParts;
+     public final ModelPart leftSleeve;
+     public final ModelPart rightSleeve;
+@@ -95,23 +_,6 @@
+         return meshdefinition;
+     }
+ 
+-    public static ArmorModelSet<MeshDefinition> createArmorMeshSet(CubeDeformation p_432967_, CubeDeformation p_434994_) {
+-        return HumanoidModel.createArmorMeshSet(p_432967_, p_434994_).map(p_432754_ -> {
+-            PartDefinition partdefinition = p_432754_.getRoot();
+-            PartDefinition partdefinition1 = partdefinition.getChild("left_arm");
+-            PartDefinition partdefinition2 = partdefinition.getChild("right_arm");
+-            partdefinition1.addOrReplaceChild("left_sleeve", CubeListBuilder.create(), PartPose.ZERO);
+-            partdefinition2.addOrReplaceChild("right_sleeve", CubeListBuilder.create(), PartPose.ZERO);
+-            PartDefinition partdefinition3 = partdefinition.getChild("left_leg");
+-            PartDefinition partdefinition4 = partdefinition.getChild("right_leg");
+-            partdefinition3.addOrReplaceChild("left_pants", CubeListBuilder.create(), PartPose.ZERO);
+-            partdefinition4.addOrReplaceChild("right_pants", CubeListBuilder.create(), PartPose.ZERO);
+-            PartDefinition partdefinition5 = partdefinition.getChild("body");
+-            partdefinition5.addOrReplaceChild("jacket", CubeListBuilder.create(), PartPose.ZERO);
+-            return (MeshDefinition)p_432754_;
+-        });
+-    }
+-
+     public void setupAnim(PlayerRenderState p_365286_) {
+         boolean flag = !p_365286_.isSpectator;
+         this.body.visible = flag;
+@@ -138,7 +_,8 @@
+         this.jacket.visible = p_103419_;
+     }
+ 
+-    public void translateToHand(PlayerRenderState p_435657_, HumanoidArm p_103392_, PoseStack p_103393_) {
++    @Override
++    public void translateToHand(HumanoidArm p_103392_, PoseStack p_103393_) {
+         this.root().translateAndRotate(p_103393_);
+         ModelPart modelpart = this.getArm(p_103392_);
+         if (this.slim) {

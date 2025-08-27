@@ -1,0 +1,31 @@
+--- a/net/minecraft/server/packs/resources/ProfiledReloadInstance.java
++++ b/net/minecraft/server/packs/resources/ProfiledReloadInstance.java
+@@ -26,20 +_,20 @@
+             p_405297_,
+             p_404634_,
+             p_404750_,
+-            (p_432487_, p_432488_, p_432489_, p_432490_, p_432491_) -> {
++            (p_404217_, p_404218_, p_404219_, p_404220_, p_404221_) -> {
+                 AtomicLong atomiclong = new AtomicLong();
+                 AtomicLong atomiclong1 = new AtomicLong();
+                 AtomicLong atomiclong2 = new AtomicLong();
+                 AtomicLong atomiclong3 = new AtomicLong();
+-                CompletableFuture<Void> completablefuture = p_432489_.reload(
+-                    p_432487_,
+-                    profiledExecutor(p_432490_, atomiclong, atomiclong1, p_432489_.getName()),
+-                    p_432488_,
+-                    profiledExecutor(p_432491_, atomiclong2, atomiclong3, p_432489_.getName())
++                CompletableFuture<Void> completablefuture = p_404219_.reload(
++                    p_404217_,
++                    p_404218_,
++                    profiledExecutor(p_404220_, atomiclong, atomiclong1, p_404219_.getName()),
++                    profiledExecutor(p_404221_, atomiclong2, atomiclong3, p_404219_.getName())
+                 );
+                 return completablefuture.thenApplyAsync(p_404215_ -> {
+-                    LOGGER.debug("Finished reloading {}", p_432489_.getName());
+-                    return new ProfiledReloadInstance.State(p_432489_.getName(), atomiclong, atomiclong1, atomiclong2, atomiclong3);
++                    LOGGER.debug("Finished reloading {}", p_404219_.getName());
++                    return new ProfiledReloadInstance.State(p_404219_.getName(), atomiclong, atomiclong1, atomiclong2, atomiclong3);
+                 }, p_405297_);
+             },
+             p_405418_

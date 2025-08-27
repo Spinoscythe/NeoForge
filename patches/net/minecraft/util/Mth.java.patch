@@ -1,0 +1,31 @@
+--- a/net/minecraft/util/Mth.java
++++ b/net/minecraft/util/Mth.java
+@@ -90,11 +_,6 @@
+         return p_14166_ > i ? i + 1 : i;
+     }
+ 
+-    public static long ceilLong(double p_439262_) {
+-        long i = (long)p_439262_;
+-        return p_439262_ > i ? i + 1L : i;
+-    }
+-
+     public static int clamp(int p_14046_, int p_14047_, int p_14048_) {
+         return Math.min(Math.max(p_14046_, p_14047_), p_14048_);
+     }
+@@ -128,7 +_,15 @@
+     }
+ 
+     public static double absMax(double p_14006_, double p_14007_) {
+-        return Math.max(Math.abs(p_14006_), Math.abs(p_14007_));
++        if (p_14006_ < 0.0) {
++            p_14006_ = -p_14006_;
++        }
++
++        if (p_14007_ < 0.0) {
++            p_14007_ = -p_14007_;
++        }
++
++        return Math.max(p_14006_, p_14007_);
+     }
+ 
+     public static int floorDiv(int p_14043_, int p_14044_) {

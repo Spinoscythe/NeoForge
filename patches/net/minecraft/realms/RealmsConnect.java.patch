@@ -1,0 +1,18 @@
+--- a/net/minecraft/realms/RealmsConnect.java
++++ b/net/minecraft/realms/RealmsConnect.java
+@@ -9,7 +_,6 @@
+ import net.minecraft.client.gui.screens.DisconnectedScreen;
+ import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
+-import net.minecraft.client.multiplayer.LevelLoadTracker;
+ import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
+ import net.minecraft.client.multiplayer.resolver.ServerAddress;
+ import net.minecraft.client.quickplay.QuickPlayLog;
+@@ -66,7 +_,6 @@
+                             false,
+                             null,
+                             p_120726_ -> {},
+-                            new LevelLoadTracker(),
+                             null
+                         );
+                         if (p_175032_.isMinigameActive()) {

@@ -1,0 +1,43 @@
+--- a/net/minecraft/client/model/geom/builders/PartDefinition.java
++++ b/net/minecraft/client/model/geom/builders/PartDefinition.java
+@@ -38,40 +_,12 @@
+         return p_362562_;
+     }
+ 
+-    public PartDefinition clearRecursively() {
+-        for (String s : this.children.keySet()) {
+-            this.clearChild(s).clearRecursively();
+-        }
+-
+-        return this;
+-    }
+-
+     public PartDefinition clearChild(String p_362566_) {
+         PartDefinition partdefinition = this.children.get(p_362566_);
+         if (partdefinition == null) {
+             throw new IllegalArgumentException("No child with name: " + p_362566_);
+         } else {
+             return this.addOrReplaceChild(p_362566_, CubeListBuilder.create(), partdefinition.partPose);
+-        }
+-    }
+-
+-    public void retainPartsAndChildren(Set<String> p_435141_) {
+-        for (Entry<String, PartDefinition> entry : this.children.entrySet()) {
+-            PartDefinition partdefinition = entry.getValue();
+-            if (!p_435141_.contains(entry.getKey())) {
+-                this.addOrReplaceChild(entry.getKey(), CubeListBuilder.create(), partdefinition.partPose).retainPartsAndChildren(p_435141_);
+-            }
+-        }
+-    }
+-
+-    public void retainExactParts(Set<String> p_433934_) {
+-        for (Entry<String, PartDefinition> entry : this.children.entrySet()) {
+-            PartDefinition partdefinition = entry.getValue();
+-            if (p_433934_.contains(entry.getKey())) {
+-                partdefinition.clearRecursively();
+-            } else {
+-                this.addOrReplaceChild(entry.getKey(), CubeListBuilder.create(), partdefinition.partPose).retainExactParts(p_433934_);
+-            }
+         }
+     }
+ 

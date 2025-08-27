@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/ai/behavior/AnimalMakeLove.java
++++ b/net/minecraft/world/entity/ai/behavior/AnimalMakeLove.java
+@@ -105,7 +_,7 @@
+             .getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES)
+             .get()
+             .findClosest(
+-                p_432535_ -> p_432535_.getType() == this.partnerType && p_432535_ instanceof Animal animal && p_22432_.canMate(animal) && !animal.isPanicking()
++                p_426985_ -> p_426985_.getType() == this.partnerType && p_426985_ instanceof Animal animal && p_22432_.canMate(animal) && !animal.isPanicking()
+             )
+             .map(Animal.class::cast);
+     }

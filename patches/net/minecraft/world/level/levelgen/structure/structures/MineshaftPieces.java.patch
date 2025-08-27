@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/levelgen/structure/structures/MineshaftPieces.java
++++ b/net/minecraft/world/level/levelgen/structure/structures/MineshaftPieces.java
+@@ -520,7 +_,7 @@
+                         boolean flag3 = this.isReplaceableByStructures(blockstate1);
+                         if (!flag3 && this.canHangChainBelow(p_227820_, blockpos$mutableblockpos, blockstate1)) {
+                             p_227820_.setBlock(blockpos$mutableblockpos.setY(i + 1), this.type.getFenceState(), 2);
+-                            fillColumnBetween(p_227820_, Blocks.IRON_CHAIN.defaultBlockState(), blockpos$mutableblockpos, i + 2, i + j);
++                            fillColumnBetween(p_227820_, Blocks.CHAIN.defaultBlockState(), blockpos$mutableblockpos, i + 2, i + j);
+                             return;
+                         }
+ 
+@@ -940,7 +_,7 @@
+             return !blockstate.is(this.type.getPlanksState().getBlock())
+                 && !blockstate.is(this.type.getWoodState().getBlock())
+                 && !blockstate.is(this.type.getFenceState().getBlock())
+-                && !blockstate.is(Blocks.IRON_CHAIN);
++                && !blockstate.is(Blocks.CHAIN);
+         }
+ 
+         @Override

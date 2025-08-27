@@ -62,7 +62,18 @@
          }
      }
  
-@@ -140,6 +_,11 @@
+@@ -127,9 +_,7 @@
+         THIS("this", LootContextParams.THIS_ENTITY),
+         ATTACKER("attacker", LootContextParams.ATTACKING_ENTITY),
+         DIRECT_ATTACKER("direct_attacker", LootContextParams.DIRECT_ATTACKING_ENTITY),
+-        ATTACKING_PLAYER("attacking_player", LootContextParams.LAST_DAMAGE_PLAYER),
+-        TARGET_ENTITY("target_entity", LootContextParams.TARGET_ENTITY),
+-        INTERACTING_ENTITY("interacting_entity", LootContextParams.INTERACTING_ENTITY);
++        ATTACKING_PLAYER("attacking_player", LootContextParams.LAST_DAMAGE_PLAYER);
+ 
+         public static final StringRepresentable.EnumCodec<LootContext.EntityTarget> CODEC = StringRepresentable.fromEnum(LootContext.EntityTarget::values);
+         private final String name;
+@@ -142,6 +_,11 @@
  
          public ContextKey<? extends Entity> getParam() {
              return this.param;

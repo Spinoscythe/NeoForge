@@ -1,9 +1,35 @@
 --- a/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientCommonPacketListenerImpl.java
-@@ -91,6 +_,10 @@
+@@ -10,7 +_,6 @@
+ import java.nio.file.Path;
+ import java.time.Duration;
+ import java.util.ArrayList;
+-import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
+@@ -39,7 +_,6 @@
+ import net.minecraft.client.resources.server.DownloadedPackSource;
+ import net.minecraft.client.telemetry.WorldSessionTelemetryManager;
+ import net.minecraft.core.Holder;
+-import net.minecraft.nbt.Tag;
+ import net.minecraft.network.Connection;
+ import net.minecraft.network.DisconnectionDetails;
+ import net.minecraft.network.ServerboundPacketListener;
+@@ -60,7 +_,6 @@
+ import net.minecraft.network.protocol.common.ClientboundShowDialogPacket;
+ import net.minecraft.network.protocol.common.ClientboundStoreCookiePacket;
+ import net.minecraft.network.protocol.common.ClientboundTransferPacket;
+-import net.minecraft.network.protocol.common.ServerboundCustomClickActionPacket;
+ import net.minecraft.network.protocol.common.ServerboundKeepAlivePacket;
+ import net.minecraft.network.protocol.common.ServerboundPongPacket;
+ import net.minecraft.network.protocol.common.ServerboundResourcePackPacket;
+@@ -94,8 +_,10 @@
      protected final Map<ResourceLocation, byte[]> serverCookies;
      protected Map<String, String> customReportDetails;
      private ServerLinks serverLinks;
+-    protected final Map<UUID, PlayerInfo> seenPlayers;
+-    protected boolean seenInsecureChatWarning;
 +    /**
 +     * Holds the current connection type, based on the types of payloads that have been received so far.
 +     */
@@ -11,16 +37,26 @@
  
      protected ClientCommonPacketListenerImpl(Minecraft p_295454_, Connection p_294773_, CommonListenerCookie p_294647_) {
          this.minecraft = p_295454_;
-@@ -102,6 +_,8 @@
+@@ -107,8 +_,8 @@
          this.serverCookies = p_294647_.serverCookies();
          this.customReportDetails = p_294647_.customReportDetails();
          this.serverLinks = p_294647_.serverLinks();
+-        this.seenPlayers = new HashMap<>(p_294647_.seenPlayers());
+-        this.seenInsecureChatWarning = p_294647_.seenInsecureChatWarning();
 +        // Neo: Set the connection type based on the cookie from the previous phase.
 +        this.connectionType = p_294647_.connectionType();
      }
  
      public ServerLinks serverLinks() {
-@@ -153,6 +_,33 @@
+@@ -118,7 +_,6 @@
+     @Override
+     public void onPacketError(Packet p_341624_, Exception p_341639_) {
+         LOGGER.error("Failed to handle packet {}, disconnecting", p_341624_, p_341639_);
+-        ClientCommonPacketListener.super.onPacketError(p_341624_, p_341639_);
+         Optional<Path> optional = this.storeDisconnectionReport(p_341624_, p_341639_);
+         Optional<URI> optional1 = this.serverLinks.findKnownType(ServerLinks.KnownLinkType.BUG_REPORT).map(ServerLinks.Entry::link);
+         this.connection.disconnect(new DisconnectionDetails(Component.translatable("disconnect.packetError"), optional, optional1));
+@@ -161,6 +_,33 @@
  
      @Override
      public void handleCustomPayload(ClientboundCustomPayloadPacket p_295727_) {
@@ -54,7 +90,16 @@
          CustomPacketPayload custompacketpayload = p_295727_.payload();
          if (!(custompacketpayload instanceof DiscardedPayload)) {
              PacketUtils.ensureRunningOnSameThread(p_295727_, this, this.minecraft);
-@@ -346,6 +_,8 @@
+@@ -329,7 +_,7 @@
+                 serveraddress,
+                 this.serverData,
+                 false,
+-                new TransferState(this.serverCookies, this.seenPlayers, this.seenInsecureChatWarning)
++                new TransferState(this.serverCookies)
+             );
+         }
+     }
+@@ -354,6 +_,8 @@
      }
  
      public void send(Packet<?> p_295097_) {
@@ -63,7 +108,32 @@
          this.connection.send(p_295097_);
      }
  
-@@ -477,5 +_,15 @@
+@@ -409,24 +_,6 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    protected abstract class CommonDialogAccess implements DialogConnectionAccess {
+-        @Override
+-        public void openDialog(Holder<Dialog> p_437297_, @Nullable Screen p_437186_) {
+-            ClientCommonPacketListenerImpl.this.showDialog(p_437297_, this, p_437186_);
+-        }
+-
+-        @Override
+-        public void sendCustomAction(ResourceLocation p_437325_, Optional<Tag> p_437224_) {
+-            ClientCommonPacketListenerImpl.this.send(new ServerboundCustomClickActionPacket(p_437325_, p_437224_));
+-        }
+-
+-        @Override
+-        public ServerLinks serverLinks() {
+-            return ClientCommonPacketListenerImpl.this.serverLinks();
+-        }
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+     record DeferredPacket(Packet<? extends ServerboundPacketListener> packet, BooleanSupplier sendCondition, long expirationTime) {
+     }
+ 
+@@ -503,5 +_,15 @@
          @OnlyIn(Dist.CLIENT)
          record PendingRequest(UUID id, URL url, String hash) {
          }

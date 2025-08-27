@@ -1,7 +1,13 @@
 --- a/net/minecraft/core/NonNullList.java
 +++ b/net/minecraft/core/NonNullList.java
-@@ -9,6 +_,28 @@
- import org.apache.commons.lang3.Validate;
+@@ -4,11 +_,33 @@
+ import java.util.AbstractList;
+ import java.util.Arrays;
+ import java.util.List;
+-import java.util.Objects;
+ import javax.annotation.Nonnull;
+ import javax.annotation.Nullable;
++import org.apache.commons.lang3.Validate;
  
  public class NonNullList<E> extends AbstractList<E> {
 +
@@ -29,3 +35,28 @@
      private final List<E> list;
      @Nullable
      private final E defaultValue;
+@@ -22,7 +_,7 @@
+     }
+ 
+     public static <E> NonNullList<E> withSize(int p_122781_, E p_122782_) {
+-        Objects.requireNonNull(p_122782_);
++        Validate.notNull(p_122782_);
+         Object[] aobject = new Object[p_122781_];
+         Arrays.fill(aobject, p_122782_);
+         return new NonNullList<>(Arrays.asList((E[])aobject), p_122782_);
+@@ -46,13 +_,13 @@
+ 
+     @Override
+     public E set(int p_122795_, E p_122796_) {
+-        Objects.requireNonNull(p_122796_);
++        Validate.notNull(p_122796_);
+         return this.list.set(p_122795_, p_122796_);
+     }
+ 
+     @Override
+     public void add(int p_122787_, E p_122788_) {
+-        Objects.requireNonNull(p_122788_);
++        Validate.notNull(p_122788_);
+         this.list.add(p_122787_, p_122788_);
+     }
+ 

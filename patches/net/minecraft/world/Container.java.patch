@@ -1,0 +1,34 @@
+--- a/net/minecraft/world/Container.java
++++ b/net/minecraft/world/Container.java
+@@ -1,12 +_,10 @@
+ package net.minecraft.world;
+ 
+ import java.util.Iterator;
+-import java.util.List;
+ import java.util.NoSuchElementException;
+ import java.util.Set;
+ import java.util.function.Predicate;
+ import net.minecraft.core.BlockPos;
+-import net.minecraft.world.entity.ContainerUser;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.Item;
+ import net.minecraft.world.item.ItemStack;
+@@ -40,14 +_,10 @@
+ 
+     boolean stillValid(Player p_18946_);
+ 
+-    default void startOpen(ContainerUser p_435573_) {
+-    }
+-
+-    default void stopOpen(ContainerUser p_432824_) {
+-    }
+-
+-    default List<ContainerUser> getEntitiesWithContainerOpen() {
+-        return List.of();
++    default void startOpen(Player p_18955_) {
++    }
++
++    default void stopOpen(Player p_18954_) {
+     }
+ 
+     default boolean canPlaceItem(int p_18952_, ItemStack p_18953_) {

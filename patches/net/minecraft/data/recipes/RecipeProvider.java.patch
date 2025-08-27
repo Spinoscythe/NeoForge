@@ -1,6 +1,33 @@
 --- a/net/minecraft/data/recipes/RecipeProvider.java
 +++ b/net/minecraft/data/recipes/RecipeProvider.java
-@@ -593,8 +_,7 @@
+@@ -263,17 +_,6 @@
+         this.slabBuilder(p_251848_, p_249368_, Ingredient.of(p_252133_)).unlockedBy(getHasName(p_252133_), this.has(p_252133_)).save(this.output);
+     }
+ 
+-    protected void shelf(ItemLike p_435352_, ItemLike p_432772_) {
+-        this.shaped(RecipeCategory.DECORATIONS, p_435352_, 6)
+-            .define('#', p_432772_)
+-            .pattern("###")
+-            .pattern("   ")
+-            .pattern("###")
+-            .group("shelf")
+-            .unlockedBy(getHasName(p_432772_), this.has(p_432772_))
+-            .save(this.output);
+-    }
+-
+     protected RecipeBuilder slabBuilder(RecipeCategory p_251707_, ItemLike p_251284_, Ingredient p_248824_) {
+         return this.shaped(p_251707_, p_251284_, 6).define('#', p_248824_).pattern("###");
+     }
+@@ -300,7 +_,7 @@
+         this.shaped(RecipeCategory.DECORATIONS, p_252355_, 6)
+             .group("hanging_sign")
+             .define('#', p_250437_)
+-            .define('X', ItemTags.CHAINS)
++            .define('X', Items.CHAIN)
+             .pattern("X X")
+             .pattern("###")
+             .pattern("###")
+@@ -604,8 +_,7 @@
      }
  
      protected void waxRecipes(FeatureFlagSet p_313879_) {
@@ -10,7 +37,7 @@
              .forEach(
                  (p_392602_, p_392603_) -> {
                      if (p_392603_.requiredFeatures().isSubsetOf(p_313879_)) {
-@@ -783,13 +_,13 @@
+@@ -794,13 +_,13 @@
                          final List<CompletableFuture<?>> list = new ArrayList<>();
                          RecipeOutput recipeoutput = new RecipeOutput() {
                              @Override
@@ -27,7 +54,7 @@
                                      }
                                  }
                              }
-@@ -808,15 +_,21 @@
+@@ -819,15 +_,21 @@
                              }
  
                              private void saveRecipe(ResourceKey<Recipe<?>> p_380099_, Recipe<?> p_364792_) {

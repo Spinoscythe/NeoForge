@@ -1,0 +1,22 @@
+--- a/net/minecraft/data/loot/packs/VanillaEntityLoot.java
++++ b/net/minecraft/data/loot/packs/VanillaEntityLoot.java
+@@ -177,19 +_,6 @@
+                 )
+         );
+         this.add(
+-            EntityType.COPPER_GOLEM,
+-            LootTable.lootTable()
+-                .withPool(
+-                    LootPool.lootPool()
+-                        .setRolls(ConstantValue.exactly(1.0F))
+-                        .add(
+-                            LootItem.lootTableItem(Items.COPPER_INGOT)
+-                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 3.0F)))
+-                                .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0.0F, 1.0F)))
+-                        )
+-                )
+-        );
+-        this.add(
+             EntityType.COW,
+             LootTable.lootTable()
+                 .withPool(

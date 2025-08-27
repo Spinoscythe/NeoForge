@@ -1,0 +1,44 @@
+--- a/net/minecraft/world/level/block/entity/EnderChestBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/EnderChestBlockEntity.java
+@@ -4,7 +_,6 @@
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.sounds.SoundSource;
+ import net.minecraft.world.Container;
+-import net.minecraft.world.entity.ContainerUser;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.Blocks;
+@@ -47,7 +_,7 @@
+         }
+ 
+         @Override
+-        public boolean isOwnContainer(Player p_155529_) {
++        protected boolean isOwnContainer(Player p_155529_) {
+             return p_155529_.getEnderChestInventory().isActiveChest(EnderChestBlockEntity.this);
+         }
+     };
+@@ -70,18 +_,15 @@
+         }
+     }
+ 
+-    public void startOpen(ContainerUser p_434152_) {
+-        if (!this.remove && !p_434152_.getLivingEntity().isSpectator()) {
+-            this.openersCounter
+-                .incrementOpeners(
+-                    p_434152_.getLivingEntity(), this.getLevel(), this.getBlockPos(), this.getBlockState(), p_434152_.getContainerInteractionRange()
+-                );
++    public void startOpen(Player p_155516_) {
++        if (!this.remove && !p_155516_.isSpectator()) {
++            this.openersCounter.incrementOpeners(p_155516_, this.getLevel(), this.getBlockPos(), this.getBlockState());
+         }
+     }
+ 
+-    public void stopOpen(ContainerUser p_433112_) {
+-        if (!this.remove && !p_433112_.getLivingEntity().isSpectator()) {
+-            this.openersCounter.decrementOpeners(p_433112_.getLivingEntity(), this.getLevel(), this.getBlockPos(), this.getBlockState());
++    public void stopOpen(Player p_155523_) {
++        if (!this.remove && !p_155523_.isSpectator()) {
++            this.openersCounter.decrementOpeners(p_155523_, this.getLevel(), this.getBlockPos(), this.getBlockState());
+         }
+     }
+ 

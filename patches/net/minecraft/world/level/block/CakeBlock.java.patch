@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/CakeBlock.java
++++ b/net/minecraft/world/level/block/CakeBlock.java
+@@ -70,7 +_,7 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_316481_, Level p_316406_, BlockPos p_316218_, Player p_316212_, BlockHitResult p_316525_) {
+-        if (p_316406_.isClientSide()) {
++        if (p_316406_.isClientSide) {
+             if (eat(p_316406_, p_316218_, p_316481_, p_316212_).consumesAction()) {
+                 return InteractionResult.SUCCESS;
+             }
+@@ -129,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_51198_, Level p_51199_, BlockPos p_51200_, Direction p_432904_) {
++    protected int getAnalogOutputSignal(BlockState p_51198_, Level p_51199_, BlockPos p_51200_) {
+         return getOutputSignal(p_51198_.getValue(BITES));
+     }
+ 

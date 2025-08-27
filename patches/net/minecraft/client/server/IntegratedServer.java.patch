@@ -1,6 +1,48 @@
 --- a/net/minecraft/client/server/IntegratedServer.java
 +++ b/net/minecraft/client/server/IntegratedServer.java
-@@ -71,10 +_,12 @@
+@@ -14,19 +_,14 @@
+ import net.minecraft.SystemReport;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.components.toasts.SystemToast;
+-import net.minecraft.core.BlockPos;
+-import net.minecraft.core.GlobalPos;
+-import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.Services;
+ import net.minecraft.server.WorldStem;
+ import net.minecraft.server.level.ServerPlayer;
+-import net.minecraft.server.level.progress.LevelLoadListener;
++import net.minecraft.server.level.progress.ChunkProgressListenerFactory;
+ import net.minecraft.server.packs.repository.PackRepository;
+-import net.minecraft.server.players.NameAndId;
+ import net.minecraft.stats.Stats;
+ import net.minecraft.util.ModCheck;
+-import net.minecraft.util.ProblemReporter;
+ import net.minecraft.util.debugchart.LocalSampleLogger;
+ import net.minecraft.util.profiling.Profiler;
+ import net.minecraft.util.profiling.ProfilerFiller;
+@@ -34,8 +_,6 @@
+ import net.minecraft.world.level.GameType;
+ import net.minecraft.world.level.chunk.storage.RegionStorageInfo;
+ import net.minecraft.world.level.storage.LevelStorageSource;
+-import net.minecraft.world.level.storage.TagValueInput;
+-import net.minecraft.world.level.storage.ValueInput;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ import org.slf4j.Logger;
+@@ -62,9 +_,9 @@
+         PackRepository p_235251_,
+         WorldStem p_235252_,
+         Services p_235253_,
+-        LevelLoadListener p_433940_
++        ChunkProgressListenerFactory p_235254_
+     ) {
+-        super(p_235248_, p_235250_, p_235251_, p_235252_, p_235249_.getProxy(), p_235249_.getFixerUpper(), p_235253_, p_433940_);
++        super(p_235248_, p_235250_, p_235251_, p_235252_, p_235249_.getProxy(), p_235249_.getFixerUpper(), p_235253_, p_235254_);
+         this.setSingleplayerProfile(p_235249_.getGameProfile());
+         this.setDemo(p_235249_.isDemo());
+         this.setPlayerList(new IntegratedPlayerList(this, this.registries(), this.playerDataStorage));
+@@ -78,10 +_,12 @@
          this.setPvpAllowed(true);
          this.setFlightAllowed(true);
          this.initializeKeyPair();
@@ -13,7 +55,48 @@
          return true;
      }
  
-@@ -218,6 +_,7 @@
+@@ -93,7 +_,7 @@
+     @Override
+     public void tickServer(BooleanSupplier p_120049_) {
+         boolean flag = this.paused;
+-        this.paused = Minecraft.getInstance().isPaused() || this.getPlayerList().getPlayers().isEmpty();
++        this.paused = Minecraft.getInstance().isPaused();
+         ProfilerFiller profilerfiller = Profiler.get();
+         if (!flag && this.paused) {
+             profilerfiller.push("autoSave");
+@@ -102,10 +_,11 @@
+             profilerfiller.pop();
+         }
+ 
+-        if (this.paused) {
++        boolean flag1 = Minecraft.getInstance().getConnection() != null;
++        if (flag1 && this.paused) {
+             this.tickPaused();
+         } else {
+-            if (flag) {
++            if (flag && !this.paused) {
+                 this.forceTimeSynchronization();
+             }
+ 
+@@ -135,8 +_,6 @@
+     }
+ 
+     private void tickPaused() {
+-        this.tickConnection();
+-
+         for (ServerPlayer serverplayer : this.getPlayerList().getPlayers()) {
+             serverplayer.awardStat(Stats.TOTAL_WORLD_TIME);
+         }
+@@ -202,7 +_,7 @@
+             this.lanPinger.start();
+             this.publishedGameType = p_120041_;
+             this.getPlayerList().setAllowCommandsForAllPlayers(p_120042_);
+-            int i = this.getProfilePermissions(this.minecraft.player.nameAndId());
++            int i = this.getProfilePermissions(this.minecraft.player.getGameProfile());
+             this.minecraft.player.setPermissionLevel(i);
+ 
+             for (ServerPlayer serverplayer : this.getPlayerList().getPlayers()) {
+@@ -226,6 +_,7 @@
  
      @Override
      public void halt(boolean p_120053_) {
@@ -21,3 +104,40 @@
          this.executeBlocking(() -> {
              for (ServerPlayer serverplayer : Lists.newArrayList(this.getPlayerList().getPlayers())) {
                  if (!serverplayer.getUUID().equals(this.uuid)) {
+@@ -276,8 +_,8 @@
+     }
+ 
+     @Override
+-    public boolean isSingleplayerOwner(NameAndId p_433537_) {
+-        return this.getSingleplayerProfile() != null && p_433537_.name().equalsIgnoreCase(this.getSingleplayerProfile().getName());
++    public boolean isSingleplayerOwner(GameProfile p_120045_) {
++        return this.getSingleplayerProfile() != null && p_120045_.getName().equalsIgnoreCase(this.getSingleplayerProfile().getName());
+     }
+ 
+     @Override
+@@ -294,25 +_,6 @@
+     @Override
+     public GameType getForcedGameType() {
+         return this.isPublished() && !this.isHardcore() ? MoreObjects.firstNonNull(this.publishedGameType, this.worldData.getGameType()) : null;
+-    }
+-
+-    @Override
+-    public GlobalPos selectLevelLoadFocusPos() {
+-        CompoundTag compoundtag = this.worldData.getLoadedPlayerTag();
+-        if (compoundtag == null) {
+-            return super.selectLevelLoadFocusPos();
+-        } else {
+-            try (ProblemReporter.ScopedCollector problemreporter$scopedcollector = new ProblemReporter.ScopedCollector(LOGGER)) {
+-                ValueInput valueinput = TagValueInput.create(problemreporter$scopedcollector, this.registryAccess(), compoundtag);
+-                ServerPlayer.SavedPosition serverplayer$savedposition = valueinput.read(ServerPlayer.SavedPosition.MAP_CODEC)
+-                    .orElse(ServerPlayer.SavedPosition.EMPTY);
+-                if (serverplayer$savedposition.dimension().isPresent() && serverplayer$savedposition.position().isPresent()) {
+-                    return new GlobalPos(serverplayer$savedposition.dimension().get(), BlockPos.containing(serverplayer$savedposition.position().get()));
+-                }
+-            }
+-
+-            return super.selectLevelLoadFocusPos();
+-        }
+     }
+ 
+     @Override

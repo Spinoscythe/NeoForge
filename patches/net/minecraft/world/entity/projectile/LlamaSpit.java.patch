@@ -8,3 +8,32 @@
          this.hitTargetOrDeflectSelf(hitresult);
          double d0 = this.getX() + vec3.x;
          double d1 = this.getY() + vec3.y;
+@@ -75,7 +_,7 @@
+     @Override
+     protected void onHitBlock(BlockHitResult p_37239_) {
+         super.onHitBlock(p_37239_);
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.discard();
+         }
+     }
+@@ -87,13 +_,15 @@
+     @Override
+     public void recreateFromPacket(ClientboundAddEntityPacket p_150162_) {
+         super.recreateFromPacket(p_150162_);
+-        Vec3 vec3 = p_150162_.getMovement();
++        double d0 = p_150162_.getXa();
++        double d1 = p_150162_.getYa();
++        double d2 = p_150162_.getZa();
+ 
+         for (int i = 0; i < 7; i++) {
+-            double d0 = 0.4 + 0.1 * i;
+-            this.level().addParticle(ParticleTypes.SPIT, this.getX(), this.getY(), this.getZ(), vec3.x * d0, vec3.y, vec3.z * d0);
++            double d3 = 0.4 + 0.1 * i;
++            this.level().addParticle(ParticleTypes.SPIT, this.getX(), this.getY(), this.getZ(), d0 * d3, d1, d2 * d3);
+         }
+ 
+-        this.setDeltaMovement(vec3);
++        this.setDeltaMovement(d0, d1, d2);
+     }
+ }

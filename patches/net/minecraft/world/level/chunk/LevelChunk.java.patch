@@ -17,11 +17,22 @@
                      ProfilerFiller profilerfiller = Profiler.get();
                      profilerfiller.push("updateSkyLightSources");
                      this.skyLightSources.update(this, j, i, l);
+@@ -297,8 +_,8 @@
+                 boolean flag4 = !blockstate.is(block);
+                 boolean flag2 = (p_393859_ & 64) != 0;
+                 boolean flag3 = (p_393859_ & 256) == 0;
+-                if (flag4 && blockstate.hasBlockEntity() && !p_62866_.shouldChangedStateKeepBlockEntity(blockstate)) {
+-                    if (!this.level.isClientSide() && flag3) {
++                if (flag4 && blockstate.hasBlockEntity()) {
++                    if (!this.level.isClientSide && flag3) {
+                         BlockEntity blockentity = this.level.getBlockEntity(p_62865_);
+                         if (blockentity != null) {
+                             blockentity.preRemoveSideEffects(p_62865_, blockstate);
 @@ -315,7 +_,7 @@
                  if (!levelchunksection.getBlockState(j, k, l).is(block)) {
                      return null;
                  } else {
--                    if (!this.level.isClientSide && (p_393859_ & 512) == 0) {
+-                    if (!this.level.isClientSide() && (p_393859_ & 512) == 0) {
 +                    if (!this.level.isClientSide && !this.level.captureBlockSnapshots && (p_393859_ & 512) == 0) {
                          p_62866_.onPlace(this.level, p_62865_, blockstate, flag2);
                      }

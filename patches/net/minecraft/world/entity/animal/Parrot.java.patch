@@ -13,15 +13,26 @@
      static final Map<EntityType<?>, SoundEvent> MOB_SOUND_MAP = Util.make(Maps.newHashMap(), p_415269_ -> {
          p_415269_.put(EntityType.BLAZE, SoundEvents.PARROT_IMITATE_BLAZE);
          p_415269_.put(EntityType.BOGGED, SoundEvents.PARROT_IMITATE_BOGGED);
-@@ -266,7 +_,7 @@
+@@ -265,8 +_,8 @@
+                     );
              }
  
-             if (!this.level().isClientSide) {
+-            if (!this.level().isClientSide()) {
 -                if (this.random.nextInt(10) == 0) {
++            if (!this.level().isClientSide) {
 +                if (this.random.nextInt(10) == 0 && !net.neoforged.neoforge.event.EventHooks.onAnimalTame(this, p_29414_)) {
                      this.tame(p_29414_);
                      this.level().broadcastEntityEvent(this, (byte)7);
                  } else {
+@@ -277,7 +_,7 @@
+             return InteractionResult.SUCCESS;
+         } else if (!itemstack.is(ItemTags.PARROT_POISONOUS_FOOD)) {
+             if (!this.isFlying() && this.isTame() && this.isOwnedBy(p_29414_)) {
+-                if (!this.level().isClientSide()) {
++                if (!this.level().isClientSide) {
+                     this.setOrderedToSit(!this.isOrderedToSit());
+                 }
+ 
 @@ -330,7 +_,10 @@
  
      public static SoundEvent getAmbient(Level p_218239_, RandomSource p_218240_) {

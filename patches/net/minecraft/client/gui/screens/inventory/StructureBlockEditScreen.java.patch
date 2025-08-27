@@ -1,0 +1,25 @@
+--- a/net/minecraft/client/gui/screens/inventory/StructureBlockEditScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/StructureBlockEditScreen.java
+@@ -235,6 +_,11 @@
+     }
+ 
+     @Override
++    public void renderBackground(GuiGraphics p_333749_, int p_333882_, int p_333946_, float p_334094_) {
++        this.renderTransparentBackground(p_333749_);
++    }
++
++    @Override
+     public void resize(Minecraft p_99411_, int p_99412_, int p_99413_) {
+         String s = this.nameEdit.getValue();
+         String s1 = this.posXEdit.getValue();
+@@ -463,10 +_,5 @@
+     @Override
+     public boolean isPauseScreen() {
+         return false;
+-    }
+-
+-    @Override
+-    public boolean isInGameUi() {
+-        return true;
+     }
+ }

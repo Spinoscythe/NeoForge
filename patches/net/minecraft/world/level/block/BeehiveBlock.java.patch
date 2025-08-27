@@ -1,11 +1,88 @@
 --- a/net/minecraft/world/level/block/BeehiveBlock.java
 +++ b/net/minecraft/world/level/block/BeehiveBlock.java
-@@ -139,7 +_,7 @@
+@@ -23,6 +_,7 @@
+ import net.minecraft.world.InteractionHand;
+ import net.minecraft.world.InteractionResult;
+ import net.minecraft.world.entity.Entity;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.animal.Bee;
+ import net.minecraft.world.entity.boss.wither.WitherBoss;
+ import net.minecraft.world.entity.item.ItemEntity;
+@@ -53,7 +_,6 @@
+ import net.minecraft.world.level.block.state.properties.EnumProperty;
+ import net.minecraft.world.level.block.state.properties.IntegerProperty;
+ import net.minecraft.world.level.gameevent.GameEvent;
+-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+ import net.minecraft.world.level.storage.loot.LootParams;
+ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+ import net.minecraft.world.phys.AABB;
+@@ -65,6 +_,7 @@
+     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
+     public static final IntegerProperty HONEY_LEVEL = BlockStateProperties.LEVEL_HONEY;
+     public static final int MAX_HONEY_LEVELS = 5;
++    private static final int SHEARED_HONEYCOMB_COUNT = 3;
+ 
+     @Override
+     public MapCodec<BeehiveBlock> codec() {
+@@ -82,14 +_,14 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_49620_, Level p_49621_, BlockPos p_49622_, Direction p_435261_) {
++    protected int getAnalogOutputSignal(BlockState p_49620_, Level p_49621_, BlockPos p_49622_) {
+         return p_49620_.getValue(HONEY_LEVEL);
+     }
+ 
+     @Override
+     public void playerDestroy(Level p_49584_, Player p_49585_, BlockPos p_49586_, BlockState p_49587_, @Nullable BlockEntity p_49588_, ItemStack p_49589_) {
+         super.playerDestroy(p_49584_, p_49585_, p_49586_, p_49587_, p_49588_, p_49589_);
+-        if (!p_49584_.isClientSide() && p_49588_ instanceof BeehiveBlockEntity beehiveblockentity) {
++        if (!p_49584_.isClientSide && p_49588_ instanceof BeehiveBlockEntity beehiveblockentity) {
+             if (!EnchantmentHelper.hasTag(p_49589_, EnchantmentTags.PREVENTS_BEE_SPAWNS_WHEN_MINING)) {
+                 beehiveblockentity.emptyAllLivingFromHive(p_49585_, p_49587_, BeehiveBlockEntity.BeeReleaseStatus.EMERGENCY);
+                 Containers.updateNeighboursAfterDestroy(p_49587_, p_49584_, p_49586_);
+@@ -126,18 +_,8 @@
+         }
+     }
+ 
+-    public static void dropHoneycomb(
+-        ServerLevel p_435951_, ItemStack p_435562_, BlockState p_434197_, @Nullable BlockEntity p_433832_, @Nullable Entity p_433602_, BlockPos p_49602_
+-    ) {
+-        dropFromBlockInteractLootTable(
+-            p_435951_,
+-            BuiltInLootTables.HARVEST_BEEHIVE,
+-            p_434197_,
+-            p_433832_,
+-            p_435562_,
+-            p_433602_,
+-            (p_434111_, p_434054_) -> popResource(p_434111_, p_49602_, p_434054_)
+-        );
++    public static void dropHoneycomb(Level p_49601_, BlockPos p_49602_) {
++        popResource(p_49601_, p_49602_, new ItemStack(Items.HONEYCOMB, 3));
+     }
+ 
+     @Override
+@@ -148,10 +_,10 @@
          boolean flag = false;
          if (i >= 5) {
              Item item = p_316844_.getItem();
--            if (p_316844_.is(Items.SHEARS)) {
+-            if (p_316306_ instanceof ServerLevel serverlevel && p_316844_.is(Items.SHEARS)) {
+-                dropHoneycomb(serverlevel, p_316844_, p_316365_, p_316306_.getBlockEntity(p_316497_), p_316824_, p_316497_);
+-                p_316306_.playSound(null, p_316824_.getX(), p_316824_.getY(), p_316824_.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
+-                p_316844_.hurtAndBreak(1, p_316824_, p_316436_.asEquipmentSlot());
 +            if (p_316844_.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHEARS_HARVEST)) {
-                 p_316306_.playSound(p_316824_, p_316824_.getX(), p_316824_.getY(), p_316824_.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
-                 dropHoneycomb(p_316306_, p_316497_);
-                 p_316844_.hurtAndBreak(1, p_316824_, LivingEntity.getSlotForHand(p_316436_));
++                p_316306_.playSound(p_316824_, p_316824_.getX(), p_316824_.getY(), p_316824_.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
++                dropHoneycomb(p_316306_, p_316497_);
++                p_316844_.hurtAndBreak(1, p_316824_, LivingEntity.getSlotForHand(p_316436_));
+                 flag = true;
+                 p_316306_.gameEvent(p_316824_, GameEvent.SHEAR, p_316497_);
+             } else if (p_316844_.is(Items.GLASS_BOTTLE)) {
+@@ -278,7 +_,7 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_152180_, BlockState p_152181_, BlockEntityType<T> p_152182_) {
+-        return p_152180_.isClientSide() ? null : createTickerHelper(p_152182_, BlockEntityType.BEEHIVE, BeehiveBlockEntity::serverTick);
++        return p_152180_.isClientSide ? null : createTickerHelper(p_152182_, BlockEntityType.BEEHIVE, BeehiveBlockEntity::serverTick);
+     }
+ 
+     @Override

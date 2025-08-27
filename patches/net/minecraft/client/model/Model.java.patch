@@ -1,6 +1,20 @@
 --- a/net/minecraft/client/model/Model.java
 +++ b/net/minecraft/client/model/Model.java
-@@ -22,6 +_,10 @@
+@@ -7,12 +_,11 @@
+ import net.minecraft.client.model.geom.ModelPart;
+ import net.minecraft.client.renderer.RenderType;
+ import net.minecraft.resources.ResourceLocation;
+-import net.minecraft.util.Unit;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public abstract class Model<S> {
++public abstract class Model {
+     protected final ModelPart root;
+     protected final Function<ResourceLocation, RenderType> renderType;
+     private final List<ModelPart> allParts;
+@@ -23,6 +_,10 @@
          this.allParts = p_368583_.getAllParts();
      }
  
@@ -11,3 +25,28 @@
      public final RenderType renderType(ResourceLocation p_103120_) {
          return this.renderType.apply(p_103120_);
      }
+@@ -43,10 +_,6 @@
+         return this.allParts;
+     }
+ 
+-    public void setupAnim(S p_435637_) {
+-        this.resetPose();
+-    }
+-
+     public final void resetPose() {
+         for (ModelPart modelpart : this.allParts) {
+             modelpart.resetPose();
+@@ -54,12 +_,9 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    public static class Simple extends Model<Unit> {
++    public static class Simple extends Model {
+         public Simple(ModelPart p_364140_, Function<ResourceLocation, RenderType> p_364753_) {
+             super(p_364140_, p_364753_);
+-        }
+-
+-        public void setupAnim(Unit p_434895_) {
+         }
+     }
+ }

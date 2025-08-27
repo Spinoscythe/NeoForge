@@ -1,0 +1,48 @@
+--- a/net/minecraft/client/renderer/special/TridentSpecialRenderer.java
++++ b/net/minecraft/client/renderer/special/TridentSpecialRenderer.java
+@@ -1,12 +_,14 @@
+ package net.minecraft.client.renderer.special;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import com.mojang.serialization.MapCodec;
+ import java.util.Set;
+ import net.minecraft.client.model.TridentModel;
++import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.util.Unit;
++import net.minecraft.client.renderer.MultiBufferSource;
++import net.minecraft.client.renderer.entity.ItemRenderer;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -21,11 +_,12 @@
+     }
+ 
+     @Override
+-    public void submit(ItemDisplayContext p_439415_, PoseStack p_440271_, SubmitNodeCollector p_439029_, int p_440435_, int p_440161_, boolean p_439212_) {
+-        p_440271_.pushPose();
+-        p_440271_.scale(1.0F, -1.0F, -1.0F);
+-        p_439029_.submitModel(this.model, Unit.INSTANCE, p_440271_, this.model.renderType(TridentModel.TEXTURE), p_440435_, p_440161_, 0, null);
+-        p_440271_.popPose();
++    public void render(ItemDisplayContext p_387547_, PoseStack p_386661_, MultiBufferSource p_386541_, int p_387525_, int p_388595_, boolean p_388045_) {
++        p_386661_.pushPose();
++        p_386661_.scale(1.0F, -1.0F, -1.0F);
++        VertexConsumer vertexconsumer = ItemRenderer.getFoilBuffer(p_386541_, this.model.renderType(TridentModel.TEXTURE), false, p_388045_);
++        this.model.renderToBuffer(p_386661_, vertexconsumer, p_387525_, p_388595_);
++        p_386661_.popPose();
+     }
+ 
+     @Override
+@@ -45,8 +_,8 @@
+         }
+ 
+         @Override
+-        public SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext p_434124_) {
+-            return new TridentSpecialRenderer(new TridentModel(p_434124_.entityModelSet().bakeLayer(ModelLayers.TRIDENT)));
++        public SpecialModelRenderer<?> bake(EntityModelSet p_386553_) {
++            return new TridentSpecialRenderer(new TridentModel(p_386553_.bakeLayer(ModelLayers.TRIDENT)));
+         }
+     }
+ }

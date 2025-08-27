@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/gui/screens/options/ChatOptionsScreen.java
++++ b/net/minecraft/client/gui/screens/options/ChatOptionsScreen.java
+@@ -29,8 +_,7 @@
+             p_345277_.autoSuggestions(),
+             p_345277_.hideMatchedNames(),
+             p_345277_.reducedDebugInfo(),
+-            p_345277_.onlyShowSecureChat(),
+-            p_345277_.saveChatDrafts()
++            p_345277_.onlyShowSecureChat()
+         };
+     }
+ 

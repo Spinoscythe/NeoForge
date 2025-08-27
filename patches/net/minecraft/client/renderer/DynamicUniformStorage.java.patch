@@ -1,0 +1,20 @@
+--- a/net/minecraft/client/renderer/DynamicUniformStorage.java
++++ b/net/minecraft/client/renderer/DynamicUniformStorage.java
+@@ -62,7 +_,7 @@
+         } else {
+             if (this.nextBlock >= this.capacity) {
+                 int i = this.capacity * 2;
+-                LOGGER.info("Resizing {}, capacity limit of {} reached during a single frame. New capacity will be {}.", this.label, this.capacity, i);
++                LOGGER.info("Resizing " + this.label + ", capacity limit of {} reached during a single frame. New capacity will be {}.", this.capacity, i);
+                 this.resizeBuffers(i);
+             }
+ 
+@@ -86,7 +_,7 @@
+         } else {
+             if (this.nextBlock + p_418454_.length > this.capacity) {
+                 int i = Mth.smallestEncompassingPowerOfTwo(Math.max(this.capacity + 1, p_418454_.length));
+-                LOGGER.info("Resizing {}, capacity limit of {} reached during a single frame. New capacity will be {}.", this.label, this.capacity, i);
++                LOGGER.info("Resizing " + this.label + ", capacity limit of {} reached during a single frame. New capacity will be {}.", this.capacity, i);
+                 this.resizeBuffers(i);
+             }
+ 

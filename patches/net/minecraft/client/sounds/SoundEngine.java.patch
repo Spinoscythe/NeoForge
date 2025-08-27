@@ -16,7 +16,48 @@
      }
  
      private synchronized void loadLibrary() {
-@@ -351,7 +_,9 @@
+@@ -106,6 +_,7 @@
+                 String s = this.options.soundDevice().get();
+                 this.library.init("".equals(s) ? null : s, this.options.directionalAudio().get());
+                 this.listener.reset();
++                this.listener.setGain(this.options.getSoundSourceVolume(SoundSource.MASTER));
+                 this.soundBuffers.preload(this.preloadQueue).thenRun(this.preloadQueue::clear);
+                 this.loaded = true;
+                 LOGGER.info(MARKER, "Sound engine started");
+@@ -115,16 +_,24 @@
+         }
+     }
+ 
+-    public void updateCategoryVolume(SoundSource p_120261_) {
++    private float getVolume(@Nullable SoundSource p_428781_) {
++        return p_428781_ != null && p_428781_ != SoundSource.MASTER ? this.options.getSoundSourceVolume(p_428781_) : 1.0F;
++    }
++
++    public void updateCategoryVolume(SoundSource p_120261_, float p_428780_) {
+         if (this.loaded) {
+-            if ((p_120261_ == SoundSource.MASTER || p_120261_ == SoundSource.MUSIC) && this.options.getFinalSoundSourceVolume(SoundSource.MUSIC) > 0.0F) {
+-                this.musicManager.showNowPlayingToastIfNeeded();
++            if (p_120261_ == SoundSource.MASTER) {
++                this.listener.setGain(p_428780_);
++            } else {
++                if (p_120261_ == SoundSource.MUSIC && this.options.getSoundSourceVolume(SoundSource.MUSIC) > 0.0F) {
++                    this.musicManager.showNowPlayingToastIfNeeded();
++                }
++
++                this.instanceToChannel.forEach((p_120280_, p_120281_) -> {
++                    float f = this.calculateVolume(p_120280_);
++                    p_120281_.execute(p_425183_ -> p_425183_.setVolume(f));
++                });
+             }
+-
+-            this.instanceToChannel.forEach((p_120280_, p_120281_) -> {
+-                float f = this.calculateVolume(p_120280_);
+-                p_120281_.execute(p_425183_ -> p_425183_.setVolume(f));
+-            });
+         }
+     }
+ 
+@@ -342,7 +_,9 @@
      public SoundEngine.PlayResult play(SoundInstance p_120313_) {
          if (!this.loaded) {
              return SoundEngine.PlayResult.NOT_STARTED;
@@ -27,23 +68,114 @@
              return SoundEngine.PlayResult.NOT_STARTED;
          } else {
              WeighedSoundEvents weighedsoundevents = p_120313_.resolve(this.soundManager);
-@@ -432,15 +_,18 @@
-                                 p_194488_.setSelfPosition(vec3);
-                                 p_194488_.setRelative(flag);
-                             });
-+                            final SoundInstance soundinstance = p_120313_;
-                             if (!flag1) {
-                                 this.soundBuffers.getCompleteBuffer(sound.getPath()).thenAccept(p_383126_ -> channelaccess$channelhandle.execute(p_194495_ -> {
-                                     p_194495_.attachStaticBuffer(p_383126_);
-                                     p_194495_.play();
-+                                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.sound.PlaySoundSourceEvent(this, soundinstance, p_194495_));
-                                 }));
-                             } else {
--                                this.soundBuffers.getStream(sound.getPath(), flag3).thenAccept(p_383033_ -> channelaccess$channelhandle.execute(p_194498_ -> {
-+                                soundinstance.getStream(this.soundBuffers, sound, flag3).thenAccept(p_383033_ -> channelaccess$channelhandle.execute(p_194498_ -> {
-                                     p_194498_.attachBufferStream(p_383033_);
-                                     p_194498_.play();
-+                                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.sound.PlayStreamingSourceEvent(this, soundinstance, p_194498_));
-                                 }));
+@@ -390,52 +_,60 @@
+                     }
+ 
+                     Vec3 vec3 = new Vec3(p_120313_.getX(), p_120313_.getY(), p_120313_.getZ());
+-                    boolean flag3 = shouldLoopAutomatically(p_120313_);
+-                    boolean flag1 = sound.shouldStream();
+-                    CompletableFuture<ChannelAccess.ChannelHandle> completablefuture = this.channelAccess
+-                        .createHandle(sound.shouldStream() ? Library.Pool.STREAMING : Library.Pool.STATIC);
+-                    ChannelAccess.ChannelHandle channelaccess$channelhandle = completablefuture.join();
+-                    if (channelaccess$channelhandle == null) {
+-                        if (SharedConstants.IS_RUNNING_IN_IDE) {
+-                            LOGGER.warn("Failed to create new sound handle");
+-                        }
+-
++                    if (this.listener.getGain() <= 0.0F && soundsource != SoundSource.MUSIC) {
++                        LOGGER.debug(MARKER, "Skipped playing soundEvent: {}, master volume was zero", resourcelocation);
+                         return SoundEngine.PlayResult.NOT_STARTED;
+                     } else {
+-                        LOGGER.debug(MARKER, "Playing sound {} for event {}", sound.getLocation(), resourcelocation);
+-                        this.soundDeleteTime.put(p_120313_, this.tickCount + 20);
+-                        this.instanceToChannel.put(p_120313_, channelaccess$channelhandle);
+-                        this.instanceBySource.put(soundsource, p_120313_);
+-                        channelaccess$channelhandle.execute(p_194488_ -> {
+-                            p_194488_.setPitch(f3);
+-                            p_194488_.setVolume(f2);
+-                            if (soundinstance$attenuation == SoundInstance.Attenuation.LINEAR) {
+-                                p_194488_.linearAttenuation(f1);
+-                            } else {
+-                                p_194488_.disableAttenuation();
++                        boolean flag3 = shouldLoopAutomatically(p_120313_);
++                        boolean flag1 = sound.shouldStream();
++                        CompletableFuture<ChannelAccess.ChannelHandle> completablefuture = this.channelAccess
++                            .createHandle(sound.shouldStream() ? Library.Pool.STREAMING : Library.Pool.STATIC);
++                        ChannelAccess.ChannelHandle channelaccess$channelhandle = completablefuture.join();
++                        if (channelaccess$channelhandle == null) {
++                            if (SharedConstants.IS_RUNNING_IN_IDE) {
++                                LOGGER.warn("Failed to create new sound handle");
                              }
  
+-                            p_194488_.setLooping(flag3 && !flag1);
+-                            p_194488_.setSelfPosition(vec3);
+-                            p_194488_.setRelative(flag);
+-                        });
+-                        if (!flag1) {
+-                            this.soundBuffers.getCompleteBuffer(sound.getPath()).thenAccept(p_383126_ -> channelaccess$channelhandle.execute(p_194495_ -> {
+-                                p_194495_.attachStaticBuffer(p_383126_);
+-                                p_194495_.play();
+-                            }));
++                            return SoundEngine.PlayResult.NOT_STARTED;
+                         } else {
+-                            this.soundBuffers.getStream(sound.getPath(), flag3).thenAccept(p_383033_ -> channelaccess$channelhandle.execute(p_194498_ -> {
+-                                p_194498_.attachBufferStream(p_383033_);
+-                                p_194498_.play();
+-                            }));
+-                        }
+-
+-                        if (p_120313_ instanceof TickableSoundInstance) {
+-                            this.tickingSounds.add((TickableSoundInstance)p_120313_);
+-                        }
+-
+-                        return flag2 ? SoundEngine.PlayResult.STARTED_SILENTLY : SoundEngine.PlayResult.STARTED;
++                            LOGGER.debug(MARKER, "Playing sound {} for event {}", sound.getLocation(), resourcelocation);
++                            this.soundDeleteTime.put(p_120313_, this.tickCount + 20);
++                            this.instanceToChannel.put(p_120313_, channelaccess$channelhandle);
++                            this.instanceBySource.put(soundsource, p_120313_);
++                            channelaccess$channelhandle.execute(p_194488_ -> {
++                                p_194488_.setPitch(f3);
++                                p_194488_.setVolume(f2);
++                                if (soundinstance$attenuation == SoundInstance.Attenuation.LINEAR) {
++                                    p_194488_.linearAttenuation(f1);
++                                } else {
++                                    p_194488_.disableAttenuation();
++                                }
++
++                                p_194488_.setLooping(flag3 && !flag1);
++                                p_194488_.setSelfPosition(vec3);
++                                p_194488_.setRelative(flag);
++                            });
++                            final SoundInstance soundinstance = p_120313_;
++                            if (!flag1) {
++                                this.soundBuffers.getCompleteBuffer(sound.getPath()).thenAccept(p_383126_ -> channelaccess$channelhandle.execute(p_194495_ -> {
++                                    p_194495_.attachStaticBuffer(p_383126_);
++                                    p_194495_.play();
++                                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.sound.PlaySoundSourceEvent(this, soundinstance, p_194495_));
++                                }));
++                            } else {
++                                soundinstance.getStream(this.soundBuffers, sound, flag3).thenAccept(p_383033_ -> channelaccess$channelhandle.execute(p_194498_ -> {
++                                    p_194498_.attachBufferStream(p_383033_);
++                                    p_194498_.play();
++                                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.sound.PlayStreamingSourceEvent(this, soundinstance, p_194498_));
++                                }));
++                            }
++
++                            if (p_120313_ instanceof TickableSoundInstance) {
++                                this.tickingSounds.add((TickableSoundInstance)p_120313_);
++                            }
++
++                            return flag2 ? SoundEngine.PlayResult.STARTED_SILENTLY : SoundEngine.PlayResult.STARTED;
++                        }
+                     }
+                 }
+             }
+@@ -459,7 +_,7 @@
+     }
+ 
+     private float calculateVolume(float p_235258_, SoundSource p_235259_) {
+-        return Mth.clamp(p_235258_, 0.0F, 1.0F) * Mth.clamp(this.options.getFinalSoundSourceVolume(p_235259_), 0.0F, 1.0F);
++        return Mth.clamp(p_235258_ * this.getVolume(p_235259_), 0.0F, 1.0F);
+     }
+ 
+     public void pauseAllExcept(SoundSource... p_425836_) {

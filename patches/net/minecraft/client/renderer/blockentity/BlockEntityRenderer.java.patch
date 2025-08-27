@@ -1,0 +1,31 @@
+--- a/net/minecraft/client/renderer/blockentity/BlockEntityRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/BlockEntityRenderer.java
+@@ -1,9 +_,7 @@
+ package net.minecraft.client.renderer.blockentity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+-import javax.annotation.Nullable;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.world.level.block.entity.BlockEntity;
+ import net.minecraft.world.phys.Vec3;
+ import net.neoforged.api.distmarker.Dist;
+@@ -11,16 +_,7 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public interface BlockEntityRenderer<T extends BlockEntity> extends net.neoforged.neoforge.client.extensions.IBlockEntityRendererExtension<T> {
+-    void submit(
+-        T p_112307_,
+-        float p_112308_,
+-        PoseStack p_112309_,
+-        int p_112311_,
+-        int p_112312_,
+-        Vec3 p_401186_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_439688_,
+-        SubmitNodeCollector p_440274_
+-    );
++    void render(T p_112307_, float p_112308_, PoseStack p_112309_, MultiBufferSource p_112310_, int p_112311_, int p_112312_, Vec3 p_401186_);
+ 
+     default boolean shouldRenderOffScreen() {
+         return false;

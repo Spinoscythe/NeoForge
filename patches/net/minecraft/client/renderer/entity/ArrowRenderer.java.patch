@@ -1,0 +1,48 @@
+--- a/net/minecraft/client/renderer/entity/ArrowRenderer.java
++++ b/net/minecraft/client/renderer/entity/ArrowRenderer.java
+@@ -1,11 +_,12 @@
+ package net.minecraft.client.renderer.entity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import com.mojang.math.Axis;
+ import net.minecraft.client.model.ArrowModel;
+ import net.minecraft.client.model.geom.ModelLayers;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.state.ArrowRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.resources.ResourceLocation;
+@@ -22,22 +_,15 @@
+         this.model = new ArrowModel(p_173917_.bakeLayer(ModelLayers.ARROW));
+     }
+ 
+-    public void submit(S p_433387_, PoseStack p_435722_, SubmitNodeCollector p_432834_) {
+-        p_435722_.pushPose();
+-        p_435722_.mulPose(Axis.YP.rotationDegrees(p_433387_.yRot - 90.0F));
+-        p_435722_.mulPose(Axis.ZP.rotationDegrees(p_433387_.xRot));
+-        p_432834_.submitModel(
+-            this.model,
+-            p_433387_,
+-            p_435722_,
+-            RenderType.entityCutout(this.getTextureLocation(p_433387_)),
+-            p_433387_.lightCoords,
+-            OverlayTexture.NO_OVERLAY,
+-            p_433387_.outlineColor,
+-            null
+-        );
+-        p_435722_.popPose();
+-        super.submit(p_433387_, p_435722_, p_432834_);
++    public void render(S p_361021_, PoseStack p_113822_, MultiBufferSource p_113823_, int p_113824_) {
++        p_113822_.pushPose();
++        p_113822_.mulPose(Axis.YP.rotationDegrees(p_361021_.yRot - 90.0F));
++        p_113822_.mulPose(Axis.ZP.rotationDegrees(p_361021_.xRot));
++        VertexConsumer vertexconsumer = p_113823_.getBuffer(RenderType.entityCutout(this.getTextureLocation(p_361021_)));
++        this.model.setupAnim(p_361021_);
++        this.model.renderToBuffer(p_113822_, vertexconsumer, p_113824_, OverlayTexture.NO_OVERLAY);
++        p_113822_.popPose();
++        super.render(p_361021_, p_113822_, p_113823_, p_113824_);
+     }
+ 
+     protected abstract ResourceLocation getTextureLocation(S p_368566_);

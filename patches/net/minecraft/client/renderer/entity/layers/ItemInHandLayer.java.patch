@@ -1,0 +1,49 @@
+--- a/net/minecraft/client/renderer/entity/layers/ItemInHandLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/ItemInHandLayer.java
+@@ -4,7 +_,7 @@
+ import com.mojang.math.Axis;
+ import net.minecraft.client.model.ArmedModel;
+ import net.minecraft.client.model.EntityModel;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
+ import net.minecraft.client.renderer.item.ItemStackRenderState;
+@@ -19,23 +_,23 @@
+         super(p_234846_);
+     }
+ 
+-    public void submit(PoseStack p_433803_, SubmitNodeCollector p_434482_, int p_433450_, S p_434546_, float p_433047_, float p_433527_) {
+-        this.submitArmWithItem(p_434546_, p_434546_.rightHandItem, HumanoidArm.RIGHT, p_433803_, p_434482_, p_433450_);
+-        this.submitArmWithItem(p_434546_, p_434546_.leftHandItem, HumanoidArm.LEFT, p_433803_, p_434482_, p_433450_);
++    public void render(PoseStack p_117193_, MultiBufferSource p_117194_, int p_117195_, S p_386634_, float p_117197_, float p_117198_) {
++        this.renderArmWithItem(p_386634_, p_386634_.rightHandItem, HumanoidArm.RIGHT, p_117193_, p_117194_, p_117195_);
++        this.renderArmWithItem(p_386634_, p_386634_.leftHandItem, HumanoidArm.LEFT, p_117193_, p_117194_, p_117195_);
+     }
+ 
+-    protected void submitArmWithItem(
+-        S p_433403_, ItemStackRenderState p_434808_, HumanoidArm p_433781_, PoseStack p_435302_, SubmitNodeCollector p_435985_, int p_434421_
++    protected void renderArmWithItem(
++        S p_388299_, ItemStackRenderState p_388580_, HumanoidArm p_117188_, PoseStack p_117189_, MultiBufferSource p_117190_, int p_117191_
+     ) {
+-        if (!p_434808_.isEmpty()) {
+-            p_435302_.pushPose();
+-            this.getParentModel().translateToHand(p_433403_, p_433781_, p_435302_);
+-            p_435302_.mulPose(Axis.XP.rotationDegrees(-90.0F));
+-            p_435302_.mulPose(Axis.YP.rotationDegrees(180.0F));
+-            boolean flag = p_433781_ == HumanoidArm.LEFT;
+-            p_435302_.translate((flag ? -1 : 1) / 16.0F, 0.125F, -0.625F);
+-            p_434808_.submit(p_435302_, p_435985_, p_434421_, OverlayTexture.NO_OVERLAY, p_433403_.outlineColor);
+-            p_435302_.popPose();
++        if (!p_388580_.isEmpty()) {
++            p_117189_.pushPose();
++            this.getParentModel().translateToHand(p_117188_, p_117189_);
++            p_117189_.mulPose(Axis.XP.rotationDegrees(-90.0F));
++            p_117189_.mulPose(Axis.YP.rotationDegrees(180.0F));
++            boolean flag = p_117188_ == HumanoidArm.LEFT;
++            p_117189_.translate((flag ? -1 : 1) / 16.0F, 0.125F, -0.625F);
++            p_388580_.render(p_117189_, p_117190_, p_117191_, OverlayTexture.NO_OVERLAY);
++            p_117189_.popPose();
+         }
+     }
+ }

@@ -1,0 +1,17 @@
+--- a/net/minecraft/client/gui/screens/recipebook/OverlayRecipeComponent.java
++++ b/net/minecraft/client/gui/screens/recipebook/OverlayRecipeComponent.java
+@@ -109,12 +_,12 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_100186_, double p_100187_, int p_100188_, boolean p_435819_) {
++    public boolean mouseClicked(double p_100186_, double p_100187_, int p_100188_) {
+         if (p_100188_ != 0) {
+             return false;
+         } else {
+             for (OverlayRecipeComponent.OverlayRecipeButton overlayrecipecomponent$overlayrecipebutton : this.recipeButtons) {
+-                if (overlayrecipecomponent$overlayrecipebutton.mouseClicked(p_100186_, p_100187_, p_100188_, p_435819_)) {
++                if (overlayrecipecomponent$overlayrecipebutton.mouseClicked(p_100186_, p_100187_, p_100188_)) {
+                     this.lastRecipeClicked = overlayrecipecomponent$overlayrecipebutton.recipe;
+                     return true;
+                 }

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/animal/IronGolem.java
++++ b/net/minecraft/world/entity/animal/IronGolem.java
+@@ -125,7 +_,7 @@
+             this.offerFlowerTick--;
+         }
+ 
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.updatePersistentAnger((ServerLevel)this.level(), true);
+         }
+     }

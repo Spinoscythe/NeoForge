@@ -1,6 +1,41 @@
 --- a/net/minecraft/client/data/models/model/ModelTemplates.java
 +++ b/net/minecraft/client/data/models/model/ModelTemplates.java
-@@ -218,18 +_,18 @@
+@@ -131,13 +_,6 @@
+     public static final ModelTemplate CHISELED_BOOKSHELF_SLOT_BOTTOM_RIGHT = create(
+         "template_chiseled_bookshelf_slot_bottom_right", "_slot_bottom_right", TextureSlot.TEXTURE
+     );
+-    public static final ModelTemplate SHELF_BODY = create("template_shelf_body", TextureSlot.ALL);
+-    public static final ModelTemplate SHELF_INVENTORY = create("template_shelf_inventory", "_inventory", TextureSlot.ALL);
+-    public static final ModelTemplate SHELF_UNPOWERED = create("template_shelf_unpowered", "_unpowered", TextureSlot.ALL);
+-    public static final ModelTemplate SHELF_UNCONNECTED = create("template_shelf_unconnected", "_unconnected", TextureSlot.ALL);
+-    public static final ModelTemplate SHELF_LEFT = create("template_shelf_left", "_left", TextureSlot.ALL);
+-    public static final ModelTemplate SHELF_CENTER = create("template_shelf_center", "_center", TextureSlot.ALL);
+-    public static final ModelTemplate SHELF_RIGHT = create("template_shelf_right", "_right", TextureSlot.ALL);
+     public static final ModelTemplate ANVIL = create("template_anvil", TextureSlot.TOP);
+     public static final ModelTemplate[] STEMS = IntStream.range(0, 8)
+         .mapToObj(p_386777_ -> create("stem_growth" + p_386777_, "_stage" + p_386777_, TextureSlot.STEM))
+@@ -153,13 +_,6 @@
+     public static final ModelTemplate CAMPFIRE = create("template_campfire", TextureSlot.FIRE, TextureSlot.LIT_LOG);
+     public static final ModelTemplate LANTERN = create("template_lantern", TextureSlot.LANTERN);
+     public static final ModelTemplate HANGING_LANTERN = create("template_hanging_lantern", "_hanging", TextureSlot.LANTERN);
+-    public static final ModelTemplate CHAIN = create("template_chain", TextureSlot.TEXTURE);
+-    public static final ModelTemplate BARS_CAP = create("template_bars_cap", "_cap", TextureSlot.BARS, TextureSlot.EDGE);
+-    public static final ModelTemplate BARS_CAP_ALT = create("template_bars_cap_alt", "_cap_alt", TextureSlot.BARS, TextureSlot.EDGE);
+-    public static final ModelTemplate BARS_POST = create("template_bars_post", "_post", TextureSlot.BARS, TextureSlot.EDGE);
+-    public static final ModelTemplate BARS_POST_ENDS = create("template_bars_post_ends", "_post_ends", TextureSlot.BARS, TextureSlot.EDGE);
+-    public static final ModelTemplate BARS_POST_SIDE = create("template_bars_side", "_side", TextureSlot.BARS, TextureSlot.EDGE);
+-    public static final ModelTemplate BARS_POST_SIDE_ALT = create("template_bars_side_alt", "_side_alt", TextureSlot.BARS, TextureSlot.EDGE);
+     public static final ModelTemplate TORCH = create("template_torch", TextureSlot.TORCH);
+     public static final ModelTemplate TORCH_UNLIT = create("template_torch_unlit", TextureSlot.TORCH);
+     public static final ModelTemplate WALL_TORCH = create("template_torch_wall", TextureSlot.TORCH);
+@@ -226,25 +_,24 @@
+     );
+     public static final ModelTemplate VAULT = create("template_vault", TextureSlot.TOP, TextureSlot.BOTTOM, TextureSlot.SIDE, TextureSlot.FRONT);
+     public static final ModelTemplate FLAT_HANDHELD_MACE_ITEM = createItem("handheld_mace", TextureSlot.LAYER0);
+-    public static final ModelTemplate LIGHTNING_ROD = create("template_lightning_rod", TextureSlot.TEXTURE);
+ 
+     public static ModelTemplate create(TextureSlot... p_386690_) {
+         return new ModelTemplate(Optional.empty(), Optional.empty(), p_386690_);
      }
  
      public static ModelTemplate create(String p_386521_, TextureSlot... p_388561_) {

@@ -1,9 +1,103 @@
 --- a/com/mojang/blaze3d/vertex/VertexFormat.java
 +++ b/com/mojang/blaze3d/vertex/VertexFormat.java
-@@ -245,4 +_,28 @@
-             };
+@@ -15,6 +_,7 @@
+ import java.util.List;
+ import java.util.function.Supplier;
+ import javax.annotation.Nullable;
++import net.minecraft.Util;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+@@ -22,6 +_,9 @@
+ @DontObfuscate
+ public class VertexFormat {
+     public static final int UNKNOWN_ELEMENT = -1;
++    private static final boolean USE_STAGING_BUFFER_WORKAROUND = Util.getPlatform() == Util.OS.WINDOWS && Util.isAarch64();
++    @Nullable
++    private static GpuBuffer UPLOAD_STAGING_BUFFER;
+     private final List<VertexFormatElement> elements;
+     private final List<String> names;
+     private final int vertexSize;
+@@ -109,36 +_,60 @@
+ 
+     private static GpuBuffer uploadToBuffer(@Nullable GpuBuffer p_428839_, ByteBuffer p_428844_, int p_428826_, Supplier<String> p_428833_) {
+         GpuDevice gpudevice = RenderSystem.getDevice();
+-        if (GraphicsWorkarounds.get(gpudevice).alwaysCreateFreshImmediateBuffer()) {
+-            if (p_428839_ != null) {
++        if (p_428839_ == null) {
++            p_428839_ = gpudevice.createBuffer(p_428833_, p_428826_, p_428844_);
++        } else {
++            CommandEncoder commandencoder = gpudevice.createCommandEncoder();
++            if (p_428839_.size() < p_428844_.remaining()) {
+                 p_428839_.close();
+-            }
+-
+-            return gpudevice.createBuffer(p_428833_, p_428826_, p_428844_);
+-        } else {
+-            if (p_428839_ == null) {
+                 p_428839_ = gpudevice.createBuffer(p_428833_, p_428826_, p_428844_);
+             } else {
++                commandencoder.writeToBuffer(p_428839_.slice(), p_428844_);
++            }
++        }
++
++        return p_428839_;
++    }
++
++    private GpuBuffer uploadToBufferWithWorkaround(@Nullable GpuBuffer p_428850_, ByteBuffer p_428822_, int p_428845_, Supplier<String> p_428834_) {
++        GpuDevice gpudevice = RenderSystem.getDevice();
++        if (USE_STAGING_BUFFER_WORKAROUND) {
++            if (p_428850_ == null) {
++                p_428850_ = gpudevice.createBuffer(p_428834_, p_428845_, p_428822_);
++            } else {
+                 CommandEncoder commandencoder = gpudevice.createCommandEncoder();
+-                if (p_428839_.size() < p_428844_.remaining()) {
+-                    p_428839_.close();
+-                    p_428839_ = gpudevice.createBuffer(p_428833_, p_428826_, p_428844_);
++                if (p_428850_.size() < p_428822_.remaining()) {
++                    p_428850_.close();
++                    p_428850_ = gpudevice.createBuffer(p_428834_, p_428845_, p_428822_);
+                 } else {
+-                    commandencoder.writeToBuffer(p_428839_.slice(), p_428844_);
++                    UPLOAD_STAGING_BUFFER = uploadToBuffer(UPLOAD_STAGING_BUFFER, p_428822_, p_428845_, p_428834_);
++                    commandencoder.copyToBuffer(UPLOAD_STAGING_BUFFER.slice(0, p_428822_.remaining()), p_428850_.slice(0, p_428822_.remaining()));
+                 }
+             }
+ 
+-            return p_428839_;
++            return p_428850_;
++        } else if (GraphicsWorkarounds.get(gpudevice).alwaysCreateFreshImmediateBuffer()) {
++            if (p_428850_ != null) {
++                p_428850_.close();
++            }
++
++            return gpudevice.createBuffer(p_428834_, p_428845_, p_428822_);
++        } else {
++            return uploadToBuffer(p_428850_, p_428822_, p_428845_, p_428834_);
          }
      }
+ 
+     public GpuBuffer uploadImmediateVertexBuffer(ByteBuffer p_410477_) {
+-        this.immediateDrawVertexBuffer = uploadToBuffer(this.immediateDrawVertexBuffer, p_410477_, 40, () -> "Immediate vertex buffer for " + this);
++        this.immediateDrawVertexBuffer = this.uploadToBufferWithWorkaround(
++            this.immediateDrawVertexBuffer, p_410477_, 40, () -> "Immediate vertex buffer for " + this
++        );
+         return this.immediateDrawVertexBuffer;
+     }
+ 
+     public GpuBuffer uploadImmediateIndexBuffer(ByteBuffer p_410562_) {
+-        this.immediateDrawIndexBuffer = uploadToBuffer(this.immediateDrawIndexBuffer, p_410562_, 72, () -> "Immediate index buffer for " + this);
++        this.immediateDrawIndexBuffer = this.uploadToBufferWithWorkaround(
++            this.immediateDrawIndexBuffer, p_410562_, 72, () -> "Immediate index buffer for " + this
++        );
+         return this.immediateDrawIndexBuffer;
+     }
+ 
+@@ -216,5 +_,29 @@
+                 default -> 0;
+             };
+         }
++    }
 +
 +    public ImmutableMap<String, VertexFormatElement> getElementMapping() {
 +        ImmutableMap.Builder<String, VertexFormatElement> builder = ImmutableMap.builder();
@@ -27,5 +121,5 @@
 +
 +    public boolean hasUV(int which) {
 +        return elements.stream().anyMatch(e -> e.usage() == VertexFormatElement.Usage.UV && e.index() == which);
-+    }
+     }
  }

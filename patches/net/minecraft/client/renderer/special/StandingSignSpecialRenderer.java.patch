@@ -1,0 +1,55 @@
+--- a/net/minecraft/client/renderer/special/StandingSignSpecialRenderer.java
++++ b/net/minecraft/client/renderer/special/StandingSignSpecialRenderer.java
+@@ -7,11 +_,11 @@
+ import java.util.Optional;
+ import java.util.Set;
+ import net.minecraft.client.model.Model;
++import net.minecraft.client.model.geom.EntityModelSet;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.Sheets;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.blockentity.SignRenderer;
+ import net.minecraft.client.resources.model.Material;
+-import net.minecraft.client.resources.model.MaterialSet;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.minecraft.world.level.block.state.properties.WoodType;
+@@ -21,19 +_,17 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class StandingSignSpecialRenderer implements NoDataSpecialModelRenderer {
+-    private final MaterialSet materials;
+-    private final Model.Simple model;
++    private final Model model;
+     private final Material material;
+ 
+-    public StandingSignSpecialRenderer(MaterialSet p_435774_, Model.Simple p_435066_, Material p_389667_) {
+-        this.materials = p_435774_;
+-        this.model = p_435066_;
++    public StandingSignSpecialRenderer(Model p_389670_, Material p_389667_) {
++        this.model = p_389670_;
+         this.material = p_389667_;
+     }
+ 
+     @Override
+-    public void submit(ItemDisplayContext p_440327_, PoseStack p_438876_, SubmitNodeCollector p_440467_, int p_439536_, int p_439265_, boolean p_439509_) {
+-        SignRenderer.submitSpecial(this.materials, p_438876_, p_440467_, p_439536_, p_439265_, this.model, this.material);
++    public void render(ItemDisplayContext p_389518_, PoseStack p_389707_, MultiBufferSource p_389673_, int p_389471_, int p_389604_, boolean p_389437_) {
++        SignRenderer.renderInHand(p_389707_, p_389673_, p_389471_, p_389604_, this.model, this.material);
+     }
+ 
+     @Override
+@@ -63,10 +_,10 @@
+         }
+ 
+         @Override
+-        public SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext p_436063_) {
+-            Model.Simple model$simple = SignRenderer.createSignModel(p_436063_.entityModelSet(), this.woodType, true);
++        public SpecialModelRenderer<?> bake(EntityModelSet p_389399_) {
++            Model model = SignRenderer.createSignModel(p_389399_, this.woodType, true);
+             Material material = this.texture.map(Sheets.SIGN_MAPPER::apply).orElseGet(() -> Sheets.getSignMaterial(this.woodType));
+-            return new StandingSignSpecialRenderer(p_436063_.materials(), model$simple, material);
++            return new StandingSignSpecialRenderer(model, material);
+         }
+     }
+ }

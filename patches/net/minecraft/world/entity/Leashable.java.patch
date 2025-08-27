@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/Leashable.java
 +++ b/net/minecraft/world/entity/Leashable.java
+@@ -146,7 +_,7 @@
+         }
+ 
+         if (leashable$leashdata != null && leashable$leashdata.leashHolder != null) {
+-            if (!p_352082_.canInteractWithLevel() || !leashable$leashdata.leashHolder.canInteractWithLevel()) {
++            if (!p_352082_.isAlive() || !leashable$leashdata.leashHolder.isAlive()) {
+                 if (p_376374_.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+                     p_352082_.dropLeash();
+                 } else {
 @@ -189,7 +_,8 @@
  
      static <E extends Entity & Leashable> float angularFriction(E p_418015_) {
@@ -10,3 +19,12 @@
          } else {
              return p_418015_.isInLiquid() ? 0.8F : 0.91F;
          }
+@@ -332,7 +_,7 @@
+         if (leashable$leashdata == null) {
+             return null;
+         } else {
+-            if (leashable$leashdata.delayedLeashHolderId != 0 && p_352466_.level().isClientSide()) {
++            if (leashable$leashdata.delayedLeashHolderId != 0 && p_352466_.level().isClientSide) {
+                 Entity entity = p_352466_.level().getEntity(leashable$leashdata.delayedLeashHolderId);
+                 if (entity instanceof Entity) {
+                     leashable$leashdata.setLeashHolder(entity);

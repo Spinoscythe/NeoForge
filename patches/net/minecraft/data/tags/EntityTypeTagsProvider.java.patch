@@ -15,3 +15,38 @@
      }
  
      @Override
+@@ -67,13 +_,11 @@
+                 EntityType.SQUID,
+                 EntityType.TROPICAL_FISH,
+                 EntityType.TADPOLE,
+-                EntityType.ARMOR_STAND,
+-                EntityType.COPPER_GOLEM
++                EntityType.ARMOR_STAND
+             );
+         this.tag(EntityTypeTags.FROG_FOOD).add(EntityType.SLIME, EntityType.MAGMA_CUBE);
+         this.tag(EntityTypeTags.FALL_DAMAGE_IMMUNE)
+             .add(
+-                EntityType.COPPER_GOLEM,
+                 EntityType.IRON_GOLEM,
+                 EntityType.SNOW_GOLEM,
+                 EntityType.SHULKER,
+@@ -219,19 +_,5 @@
+                 EntityType.VILLAGER,
+                 EntityType.WOLF
+             );
+-        this.tag(EntityTypeTags.CANNOT_BE_PUSHED_ONTO_BOATS)
+-            .add(EntityType.PLAYER)
+-            .add(EntityType.ELDER_GUARDIAN)
+-            .add(EntityType.COD)
+-            .add(EntityType.PUFFERFISH)
+-            .add(EntityType.SALMON)
+-            .add(EntityType.TROPICAL_FISH)
+-            .add(EntityType.DOLPHIN)
+-            .add(EntityType.SQUID)
+-            .add(EntityType.GLOW_SQUID)
+-            .add(EntityType.TADPOLE)
+-            .add(EntityType.CREAKING);
+-        this.tag(EntityTypeTags.ACCEPTS_IRON_GOLEM_GIFT).add(EntityType.COPPER_GOLEM);
+-        this.tag(EntityTypeTags.CANDIDATE_FOR_IRON_GOLEM_GIFT).add(EntityType.VILLAGER).addTag(EntityTypeTags.ACCEPTS_IRON_GOLEM_GIFT);
+     }
+ }

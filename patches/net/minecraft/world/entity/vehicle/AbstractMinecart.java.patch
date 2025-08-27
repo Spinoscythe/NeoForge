@@ -1,6 +1,23 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractMinecart.java
-@@ -426,8 +_,8 @@
+@@ -347,12 +_,13 @@
+     @Override
+     public void recreateFromPacket(ClientboundAddEntityPacket p_423610_) {
+         super.recreateFromPacket(p_423610_);
+-        this.behavior.lerpMotion(this.getDeltaMovement());
++        Vec3 vec3 = this.getDeltaMovement();
++        this.behavior.lerpMotion(vec3.x, vec3.y, vec3.z);
+     }
+ 
+     @Override
+-    public void lerpMotion(Vec3 p_436686_) {
+-        this.behavior.lerpMotion(p_436686_);
++    public void lerpMotion(double p_38171_, double p_38172_, double p_38173_) {
++        this.behavior.lerpMotion(p_38171_, p_38172_, p_38173_);
+     }
+ 
+     protected void moveAlongTrack(ServerLevel p_376546_) {
+@@ -425,8 +_,8 @@
  
      public Vec3 getRedstoneDirection(BlockPos p_361470_) {
          BlockState blockstate = this.level().getBlockState(p_361470_);
@@ -11,3 +28,12 @@
              if (railshape == RailShape.EAST_WEST) {
                  if (this.isRedstoneConductor(p_361470_.west())) {
                      return new Vec3(1.0, 0.0, 0.0);
+@@ -487,7 +_,7 @@
+ 
+     @Override
+     public void push(Entity p_38165_) {
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             if (!p_38165_.noPhysics && !this.noPhysics) {
+                 if (!this.hasPassenger(p_38165_)) {
+                     double d0 = p_38165_.getX() - this.getX();

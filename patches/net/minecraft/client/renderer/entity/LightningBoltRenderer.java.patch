@@ -1,0 +1,139 @@
+--- a/net/minecraft/client/renderer/entity/LightningBoltRenderer.java
++++ b/net/minecraft/client/renderer/entity/LightningBoltRenderer.java
+@@ -2,8 +_,8 @@
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.blaze3d.vertex.VertexConsumer;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.state.LightningBoltRenderState;
+ import net.minecraft.util.RandomSource;
+ import net.minecraft.world.entity.LightningBolt;
+@@ -17,12 +_,12 @@
+         super(p_174286_);
+     }
+ 
+-    public void submit(LightningBoltRenderState p_433100_, PoseStack p_435280_, SubmitNodeCollector p_433826_) {
++    public void render(LightningBoltRenderState p_361767_, PoseStack p_115269_, MultiBufferSource p_115270_, int p_115271_) {
+         float[] afloat = new float[8];
+         float[] afloat1 = new float[8];
+         float f = 0.0F;
+         float f1 = 0.0F;
+-        RandomSource randomsource = RandomSource.create(p_433100_.seed);
++        RandomSource randomsource = RandomSource.create(p_361767_.seed);
+ 
+         for (int i = 7; i >= 0; i--) {
+             afloat[i] = f;
+@@ -31,61 +_,58 @@
+             f1 += randomsource.nextInt(11) - 5;
+         }
+ 
+-        float f2 = f;
+-        float f3 = f1;
+-        p_433826_.submitCustomGeometry(p_435280_, RenderType.lightning(), (p_434636_, p_432984_) -> {
+-            Matrix4f matrix4f = p_434636_.pose();
+-
+-            for (int j = 0; j < 4; j++) {
+-                RandomSource randomsource1 = RandomSource.create(p_433100_.seed);
+-
+-                for (int k = 0; k < 3; k++) {
+-                    int l = 7;
+-                    int i1 = 0;
+-                    if (k > 0) {
+-                        l = 7 - k;
+-                    }
+-
+-                    if (k > 0) {
+-                        i1 = l - 2;
+-                    }
+-
+-                    float f4 = afloat[l] - f2;
+-                    float f5 = afloat1[l] - f3;
+-
+-                    for (int j1 = l; j1 >= i1; j1--) {
+-                        float f6 = f4;
+-                        float f7 = f5;
+-                        if (k == 0) {
+-                            f4 += randomsource1.nextInt(11) - 5;
+-                            f5 += randomsource1.nextInt(11) - 5;
+-                        } else {
+-                            f4 += randomsource1.nextInt(31) - 15;
+-                            f5 += randomsource1.nextInt(31) - 15;
+-                        }
+-
+-                        float f8 = 0.5F;
+-                        float f9 = 0.45F;
+-                        float f10 = 0.45F;
+-                        float f11 = 0.5F;
+-                        float f12 = 0.1F + j * 0.2F;
+-                        if (k == 0) {
+-                            f12 *= j1 * 0.1F + 1.0F;
+-                        }
+-
+-                        float f13 = 0.1F + j * 0.2F;
+-                        if (k == 0) {
+-                            f13 *= (j1 - 1.0F) * 0.1F + 1.0F;
+-                        }
+-
+-                        quad(matrix4f, p_432984_, f4, f5, j1, f6, f7, 0.45F, 0.45F, 0.5F, f12, f13, false, false, true, false);
+-                        quad(matrix4f, p_432984_, f4, f5, j1, f6, f7, 0.45F, 0.45F, 0.5F, f12, f13, true, false, true, true);
+-                        quad(matrix4f, p_432984_, f4, f5, j1, f6, f7, 0.45F, 0.45F, 0.5F, f12, f13, true, true, false, true);
+-                        quad(matrix4f, p_432984_, f4, f5, j1, f6, f7, 0.45F, 0.45F, 0.5F, f12, f13, false, true, false, false);
+-                    }
++        VertexConsumer vertexconsumer = p_115270_.getBuffer(RenderType.lightning());
++        Matrix4f matrix4f = p_115269_.last().pose();
++
++        for (int j = 0; j < 4; j++) {
++            RandomSource randomsource1 = RandomSource.create(p_361767_.seed);
++
++            for (int k = 0; k < 3; k++) {
++                int l = 7;
++                int i1 = 0;
++                if (k > 0) {
++                    l = 7 - k;
++                }
++
++                if (k > 0) {
++                    i1 = l - 2;
++                }
++
++                float f2 = afloat[l] - f;
++                float f3 = afloat1[l] - f1;
++
++                for (int j1 = l; j1 >= i1; j1--) {
++                    float f4 = f2;
++                    float f5 = f3;
++                    if (k == 0) {
++                        f2 += randomsource1.nextInt(11) - 5;
++                        f3 += randomsource1.nextInt(11) - 5;
++                    } else {
++                        f2 += randomsource1.nextInt(31) - 15;
++                        f3 += randomsource1.nextInt(31) - 15;
++                    }
++
++                    float f6 = 0.5F;
++                    float f7 = 0.45F;
++                    float f8 = 0.45F;
++                    float f9 = 0.5F;
++                    float f10 = 0.1F + j * 0.2F;
++                    if (k == 0) {
++                        f10 *= j1 * 0.1F + 1.0F;
++                    }
++
++                    float f11 = 0.1F + j * 0.2F;
++                    if (k == 0) {
++                        f11 *= (j1 - 1.0F) * 0.1F + 1.0F;
++                    }
++
++                    quad(matrix4f, vertexconsumer, f2, f3, j1, f4, f5, 0.45F, 0.45F, 0.5F, f10, f11, false, false, true, false);
++                    quad(matrix4f, vertexconsumer, f2, f3, j1, f4, f5, 0.45F, 0.45F, 0.5F, f10, f11, true, false, true, true);
++                    quad(matrix4f, vertexconsumer, f2, f3, j1, f4, f5, 0.45F, 0.45F, 0.5F, f10, f11, true, true, false, true);
++                    quad(matrix4f, vertexconsumer, f2, f3, j1, f4, f5, 0.45F, 0.45F, 0.5F, f10, f11, false, true, false, false);
+                 }
+             }
+-        });
++        }
+     }
+ 
+     private static void quad(

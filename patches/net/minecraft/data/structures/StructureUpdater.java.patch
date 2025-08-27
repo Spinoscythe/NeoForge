@@ -1,0 +1,15 @@
+--- a/net/minecraft/data/structures/StructureUpdater.java
++++ b/net/minecraft/data/structures/StructureUpdater.java
+@@ -22,9 +_,9 @@
+     public static CompoundTag update(String p_176823_, CompoundTag p_176824_) {
+         StructureTemplate structuretemplate = new StructureTemplate();
+         int i = NbtUtils.getDataVersion(p_176824_, 500);
+-        int j = 4531;
+-        if (i < 4531) {
+-            LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 4531, p_176823_);
++        int j = 4420;
++        if (i < 4420) {
++            LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 4420, p_176823_);
+         }
+ 
+         CompoundTag compoundtag = DataFixTypes.STRUCTURE.updateToCurrentVersion(DataFixers.getDataFixer(), p_176824_, i);

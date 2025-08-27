@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/gui/components/WidgetSprites.java
++++ b/net/minecraft/client/gui/components/WidgetSprites.java
+@@ -6,10 +_,6 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public record WidgetSprites(ResourceLocation enabled, ResourceLocation disabled, ResourceLocation enabledFocused, ResourceLocation disabledFocused) {
+-    public WidgetSprites(ResourceLocation p_439822_) {
+-        this(p_439822_, p_439822_, p_439822_, p_439822_);
+-    }
+-
+     public WidgetSprites(ResourceLocation p_295225_, ResourceLocation p_294772_) {
+         this(p_295225_, p_295225_, p_294772_, p_294772_);
+     }

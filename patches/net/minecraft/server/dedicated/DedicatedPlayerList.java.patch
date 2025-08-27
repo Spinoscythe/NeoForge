@@ -1,0 +1,54 @@
+--- a/net/minecraft/server/dedicated/DedicatedPlayerList.java
++++ b/net/minecraft/server/dedicated/DedicatedPlayerList.java
+@@ -1,10 +_,10 @@
+ package net.minecraft.server.dedicated;
+ 
++import com.mojang.authlib.GameProfile;
+ import com.mojang.logging.LogUtils;
+ import java.io.IOException;
+ import net.minecraft.core.LayeredRegistryAccess;
+ import net.minecraft.server.RegistryLayer;
+-import net.minecraft.server.players.NameAndId;
+ import net.minecraft.server.players.PlayerList;
+ import net.minecraft.world.level.storage.PlayerDataStorage;
+ import org.slf4j.Logger;
+@@ -37,14 +_,14 @@
+     }
+ 
+     @Override
+-    public void op(NameAndId p_434276_) {
+-        super.op(p_434276_);
++    public void op(GameProfile p_139582_) {
++        super.op(p_139582_);
+         this.saveOps();
+     }
+ 
+     @Override
+-    public void deop(NameAndId p_435835_) {
+-        super.deop(p_435835_);
++    public void deop(GameProfile p_139587_) {
++        super.deop(p_139587_);
+         this.saveOps();
+     }
+ 
+@@ -118,8 +_,8 @@
+     }
+ 
+     @Override
+-    public boolean isWhiteListed(NameAndId p_433903_) {
+-        return !this.isUsingWhitelist() || this.isOp(p_433903_) || this.getWhiteList().isWhiteListed(p_433903_);
++    public boolean isWhiteListed(GameProfile p_139590_) {
++        return !this.isUsingWhitelist() || this.isOp(p_139590_) || this.getWhiteList().isWhiteListed(p_139590_);
+     }
+ 
+     public DedicatedServer getServer() {
+@@ -127,7 +_,7 @@
+     }
+ 
+     @Override
+-    public boolean canBypassPlayerLimit(NameAndId p_434249_) {
+-        return this.getOps().canBypassPlayerLimit(p_434249_);
++    public boolean canBypassPlayerLimit(GameProfile p_139592_) {
++        return this.getOps().canBypassPlayerLimit(p_139592_);
+     }
+ }

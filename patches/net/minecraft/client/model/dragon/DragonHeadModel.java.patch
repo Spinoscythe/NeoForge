@@ -1,0 +1,18 @@
+--- a/net/minecraft/client/model/dragon/DragonHeadModel.java
++++ b/net/minecraft/client/model/dragon/DragonHeadModel.java
+@@ -44,10 +_,10 @@
+         return LayerDefinition.create(meshdefinition, 256, 256);
+     }
+ 
+-    public void setupAnim(SkullModelBase.State p_434230_) {
+-        super.setupAnim(p_434230_);
+-        this.jaw.xRot = (float)(Math.sin(p_434230_.animationPos * (float) Math.PI * 0.2F) + 1.0) * 0.2F;
+-        this.head.yRot = p_434230_.yRot * (float) (Math.PI / 180.0);
+-        this.head.xRot = p_434230_.xRot * (float) (Math.PI / 180.0);
++    @Override
++    public void setupAnim(float p_104188_, float p_104189_, float p_104190_) {
++        this.jaw.xRot = (float)(Math.sin(p_104188_ * (float) Math.PI * 0.2F) + 1.0) * 0.2F;
++        this.head.yRot = p_104189_ * (float) (Math.PI / 180.0);
++        this.head.xRot = p_104190_ * (float) (Math.PI / 180.0);
+     }
+ }

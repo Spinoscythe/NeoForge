@@ -1,0 +1,28 @@
+--- a/net/minecraft/client/renderer/entity/PufferfishRenderer.java
++++ b/net/minecraft/client/renderer/entity/PufferfishRenderer.java
+@@ -6,7 +_,7 @@
+ import net.minecraft.client.model.PufferfishMidModel;
+ import net.minecraft.client.model.PufferfishSmallModel;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.state.EntityRenderState;
+ import net.minecraft.client.renderer.entity.state.PufferfishRenderState;
+ import net.minecraft.resources.ResourceLocation;
+@@ -40,13 +_,13 @@
+         return 0.1F + 0.1F * p_382918_.puffState;
+     }
+ 
+-    public void submit(PufferfishRenderState p_433818_, PoseStack p_434209_, SubmitNodeCollector p_435212_) {
+-        this.model = switch (p_433818_.puffState) {
++    public void render(PufferfishRenderState p_362139_, PoseStack p_115758_, MultiBufferSource p_115759_, int p_115760_) {
++        this.model = switch (p_362139_.puffState) {
+             case 0 -> this.small;
+             case 1 -> this.mid;
+             default -> this.big;
+         };
+-        super.submit(p_433818_, p_434209_, p_435212_);
++        super.render(p_362139_, p_115758_, p_115759_, p_115760_);
+     }
+ 
+     public void extractRenderState(Pufferfish p_362491_, PufferfishRenderState p_362905_, float p_360796_) {

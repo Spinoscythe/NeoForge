@@ -1,0 +1,29 @@
+--- a/net/minecraft/client/renderer/entity/OminousItemSpawnerRenderer.java
++++ b/net/minecraft/client/renderer/entity/OminousItemSpawnerRenderer.java
+@@ -2,7 +_,7 @@
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.math.Axis;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.state.ItemClusterRenderState;
+ import net.minecraft.client.renderer.item.ItemModelResolver;
+ import net.minecraft.util.Mth;
+@@ -34,7 +_,7 @@
+         p_388307_.extractItemGroupRenderState(p_361782_, itemstack, this.itemModelResolver);
+     }
+ 
+-    public void submit(ItemClusterRenderState p_386695_, PoseStack p_338440_, SubmitNodeCollector p_435320_) {
++    public void render(ItemClusterRenderState p_386695_, PoseStack p_338440_, MultiBufferSource p_338413_, int p_338541_) {
+         if (!p_386695_.item.isEmpty()) {
+             p_338440_.pushPose();
+             if (p_386695_.ageInTicks <= 50.0F) {
+@@ -44,7 +_,7 @@
+ 
+             float f1 = Mth.wrapDegrees(p_386695_.ageInTicks * 40.0F);
+             p_338440_.mulPose(Axis.YP.rotationDegrees(f1));
+-            ItemEntityRenderer.submitMultipleFromCount(p_338440_, p_435320_, 15728880, p_386695_, this.random);
++            ItemEntityRenderer.renderMultipleFromCount(p_338440_, p_338413_, 15728880, p_386695_, this.random);
+             p_338440_.popPose();
+         }
+     }

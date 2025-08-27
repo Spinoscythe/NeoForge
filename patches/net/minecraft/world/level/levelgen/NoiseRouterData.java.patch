@@ -1,0 +1,173 @@
+--- a/net/minecraft/world/level/levelgen/NoiseRouterData.java
++++ b/net/minecraft/world/level/levelgen/NoiseRouterData.java
+@@ -19,15 +_,8 @@
+     private static final double NOODLE_SPACING_AND_STRAIGHTNESS = 1.5;
+     private static final double SURFACE_DENSITY_THRESHOLD = 1.5625;
+     private static final double CHEESE_NOISE_TARGET = -0.703125;
+-    public static final double NOISE_ZERO = 0.390625;
+     public static final int ISLAND_CHUNK_DISTANCE = 64;
+     public static final long ISLAND_CHUNK_DISTANCE_SQR = 4096L;
+-    private static final int DENSITY_Y_ANCHOR_BOTTOM = -64;
+-    private static final int DENSITY_Y_ANCHOR_TOP = 320;
+-    private static final double DENSITY_Y_BOTTOM = 1.5;
+-    private static final double DENSITY_Y_TOP = -1.5;
+-    private static final int OVERWORLD_BOTTOM_SLIDE_HEIGHT = 24;
+-    private static final double BASE_DENSITY_MULTIPLIER = 4.0;
+     private static final DensityFunction BLENDING_FACTOR = DensityFunctions.constant(10.0);
+     private static final DensityFunction BLENDING_JAGGEDNESS = DensityFunctions.zero();
+     private static final ResourceKey<DensityFunction> ZERO = createKey("zero");
+@@ -190,7 +_,9 @@
+                 BLENDING_FACTOR
+             )
+         );
+-        DensityFunction densityfunction2 = registerAndWrap(p_321572_, p_224482_, offsetToDepth(densityfunction));
++        DensityFunction densityfunction2 = registerAndWrap(
++            p_321572_, p_224482_, DensityFunctions.add(DensityFunctions.yClampedGradient(-64, 320, 1.5, -1.5), densityfunction)
++        );
+         DensityFunction densityfunction3 = registerAndWrap(
+             p_321572_,
+             p_224481_,
+@@ -212,10 +_,6 @@
+         p_321572_.register(p_224483_, DensityFunctions.add(densityfunction5, getFunction(p_256393_, BASE_3D_NOISE_OVERWORLD)));
+     }
+ 
+-    private static DensityFunction offsetToDepth(DensityFunction p_434173_) {
+-        return DensityFunctions.add(DensityFunctions.yClampedGradient(-64, 320, 1.5, -1.5), p_434173_);
+-    }
+-
+     private static DensityFunction registerAndWrap(
+         BootstrapContext<DensityFunction> p_321585_, ResourceKey<DensityFunction> p_255905_, DensityFunction p_255856_
+     ) {
+@@ -341,12 +_,6 @@
+         return DensityFunctions.mul(DensityFunctions.interpolated(densityfunction), DensityFunctions.constant(0.64)).squeeze();
+     }
+ 
+-    private static DensityFunction remap(DensityFunction p_435446_, double p_435211_, double p_435493_, double p_433186_, double p_433026_) {
+-        double d0 = (p_433026_ - p_433186_) / (p_435493_ - p_435211_);
+-        double d1 = p_433186_ - p_435211_ * d0;
+-        return DensityFunctions.add(DensityFunctions.mul(p_435446_, DensityFunctions.constant(d0)), DensityFunctions.constant(d1));
+-    }
+-
+     protected static NoiseRouter overworld(
+         HolderGetter<DensityFunction> p_255681_, HolderGetter<NormalNoise.NoiseParameters> p_256005_, boolean p_255649_, boolean p_255617_
+     ) {
+@@ -362,35 +_,34 @@
+         DensityFunction densityfunction7 = DensityFunctions.shiftedNoise2d(
+             densityfunction4, densityfunction5, 0.25, p_256005_.getOrThrow(p_255649_ ? Noises.VEGETATION_LARGE : Noises.VEGETATION)
+         );
+-        DensityFunction densityfunction8 = getFunction(p_255681_, p_255649_ ? OFFSET_LARGE : (p_255617_ ? OFFSET_AMPLIFIED : OFFSET));
+-        DensityFunction densityfunction9 = getFunction(p_255681_, p_255649_ ? FACTOR_LARGE : (p_255617_ ? FACTOR_AMPLIFIED : FACTOR));
+-        DensityFunction densityfunction10 = getFunction(p_255681_, p_255649_ ? DEPTH_LARGE : (p_255617_ ? DEPTH_AMPLIFIED : DEPTH));
+-        DensityFunction densityfunction11 = preliminarySurfaceLevel(densityfunction8, densityfunction9, p_255617_);
+-        DensityFunction densityfunction12 = getFunction(p_255681_, p_255649_ ? SLOPED_CHEESE_LARGE : (p_255617_ ? SLOPED_CHEESE_AMPLIFIED : SLOPED_CHEESE));
+-        DensityFunction densityfunction13 = DensityFunctions.min(
+-            densityfunction12, DensityFunctions.mul(DensityFunctions.constant(5.0), getFunction(p_255681_, ENTRANCES))
+-        );
+-        DensityFunction densityfunction14 = DensityFunctions.rangeChoice(
+-            densityfunction12, -1000000.0, 1.5625, densityfunction13, underground(p_255681_, p_256005_, densityfunction12)
+-        );
+-        DensityFunction densityfunction15 = DensityFunctions.min(postProcess(slideOverworld(p_255617_, densityfunction14)), getFunction(p_255681_, NOODLE));
+-        DensityFunction densityfunction16 = getFunction(p_255681_, Y);
++        DensityFunction densityfunction8 = getFunction(p_255681_, p_255649_ ? FACTOR_LARGE : (p_255617_ ? FACTOR_AMPLIFIED : FACTOR));
++        DensityFunction densityfunction9 = getFunction(p_255681_, p_255649_ ? DEPTH_LARGE : (p_255617_ ? DEPTH_AMPLIFIED : DEPTH));
++        DensityFunction densityfunction10 = noiseGradientDensity(DensityFunctions.cache2d(densityfunction8), densityfunction9);
++        DensityFunction densityfunction11 = getFunction(p_255681_, p_255649_ ? SLOPED_CHEESE_LARGE : (p_255617_ ? SLOPED_CHEESE_AMPLIFIED : SLOPED_CHEESE));
++        DensityFunction densityfunction12 = DensityFunctions.min(
++            densityfunction11, DensityFunctions.mul(DensityFunctions.constant(5.0), getFunction(p_255681_, ENTRANCES))
++        );
++        DensityFunction densityfunction13 = DensityFunctions.rangeChoice(
++            densityfunction11, -1000000.0, 1.5625, densityfunction12, underground(p_255681_, p_256005_, densityfunction11)
++        );
++        DensityFunction densityfunction14 = DensityFunctions.min(postProcess(slideOverworld(p_255617_, densityfunction13)), getFunction(p_255681_, NOODLE));
++        DensityFunction densityfunction15 = getFunction(p_255681_, Y);
+         int i = Stream.of(OreVeinifier.VeinType.values()).mapToInt(p_224495_ -> p_224495_.minY).min().orElse(-DimensionType.MIN_Y * 2);
+         int j = Stream.of(OreVeinifier.VeinType.values()).mapToInt(p_224457_ -> p_224457_.maxY).max().orElse(-DimensionType.MIN_Y * 2);
+-        DensityFunction densityfunction17 = yLimitedInterpolatable(
+-            densityfunction16, DensityFunctions.noise(p_256005_.getOrThrow(Noises.ORE_VEININESS), 1.5, 1.5), i, j, 0
++        DensityFunction densityfunction16 = yLimitedInterpolatable(
++            densityfunction15, DensityFunctions.noise(p_256005_.getOrThrow(Noises.ORE_VEININESS), 1.5, 1.5), i, j, 0
+         );
+         float f = 4.0F;
++        DensityFunction densityfunction17 = yLimitedInterpolatable(
++                densityfunction15, DensityFunctions.noise(p_256005_.getOrThrow(Noises.ORE_VEIN_A), 4.0, 4.0), i, j, 0
++            )
++            .abs();
+         DensityFunction densityfunction18 = yLimitedInterpolatable(
+-                densityfunction16, DensityFunctions.noise(p_256005_.getOrThrow(Noises.ORE_VEIN_A), 4.0, 4.0), i, j, 0
+-            )
+-            .abs();
+-        DensityFunction densityfunction19 = yLimitedInterpolatable(
+-                densityfunction16, DensityFunctions.noise(p_256005_.getOrThrow(Noises.ORE_VEIN_B), 4.0, 4.0), i, j, 0
+-            )
+-            .abs();
+-        DensityFunction densityfunction20 = DensityFunctions.add(DensityFunctions.constant(-0.08F), DensityFunctions.max(densityfunction18, densityfunction19));
+-        DensityFunction densityfunction21 = DensityFunctions.noise(p_256005_.getOrThrow(Noises.ORE_GAP));
++                densityfunction15, DensityFunctions.noise(p_256005_.getOrThrow(Noises.ORE_VEIN_B), 4.0, 4.0), i, j, 0
++            )
++            .abs();
++        DensityFunction densityfunction19 = DensityFunctions.add(DensityFunctions.constant(-0.08F), DensityFunctions.max(densityfunction17, densityfunction18));
++        DensityFunction densityfunction20 = DensityFunctions.noise(p_256005_.getOrThrow(Noises.ORE_GAP));
+         return new NoiseRouter(
+             densityfunction,
+             densityfunction1,
+@@ -400,13 +_,13 @@
+             densityfunction7,
+             getFunction(p_255681_, p_255649_ ? CONTINENTS_LARGE : CONTINENTS),
+             getFunction(p_255681_, p_255649_ ? EROSION_LARGE : EROSION),
+-            densityfunction10,
++            densityfunction9,
+             getFunction(p_255681_, RIDGES),
+-            densityfunction11,
+-            densityfunction15,
+-            densityfunction17,
+-            densityfunction20,
+-            densityfunction21
++            slideOverworld(p_255617_, DensityFunctions.add(densityfunction10, DensityFunctions.constant(-0.703125)).clamp(-64.0, 64.0)),
++            densityfunction14,
++            densityfunction16,
++            densityfunction19,
++            densityfunction20
+         );
+     }
+ 
+@@ -479,7 +_,7 @@
+             densityfunction,
+             DensityFunctions.zero(),
+             DensityFunctions.zero(),
+-            DensityFunctions.zero(),
++            slideEnd(DensityFunctions.add(densityfunction, DensityFunctions.constant(-0.703125))),
+             densityfunction1,
+             DensityFunctions.zero(),
+             DensityFunctions.zero(),
+@@ -515,31 +_,6 @@
+     private static DensityFunction noiseGradientDensity(DensityFunction p_212272_, DensityFunction p_212273_) {
+         DensityFunction densityfunction = DensityFunctions.mul(p_212273_, p_212272_);
+         return DensityFunctions.mul(DensityFunctions.constant(4.0), densityfunction.quarterNegative());
+-    }
+-
+-    private static DensityFunction preliminarySurfaceLevel(DensityFunction p_434252_, DensityFunction p_435873_, boolean p_432990_) {
+-        DensityFunction densityfunction = DensityFunctions.cache2d(p_435873_);
+-        DensityFunction densityfunction1 = DensityFunctions.cache2d(p_434252_);
+-        DensityFunction densityfunction2 = remap(
+-            DensityFunctions.add(
+-                DensityFunctions.mul(DensityFunctions.constant(0.2734375), densityfunction.invert()),
+-                DensityFunctions.mul(DensityFunctions.constant(-1.0), densityfunction1)
+-            ),
+-            1.5,
+-            -1.5,
+-            -64.0,
+-            320.0
+-        );
+-        densityfunction2 = densityfunction2.clamp(-40.0, 320.0);
+-        DensityFunction densityfunction3 = DensityFunctions.add(
+-            slideOverworld(
+-                p_432990_,
+-                DensityFunctions.add(noiseGradientDensity(densityfunction, offsetToDepth(densityfunction1)), DensityFunctions.constant(-0.703125))
+-                    .clamp(-64.0, 64.0)
+-            ),
+-            DensityFunctions.constant(-0.390625)
+-        );
+-        return DensityFunctions.findTopSurface(densityfunction3, densityfunction2, -64, NoiseSettings.OVERWORLD_NOISE_SETTINGS.getCellHeight());
+     }
+ 
+     private static DensityFunction yLimitedInterpolatable(DensityFunction p_209472_, DensityFunction p_209473_, int p_209474_, int p_209475_, int p_209476_) {

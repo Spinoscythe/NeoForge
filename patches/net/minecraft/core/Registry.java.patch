@@ -9,3 +9,14 @@
              ? DataResult.success(reference)
              : DataResult.error(() -> "Unregistered holder in " + this.key() + ": " + p_326365_);
      }
+@@ -142,6 +_,10 @@
+ 
+     default Iterable<Holder<T>> getTagOrEmpty(TagKey<T> p_206059_) {
+         return DataFixUtils.orElse(this.get(p_206059_), List.of());
++    }
++
++    default Optional<Holder<T>> getRandomElementOf(TagKey<T> p_320357_, RandomSource p_320935_) {
++        return this.get(p_320357_).flatMap(p_319421_ -> p_319421_.getRandomElement(p_320935_));
+     }
+ 
+     Stream<HolderSet.Named<T>> getTags();

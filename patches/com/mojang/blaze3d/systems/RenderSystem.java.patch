@@ -1,6 +1,39 @@
 --- a/com/mojang/blaze3d/systems/RenderSystem.java
 +++ b/com/mojang/blaze3d/systems/RenderSystem.java
-@@ -101,6 +_,7 @@
+@@ -11,6 +_,10 @@
+ import com.mojang.blaze3d.platform.GLX;
+ import com.mojang.blaze3d.shaders.ShaderType;
+ import com.mojang.blaze3d.textures.GpuTextureView;
++import com.mojang.blaze3d.vertex.BufferBuilder;
++import com.mojang.blaze3d.vertex.ByteBufferBuilder;
++import com.mojang.blaze3d.vertex.DefaultVertexFormat;
++import com.mojang.blaze3d.vertex.MeshData;
+ import com.mojang.blaze3d.vertex.Tesselator;
+ import com.mojang.blaze3d.vertex.VertexFormat;
+ import com.mojang.logging.LogUtils;
+@@ -32,6 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ import org.joml.Matrix4f;
+ import org.joml.Matrix4fStack;
++import org.joml.Vector3f;
+ import org.lwjgl.glfw.GLFW;
+ import org.lwjgl.glfw.GLFWErrorCallbackI;
+ import org.lwjgl.system.MemoryUtil;
+@@ -79,10 +_,13 @@
+     private static GpuBufferSlice projectionMatrixBuffer;
+     @Nullable
+     private static GpuBufferSlice savedProjectionMatrixBuffer;
++    private static final Vector3f modelOffset = new Vector3f();
+     private static float shaderLineWidth = 1.0F;
+     private static String apiDescription = "Unknown";
+     private static final AtomicLong pollEventsWaitStart = new AtomicLong();
+     private static final AtomicBoolean pollingEvents = new AtomicBoolean(false);
++    @Nullable
++    private static GpuBuffer QUAD_VERTEX_BUFFER;
+     private static final ArrayListDeque<RenderSystem.GpuAsyncTask> PENDING_FENCES = new ArrayListDeque<>();
+     @Nullable
+     public static GpuTextureView outputColorTextureOverride;
+@@ -93,6 +_,7 @@
      @Nullable
      private static DynamicUniforms dynamicUniforms;
      private static ScissorState scissorStateForRenderTypeDraws = new ScissorState();
@@ -8,7 +41,7 @@
  
      public static void initRenderThread() {
          if (renderThread != null) {
-@@ -214,7 +_,7 @@
+@@ -206,9 +_,21 @@
      public static void initRenderer(
          long p_409720_, int p_69581_, boolean p_69582_, BiFunction<ResourceLocation, ShaderType, String> p_410113_, boolean p_410401_
      ) {
@@ -16,8 +49,52 @@
 +        DEVICE = net.neoforged.neoforge.client.ClientHooks.createGpuDevice(p_409720_, p_69581_, p_69582_, p_410113_, p_410401_);
          apiDescription = getDevice().getImplementationInformation();
          dynamicUniforms = new DynamicUniforms();
++
++        try (ByteBufferBuilder bytebufferbuilder = ByteBufferBuilder.exactlySized(DefaultVertexFormat.POSITION.getVertexSize() * 4)) {
++            BufferBuilder bufferbuilder = new BufferBuilder(bytebufferbuilder, VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
++            bufferbuilder.addVertex(0.0F, 0.0F, 0.0F);
++            bufferbuilder.addVertex(1.0F, 0.0F, 0.0F);
++            bufferbuilder.addVertex(1.0F, 1.0F, 0.0F);
++            bufferbuilder.addVertex(0.0F, 1.0F, 0.0F);
++
++            try (MeshData meshdata = bufferbuilder.buildOrThrow()) {
++                QUAD_VERTEX_BUFFER = getDevice().createBuffer(() -> "Quad", 32, meshdata.vertexBuffer());
++            }
++        }
+     }
  
-@@ -423,6 +_,40 @@
+     public static void setErrorCallback(GLFWErrorCallbackI p_69901_) {
+@@ -316,6 +_,29 @@
+         return projectionType;
+     }
+ 
++    public static GpuBuffer getQuadVertexBuffer() {
++        if (QUAD_VERTEX_BUFFER == null) {
++            throw new IllegalStateException("Can't getQuadVertexBuffer() before renderer was initialized");
++        } else {
++            return QUAD_VERTEX_BUFFER;
++        }
++    }
++
++    public static void setModelOffset(float p_401762_, float p_401844_, float p_401774_) {
++        assertOnRenderThread();
++        modelOffset.set(p_401762_, p_401844_, p_401774_);
++    }
++
++    public static void resetModelOffset() {
++        assertOnRenderThread();
++        modelOffset.set(0.0F, 0.0F, 0.0F);
++    }
++
++    public static Vector3f getModelOffset() {
++        assertOnRenderThread();
++        return modelOffset;
++    }
++
+     public static void queueFencedTask(Runnable p_406359_) {
+         PENDING_FENCES.addLast(new RenderSystem.GpuAsyncTask(p_406359_, getDevice().createCommandEncoder().createFence()));
+     }
+@@ -380,6 +_,40 @@
          if (gpubufferslice2 != null) {
              p_418212_.setUniform("Lighting", gpubufferslice2);
          }

@@ -1,5 +1,21 @@
 --- a/net/minecraft/world/level/block/StemBlock.java
 +++ b/net/minecraft/world/level/block/StemBlock.java
+@@ -29,13 +_,13 @@
+ 
+ public class StemBlock extends VegetationBlock implements BonemealableBlock {
+     public static final MapCodec<StemBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432684_ -> p_432684_.group(
++        p_368441_ -> p_368441_.group(
+                 ResourceKey.codec(Registries.BLOCK).fieldOf("fruit").forGetter(p_304695_ -> p_304695_.fruit),
+                 ResourceKey.codec(Registries.BLOCK).fieldOf("attached_stem").forGetter(p_304684_ -> p_304684_.attachedStem),
+                 ResourceKey.codec(Registries.ITEM).fieldOf("seed").forGetter(p_304883_ -> p_304883_.seed),
+                 propertiesCodec()
+             )
+-            .apply(p_432684_, StemBlock::new)
++            .apply(p_368441_, StemBlock::new)
+     );
+     public static final int MAX_AGE = 7;
+     public static final IntegerProperty AGE = BlockStateProperties.AGE_7;
 @@ -64,23 +_,23 @@
  
      @Override

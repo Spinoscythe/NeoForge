@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/level/block/JukeboxBlock.java
++++ b/net/minecraft/world/level/block/JukeboxBlock.java
+@@ -13,7 +_,7 @@
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.JukeboxPlayable;
+-import net.minecraft.world.item.component.TypedEntityData;
++import net.minecraft.world.item.component.CustomData;
+ import net.minecraft.world.level.BlockGetter;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.entity.BlockEntity;
+@@ -44,8 +_,8 @@
+     @Override
+     public void setPlacedBy(Level p_54264_, BlockPos p_54265_, BlockState p_54266_, @Nullable LivingEntity p_54267_, ItemStack p_54268_) {
+         super.setPlacedBy(p_54264_, p_54265_, p_54266_, p_54267_, p_54268_);
+-        TypedEntityData<BlockEntityType<?>> typedentitydata = p_54268_.get(DataComponents.BLOCK_ENTITY_DATA);
+-        if (typedentitydata != null && typedentitydata.contains("RecordItem")) {
++        CustomData customdata = p_54268_.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY);
++        if (customdata.contains("RecordItem")) {
+             p_54264_.setBlock(p_54265_, p_54266_.setValue(HAS_RECORD, true), 2);
+         }
+     }
+@@ -99,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_54277_, Level p_54278_, BlockPos p_54279_, Direction p_433608_) {
++    protected int getAnalogOutputSignal(BlockState p_54277_, Level p_54278_, BlockPos p_54279_) {
+         return p_54278_.getBlockEntity(p_54279_) instanceof JukeboxBlockEntity jukeboxblockentity ? jukeboxblockentity.getComparatorOutput() : 0;
+     }
+ 

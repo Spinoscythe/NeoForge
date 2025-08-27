@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/ItemUtils.java
++++ b/net/minecraft/world/item/ItemUtils.java
+@@ -40,7 +_,7 @@
+ 
+     public static void onContainerDestroyed(ItemEntity p_150953_, Iterable<ItemStack> p_340959_) {
+         Level level = p_150953_.level();
+-        if (!level.isClientSide()) {
++        if (!level.isClientSide) {
+             p_340959_.forEach(p_427160_ -> level.addFreshEntity(new ItemEntity(level, p_150953_.getX(), p_150953_.getY(), p_150953_.getZ(), p_427160_)));
+         }
+     }

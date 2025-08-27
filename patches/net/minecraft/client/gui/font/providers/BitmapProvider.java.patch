@@ -1,0 +1,54 @@
+--- a/net/minecraft/client/gui/font/providers/BitmapProvider.java
++++ b/net/minecraft/client/gui/font/providers/BitmapProvider.java
+@@ -1,9 +_,8 @@
+ package net.minecraft.client.gui.font.providers;
+ 
+-import com.mojang.blaze3d.font.GlyphBitmap;
+ import com.mojang.blaze3d.font.GlyphInfo;
+ import com.mojang.blaze3d.font.GlyphProvider;
+-import com.mojang.blaze3d.font.UnbakedGlyph;
++import com.mojang.blaze3d.font.SheetGlyphInfo;
+ import com.mojang.blaze3d.platform.NativeImage;
+ import com.mojang.blaze3d.systems.RenderSystem;
+ import com.mojang.blaze3d.textures.GpuTexture;
+@@ -20,6 +_,7 @@
+ import java.io.InputStream;
+ import java.util.ArrayList;
+ import java.util.List;
++import java.util.function.Function;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.gui.font.CodepointMap;
+ import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+@@ -47,7 +_,7 @@
+ 
+     @Nullable
+     @Override
+-    public UnbakedGlyph getGlyph(int p_232638_) {
++    public GlyphInfo getGlyph(int p_232638_) {
+         return this.glyphs.get(p_232638_);
+     }
+ 
+@@ -185,17 +_,16 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    record Glyph(float scale, NativeImage image, int offsetX, int offsetY, int width, int height, int advance, int ascent) implements UnbakedGlyph {
++    record Glyph(float scale, NativeImage image, int offsetX, int offsetY, int width, int height, int advance, int ascent) implements GlyphInfo {
+         @Override
+-        public GlyphInfo info() {
+-            return GlyphInfo.simple(this.advance);
++        public float getAdvance() {
++            return this.advance;
+         }
+ 
+         @Override
+-        public BakedGlyph bake(UnbakedGlyph.Stitcher p_440172_) {
+-            return p_440172_.stitch(
+-                this.info(),
+-                new GlyphBitmap() {
++        public BakedGlyph bake(Function<SheetGlyphInfo, BakedGlyph> p_232640_) {
++            return p_232640_.apply(
++                new SheetGlyphInfo() {
+                     @Override
+                     public float getOversample() {
+                         return 1.0F / Glyph.this.scale;

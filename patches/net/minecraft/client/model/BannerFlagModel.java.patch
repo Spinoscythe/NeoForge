@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/model/BannerFlagModel.java
++++ b/net/minecraft/client/model/BannerFlagModel.java
+@@ -12,7 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class BannerFlagModel extends Model<Float> {
++public class BannerFlagModel extends Model {
+     private final ModelPart flag;
+ 
+     public BannerFlagModel(ModelPart p_383181_) {
+@@ -31,8 +_,7 @@
+         return LayerDefinition.create(meshdefinition, 64, 64);
+     }
+ 
+-    public void setupAnim(Float p_434313_) {
+-        super.setupAnim(p_434313_);
+-        this.flag.xRot = (-0.0125F + 0.01F * Mth.cos((float) (Math.PI * 2) * p_434313_)) * (float) Math.PI;
++    public void setupAnim(float p_382939_) {
++        this.flag.xRot = (-0.0125F + 0.01F * Mth.cos((float) (Math.PI * 2) * p_382939_)) * (float) Math.PI;
+     }
+ }

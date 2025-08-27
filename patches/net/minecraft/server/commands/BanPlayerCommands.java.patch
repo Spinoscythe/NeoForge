@@ -1,0 +1,45 @@
+--- a/net/minecraft/server/commands/BanPlayerCommands.java
++++ b/net/minecraft/server/commands/BanPlayerCommands.java
+@@ -1,5 +_,6 @@
+ package net.minecraft.server.commands;
+ 
++import com.mojang.authlib.GameProfile;
+ import com.mojang.brigadier.CommandDispatcher;
+ import com.mojang.brigadier.context.CommandContext;
+ import com.mojang.brigadier.exceptions.CommandSyntaxException;
+@@ -12,7 +_,6 @@
+ import net.minecraft.commands.arguments.MessageArgument;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.server.level.ServerPlayer;
+-import net.minecraft.server.players.NameAndId;
+ import net.minecraft.server.players.UserBanList;
+ import net.minecraft.server.players.UserBanListEntry;
+ 
+@@ -40,21 +_,21 @@
+         );
+     }
+ 
+-    private static int banPlayers(CommandSourceStack p_136565_, Collection<NameAndId> p_136566_, @Nullable Component p_136567_) throws CommandSyntaxException {
++    private static int banPlayers(CommandSourceStack p_136565_, Collection<GameProfile> p_136566_, @Nullable Component p_136567_) throws CommandSyntaxException {
+         UserBanList userbanlist = p_136565_.getServer().getPlayerList().getBans();
+         int i = 0;
+ 
+-        for (NameAndId nameandid : p_136566_) {
+-            if (!userbanlist.isBanned(nameandid)) {
++        for (GameProfile gameprofile : p_136566_) {
++            if (!userbanlist.isBanned(gameprofile)) {
+                 UserBanListEntry userbanlistentry = new UserBanListEntry(
+-                    nameandid, null, p_136565_.getTextName(), null, p_136567_ == null ? null : p_136567_.getString()
++                    gameprofile, null, p_136565_.getTextName(), null, p_136567_ == null ? null : p_136567_.getString()
+                 );
+                 userbanlist.add(userbanlistentry);
+                 i++;
+                 p_136565_.sendSuccess(
+-                    () -> Component.translatable("commands.ban.success", Component.literal(nameandid.name()), userbanlistentry.getReason()), true
++                    () -> Component.translatable("commands.ban.success", Component.literal(gameprofile.getName()), userbanlistentry.getReason()), true
+                 );
+-                ServerPlayer serverplayer = p_136565_.getServer().getPlayerList().getPlayer(nameandid.id());
++                ServerPlayer serverplayer = p_136565_.getServer().getPlayerList().getPlayer(gameprofile.getId());
+                 if (serverplayer != null) {
+                     serverplayer.connection.disconnect(Component.translatable("multiplayer.disconnect.banned"));
+                 }

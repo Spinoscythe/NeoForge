@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/npc/WanderingTrader.java
++++ b/net/minecraft/world/entity/npc/WanderingTrader.java
+@@ -115,7 +_,7 @@
+                 p_35856_.awardStat(Stats.TALKED_TO_VILLAGER);
+             }
+ 
+-            if (!this.level().isClientSide()) {
++            if (!this.level().isClientSide) {
+                 if (this.getOffers().isEmpty()) {
+                     return InteractionResult.CONSUME;
+                 }
+@@ -209,7 +_,7 @@
+     @Override
+     public void aiStep() {
+         super.aiStep();
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.maybeDespawn();
+         }
+     }

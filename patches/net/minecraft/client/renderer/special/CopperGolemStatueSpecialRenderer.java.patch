@@ -1,0 +1,74 @@
+--- a/net/minecraft/client/renderer/special/CopperGolemStatueSpecialRenderer.java
++++ /dev/null
+@@ -1,71 +_,0 @@
+-package net.minecraft.client.renderer.special;
+-
+-import com.mojang.blaze3d.vertex.PoseStack;
+-import com.mojang.serialization.MapCodec;
+-import com.mojang.serialization.codecs.RecordCodecBuilder;
+-import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+-import java.util.Set;
+-import net.minecraft.client.model.CopperGolemStatueModel;
+-import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.core.Direction;
+-import net.minecraft.resources.ResourceLocation;
+-import net.minecraft.world.entity.animal.coppergolem.CopperGolemOxidationLevels;
+-import net.minecraft.world.item.ItemDisplayContext;
+-import net.minecraft.world.level.block.WeatheringCopper;
+-import net.neoforged.api.distmarker.Dist;
+-import net.neoforged.api.distmarker.OnlyIn;
+-import org.joml.Vector3f;
+-
+-@OnlyIn(Dist.CLIENT)
+-public class CopperGolemStatueSpecialRenderer implements NoDataSpecialModelRenderer {
+-    private final CopperGolemStatueModel model;
+-    private final ResourceLocation texture;
+-
+-    public CopperGolemStatueSpecialRenderer(CopperGolemStatueModel p_440114_, ResourceLocation p_434991_) {
+-        this.model = p_440114_;
+-        this.texture = p_434991_;
+-    }
+-
+-    @Override
+-    public void submit(ItemDisplayContext p_439153_, PoseStack p_440674_, SubmitNodeCollector p_439014_, int p_439345_, int p_440397_, boolean p_440452_) {
+-        this.positionModel(p_440674_);
+-        p_439014_.submitModel(this.model, Direction.SOUTH, p_440674_, RenderType.entityCutoutNoCull(this.texture), p_439345_, p_440397_, -1, null, 0, null);
+-    }
+-
+-    @Override
+-    public void getExtents(Set<Vector3f> p_435866_) {
+-        PoseStack posestack = new PoseStack();
+-        this.positionModel(posestack);
+-        this.model.root().getExtentsForGui(posestack, p_435866_);
+-    }
+-
+-    private void positionModel(PoseStack p_434827_) {
+-        p_434827_.translate(0.5F, 1.5F, 0.5F);
+-        p_434827_.scale(-1.0F, -1.0F, 1.0F);
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    public record Unbaked(ResourceLocation texture) implements SpecialModelRenderer.Unbaked {
+-        public static final MapCodec<CopperGolemStatueSpecialRenderer.Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(
+-            p_435761_ -> p_435761_.group(ResourceLocation.CODEC.fieldOf("texture").forGetter(CopperGolemStatueSpecialRenderer.Unbaked::texture))
+-                .apply(p_435761_, CopperGolemStatueSpecialRenderer.Unbaked::new)
+-        );
+-
+-        public Unbaked(WeatheringCopper.WeatherState p_433517_) {
+-            this(CopperGolemOxidationLevels.getOxidationLevel(p_433517_).texture());
+-        }
+-
+-        @Override
+-        public MapCodec<CopperGolemStatueSpecialRenderer.Unbaked> type() {
+-            return MAP_CODEC;
+-        }
+-
+-        @Override
+-        public SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext p_435794_) {
+-            CopperGolemStatueModel coppergolemstatuemodel = new CopperGolemStatueModel(p_435794_.entityModelSet().bakeLayer(ModelLayers.COPPER_GOLEM));
+-            return new CopperGolemStatueSpecialRenderer(coppergolemstatuemodel, this.texture);
+-        }
+-    }
+-}

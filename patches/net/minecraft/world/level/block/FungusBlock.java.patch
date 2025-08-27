@@ -1,5 +1,20 @@
 --- a/net/minecraft/world/level/block/FungusBlock.java
 +++ b/net/minecraft/world/level/block/FungusBlock.java
+@@ -23,12 +_,12 @@
+ 
+ public class FungusBlock extends VegetationBlock implements BonemealableBlock {
+     public static final MapCodec<FungusBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432667_ -> p_432667_.group(
++        p_368425_ -> p_368425_.group(
+                 ResourceKey.codec(Registries.CONFIGURED_FEATURE).fieldOf("feature").forGetter(p_304367_ -> p_304367_.feature),
+                 BuiltInRegistries.BLOCK.byNameCodec().fieldOf("grows_on").forGetter(p_304365_ -> p_304365_.requiredBlock),
+                 propertiesCodec()
+             )
+-            .apply(p_432667_, FungusBlock::new)
++            .apply(p_368425_, FungusBlock::new)
+     );
+     private static final double BONEMEAL_SUCCESS_PROBABILITY = 0.4;
+     private static final VoxelShape SHAPE = Block.column(8.0, 0.0, 9.0);
 @@ -73,6 +_,9 @@
  
      @Override

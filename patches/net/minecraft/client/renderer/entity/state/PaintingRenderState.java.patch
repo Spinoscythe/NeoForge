@@ -1,0 +1,9 @@
+--- a/net/minecraft/client/renderer/entity/state/PaintingRenderState.java
++++ b/net/minecraft/client/renderer/entity/state/PaintingRenderState.java
+@@ -11,5 +_,5 @@
+     public Direction direction = Direction.NORTH;
+     @Nullable
+     public PaintingVariant variant;
+-    public int[] lightCoordsPerBlock = new int[0];
++    public int[] lightCoords = new int[0];
+ }

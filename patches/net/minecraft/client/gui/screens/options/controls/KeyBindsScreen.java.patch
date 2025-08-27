@@ -12,7 +12,7 @@
  
      public KeyBindsScreen(Screen p_344996_, Options p_344771_) {
          super(p_344996_, p_344771_, TITLE);
-@@ -41,7 +_,7 @@
+@@ -41,14 +_,14 @@
      protected void addFooter() {
          this.resetButton = Button.builder(Component.translatable("controls.resetAll"), p_346345_ -> {
              for (KeyMapping keymapping : this.options.keyMappings) {
@@ -21,7 +21,31 @@
              }
  
              this.keyBindsList.resetMappingAndUpdateButtons();
-@@ -72,18 +_,68 @@
+         }).build();
+         LinearLayout linearlayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
+         linearlayout.addChild(this.resetButton);
+-        linearlayout.addChild(Button.builder(CommonComponents.GUI_DONE, p_432229_ -> this.onClose()).build());
++        linearlayout.addChild(Button.builder(CommonComponents.GUI_DONE, p_425146_ -> this.onClose()).build());
+     }
+ 
+     @Override
+@@ -58,32 +_,82 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_346251_, double p_345041_, int p_345147_, boolean p_434872_) {
++    public boolean mouseClicked(double p_346251_, double p_345041_, int p_345147_) {
+         if (this.selectedKey != null) {
+             this.selectedKey.setKey(InputConstants.Type.MOUSE.getOrCreate(p_345147_));
+             this.selectedKey = null;
+             this.keyBindsList.resetMappingAndUpdateButtons();
+             return true;
+         } else {
+-            return super.mouseClicked(p_346251_, p_345041_, p_345147_, p_434872_);
++            return super.mouseClicked(p_346251_, p_345041_, p_345147_);
+         }
+     }
+ 
      @Override
      public boolean keyPressed(int p_345810_, int p_345447_, int p_344981_) {
          if (this.selectedKey != null) {

@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/monster/Witch.java
++++ b/net/minecraft/world/entity/monster/Witch.java
+@@ -60,7 +_,7 @@
+     protected void registerGoals() {
+         super.registerGoals();
+         this.healRaidersGoal = new NearestHealableRaiderTargetGoal<>(
+-            this, Raider.class, true, (p_432550_, p_432551_) -> this.hasActiveRaid() && p_432550_.getType() != EntityType.WITCH
++            this, Raider.class, true, (p_427110_, p_427111_) -> this.hasActiveRaid() && p_427110_.getType() != EntityType.WITCH
+         );
+         this.attackPlayersGoal = new NearestAttackableWitchTargetGoal<>(this, Player.class, 10, true, false, null);
+         this.goalSelector.addGoal(1, new FloatGoal(this));
+@@ -108,7 +_,7 @@
+ 
+     @Override
+     public void aiStep() {
+-        if (!this.level().isClientSide() && this.isAlive()) {
++        if (!this.level().isClientSide && this.isAlive()) {
+             this.healRaidersGoal.decrementCooldown();
+             if (this.healRaidersGoal.getCooldown() <= 0) {
+                 this.attackPlayersGoal.setCanAttack(true);

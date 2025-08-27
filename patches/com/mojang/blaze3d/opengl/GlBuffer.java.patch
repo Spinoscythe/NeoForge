@@ -1,0 +1,11 @@
+--- a/com/mojang/blaze3d/opengl/GlBuffer.java
++++ b/com/mojang/blaze3d/opengl/GlBuffer.java
+@@ -41,7 +_,7 @@
+         if (!this.closed) {
+             this.closed = true;
+             if (this.persistentBuffer != null) {
+-                this.dsa.unmapBuffer(this.handle, this.usage());
++                this.dsa.unmapBuffer(this.handle);
+                 this.persistentBuffer = null;
+             }
+ 

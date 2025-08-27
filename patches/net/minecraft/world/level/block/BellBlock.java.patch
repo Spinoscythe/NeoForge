@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/BellBlock.java
++++ b/net/minecraft/world/level/block/BellBlock.java
+@@ -132,7 +_,7 @@
+ 
+     public boolean attemptToRing(@Nullable Entity p_152189_, Level p_152190_, BlockPos p_152191_, @Nullable Direction p_152192_) {
+         BlockEntity blockentity = p_152190_.getBlockEntity(p_152191_);
+-        if (!p_152190_.isClientSide() && blockentity instanceof BellBlockEntity) {
++        if (!p_152190_.isClientSide && blockentity instanceof BellBlockEntity) {
+             if (p_152192_ == null) {
+                 p_152192_ = p_152190_.getBlockState(p_152191_).getValue(FACING);
+             }
+@@ -281,7 +_,7 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_152194_, BlockState p_152195_, BlockEntityType<T> p_152196_) {
+-        return createTickerHelper(p_152196_, BlockEntityType.BELL, p_152194_.isClientSide() ? BellBlockEntity::clientTick : BellBlockEntity::serverTick);
++        return createTickerHelper(p_152196_, BlockEntityType.BELL, p_152194_.isClientSide ? BellBlockEntity::clientTick : BellBlockEntity::serverTick);
+     }
+ 
+     @Override

@@ -1,5 +1,71 @@
 --- a/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/net/minecraft/world/entity/projectile/Projectile.java
+@@ -54,13 +_,13 @@
+     }
+ 
+     public void setOwner(@Nullable Entity p_37263_) {
+-        this.setOwner(EntityReference.of(p_37263_));
++        this.setOwner(p_37263_ != null ? new EntityReference<>(p_37263_) : null);
+     }
+ 
+     @Nullable
+     @Override
+     public Entity getOwner() {
+-        return EntityReference.getEntity(this.owner, this.level());
++        return EntityReference.get(this.owner, this.level(), Entity.class);
+     }
+ 
+     public Entity getEffectSource() {
+@@ -237,7 +_,7 @@
+             Entity entity = entityhitresult.getEntity();
+             ProjectileDeflection projectiledeflection = entity.deflection(this);
+             if (projectiledeflection != ProjectileDeflection.NONE) {
+-                if (entity != this.lastDeflectedBy && this.deflect(projectiledeflection, entity, this.owner, false)) {
++                if (entity != this.lastDeflectedBy && this.deflect(projectiledeflection, entity, this.getOwner(), false)) {
+                     this.lastDeflectedBy = entity;
+                 }
+ 
+@@ -245,7 +_,7 @@
+             }
+         } else if (this.shouldBounceOnWorldBorder() && p_341949_ instanceof BlockHitResult blockhitresult && blockhitresult.isWorldBorderHit()) {
+             ProjectileDeflection projectiledeflection1 = ProjectileDeflection.REVERSE;
+-            if (this.deflect(projectiledeflection1, null, this.owner, false)) {
++            if (this.deflect(projectiledeflection1, null, this.getOwner(), false)) {
+                 this.setDeltaMovement(this.getDeltaMovement().scale(0.2));
+                 return projectiledeflection1;
+             }
+@@ -259,17 +_,17 @@
+         return false;
+     }
+ 
+-    public boolean deflect(ProjectileDeflection p_341900_, @Nullable Entity p_341912_, @Nullable EntityReference<Entity> p_439577_, boolean p_341948_) {
++    public boolean deflect(ProjectileDeflection p_341900_, @Nullable Entity p_341912_, @Nullable Entity p_341932_, boolean p_341948_) {
+         p_341900_.deflect(this, p_341912_, this.random);
+-        if (!this.level().isClientSide()) {
+-            this.setOwner(p_439577_);
+-            this.onDeflection(p_341948_);
++        if (!this.level().isClientSide) {
++            this.setOwner(p_341932_);
++            this.onDeflection(p_341912_, p_341948_);
+         }
+ 
+         return true;
+     }
+ 
+-    protected void onDeflection(boolean p_341907_) {
++    protected void onDeflection(@Nullable Entity p_341918_, boolean p_341907_) {
+     }
+ 
+     protected void onItemBreak(Item p_361691_) {
+@@ -281,7 +_,7 @@
+             EntityHitResult entityhitresult = (EntityHitResult)p_37260_;
+             Entity entity = entityhitresult.getEntity();
+             if (entity.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile projectile) {
+-                projectile.deflect(ProjectileDeflection.AIM_DEFLECT, this.getOwner(), this.owner, true);
++                projectile.deflect(ProjectileDeflection.AIM_DEFLECT, this.getOwner(), this.getOwner(), true);
+             }
+ 
+             this.onHitEntity(entityhitresult);
 @@ -350,7 +_,7 @@
          Entity entity = this.getOwner();
          return entity instanceof Player

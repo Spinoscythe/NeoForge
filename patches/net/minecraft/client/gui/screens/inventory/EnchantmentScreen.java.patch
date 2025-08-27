@@ -1,5 +1,23 @@
 --- a/net/minecraft/client/gui/screens/inventory/EnchantmentScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/EnchantmentScreen.java
+@@ -74,7 +_,7 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_98758_, double p_98759_, int p_98760_, boolean p_434078_) {
++    public boolean mouseClicked(double p_98758_, double p_98759_, int p_98760_) {
+         int i = (this.width - this.imageWidth) / 2;
+         int j = (this.height - this.imageHeight) / 2;
+ 
+@@ -87,7 +_,7 @@
+             }
+         }
+ 
+-        return super.mouseClicked(p_98758_, p_98759_, p_98760_, p_434078_);
++        return super.mouseClicked(p_98758_, p_98759_, p_98760_);
+     }
+ 
+     @Override
 @@ -110,7 +_,7 @@
                  int l1 = 86 - this.font.width(s);
                  FormattedText formattedtext = EnchantmentNames.getInstance().getRandomName(this.font, l1);

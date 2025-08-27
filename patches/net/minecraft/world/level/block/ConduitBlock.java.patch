@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/ConduitBlock.java
++++ b/net/minecraft/world/level/block/ConduitBlock.java
+@@ -54,9 +_,7 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153094_, BlockState p_153095_, BlockEntityType<T> p_153096_) {
+-        return createTickerHelper(
+-            p_153096_, BlockEntityType.CONDUIT, p_153094_.isClientSide() ? ConduitBlockEntity::clientTick : ConduitBlockEntity::serverTick
+-        );
++        return createTickerHelper(p_153096_, BlockEntityType.CONDUIT, p_153094_.isClientSide ? ConduitBlockEntity::clientTick : ConduitBlockEntity::serverTick);
+     }
+ 
+     @Override

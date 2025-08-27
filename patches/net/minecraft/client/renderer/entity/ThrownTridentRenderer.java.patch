@@ -1,0 +1,51 @@
+--- a/net/minecraft/client/renderer/entity/ThrownTridentRenderer.java
++++ b/net/minecraft/client/renderer/entity/ThrownTridentRenderer.java
+@@ -1,16 +_,14 @@
+ package net.minecraft.client.renderer.entity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import com.mojang.math.Axis;
+-import java.util.List;
+ import net.minecraft.client.model.TridentModel;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.state.ThrownTridentRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.resources.ResourceLocation;
+-import net.minecraft.util.Unit;
+ import net.minecraft.world.entity.projectile.ThrownTrident;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -25,21 +_,14 @@
+         this.model = new TridentModel(p_174420_.bakeLayer(ModelLayers.TRIDENT));
+     }
+ 
+-    public void submit(ThrownTridentRenderState p_434752_, PoseStack p_435381_, SubmitNodeCollector p_435880_) {
+-        p_435381_.pushPose();
+-        p_435381_.mulPose(Axis.YP.rotationDegrees(p_434752_.yRot - 90.0F));
+-        p_435381_.mulPose(Axis.ZP.rotationDegrees(p_434752_.xRot + 90.0F));
+-        List<RenderType> list = ItemRenderer.getFoilRenderTypes(this.model.renderType(TRIDENT_LOCATION), false, p_434752_.isFoil);
+-
+-        for (int i = 0; i < list.size(); i++) {
+-            p_435880_.order(i)
+-                .submitModel(
+-                    this.model, Unit.INSTANCE, p_435381_, list.get(i), p_434752_.lightCoords, OverlayTexture.NO_OVERLAY, -1, null, p_434752_.outlineColor, null
+-                );
+-        }
+-
+-        p_435381_.popPose();
+-        super.submit(p_434752_, p_435381_, p_435880_);
++    public void render(ThrownTridentRenderState p_361109_, PoseStack p_116114_, MultiBufferSource p_116115_, int p_116116_) {
++        p_116114_.pushPose();
++        p_116114_.mulPose(Axis.YP.rotationDegrees(p_361109_.yRot - 90.0F));
++        p_116114_.mulPose(Axis.ZP.rotationDegrees(p_361109_.xRot + 90.0F));
++        VertexConsumer vertexconsumer = ItemRenderer.getFoilBuffer(p_116115_, this.model.renderType(TRIDENT_LOCATION), false, p_361109_.isFoil);
++        this.model.renderToBuffer(p_116114_, vertexconsumer, p_116116_, OverlayTexture.NO_OVERLAY);
++        p_116114_.popPose();
++        super.render(p_361109_, p_116114_, p_116115_, p_116116_);
+     }
+ 
+     public ThrownTridentRenderState createRenderState() {

@@ -1,0 +1,27 @@
+--- a/net/minecraft/client/renderer/entity/VindicatorRenderer.java
++++ b/net/minecraft/client/renderer/entity/VindicatorRenderer.java
+@@ -3,7 +_,7 @@
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import net.minecraft.client.model.IllagerModel;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+ import net.minecraft.client.renderer.entity.state.IllagerRenderState;
+ import net.minecraft.resources.ResourceLocation;
+@@ -19,11 +_,11 @@
+         super(p_174439_, new IllagerModel<>(p_174439_.bakeLayer(ModelLayers.VINDICATOR)), 0.5F);
+         this.addLayer(
+             new ItemInHandLayer<IllagerRenderState, IllagerModel<IllagerRenderState>>(this) {
+-                public void submit(
+-                    PoseStack p_434569_, SubmitNodeCollector p_434409_, int p_433214_, IllagerRenderState p_433367_, float p_435149_, float p_433947_
++                public void render(
++                    PoseStack p_116341_, MultiBufferSource p_116342_, int p_116343_, IllagerRenderState p_362981_, float p_116345_, float p_116346_
+                 ) {
+-                    if (p_433367_.isAggressive) {
+-                        super.submit(p_434569_, p_434409_, p_433214_, p_433367_, p_435149_, p_433947_);
++                    if (p_362981_.isAggressive) {
++                        super.render(p_116341_, p_116342_, p_116343_, p_362981_, p_116345_, p_116346_);
+                     }
+                 }
+             }

@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/gui/components/MultilineTextField.java
++++ b/net/minecraft/client/gui/components/MultilineTextField.java
+@@ -185,13 +_,6 @@
+         this.seekCursor(Whence.ABSOLUTE, multilinetextfield$stringview.beginIndex + k);
+     }
+ 
+-    public void selectWordAtCursor() {
+-        MultilineTextField.StringView multilinetextfield$stringview = this.getPreviousWord();
+-        this.seekCursor(Whence.ABSOLUTE, multilinetextfield$stringview.beginIndex);
+-        this.setSelecting(true);
+-        this.seekCursor(Whence.ABSOLUTE, multilinetextfield$stringview.endIndex);
+-    }
+-
+     public boolean keyPressed(int p_239712_) {
+         this.selecting = Screen.hasShiftDown();
+         if (Screen.isSelectAll(p_239712_)) {

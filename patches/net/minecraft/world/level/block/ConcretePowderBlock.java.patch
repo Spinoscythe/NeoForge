@@ -1,5 +1,16 @@
 --- a/net/minecraft/world/level/block/ConcretePowderBlock.java
 +++ b/net/minecraft/world/level/block/ConcretePowderBlock.java
+@@ -19,8 +_,8 @@
+ 
+ public class ConcretePowderBlock extends FallingBlock {
+     public static final MapCodec<ConcretePowderBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432656_ -> p_432656_.group(BuiltInRegistries.BLOCK.byNameCodec().fieldOf("concrete").forGetter(p_304618_ -> p_304618_.concrete), propertiesCodec())
+-            .apply(p_432656_, ConcretePowderBlock::new)
++        p_368415_ -> p_368415_.group(BuiltInRegistries.BLOCK.byNameCodec().fieldOf("concrete").forGetter(p_304618_ -> p_304618_.concrete), propertiesCodec())
++            .apply(p_368415_, ConcretePowderBlock::new)
+     );
+     private final Block concrete;
+ 
 @@ -36,7 +_,7 @@
  
      @Override

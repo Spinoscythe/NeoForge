@@ -1,6 +1,24 @@
 --- a/net/minecraft/util/datafix/DataFixers.java
 +++ b/net/minecraft/util/datafix/DataFixers.java
-@@ -1353,10 +_,35 @@
+@@ -85,7 +_,6 @@
+ import net.minecraft.util.datafix.fixes.ChunkToProtochunkFix;
+ import net.minecraft.util.datafix.fixes.ColorlessShulkerEntityFix;
+ import net.minecraft.util.datafix.fixes.ContainerBlockEntityLockPredicateFix;
+-import net.minecraft.util.datafix.fixes.CopperGolemWeatherStateFix;
+ import net.minecraft.util.datafix.fixes.CriteriaRenameFix;
+ import net.minecraft.util.datafix.fixes.CustomModelDataExpandFix;
+ import net.minecraft.util.datafix.fixes.DecoratedPotFieldRenameFix;
+@@ -366,9 +_,6 @@
+ import net.minecraft.util.datafix.schemas.V4312;
+ import net.minecraft.util.datafix.schemas.V4420;
+ import net.minecraft.util.datafix.schemas.V4421;
+-import net.minecraft.util.datafix.schemas.V4531;
+-import net.minecraft.util.datafix.schemas.V4532;
+-import net.minecraft.util.datafix.schemas.V4533;
+ import net.minecraft.util.datafix.schemas.V501;
+ import net.minecraft.util.datafix.schemas.V700;
+ import net.minecraft.util.datafix.schemas.V701;
+@@ -1357,10 +_,35 @@
          Schema schema202 = p_14514_.addSchema(3800, SAME_NAMESPACED);
          UnaryOperator<String> unaryoperator2 = createRenamer(Map.of("minecraft:scute", "minecraft:turtle_scute"));
          p_14514_.addFixer(ItemRenameFix.create(schema202, "Rename scute item to turtle_scute", unaryoperator2));
@@ -36,7 +54,7 @@
          Schema schema204 = p_14514_.addSchema(3807, V3807::new);
          p_14514_.addFixer(new AddNewChoices(schema204, "Added Vault", References.BLOCK_ENTITY));
          Schema schema205 = p_14514_.addSchema(3807, 1, SAME_NAMESPACED);
-@@ -1379,6 +_,18 @@
+@@ -1383,6 +_,18 @@
                  schema212, "Rename jump strength attribute", createRenamer("minecraft:horse.jump_strength", "minecraft:generic.jump_strength")
              )
          );
@@ -55,3 +73,20 @@
          Schema schema213 = p_14514_.addSchema(3816, V3816::new);
          p_14514_.addFixer(new AddNewChoices(schema213, "Added Bogged", References.ENTITY));
          Schema schema214 = p_14514_.addSchema(3818, V3818::new);
+@@ -1559,16 +_,6 @@
+         p_14514_.addFixer(new AddNewChoices(schema267, "Added Happy Ghast", References.ENTITY));
+         Schema schema268 = p_14514_.addSchema(4424, SAME_NAMESPACED);
+         p_14514_.addFixer(new FeatureFlagRemoveFix(schema268, "Remove Locator Bar experimental feature flag", Set.of("minecraft:locator_bar")));
+-        Schema schema269 = p_14514_.addSchema(4531, V4531::new);
+-        p_14514_.addFixer(new AddNewChoices(schema269, "Added Copper Golem", References.ENTITY));
+-        Schema schema270 = p_14514_.addSchema(4532, V4532::new);
+-        p_14514_.addFixer(new AddNewChoices(schema270, "Added Copper Golem Statue Block Entity", References.BLOCK_ENTITY));
+-        Schema schema271 = p_14514_.addSchema(4533, V4533::new);
+-        p_14514_.addFixer(new AddNewChoices(schema271, "Added Shelf", References.BLOCK_ENTITY));
+-        Schema schema272 = p_14514_.addSchema(4535, SAME_NAMESPACED);
+-        p_14514_.addFixer(new CopperGolemWeatherStateFix(schema272));
+-        Schema schema273 = p_14514_.addSchema(4537, SAME_NAMESPACED);
+-        p_14514_.addFixer(new ChunkDeleteLightFix(schema273));
+     }
+ 
+     private static UnaryOperator<String> createRenamerNoNamespace(Map<String, String> p_326818_) {

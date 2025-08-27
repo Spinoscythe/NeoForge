@@ -1,0 +1,77 @@
+--- a/com/mojang/realmsclient/client/worldupload/RealmsCreateWorldFlow.java
++++ b/com/mojang/realmsclient/client/worldupload/RealmsCreateWorldFlow.java
+@@ -40,11 +_,11 @@
+     ) {
+         CreateWorldScreen.openFresh(
+             p_374166_,
+-            () -> p_374166_.setScreen(p_374334_),
+-            (p_438686_, p_438687_, p_438688_, p_438689_) -> {
++            p_374334_,
++            (p_419395_, p_419396_, p_419397_, p_419398_) -> {
+                 Path path;
+                 try {
+-                    path = createTemporaryWorldFolder(p_438687_, p_438688_, p_438689_);
++                    path = createTemporaryWorldFolder(p_419396_, p_419397_, p_419398_);
+                 } catch (IOException ioexception) {
+                     LOGGER.warn("Failed to create temporary world folder.");
+                     p_374166_.setScreen(new RealmsGenericErrorScreen(Component.translatable("mco.create.world.failed"), p_374049_));
+@@ -52,15 +_,15 @@
+                 }
+ 
+                 RealmsWorldOptions realmsworldoptions = RealmsWorldOptions.createFromSettings(
+-                    p_438688_.getLevelSettings(), p_438688_.getLevelSettings().allowCommands(), SharedConstants.getCurrentVersion().name()
++                    p_419397_.getLevelSettings(), p_419397_.getLevelSettings().allowCommands(), SharedConstants.getCurrentVersion().name()
+                 );
+                 RealmsSlot realmsslot = new RealmsSlot(
+-                    p_376611_, realmsworldoptions, List.of(RealmsSetting.hardcoreSetting(p_438688_.getLevelSettings().hardcore()))
++                    p_376611_, realmsworldoptions, List.of(RealmsSetting.hardcoreSetting(p_419397_.getLevelSettings().hardcore()))
+                 );
+                 RealmsWorldUpload realmsworldupload = new RealmsWorldUpload(
+                     path, realmsslot, p_374166_.getUser(), p_374154_.id, RealmsWorldUploadStatusTracker.noOp()
+                 );
+-                p_374166_.setScreenAndShow(
++                p_374166_.forceSetScreen(
+                     new AlertScreen(
+                         realmsworldupload::cancel,
+                         Component.translatable("mco.create.world.reset.title"),
+@@ -73,22 +_,22 @@
+                     p_374383_.run();
+                 }
+ 
+-                realmsworldupload.packAndUpload().handleAsync((p_438695_, p_438696_) -> {
+-                    if (p_438696_ != null) {
+-                        if (p_438696_ instanceof CompletionException completionexception) {
+-                            p_438696_ = completionexception.getCause();
++                realmsworldupload.packAndUpload().handleAsync((p_378750_, p_378751_) -> {
++                    if (p_378751_ != null) {
++                        if (p_378751_ instanceof CompletionException completionexception) {
++                            p_378751_ = completionexception.getCause();
+                         }
+ 
+-                        if (p_438696_ instanceof RealmsUploadCanceledException) {
+-                            p_374166_.setScreenAndShow(p_374049_);
++                        if (p_378751_ instanceof RealmsUploadCanceledException) {
++                            p_374166_.forceSetScreen(p_374049_);
+                         } else {
+-                            if (p_438696_ instanceof RealmsUploadFailedException realmsuploadfailedexception) {
++                            if (p_378751_ instanceof RealmsUploadFailedException realmsuploadfailedexception) {
+                                 LOGGER.warn("Failed to create realms world {}", realmsuploadfailedexception.getStatusMessage());
+                             } else {
+-                                LOGGER.warn("Failed to create realms world {}", p_438696_.getMessage());
++                                LOGGER.warn("Failed to create realms world {}", p_378751_.getMessage());
+                             }
+ 
+-                            p_374166_.setScreenAndShow(new RealmsGenericErrorScreen(Component.translatable("mco.create.world.failed"), p_374049_));
++                            p_374166_.forceSetScreen(new RealmsGenericErrorScreen(Component.translatable("mco.create.world.failed"), p_374049_));
+                         }
+                     } else {
+                         if (p_374334_ instanceof RealmsConfigureWorldScreen realmsconfigureworldscreen) {
+@@ -98,7 +_,7 @@
+                         if (p_374383_ != null) {
+                             RealmsMainScreen.play(p_374154_, p_374334_, true);
+                         } else {
+-                            p_374166_.setScreenAndShow(p_374334_);
++                            p_374166_.forceSetScreen(p_374334_);
+                         }
+ 
+                         RealmsMainScreen.refreshServerList();

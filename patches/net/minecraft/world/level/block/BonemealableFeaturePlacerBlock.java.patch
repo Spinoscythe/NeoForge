@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/level/block/BonemealableFeaturePlacerBlock.java
++++ b/net/minecraft/world/level/block/BonemealableFeaturePlacerBlock.java
+@@ -18,10 +_,10 @@
+ 
+ public class BonemealableFeaturePlacerBlock extends Block implements BonemealableBlock {
+     public static final MapCodec<BonemealableFeaturePlacerBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432632_ -> p_432632_.group(
++        p_380194_ -> p_380194_.group(
+                 ResourceKey.codec(Registries.CONFIGURED_FEATURE).fieldOf("feature").forGetter(p_380141_ -> p_380141_.feature), propertiesCodec()
+             )
+-            .apply(p_432632_, BonemealableFeaturePlacerBlock::new)
++            .apply(p_380194_, BonemealableFeaturePlacerBlock::new)
+     );
+     private final ResourceKey<ConfiguredFeature<?, ?>> feature;
+ 

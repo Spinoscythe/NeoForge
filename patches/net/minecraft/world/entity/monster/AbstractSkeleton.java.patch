@@ -1,7 +1,11 @@
 --- a/net/minecraft/world/entity/monster/AbstractSkeleton.java
 +++ b/net/minecraft/world/entity/monster/AbstractSkeleton.java
-@@ -163,8 +_,8 @@
-         if (this.level() != null && !this.level().isClientSide) {
+@@ -160,11 +_,11 @@
+     }
+ 
+     public void reassessWeaponGoal() {
+-        if (this.level() != null && !this.level().isClientSide()) {
++        if (this.level() != null && !this.level().isClientSide) {
              this.goalSelector.removeGoal(this.meleeGoal);
              this.goalSelector.removeGoal(this.bowGoal);
 -            ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, Items.BOW));
@@ -35,3 +39,12 @@
      }
  
      @Override
+@@ -227,7 +_,7 @@
+     @Override
+     public void onEquipItem(EquipmentSlot p_401835_, ItemStack p_401917_, ItemStack p_401943_) {
+         super.onEquipItem(p_401835_, p_401917_, p_401943_);
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.reassessWeaponGoal();
+         }
+     }

@@ -1,0 +1,25 @@
+--- a/net/minecraft/client/gui/screens/inventory/TestBlockEditScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/TestBlockEditScreen.java
+@@ -70,11 +_,6 @@
+         return false;
+     }
+ 
+-    @Override
+-    public boolean isInGameUi() {
+-        return true;
+-    }
+-
+     private void onDone() {
+         this.message = this.messageEdit.getValue();
+         this.minecraft.getConnection().send(new ServerboundSetTestBlockPacket(this.position, this.mode, this.message));
+@@ -93,5 +_,10 @@
+     private void updateMode(TestBlockMode p_397565_) {
+         this.mode = p_397565_;
+         this.messageEdit.visible = p_397565_ != TestBlockMode.START;
++    }
++
++    @Override
++    public void renderBackground(GuiGraphics p_399499_, int p_399635_, int p_399466_, float p_400178_) {
++        this.renderTransparentBackground(p_399499_);
+     }
+ }

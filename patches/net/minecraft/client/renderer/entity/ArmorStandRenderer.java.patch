@@ -1,0 +1,45 @@
+--- a/net/minecraft/client/renderer/entity/ArmorStandRenderer.java
++++ b/net/minecraft/client/renderer/entity/ArmorStandRenderer.java
+@@ -6,8 +_,8 @@
+ import net.minecraft.client.model.ArmorStandArmorModel;
+ import net.minecraft.client.model.ArmorStandModel;
+ import net.minecraft.client.model.geom.ModelLayers;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
+ import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+ import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+@@ -31,14 +_,16 @@
+         this.addLayer(
+             new HumanoidArmorLayer<>(
+                 this,
+-                ArmorModelSet.bake(ModelLayers.ARMOR_STAND_ARMOR, p_173915_.getModelSet(), ArmorStandArmorModel::new),
+-                ArmorModelSet.bake(ModelLayers.ARMOR_STAND_SMALL_ARMOR, p_173915_.getModelSet(), ArmorStandArmorModel::new),
++                new ArmorStandArmorModel(p_173915_.bakeLayer(ModelLayers.ARMOR_STAND_INNER_ARMOR)),
++                new ArmorStandArmorModel(p_173915_.bakeLayer(ModelLayers.ARMOR_STAND_OUTER_ARMOR)),
++                new ArmorStandArmorModel(p_173915_.bakeLayer(ModelLayers.ARMOR_STAND_SMALL_INNER_ARMOR)),
++                new ArmorStandArmorModel(p_173915_.bakeLayer(ModelLayers.ARMOR_STAND_SMALL_OUTER_ARMOR)),
+                 p_173915_.getEquipmentRenderer()
+             )
+         );
+         this.addLayer(new ItemInHandLayer<>(this));
+         this.addLayer(new WingsLayer<>(this, p_173915_.getModelSet(), p_173915_.getEquipmentRenderer()));
+-        this.addLayer(new CustomHeadLayer<>(this, p_173915_.getModelSet(), p_173915_.getPlayerSkinRenderCache()));
++        this.addLayer(new CustomHeadLayer<>(this, p_173915_.getModelSet()));
+     }
+ 
+     public ResourceLocation getTextureLocation(ArmorStandRenderState p_364197_) {
+@@ -66,9 +_,9 @@
+         p_363932_.wiggle = (float)(p_361199_.level().getGameTime() - p_361199_.lastHit) + p_365059_;
+     }
+ 
+-    public void submit(ArmorStandRenderState p_435486_, PoseStack p_433034_, SubmitNodeCollector p_433968_) {
+-        this.model = p_435486_.isSmall ? this.smallModel : this.bigModel;
+-        super.submit(p_435486_, p_433034_, p_433968_);
++    public void render(ArmorStandRenderState p_360777_, PoseStack p_362088_, MultiBufferSource p_364152_, int p_361217_) {
++        this.model = p_360777_.isSmall ? this.smallModel : this.bigModel;
++        super.render(p_360777_, p_362088_, p_364152_, p_361217_);
+     }
+ 
+     protected void setupRotations(ArmorStandRenderState p_364765_, PoseStack p_113801_, float p_113802_, float p_113803_) {

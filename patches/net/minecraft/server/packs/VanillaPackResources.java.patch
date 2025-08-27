@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/packs/VanillaPackResources.java
++++ b/net/minecraft/server/packs/VanillaPackResources.java
+@@ -127,7 +_,7 @@
+         IoSupplier<InputStream> iosupplier = this.getRootResource("pack.mcmeta");
+         if (iosupplier != null) {
+             try (InputStream inputstream = iosupplier.get()) {
+-                T t = AbstractPackResources.getMetadataFromStream(p_389612_, inputstream, this.location);
++                T t = AbstractPackResources.getMetadataFromStream(p_389612_, inputstream);
+                 if (t != null) {
+                     return t;
+                 }

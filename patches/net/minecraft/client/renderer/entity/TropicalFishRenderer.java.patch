@@ -1,0 +1,27 @@
+--- a/net/minecraft/client/renderer/entity/TropicalFishRenderer.java
++++ b/net/minecraft/client/renderer/entity/TropicalFishRenderer.java
+@@ -6,7 +_,7 @@
+ import net.minecraft.client.model.TropicalFishModelA;
+ import net.minecraft.client.model.TropicalFishModelB;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.layers.TropicalFishPatternLayer;
+ import net.minecraft.client.renderer.entity.state.TropicalFishRenderState;
+ import net.minecraft.resources.ResourceLocation;
+@@ -46,12 +_,12 @@
+         p_363671_.patternColor = p_364725_.getPatternColor().getTextureDiffuseColor();
+     }
+ 
+-    public void submit(TropicalFishRenderState p_435403_, PoseStack p_434481_, SubmitNodeCollector p_435452_) {
+-        this.model = switch (p_435403_.pattern.base()) {
++    public void render(TropicalFishRenderState p_360880_, PoseStack p_116200_, MultiBufferSource p_116201_, int p_116202_) {
++        this.model = switch (p_360880_.pattern.base()) {
+             case SMALL -> this.modelA;
+             case LARGE -> this.modelB;
+         };
+-        super.submit(p_435403_, p_434481_, p_435452_);
++        super.render(p_360880_, p_116200_, p_116201_, p_116202_);
+     }
+ 
+     protected int getModelTint(TropicalFishRenderState p_364711_) {

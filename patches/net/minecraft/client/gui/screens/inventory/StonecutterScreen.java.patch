@@ -1,0 +1,20 @@
+--- a/net/minecraft/client/gui/screens/inventory/StonecutterScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/StonecutterScreen.java
+@@ -123,7 +_,7 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_99318_, double p_99319_, int p_99320_, boolean p_435496_) {
++    public boolean mouseClicked(double p_99318_, double p_99319_, int p_99320_) {
+         this.scrolling = false;
+         if (this.displayRecipes) {
+             int i = this.leftPos + 52;
+@@ -148,7 +_,7 @@
+             }
+         }
+ 
+-        return super.mouseClicked(p_99318_, p_99319_, p_99320_, p_435496_);
++        return super.mouseClicked(p_99318_, p_99319_, p_99320_);
+     }
+ 
+     @Override

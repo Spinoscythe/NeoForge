@@ -1,6 +1,23 @@
 --- a/net/minecraft/world/level/BlockGetter.java
 +++ b/net/minecraft/world/level/BlockGetter.java
-@@ -36,7 +_,7 @@
+@@ -10,7 +_,6 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+-import net.minecraft.core.Vec3i;
+ import net.minecraft.util.Mth;
+ import net.minecraft.world.level.block.entity.BlockEntity;
+ import net.minecraft.world.level.block.entity.BlockEntityType;
+@@ -22,6 +_,8 @@
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
+ public interface BlockGetter extends LevelHeightAccessor, net.neoforged.neoforge.common.extensions.IBlockGetterExtension {
++    int MAX_BLOCK_ITERATIONS_ALONG_TRAVEL = 16;
++
+     @Nullable
+     BlockEntity getBlockEntity(BlockPos p_45570_);
+ 
+@@ -35,7 +_,7 @@
      FluidState getFluidState(BlockPos p_45569_);
  
      default int getLightEmission(BlockPos p_45572_) {
@@ -9,3 +26,168 @@
      }
  
      default Stream<BlockState> getBlockStates(AABB p_45557_) {
+@@ -173,9 +_,9 @@
+ 
+     static boolean forEachBlockIntersectedBetween(Vec3 p_405487_, Vec3 p_405072_, AABB p_405459_, BlockGetter.BlockStepVisitor p_405341_) {
+         Vec3 vec3 = p_405072_.subtract(p_405487_);
+-        if (vec3.lengthSqr() < Mth.square(1.0E-5F)) {
+-            for (BlockPos blockpos2 : BlockPos.betweenClosed(p_405459_)) {
+-                if (!p_405341_.visit(blockpos2, 0)) {
++        if (vec3.lengthSqr() < Mth.square(0.99999F)) {
++            for (BlockPos blockpos1 : BlockPos.betweenClosed(p_405459_)) {
++                if (!p_405341_.visit(blockpos1, 0)) {
+                     return false;
+                 }
+             }
+@@ -183,21 +_,14 @@
+             return true;
+         } else {
+             LongSet longset = new LongOpenHashSet();
+-
+-            for (BlockPos blockpos : BlockPos.betweenCornersInDirection(p_405459_.move(vec3.scale(-1.0)), vec3)) {
+-                if (!p_405341_.visit(blockpos, 0)) {
+-                    return false;
+-                }
+-
+-                longset.add(blockpos.asLong());
+-            }
+-
+-            int i = addCollisionsAlongTravel(longset, vec3, p_405459_, p_405341_);
++            Vec3 vec31 = p_405459_.getMinPosition();
++            Vec3 vec32 = vec31.subtract(vec3);
++            int i = addCollisionsAlongTravel(longset, vec32, vec31, p_405459_, p_405341_);
+             if (i < 0) {
+                 return false;
+             } else {
+-                for (BlockPos blockpos1 : BlockPos.betweenCornersInDirection(p_405459_, vec3)) {
+-                    if (longset.add(blockpos1.asLong()) && !p_405341_.visit(blockpos1, i + 1)) {
++                for (BlockPos blockpos : BlockPos.betweenClosed(p_405459_)) {
++                    if (!longset.contains(blockpos.asLong()) && !p_405341_.visit(blockpos, i + 1)) {
+                         return false;
+                     }
+                 }
+@@ -207,80 +_,67 @@
+         }
+     }
+ 
+-    private static int addCollisionsAlongTravel(LongSet p_404983_, Vec3 p_365197_, AABB p_362649_, BlockGetter.BlockStepVisitor p_405208_) {
+-        double d0 = p_362649_.getXsize();
+-        double d1 = p_362649_.getYsize();
+-        double d2 = p_362649_.getZsize();
+-        Vec3i vec3i = getFurthestCorner(p_365197_);
+-        Vec3 vec3 = p_362649_.getCenter();
+-        Vec3 vec31 = new Vec3(vec3.x() + d0 * 0.5 * vec3i.getX(), vec3.y() + d1 * 0.5 * vec3i.getY(), vec3.z() + d2 * 0.5 * vec3i.getZ());
+-        Vec3 vec32 = vec31.subtract(p_365197_);
+-        int i = Mth.floor(vec32.x);
+-        int j = Mth.floor(vec32.y);
+-        int k = Mth.floor(vec32.z);
+-        int l = Mth.sign(p_365197_.x);
+-        int i1 = Mth.sign(p_365197_.y);
+-        int j1 = Mth.sign(p_365197_.z);
+-        double d3 = l == 0 ? Double.MAX_VALUE : l / p_365197_.x;
+-        double d4 = i1 == 0 ? Double.MAX_VALUE : i1 / p_365197_.y;
+-        double d5 = j1 == 0 ? Double.MAX_VALUE : j1 / p_365197_.z;
+-        double d6 = d3 * (l > 0 ? 1.0 - Mth.frac(vec32.x) : Mth.frac(vec32.x));
+-        double d7 = d4 * (i1 > 0 ? 1.0 - Mth.frac(vec32.y) : Mth.frac(vec32.y));
+-        double d8 = d5 * (j1 > 0 ? 1.0 - Mth.frac(vec32.z) : Mth.frac(vec32.z));
++    private static int addCollisionsAlongTravel(LongSet p_404983_, Vec3 p_365197_, Vec3 p_362395_, AABB p_362649_, BlockGetter.BlockStepVisitor p_405208_) {
++        Vec3 vec3 = p_362395_.subtract(p_365197_);
++        int i = Mth.floor(p_365197_.x);
++        int j = Mth.floor(p_365197_.y);
++        int k = Mth.floor(p_365197_.z);
++        int l = Mth.sign(vec3.x);
++        int i1 = Mth.sign(vec3.y);
++        int j1 = Mth.sign(vec3.z);
++        double d0 = l == 0 ? Double.MAX_VALUE : l / vec3.x;
++        double d1 = i1 == 0 ? Double.MAX_VALUE : i1 / vec3.y;
++        double d2 = j1 == 0 ? Double.MAX_VALUE : j1 / vec3.z;
++        double d3 = d0 * (l > 0 ? 1.0 - Mth.frac(p_365197_.x) : Mth.frac(p_365197_.x));
++        double d4 = d1 * (i1 > 0 ? 1.0 - Mth.frac(p_365197_.y) : Mth.frac(p_365197_.y));
++        double d5 = d2 * (j1 > 0 ? 1.0 - Mth.frac(p_365197_.z) : Mth.frac(p_365197_.z));
+         int k1 = 0;
++        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-        while (d6 <= 1.0 || d7 <= 1.0 || d8 <= 1.0) {
+-            if (d6 < d7) {
+-                if (d6 < d8) {
++        while (d3 <= 1.0 || d4 <= 1.0 || d5 <= 1.0) {
++            if (d3 < d4) {
++                if (d3 < d5) {
+                     i += l;
+-                    d6 += d3;
++                    d3 += d0;
+                 } else {
+                     k += j1;
+-                    d8 += d5;
++                    d5 += d2;
+                 }
+-            } else if (d7 < d8) {
++            } else if (d4 < d5) {
+                 j += i1;
+-                d7 += d4;
++                d4 += d1;
+             } else {
+                 k += j1;
+-                d8 += d5;
+-            }
+-
+-            Optional<Vec3> optional = AABB.clip(i, j, k, i + 1, j + 1, k + 1, vec32, vec31);
++                d5 += d2;
++            }
++
++            if (k1++ > 16) {
++                break;
++            }
++
++            Optional<Vec3> optional = AABB.clip(i, j, k, i + 1, j + 1, k + 1, p_365197_, p_362395_);
+             if (!optional.isEmpty()) {
+-                k1++;
+-                Vec3 vec33 = optional.get();
+-                double d9 = Mth.clamp(vec33.x, i + 1.0E-5F, i + 1.0 - 1.0E-5F);
+-                double d10 = Mth.clamp(vec33.y, j + 1.0E-5F, j + 1.0 - 1.0E-5F);
+-                double d11 = Mth.clamp(vec33.z, k + 1.0E-5F, k + 1.0 - 1.0E-5F);
+-                int l1 = Mth.floor(d9 - d0 * vec3i.getX());
+-                int i2 = Mth.floor(d10 - d1 * vec3i.getY());
+-                int j2 = Mth.floor(d11 - d2 * vec3i.getZ());
+-                int k2 = k1;
++                Vec3 vec31 = optional.get();
++                double d6 = Mth.clamp(vec31.x, i + 1.0E-5F, i + 1.0 - 1.0E-5F);
++                double d7 = Mth.clamp(vec31.y, j + 1.0E-5F, j + 1.0 - 1.0E-5F);
++                double d8 = Mth.clamp(vec31.z, k + 1.0E-5F, k + 1.0 - 1.0E-5F);
++                int l1 = Mth.floor(d6 + p_362649_.getXsize());
++                int i2 = Mth.floor(d7 + p_362649_.getYsize());
++                int j2 = Mth.floor(d8 + p_362649_.getZsize());
+ 
+-                for (BlockPos blockpos : BlockPos.betweenCornersInDirection(i, j, k, l1, i2, j2, p_365197_)) {
+-                    if (p_404983_.add(blockpos.asLong()) && !p_405208_.visit(blockpos, k2)) {
+-                        return -1;
++                for (int k2 = i; k2 <= l1; k2++) {
++                    for (int l2 = j; l2 <= i2; l2++) {
++                        for (int i3 = k; i3 <= j2; i3++) {
++                            if (p_404983_.add(BlockPos.asLong(k2, l2, i3)) && !p_405208_.visit(blockpos$mutableblockpos.set(k2, l2, i3), k1)) {
++                                return -1;
++                            }
++                        }
+                     }
+                 }
+             }
+         }
+ 
+         return k1;
+-    }
+-
+-    private static Vec3i getFurthestCorner(Vec3 p_436576_) {
+-        double d0 = Math.abs(Vec3.X_AXIS.dot(p_436576_));
+-        double d1 = Math.abs(Vec3.Y_AXIS.dot(p_436576_));
+-        double d2 = Math.abs(Vec3.Z_AXIS.dot(p_436576_));
+-        int i = p_436576_.x >= 0.0 ? 1 : -1;
+-        int j = p_436576_.y >= 0.0 ? 1 : -1;
+-        int k = p_436576_.z >= 0.0 ? 1 : -1;
+-        if (d0 <= d1 && d0 <= d2) {
+-            return new Vec3i(-i, -k, j);
+-        } else {
+-            return d1 <= d2 ? new Vec3i(k, -j, -i) : new Vec3i(-j, i, -k);
+-        }
+     }
+ 
+     @FunctionalInterface

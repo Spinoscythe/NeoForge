@@ -1,11 +1,107 @@
 --- a/net/minecraft/client/gui/components/EditBox.java
 +++ b/net/minecraft/client/gui/components/EditBox.java
-@@ -567,4 +_,8 @@
-     public void setHint(Component p_259584_) {
+@@ -1,8 +_,7 @@
+ package net.minecraft.client.gui.components;
+ 
+-import java.util.ArrayList;
+-import java.util.List;
+ import java.util.Objects;
++import java.util.function.BiFunction;
+ import java.util.function.Consumer;
+ import java.util.function.Predicate;
+ import javax.annotation.Nullable;
+@@ -33,6 +_,7 @@
+     public static final int BACKWARDS = -1;
+     public static final int FORWARDS = 1;
+     private static final int CURSOR_INSERT_WIDTH = 1;
++    private static final int CURSOR_INSERT_COLOR = -3092272;
+     private static final String CURSOR_APPEND_CHARACTER = "_";
+     public static final int DEFAULT_TEXT_COLOR = -2039584;
+     private static final int CURSOR_BLINK_INTERVAL_MS = 300;
+@@ -54,7 +_,7 @@
+     @Nullable
+     private Consumer<String> responder;
+     private Predicate<String> filter = Objects::nonNull;
+-    private final List<EditBox.TextFormatter> formatters = new ArrayList<>();
++    private BiFunction<String, Integer, FormattedCharSequence> formatter = (p_94147_, p_94148_) -> FormattedCharSequence.forward(p_94147_, Style.EMPTY);
+     @Nullable
+     private Component hint;
+     private long focusedTime = Util.getMillis();
+@@ -83,8 +_,8 @@
+         this.responder = p_94152_;
+     }
+ 
+-    public void addFormatter(EditBox.TextFormatter p_437275_) {
+-        this.formatters.add(p_437275_);
++    public void setFormatter(BiFunction<String, Integer, FormattedCharSequence> p_94150_) {
++        this.formatter = p_94150_;
+     }
+ 
+     @Override
+@@ -370,7 +_,7 @@
+     }
+ 
+     @Override
+-    public void onClick(double p_279417_, double p_279437_, boolean p_436002_) {
++    public void onClick(double p_279417_, double p_279437_) {
+         int i = Mth.floor(p_279417_) - this.textX;
+         String s = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
+         this.moveCursorTo(this.font.plainSubstrByWidth(s, i).length() + this.displayPos, Screen.hasShiftDown());
+@@ -397,7 +_,7 @@
+             int k = Mth.clamp(this.highlightPos - this.displayPos, 0, s.length());
+             if (!s.isEmpty()) {
+                 String s1 = flag ? s.substring(0, i) : s;
+-                FormattedCharSequence formattedcharsequence = this.applyFormat(s1, this.displayPos);
++                FormattedCharSequence formattedcharsequence = this.formatter.apply(s1, this.displayPos);
+                 p_283252_.drawString(this.font, formattedcharsequence, j, this.textY, i1, this.textShadow);
+                 j += this.font.width(formattedcharsequence) + 1;
+             }
+@@ -412,7 +_,7 @@
+             }
+ 
+             if (!s.isEmpty() && flag && i < s.length()) {
+-                p_283252_.drawString(this.font, this.applyFormat(s.substring(i), this.cursorPos), j, this.textY, i1, this.textShadow);
++                p_283252_.drawString(this.font, this.formatter.apply(s.substring(i), this.cursorPos), j, this.textY, i1, this.textShadow);
+             }
+ 
+             if (this.hint != null && s.isEmpty() && !this.isFocused()) {
+@@ -430,7 +_,7 @@
+ 
+             if (flag1) {
+                 if (flag2) {
+-                    p_283252_.fill(j1, this.textY - 1, j1 + 1, this.textY + 1 + 9, i1);
++                    p_283252_.fill(j1, this.textY - 1, j1 + 1, this.textY + 1 + 9, -3092272);
+                 } else {
+                     p_283252_.drawString(this.font, "_", j1, this.textY, i1, this.textShadow);
+                 }
+@@ -438,17 +_,6 @@
+         }
+     }
+ 
+-    private FormattedCharSequence applyFormat(String p_437368_, int p_437239_) {
+-        for (EditBox.TextFormatter editbox$textformatter : this.formatters) {
+-            FormattedCharSequence formattedcharsequence = editbox$textformatter.format(p_437368_, p_437239_);
+-            if (formattedcharsequence != null) {
+-                return formattedcharsequence;
+-            }
+-        }
+-
+-        return FormattedCharSequence.forward(p_437368_, Style.EMPTY);
+-    }
+-
+     private void updateTextPosition() {
+         if (this.font != null) {
+             String s = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
+@@ -579,10 +_,7 @@
          this.hint = p_259584_;
      }
-+
+ 
+-    @FunctionalInterface
+-    @OnlyIn(Dist.CLIENT)
+-    public interface TextFormatter {
+-        @Nullable
+-        FormattedCharSequence format(String p_437332_, int p_437375_);
 +    public boolean getTextShadow() {
 +        return this.textShadow;
-+    }
+     }
  }

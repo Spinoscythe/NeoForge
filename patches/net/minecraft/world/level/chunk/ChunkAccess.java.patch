@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
+@@ -191,7 +_,7 @@
+         Heightmap heightmap = this.heightmaps.get(p_62080_);
+         if (heightmap == null) {
+             if (SharedConstants.IS_RUNNING_IN_IDE && this instanceof LevelChunk) {
+-                LOGGER.error("Unprimed heightmap: {} {} {}", p_62080_, p_62081_, p_62082_);
++                LOGGER.error("Unprimed heightmap: " + p_62080_ + " " + p_62081_ + " " + p_62082_);
+             }
+ 
+             Heightmap.primeHeightmaps(this, EnumSet.of(p_62080_));
 @@ -329,10 +_,14 @@
  
      @Override

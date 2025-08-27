@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/monster/Illusioner.java
 +++ b/net/minecraft/world/entity/monster/Illusioner.java
+@@ -90,7 +_,7 @@
+     @Override
+     public void aiStep() {
+         super.aiStep();
+-        if (this.level().isClientSide() && this.isInvisible()) {
++        if (this.level().isClientSide && this.isInvisible()) {
+             this.clientSideIllusionTicks--;
+             if (this.clientSideIllusionTicks < 0) {
+                 this.clientSideIllusionTicks = 0;
 @@ -172,9 +_,11 @@
  
      @Override

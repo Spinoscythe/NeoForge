@@ -1,0 +1,13 @@
+--- a/net/minecraft/network/Varint21FrameDecoder.java
++++ b/net/minecraft/network/Varint21FrameDecoder.java
+@@ -47,9 +_,7 @@
+             p_130567_.resetReaderIndex();
+         } else {
+             int i = VarInt.read(this.helperBuf);
+-            if (i == 0) {
+-                throw new CorruptedFrameException("Frame length cannot be zero");
+-            } else if (p_130567_.readableBytes() < i) {
++            if (p_130567_.readableBytes() < i) {
+                 p_130567_.resetReaderIndex();
+             } else {
+                 if (this.monitor != null) {

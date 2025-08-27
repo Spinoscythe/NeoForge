@@ -1,0 +1,27 @@
+--- a/net/minecraft/util/random/Weighted.java
++++ b/net/minecraft/util/random/Weighted.java
+@@ -5,13 +_,10 @@
+ import com.mojang.serialization.MapCodec;
+ import com.mojang.serialization.codecs.RecordCodecBuilder;
+ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+-import io.netty.buffer.ByteBuf;
+ import java.util.function.BiFunction;
+ import java.util.function.Function;
+ import net.minecraft.SharedConstants;
+ import net.minecraft.Util;
+-import net.minecraft.network.codec.ByteBufCodecs;
+-import net.minecraft.network.codec.StreamCodec;
+ import net.minecraft.util.ExtraCodecs;
+ import org.slf4j.Logger;
+ 
+@@ -43,10 +_,6 @@
+                 )
+                 .apply(p_393523_, (BiFunction<E, Integer, Weighted<E>>)(Weighted::new))
+         );
+-    }
+-
+-    public static <B extends ByteBuf, T> StreamCodec<B, Weighted<T>> streamCodec(StreamCodec<B, T> p_437393_) {
+-        return StreamCodec.composite(p_437393_, Weighted::value, ByteBufCodecs.VAR_INT, Weighted::weight, Weighted::new);
+     }
+ 
+     public <U> Weighted<U> map(Function<T, U> p_410597_) {

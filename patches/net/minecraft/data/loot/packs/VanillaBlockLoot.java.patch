@@ -1,0 +1,339 @@
+--- a/net/minecraft/data/loot/packs/VanillaBlockLoot.java
++++ b/net/minecraft/data/loot/packs/VanillaBlockLoot.java
+@@ -288,7 +_,6 @@
+         this.dropSelf(Blocks.POLISHED_BASALT);
+         this.dropSelf(Blocks.SMOOTH_BASALT);
+         this.dropSelf(Blocks.SOUL_TORCH);
+-        this.dropSelf(Blocks.COPPER_TORCH);
+         this.dropSelf(Blocks.CARVED_PUMPKIN);
+         this.dropSelf(Blocks.JACK_O_LANTERN);
+         this.dropSelf(Blocks.REPEATER);
+@@ -315,7 +_,6 @@
+         this.dropSelf(Blocks.CRACKED_STONE_BRICKS);
+         this.dropSelf(Blocks.CHISELED_STONE_BRICKS);
+         this.dropSelf(Blocks.IRON_BARS);
+-        Blocks.COPPER_BARS.forEach(p_436521_ -> this.dropSelf(p_436521_));
+         this.dropSelf(Blocks.OAK_FENCE_GATE);
+         this.dropSelf(Blocks.MANGROVE_FENCE_GATE);
+         this.dropSelf(Blocks.BAMBOO_FENCE_GATE);
+@@ -351,6 +_,12 @@
+         this.dropSelf(Blocks.MANGROVE_BUTTON);
+         this.dropSelf(Blocks.CHERRY_BUTTON);
+         this.dropSelf(Blocks.BAMBOO_BUTTON);
++        this.dropSelf(Blocks.SKELETON_SKULL);
++        this.dropSelf(Blocks.WITHER_SKELETON_SKULL);
++        this.dropSelf(Blocks.ZOMBIE_HEAD);
++        this.dropSelf(Blocks.CREEPER_HEAD);
++        this.dropSelf(Blocks.DRAGON_HEAD);
++        this.dropSelf(Blocks.PIGLIN_HEAD);
+         this.dropSelf(Blocks.ANVIL);
+         this.dropSelf(Blocks.CHIPPED_ANVIL);
+         this.dropSelf(Blocks.DAMAGED_ANVIL);
+@@ -577,8 +_,7 @@
+         this.dropSelf(Blocks.CHISELED_NETHER_BRICKS);
+         this.dropSelf(Blocks.CRACKED_NETHER_BRICKS);
+         this.dropSelf(Blocks.QUARTZ_BRICKS);
+-        this.dropSelf(Blocks.IRON_CHAIN);
+-        Blocks.COPPER_CHAIN.forEach(p_436523_ -> this.dropSelf(p_436523_));
++        this.dropSelf(Blocks.CHAIN);
+         this.dropSelf(Blocks.WARPED_ROOTS);
+         this.dropSelf(Blocks.CRIMSON_ROOTS);
+         this.dropSelf(Blocks.MUD_BRICKS);
+@@ -620,13 +_,6 @@
+         this.dropSelf(Blocks.WEATHERED_CUT_COPPER_STAIRS);
+         this.dropSelf(Blocks.OXIDIZED_CUT_COPPER_STAIRS);
+         this.dropSelf(Blocks.LIGHTNING_ROD);
+-        this.dropSelf(Blocks.EXPOSED_LIGHTNING_ROD);
+-        this.dropSelf(Blocks.WEATHERED_LIGHTNING_ROD);
+-        this.dropSelf(Blocks.OXIDIZED_LIGHTNING_ROD);
+-        this.dropSelf(Blocks.WAXED_LIGHTNING_ROD);
+-        this.dropSelf(Blocks.WAXED_EXPOSED_LIGHTNING_ROD);
+-        this.dropSelf(Blocks.WAXED_WEATHERED_LIGHTNING_ROD);
+-        this.dropSelf(Blocks.WAXED_OXIDIZED_LIGHTNING_ROD);
+         this.dropSelf(Blocks.POINTED_DRIPSTONE);
+         this.dropSelf(Blocks.DRIPSTONE_BLOCK);
+         this.dropSelf(Blocks.SPORE_BLOSSOM);
+@@ -639,7 +_,7 @@
+         this.dropSelf(Blocks.BIG_DRIPLEAF);
+         this.dropSelf(Blocks.MOSS_BLOCK);
+         this.add(Blocks.PALE_MOSS_CARPET, p_378912_ -> this.createMossyCarpetBlockDrops(p_378912_));
+-        this.add(Blocks.PALE_HANGING_MOSS, p_404170_ -> this.createShearsOrSilkTouchOnlyDrop(p_404170_));
++        this.add(Blocks.PALE_HANGING_MOSS, p_382574_ -> this.createShearsOrSilkTouchOnlyDrop(p_382574_));
+         this.dropSelf(Blocks.PALE_MOSS_BLOCK);
+         this.dropSelf(Blocks.ROOTED_DIRT);
+         this.dropSelf(Blocks.COBBLED_DEEPSLATE);
+@@ -678,9 +_,9 @@
+         this.dropSelf(Blocks.TUFF_BRICK_STAIRS);
+         this.dropSelf(Blocks.TUFF_BRICK_WALL);
+         this.dropSelf(Blocks.CHISELED_TUFF_BRICKS);
+-        this.add(Blocks.TUFF_SLAB, p_249451_ -> this.createSlabItemTable(p_249451_));
+-        this.add(Blocks.TUFF_BRICK_SLAB, p_249068_ -> this.createSlabItemTable(p_249068_));
+-        this.add(Blocks.POLISHED_TUFF_SLAB, p_251336_ -> this.createSlabItemTable(p_251336_));
++        this.add(Blocks.TUFF_SLAB, p_250363_ -> this.createSlabItemTable(p_250363_));
++        this.add(Blocks.TUFF_BRICK_SLAB, p_249342_ -> this.createSlabItemTable(p_249342_));
++        this.add(Blocks.POLISHED_TUFF_SLAB, p_251340_ -> this.createSlabItemTable(p_251340_));
+         this.dropSelf(Blocks.CHISELED_COPPER);
+         this.dropSelf(Blocks.EXPOSED_CHISELED_COPPER);
+         this.dropSelf(Blocks.WEATHERED_CHISELED_COPPER);
+@@ -705,14 +_,6 @@
+         this.dropSelf(Blocks.WAXED_EXPOSED_COPPER_BULB);
+         this.dropSelf(Blocks.WAXED_WEATHERED_COPPER_BULB);
+         this.dropSelf(Blocks.WAXED_OXIDIZED_COPPER_BULB);
+-        this.dropSelf(Blocks.COPPER_GOLEM_STATUE);
+-        this.dropSelf(Blocks.EXPOSED_COPPER_GOLEM_STATUE);
+-        this.dropSelf(Blocks.WEATHERED_COPPER_GOLEM_STATUE);
+-        this.dropSelf(Blocks.OXIDIZED_COPPER_GOLEM_STATUE);
+-        this.dropSelf(Blocks.WAXED_COPPER_GOLEM_STATUE);
+-        this.dropSelf(Blocks.WAXED_EXPOSED_COPPER_GOLEM_STATUE);
+-        this.dropSelf(Blocks.WAXED_WEATHERED_COPPER_GOLEM_STATUE);
+-        this.dropSelf(Blocks.WAXED_OXIDIZED_COPPER_GOLEM_STATUE);
+         this.dropSelf(Blocks.HEAVY_CORE);
+         this.dropSelf(Blocks.FIREFLY_BUSH);
+         this.dropSelf(Blocks.CACTUS_FLOWER);
+@@ -727,9 +_,9 @@
+         this.dropOther(Blocks.BIG_DRIPLEAF_STEM, Blocks.BIG_DRIPLEAF);
+         this.add(Blocks.STONE, p_251015_ -> this.createSingleItemTableWithSilkTouch(p_251015_, Blocks.COBBLESTONE));
+         this.add(Blocks.DEEPSLATE, p_249052_ -> this.createSingleItemTableWithSilkTouch(p_249052_, Blocks.COBBLED_DEEPSLATE));
+-        this.add(Blocks.GRASS_BLOCK, p_249779_ -> this.createSingleItemTableWithSilkTouch(p_249779_, Blocks.DIRT));
+-        this.add(Blocks.PODZOL, p_250966_ -> this.createSingleItemTableWithSilkTouch(p_250966_, Blocks.DIRT));
+-        this.add(Blocks.MYCELIUM, p_250352_ -> this.createSingleItemTableWithSilkTouch(p_250352_, Blocks.DIRT));
++        this.add(Blocks.GRASS_BLOCK, p_250966_ -> this.createSingleItemTableWithSilkTouch(p_250966_, Blocks.DIRT));
++        this.add(Blocks.PODZOL, p_250352_ -> this.createSingleItemTableWithSilkTouch(p_250352_, Blocks.DIRT));
++        this.add(Blocks.MYCELIUM, p_249779_ -> this.createSingleItemTableWithSilkTouch(p_249779_, Blocks.DIRT));
+         this.add(Blocks.TUBE_CORAL_BLOCK, p_248608_ -> this.createSingleItemTableWithSilkTouch(p_248608_, Blocks.DEAD_TUBE_CORAL_BLOCK));
+         this.add(Blocks.BRAIN_CORAL_BLOCK, p_251175_ -> this.createSingleItemTableWithSilkTouch(p_251175_, Blocks.DEAD_BRAIN_CORAL_BLOCK));
+         this.add(Blocks.BUBBLE_CORAL_BLOCK, p_249280_ -> this.createSingleItemTableWithSilkTouch(p_249280_, Blocks.DEAD_BUBBLE_CORAL_BLOCK));
+@@ -787,44 +_,44 @@
+         this.add(Blocks.ACACIA_SLAB, p_248946_ -> this.createSlabItemTable(p_248946_));
+         this.add(Blocks.DARK_OAK_SLAB, p_249873_ -> this.createSlabItemTable(p_249873_));
+         this.add(Blocks.PALE_OAK_SLAB, p_250611_ -> this.createSlabItemTable(p_250611_));
+-        this.add(Blocks.MANGROVE_SLAB, p_250363_ -> this.createSlabItemTable(p_250363_));
+-        this.add(Blocks.CHERRY_SLAB, p_249255_ -> this.createSlabItemTable(p_249255_));
+-        this.add(Blocks.BAMBOO_SLAB, p_249820_ -> this.createSlabItemTable(p_249820_));
+-        this.add(Blocks.BAMBOO_MOSAIC_SLAB, p_250846_ -> this.createSlabItemTable(p_250846_));
+-        this.add(Blocks.BRICK_SLAB, p_249031_ -> this.createSlabItemTable(p_249031_));
+-        this.add(Blocks.COBBLESTONE_SLAB, p_251560_ -> this.createSlabItemTable(p_251560_));
+-        this.add(Blocks.DARK_PRISMARINE_SLAB, p_250571_ -> this.createSlabItemTable(p_250571_));
+-        this.add(Blocks.NETHER_BRICK_SLAB, p_250698_ -> this.createSlabItemTable(p_250698_));
+-        this.add(Blocks.PRISMARINE_BRICK_SLAB, p_250985_ -> this.createSlabItemTable(p_250985_));
+-        this.add(Blocks.PRISMARINE_SLAB, p_250829_ -> this.createSlabItemTable(p_250829_));
+-        this.add(Blocks.PURPUR_SLAB, p_251720_ -> this.createSlabItemTable(p_251720_));
+-        this.add(Blocks.QUARTZ_SLAB, p_249342_ -> this.createSlabItemTable(p_249342_));
+-        this.add(Blocks.RED_SANDSTONE_SLAB, p_250259_ -> this.createSlabItemTable(p_250259_));
+-        this.add(Blocks.SANDSTONE_SLAB, p_251501_ -> this.createSlabItemTable(p_251501_));
+-        this.add(Blocks.CUT_RED_SANDSTONE_SLAB, p_250933_ -> this.createSlabItemTable(p_250933_));
+-        this.add(Blocks.CUT_SANDSTONE_SLAB, p_248836_ -> this.createSlabItemTable(p_248836_));
+-        this.add(Blocks.STONE_BRICK_SLAB, p_252142_ -> this.createSlabItemTable(p_252142_));
+-        this.add(Blocks.STONE_SLAB, p_248657_ -> this.createSlabItemTable(p_248657_));
+-        this.add(Blocks.SMOOTH_STONE_SLAB, p_249500_ -> this.createSlabItemTable(p_249500_));
+-        this.add(Blocks.POLISHED_GRANITE_SLAB, p_249589_ -> this.createSlabItemTable(p_249589_));
+-        this.add(Blocks.SMOOTH_RED_SANDSTONE_SLAB, p_251378_ -> this.createSlabItemTable(p_251378_));
+-        this.add(Blocks.MOSSY_STONE_BRICK_SLAB, p_251340_ -> this.createSlabItemTable(p_251340_));
+-        this.add(Blocks.POLISHED_DIORITE_SLAB, p_252148_ -> this.createSlabItemTable(p_252148_));
+-        this.add(Blocks.MOSSY_COBBLESTONE_SLAB, p_248742_ -> this.createSlabItemTable(p_248742_));
+-        this.add(Blocks.END_STONE_BRICK_SLAB, p_252320_ -> this.createSlabItemTable(p_252320_));
+-        this.add(Blocks.SMOOTH_SANDSTONE_SLAB, p_249683_ -> this.createSlabItemTable(p_249683_));
+-        this.add(Blocks.SMOOTH_QUARTZ_SLAB, p_249813_ -> this.createSlabItemTable(p_249813_));
+-        this.add(Blocks.GRANITE_SLAB, p_250170_ -> this.createSlabItemTable(p_250170_));
+-        this.add(Blocks.ANDESITE_SLAB, p_251963_ -> this.createSlabItemTable(p_251963_));
+-        this.add(Blocks.RED_NETHER_BRICK_SLAB, p_250291_ -> this.createSlabItemTable(p_250291_));
+-        this.add(Blocks.POLISHED_ANDESITE_SLAB, p_251741_ -> this.createSlabItemTable(p_251741_));
+-        this.add(Blocks.DIORITE_SLAB, p_249431_ -> this.createSlabItemTable(p_249431_));
+-        this.add(Blocks.CRIMSON_SLAB, p_249660_ -> this.createSlabItemTable(p_249660_));
+-        this.add(Blocks.WARPED_SLAB, p_249229_ -> this.createSlabItemTable(p_249229_));
+-        this.add(Blocks.BLACKSTONE_SLAB, p_251568_ -> this.createSlabItemTable(p_251568_));
+-        this.add(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, p_248799_ -> this.createSlabItemTable(p_248799_));
+-        this.add(Blocks.POLISHED_BLACKSTONE_SLAB, p_249358_ -> this.createSlabItemTable(p_249358_));
+-        this.add(Blocks.OXIDIZED_CUT_COPPER_SLAB, p_252044_ -> this.createSlabItemTable(p_252044_));
++        this.add(Blocks.MANGROVE_SLAB, p_249255_ -> this.createSlabItemTable(p_249255_));
++        this.add(Blocks.CHERRY_SLAB, p_249820_ -> this.createSlabItemTable(p_249820_));
++        this.add(Blocks.BAMBOO_SLAB, p_250846_ -> this.createSlabItemTable(p_250846_));
++        this.add(Blocks.BAMBOO_MOSAIC_SLAB, p_249031_ -> this.createSlabItemTable(p_249031_));
++        this.add(Blocks.BRICK_SLAB, p_251560_ -> this.createSlabItemTable(p_251560_));
++        this.add(Blocks.COBBLESTONE_SLAB, p_250571_ -> this.createSlabItemTable(p_250571_));
++        this.add(Blocks.DARK_PRISMARINE_SLAB, p_250698_ -> this.createSlabItemTable(p_250698_));
++        this.add(Blocks.NETHER_BRICK_SLAB, p_250985_ -> this.createSlabItemTable(p_250985_));
++        this.add(Blocks.PRISMARINE_BRICK_SLAB, p_250829_ -> this.createSlabItemTable(p_250829_));
++        this.add(Blocks.PRISMARINE_SLAB, p_251720_ -> this.createSlabItemTable(p_251720_));
++        this.add(Blocks.PURPUR_SLAB, p_250259_ -> this.createSlabItemTable(p_250259_));
++        this.add(Blocks.QUARTZ_SLAB, p_251501_ -> this.createSlabItemTable(p_251501_));
++        this.add(Blocks.RED_SANDSTONE_SLAB, p_250933_ -> this.createSlabItemTable(p_250933_));
++        this.add(Blocks.SANDSTONE_SLAB, p_248836_ -> this.createSlabItemTable(p_248836_));
++        this.add(Blocks.CUT_RED_SANDSTONE_SLAB, p_252142_ -> this.createSlabItemTable(p_252142_));
++        this.add(Blocks.CUT_SANDSTONE_SLAB, p_248657_ -> this.createSlabItemTable(p_248657_));
++        this.add(Blocks.STONE_BRICK_SLAB, p_249451_ -> this.createSlabItemTable(p_249451_));
++        this.add(Blocks.STONE_SLAB, p_249500_ -> this.createSlabItemTable(p_249500_));
++        this.add(Blocks.SMOOTH_STONE_SLAB, p_249589_ -> this.createSlabItemTable(p_249589_));
++        this.add(Blocks.POLISHED_GRANITE_SLAB, p_251378_ -> this.createSlabItemTable(p_251378_));
++        this.add(Blocks.SMOOTH_RED_SANDSTONE_SLAB, p_252148_ -> this.createSlabItemTable(p_252148_));
++        this.add(Blocks.MOSSY_STONE_BRICK_SLAB, p_248742_ -> this.createSlabItemTable(p_248742_));
++        this.add(Blocks.POLISHED_DIORITE_SLAB, p_252320_ -> this.createSlabItemTable(p_252320_));
++        this.add(Blocks.MOSSY_COBBLESTONE_SLAB, p_249683_ -> this.createSlabItemTable(p_249683_));
++        this.add(Blocks.END_STONE_BRICK_SLAB, p_249813_ -> this.createSlabItemTable(p_249813_));
++        this.add(Blocks.SMOOTH_SANDSTONE_SLAB, p_250170_ -> this.createSlabItemTable(p_250170_));
++        this.add(Blocks.SMOOTH_QUARTZ_SLAB, p_249068_ -> this.createSlabItemTable(p_249068_));
++        this.add(Blocks.GRANITE_SLAB, p_251963_ -> this.createSlabItemTable(p_251963_));
++        this.add(Blocks.ANDESITE_SLAB, p_250291_ -> this.createSlabItemTable(p_250291_));
++        this.add(Blocks.RED_NETHER_BRICK_SLAB, p_251741_ -> this.createSlabItemTable(p_251741_));
++        this.add(Blocks.POLISHED_ANDESITE_SLAB, p_249431_ -> this.createSlabItemTable(p_249431_));
++        this.add(Blocks.DIORITE_SLAB, p_249660_ -> this.createSlabItemTable(p_249660_));
++        this.add(Blocks.CRIMSON_SLAB, p_249229_ -> this.createSlabItemTable(p_249229_));
++        this.add(Blocks.WARPED_SLAB, p_251568_ -> this.createSlabItemTable(p_251568_));
++        this.add(Blocks.BLACKSTONE_SLAB, p_248799_ -> this.createSlabItemTable(p_248799_));
++        this.add(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, p_249358_ -> this.createSlabItemTable(p_249358_));
++        this.add(Blocks.POLISHED_BLACKSTONE_SLAB, p_252044_ -> this.createSlabItemTable(p_252044_));
++        this.add(Blocks.OXIDIZED_CUT_COPPER_SLAB, p_251336_ -> this.createSlabItemTable(p_251336_));
+         this.add(Blocks.WEATHERED_CUT_COPPER_SLAB, p_251951_ -> this.createSlabItemTable(p_251951_));
+         this.add(Blocks.EXPOSED_CUT_COPPER_SLAB, p_250882_ -> this.createSlabItemTable(p_250882_));
+         this.add(Blocks.CUT_COPPER_SLAB, p_249866_ -> this.createSlabItemTable(p_249866_));
+@@ -838,27 +_,27 @@
+         this.add(Blocks.DEEPSLATE_BRICK_SLAB, p_344213_ -> this.createSlabItemTable(p_344213_));
+         this.add(Blocks.MUD_BRICK_SLAB, p_382633_ -> this.createSlabItemTable(p_382633_));
+         this.add(Blocks.RESIN_BRICK_SLAB, p_392600_ -> this.createSlabItemTable(p_392600_));
+-        this.add(Blocks.OAK_DOOR, p_382623_ -> this.createDoorTable(p_382623_));
+-        this.add(Blocks.SPRUCE_DOOR, p_382600_ -> this.createDoorTable(p_382600_));
+-        this.add(Blocks.BIRCH_DOOR, p_382596_ -> this.createDoorTable(p_382596_));
+-        this.add(Blocks.JUNGLE_DOOR, p_382584_ -> this.createDoorTable(p_382584_));
+-        this.add(Blocks.ACACIA_DOOR, p_382639_ -> this.createDoorTable(p_382639_));
+-        this.add(Blocks.DARK_OAK_DOOR, p_382637_ -> this.createDoorTable(p_382637_));
+-        this.add(Blocks.PALE_OAK_DOOR, p_382629_ -> this.createDoorTable(p_382629_));
+-        this.add(Blocks.MANGROVE_DOOR, p_382613_ -> this.createDoorTable(p_382613_));
+-        this.add(Blocks.CHERRY_DOOR, p_382586_ -> this.createDoorTable(p_382586_));
+-        this.add(Blocks.BAMBOO_DOOR, p_382572_ -> this.createDoorTable(p_382572_));
+-        this.add(Blocks.WARPED_DOOR, p_382641_ -> this.createDoorTable(p_382641_));
+-        this.add(Blocks.CRIMSON_DOOR, p_382643_ -> this.createDoorTable(p_382643_));
+-        this.add(Blocks.IRON_DOOR, p_382609_ -> this.createDoorTable(p_382609_));
+-        this.add(Blocks.COPPER_DOOR, p_382564_ -> this.createDoorTable(p_382564_));
+-        this.add(Blocks.EXPOSED_COPPER_DOOR, p_382580_ -> this.createDoorTable(p_382580_));
+-        this.add(Blocks.WEATHERED_COPPER_DOOR, p_382566_ -> this.createDoorTable(p_382566_));
+-        this.add(Blocks.OXIDIZED_COPPER_DOOR, p_382625_ -> this.createDoorTable(p_382625_));
+-        this.add(Blocks.WAXED_COPPER_DOOR, p_382604_ -> this.createDoorTable(p_382604_));
+-        this.add(Blocks.WAXED_EXPOSED_COPPER_DOOR, p_382607_ -> this.createDoorTable(p_382607_));
+-        this.add(Blocks.WAXED_WEATHERED_COPPER_DOOR, p_382617_ -> this.createDoorTable(p_382617_));
+-        this.add(Blocks.WAXED_OXIDIZED_COPPER_DOOR, p_382602_ -> this.createDoorTable(p_382602_));
++        this.add(Blocks.OAK_DOOR, p_382617_ -> this.createDoorTable(p_382617_));
++        this.add(Blocks.SPRUCE_DOOR, p_382602_ -> this.createDoorTable(p_382602_));
++        this.add(Blocks.BIRCH_DOOR, p_382623_ -> this.createDoorTable(p_382623_));
++        this.add(Blocks.JUNGLE_DOOR, p_382600_ -> this.createDoorTable(p_382600_));
++        this.add(Blocks.ACACIA_DOOR, p_382596_ -> this.createDoorTable(p_382596_));
++        this.add(Blocks.DARK_OAK_DOOR, p_382584_ -> this.createDoorTable(p_382584_));
++        this.add(Blocks.PALE_OAK_DOOR, p_382639_ -> this.createDoorTable(p_382639_));
++        this.add(Blocks.MANGROVE_DOOR, p_382637_ -> this.createDoorTable(p_382637_));
++        this.add(Blocks.CHERRY_DOOR, p_382629_ -> this.createDoorTable(p_382629_));
++        this.add(Blocks.BAMBOO_DOOR, p_382613_ -> this.createDoorTable(p_382613_));
++        this.add(Blocks.WARPED_DOOR, p_382586_ -> this.createDoorTable(p_382586_));
++        this.add(Blocks.CRIMSON_DOOR, p_382572_ -> this.createDoorTable(p_382572_));
++        this.add(Blocks.IRON_DOOR, p_382641_ -> this.createDoorTable(p_382641_));
++        this.add(Blocks.COPPER_DOOR, p_382643_ -> this.createDoorTable(p_382643_));
++        this.add(Blocks.EXPOSED_COPPER_DOOR, p_382609_ -> this.createDoorTable(p_382609_));
++        this.add(Blocks.WEATHERED_COPPER_DOOR, p_382564_ -> this.createDoorTable(p_382564_));
++        this.add(Blocks.OXIDIZED_COPPER_DOOR, p_382580_ -> this.createDoorTable(p_382580_));
++        this.add(Blocks.WAXED_COPPER_DOOR, p_382566_ -> this.createDoorTable(p_382566_));
++        this.add(Blocks.WAXED_EXPOSED_COPPER_DOOR, p_382625_ -> this.createDoorTable(p_382625_));
++        this.add(Blocks.WAXED_WEATHERED_COPPER_DOOR, p_382604_ -> this.createDoorTable(p_382604_));
++        this.add(Blocks.WAXED_OXIDIZED_COPPER_DOOR, p_382607_ -> this.createDoorTable(p_382607_));
+         this.add(Blocks.BLACK_BED, p_251275_ -> this.createSinglePropConditionTable(p_251275_, BedBlock.PART, BedPart.HEAD));
+         this.add(Blocks.BLUE_BED, p_252316_ -> this.createSinglePropConditionTable(p_252316_, BedBlock.PART, BedPart.HEAD));
+         this.add(Blocks.BROWN_BED, p_249155_ -> this.createSinglePropConditionTable(p_249155_, BedBlock.PART, BedPart.HEAD));
+@@ -979,45 +_,24 @@
+         this.add(Blocks.BEACON, p_251287_ -> this.createNameableBlockEntityTable(p_251287_));
+         this.add(Blocks.BREWING_STAND, p_250976_ -> this.createNameableBlockEntityTable(p_250976_));
+         this.add(Blocks.CHEST, p_250538_ -> this.createNameableBlockEntityTable(p_250538_));
+-        this.add(Blocks.COPPER_CHEST, p_250717_ -> this.createNameableBlockEntityTable(p_250717_));
+-        this.add(Blocks.EXPOSED_COPPER_CHEST, p_250178_ -> this.createNameableBlockEntityTable(p_250178_));
+-        this.add(Blocks.WEATHERED_COPPER_CHEST, p_251962_ -> this.createNameableBlockEntityTable(p_251962_));
+-        this.add(Blocks.OXIDIZED_COPPER_CHEST, p_250520_ -> this.createNameableBlockEntityTable(p_250520_));
+-        this.add(Blocks.WAXED_COPPER_CHEST, p_252043_ -> this.createNameableBlockEntityTable(p_252043_));
+-        this.add(Blocks.WAXED_EXPOSED_COPPER_CHEST, p_248545_ -> this.createNameableBlockEntityTable(p_248545_));
+-        this.add(Blocks.WAXED_WEATHERED_COPPER_CHEST, p_250001_ -> this.createNameableBlockEntityTable(p_250001_));
+-        this.add(Blocks.WAXED_OXIDIZED_COPPER_CHEST, p_250727_ -> this.createNameableBlockEntityTable(p_250727_));
+-        this.add(Blocks.DISPENSER, p_249831_ -> this.createNameableBlockEntityTable(p_249831_));
+-        this.add(Blocks.DROPPER, p_432351_ -> this.createNameableBlockEntityTable(p_432351_));
+-        this.add(Blocks.ENCHANTING_TABLE, p_432355_ -> this.createNameableBlockEntityTable(p_432355_));
+-        this.add(Blocks.FURNACE, p_432353_ -> this.createNameableBlockEntityTable(p_432353_));
+-        this.add(Blocks.HOPPER, p_432343_ -> this.createNameableBlockEntityTable(p_432343_));
+-        this.add(Blocks.TRAPPED_CHEST, p_432357_ -> this.createNameableBlockEntityTable(p_432357_));
+-        this.add(Blocks.SMOKER, p_432347_ -> this.createNameableBlockEntityTable(p_432347_));
+-        this.add(Blocks.BLAST_FURNACE, p_432349_ -> this.createNameableBlockEntityTable(p_432349_));
+-        this.add(Blocks.BARREL, p_432345_ -> this.createNameableBlockEntityTable(p_432345_));
++        this.add(Blocks.DISPENSER, p_250717_ -> this.createNameableBlockEntityTable(p_250717_));
++        this.add(Blocks.DROPPER, p_250178_ -> this.createNameableBlockEntityTable(p_250178_));
++        this.add(Blocks.ENCHANTING_TABLE, p_251962_ -> this.createNameableBlockEntityTable(p_251962_));
++        this.add(Blocks.FURNACE, p_250520_ -> this.createNameableBlockEntityTable(p_250520_));
++        this.add(Blocks.HOPPER, p_252043_ -> this.createNameableBlockEntityTable(p_252043_));
++        this.add(Blocks.TRAPPED_CHEST, p_248545_ -> this.createNameableBlockEntityTable(p_248545_));
++        this.add(Blocks.SMOKER, p_250001_ -> this.createNameableBlockEntityTable(p_250001_));
++        this.add(Blocks.BLAST_FURNACE, p_250727_ -> this.createNameableBlockEntityTable(p_250727_));
++        this.add(Blocks.BARREL, p_249831_ -> this.createNameableBlockEntityTable(p_249831_));
+         this.dropSelf(Blocks.CARTOGRAPHY_TABLE);
+         this.dropSelf(Blocks.FLETCHING_TABLE);
+         this.dropSelf(Blocks.GRINDSTONE);
+         this.dropSelf(Blocks.LECTERN);
+         this.dropSelf(Blocks.SMITHING_TABLE);
+         this.dropSelf(Blocks.STONECUTTER);
+-        this.dropSelf(Blocks.ACACIA_SHELF);
+-        this.dropSelf(Blocks.BAMBOO_SHELF);
+-        this.dropSelf(Blocks.BIRCH_SHELF);
+-        this.dropSelf(Blocks.CHERRY_SHELF);
+-        this.dropSelf(Blocks.CRIMSON_SHELF);
+-        this.dropSelf(Blocks.DARK_OAK_SHELF);
+-        this.dropSelf(Blocks.JUNGLE_SHELF);
+-        this.dropSelf(Blocks.MANGROVE_SHELF);
+-        this.dropSelf(Blocks.OAK_SHELF);
+-        this.dropSelf(Blocks.PALE_OAK_SHELF);
+-        this.dropSelf(Blocks.SPRUCE_SHELF);
+-        this.dropSelf(Blocks.WARPED_SHELF);
+         this.add(Blocks.BELL, this::createSingleItemTable);
+         this.add(Blocks.LANTERN, this::createSingleItemTable);
+         this.add(Blocks.SOUL_LANTERN, this::createSingleItemTable);
+-        Blocks.COPPER_LANTERN.forEach(p_436519_ -> this.add(p_436519_, this::createSingleItemTable));
+         this.add(Blocks.SHULKER_BOX, p_251205_ -> this.createShulkerBoxDrop(p_251205_));
+         this.add(Blocks.BLACK_SHULKER_BOX, p_248609_ -> this.createShulkerBoxDrop(p_248609_));
+         this.add(Blocks.BLUE_SHULKER_BOX, p_248838_ -> this.createShulkerBoxDrop(p_248838_));
+@@ -1071,12 +_,6 @@
+                     )
+                 )
+         );
+-        this.add(Blocks.SKELETON_SKULL, this::createMobSkullDrop);
+-        this.add(Blocks.WITHER_SKELETON_SKULL, this::createMobSkullDrop);
+-        this.add(Blocks.ZOMBIE_HEAD, this::createMobSkullDrop);
+-        this.add(Blocks.CREEPER_HEAD, this::createMobSkullDrop);
+-        this.add(Blocks.PIGLIN_HEAD, this::createMobSkullDrop);
+-        this.add(Blocks.DRAGON_HEAD, this::createMobSkullDrop);
+         this.add(Blocks.BEE_NEST, p_344223_ -> this.createBeeNestDrop(p_344223_));
+         this.add(Blocks.BEEHIVE, p_344233_ -> this.createBeeHiveDrop(p_344233_));
+         this.add(Blocks.OAK_LEAVES, p_280934_ -> this.createOakLeavesDrops(p_280934_, Blocks.OAK_SAPLING, NORMAL_LEAVES_SAPLING_CHANCES));
+@@ -1245,9 +_,9 @@
+                 )
+             )
+         );
+-        this.add(Blocks.SHORT_DRY_GRASS, p_382574_ -> this.createShearsOrSilkTouchOnlyDrop(p_382574_));
+-        this.add(Blocks.TALL_DRY_GRASS, p_401714_ -> this.createShearsOrSilkTouchOnlyDrop(p_401714_));
+-        this.add(Blocks.BUSH, p_401716_ -> this.createShearsOrSilkTouchOnlyDrop(p_401716_));
++        this.add(Blocks.SHORT_DRY_GRASS, p_401714_ -> this.createShearsOrSilkTouchOnlyDrop(p_401714_));
++        this.add(Blocks.TALL_DRY_GRASS, p_401716_ -> this.createShearsOrSilkTouchOnlyDrop(p_401716_));
++        this.add(Blocks.BUSH, p_404170_ -> this.createShearsOrSilkTouchOnlyDrop(p_404170_));
+         this.add(Blocks.NETHER_SPROUTS, p_359396_ -> this.createShearsOnlyDrop(p_359396_));
+         this.add(Blocks.SEAGRASS, p_359392_ -> this.createShearsOnlyDrop(p_359392_));
+         this.add(Blocks.VINE, p_359394_ -> this.createShearsOnlyDrop(p_359394_));
+@@ -1612,20 +_,5 @@
+                         )
+                 )
+         );
+-    }
+-
+-    private LootTable.Builder createMobSkullDrop(Block p_434191_) {
+-        return LootTable.lootTable()
+-            .withPool(
+-                this.applyExplosionCondition(
+-                    p_434191_,
+-                    LootPool.lootPool()
+-                        .setRolls(ConstantValue.exactly(1.0F))
+-                        .add(
+-                            LootItem.lootTableItem(p_434191_)
+-                                .apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY).include(DataComponents.CUSTOM_NAME))
+-                        )
+-                )
+-            );
+     }
+ }

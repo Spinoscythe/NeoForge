@@ -1,6 +1,48 @@
 --- a/net/minecraft/world/entity/monster/piglin/Piglin.java
 +++ b/net/minecraft/world/entity/monster/piglin/Piglin.java
-@@ -361,7 +_,7 @@
+@@ -40,6 +_,7 @@
+ import net.minecraft.world.entity.ai.sensing.Sensor;
+ import net.minecraft.world.entity.ai.sensing.SensorType;
+ import net.minecraft.world.entity.item.ItemEntity;
++import net.minecraft.world.entity.monster.Creeper;
+ import net.minecraft.world.entity.monster.CrossbowAttackMob;
+ import net.minecraft.world.entity.monster.Monster;
+ import net.minecraft.world.entity.npc.InventoryCarrier;
+@@ -155,6 +_,12 @@
+     @Override
+     protected void dropCustomDeathLoot(ServerLevel p_348503_, DamageSource p_34697_, boolean p_34699_) {
+         super.dropCustomDeathLoot(p_348503_, p_34697_, p_34699_);
++        if (p_34697_.getEntity() instanceof Creeper creeper && creeper.canDropMobsSkull()) {
++            ItemStack itemstack = new ItemStack(Items.PIGLIN_HEAD);
++            creeper.increaseDroppedSkulls();
++            this.spawnAtLocation(p_348503_, itemstack);
++        }
++
+         this.inventory.removeAllItems().forEach(p_376797_ -> this.spawnAtLocation(p_348503_, p_376797_));
+     }
+ 
+@@ -213,6 +_,11 @@
+     }
+ 
+     @Override
++    protected boolean shouldDespawnInPeaceful() {
++        return false;
++    }
++
++    @Override
+     public boolean removeWhenFarAway(double p_34775_) {
+         return !this.isPersistenceRequired();
+     }
+@@ -269,7 +_,7 @@
+     @Override
+     public void setBaby(boolean p_34729_) {
+         this.getEntityData().set(DATA_BABY_ID, p_34729_);
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
+             attributeinstance.removeModifier(SPEED_MODIFIER_BABY.id());
+             if (p_34729_) {
+@@ -349,7 +_,7 @@
          } else if (this.isChargingCrossbow()) {
              return PiglinArmPose.CROSSBOW_CHARGE;
          } else {
@@ -9,7 +51,7 @@
          }
      }
  
-@@ -390,7 +_,7 @@
+@@ -378,7 +_,7 @@
  
      @Override
      public boolean canFireProjectileWeapon(ProjectileWeaponItem p_34715_) {
@@ -18,7 +60,7 @@
      }
  
      protected void holdInMainHand(ItemStack p_34784_) {
-@@ -398,7 +_,7 @@
+@@ -386,7 +_,7 @@
      }
  
      protected void holdInOffHand(ItemStack p_34786_) {
@@ -27,7 +69,7 @@
              this.setItemSlot(EquipmentSlot.OFFHAND, p_34786_);
              this.setGuaranteedDrop(EquipmentSlot.OFFHAND);
          } else {
-@@ -408,7 +_,7 @@
+@@ -396,7 +_,7 @@
  
      @Override
      public boolean wantsToPickUp(ServerLevel p_376232_, ItemStack p_34777_) {
@@ -36,3 +78,27 @@
      }
  
      protected boolean canReplaceCurrentItem(ItemStack p_34788_) {
+@@ -428,12 +_,12 @@
+     }
+ 
+     @Override
+-    public boolean startRiding(Entity p_34701_, boolean p_34702_, boolean p_435216_) {
++    public boolean startRiding(Entity p_34701_, boolean p_34702_) {
+         if (this.isBaby() && p_34701_.getType() == EntityType.HOGLIN) {
+             p_34701_ = this.getTopPassenger(p_34701_, 3);
+         }
+ 
+-        return super.startRiding(p_34701_, p_34702_, p_435216_);
++        return super.startRiding(p_34701_, p_34702_);
+     }
+ 
+     private Entity getTopPassenger(Entity p_34731_, int p_34732_) {
+@@ -444,7 +_,7 @@
+     @Nullable
+     @Override
+     protected SoundEvent getAmbientSound() {
+-        return this.level().isClientSide() ? null : PiglinAi.getSoundForCurrentActivity(this).orElse(null);
++        return this.level().isClientSide ? null : PiglinAi.getSoundForCurrentActivity(this).orElse(null);
+     }
+ 
+     @Override

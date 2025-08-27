@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/monster/Spider.java
++++ b/net/minecraft/world/entity/monster/Spider.java
+@@ -78,7 +_,7 @@
+     @Override
+     public void tick() {
+         super.tick();
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.setClimbing(this.horizontalCollision);
+         }
+     }
+@@ -151,7 +_,7 @@
+             if (skeleton != null) {
+                 skeleton.snapTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
+                 skeleton.finalizeSpawn(p_33790_, p_33791_, p_362727_, null);
+-                skeleton.startRiding(this, false, false);
++                skeleton.startRiding(this);
+             }
+         }
+ 

@@ -1,15 +1,69 @@
 --- a/net/minecraft/client/renderer/GameRenderer.java
 +++ b/net/minecraft/client/renderer/GameRenderer.java
-@@ -140,14 +_,14 @@
+@@ -30,7 +_,6 @@
+ import net.minecraft.client.Options;
+ import net.minecraft.client.Screenshot;
+ import net.minecraft.client.gui.GuiGraphics;
+-import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+ import net.minecraft.client.gui.render.GuiRenderer;
+ import net.minecraft.client.gui.render.pip.GuiBannerResultRenderer;
+ import net.minecraft.client.gui.render.pip.GuiBookModelRenderer;
+@@ -42,11 +_,8 @@
+ import net.minecraft.client.multiplayer.ClientLevel;
+ import net.minecraft.client.player.AbstractClientPlayer;
+ import net.minecraft.client.player.LocalPlayer;
+-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+-import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
+ import net.minecraft.client.renderer.fog.FogRenderer;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+-import net.minecraft.client.resources.model.AtlasManager;
+ import net.minecraft.client.server.IntegratedServer;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+@@ -125,9 +_,6 @@
+     private final FogRenderer fogRenderer = new FogRenderer();
+     private final GuiRenderer guiRenderer;
+     private final GuiRenderState guiRenderState;
+-    private final LevelRenderState levelRenderState = new LevelRenderState();
+-    private final SubmitNodeStorage submitNodeStorage;
+-    private final FeatureRenderDispatcher featureRenderDispatcher;
+     @Nullable
+     private ResourceLocation postEffectId;
+     private boolean effectActive;
+@@ -137,39 +_,26 @@
+     private final PerspectiveProjectionMatrixBuffer levelProjectionMatrixBuffer = new PerspectiveProjectionMatrixBuffer("level");
+     private final CachedPerspectiveProjectionMatrixBuffer hud3dProjectionMatrixBuffer = new CachedPerspectiveProjectionMatrixBuffer("3d hud", 0.05F, 100.0F);
+ 
+-    public GameRenderer(Minecraft p_234219_, ItemInHandRenderer p_234220_, RenderBuffers p_234222_, BlockRenderDispatcher p_432897_) {
++    public GameRenderer(Minecraft p_234219_, ItemInHandRenderer p_234220_, RenderBuffers p_234222_) {
+         this.minecraft = p_234219_;
+         this.itemInHandRenderer = p_234220_;
+         this.lightTexture = new LightTexture(this, p_234219_);
+         this.renderBuffers = p_234222_;
+         this.guiRenderState = new GuiRenderState();
+         MultiBufferSource.BufferSource multibuffersource$buffersource = p_234222_.bufferSource();
+-        AtlasManager atlasmanager = p_234219_.getAtlasManager();
+-        this.submitNodeStorage = new SubmitNodeStorage();
+-        this.featureRenderDispatcher = new FeatureRenderDispatcher(
+-            this.submitNodeStorage,
+-            p_432897_,
+-            multibuffersource$buffersource,
+-            atlasmanager,
+-            p_234222_.outlineBufferSource(),
+-            p_234222_.crumblingBufferSource(),
+-            p_234219_.font
+-        );
          this.guiRenderer = new GuiRenderer(
              this.guiRenderState,
              multibuffersource$buffersource,
+-            this.submitNodeStorage,
+-            this.featureRenderDispatcher,
 -            List.of(
 -                new GuiEntityRenderer(multibuffersource$buffersource, p_234219_.getEntityRenderDispatcher()),
 -                new GuiSkinRenderer(multibuffersource$buffersource),
 -                new GuiBookModelRenderer(multibuffersource$buffersource),
--                new GuiBannerResultRenderer(multibuffersource$buffersource),
--                new GuiSignRenderer(multibuffersource$buffersource),
+-                new GuiBannerResultRenderer(multibuffersource$buffersource, atlasmanager),
+-                new GuiSignRenderer(multibuffersource$buffersource, atlasmanager),
 -                new GuiProfilerChartRenderer(multibuffersource$buffersource)
 -            )
 +            net.neoforged.neoforge.client.ClientHooks.gatherPictureInPictureRenderers(List.of(
@@ -21,18 +75,68 @@
 +                new net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<>(net.minecraft.client.gui.render.state.pip.GuiProfilerChartRenderState.class, GuiProfilerChartRenderer::new)
 +            ))
          );
-         this.screenEffectRenderer = new ScreenEffectRenderer(p_234219_, multibuffersource$buffersource);
+-        this.screenEffectRenderer = new ScreenEffectRenderer(p_234219_, atlasmanager, multibuffersource$buffersource);
++        this.screenEffectRenderer = new ScreenEffectRenderer(p_234219_, multibuffersource$buffersource);
      }
-@@ -194,6 +_,8 @@
-             this.setPostEffect(ResourceLocation.withDefaultNamespace("spider"));
-         } else if (p_109107_ instanceof EnderMan) {
-             this.setPostEffect(ResourceLocation.withDefaultNamespace("invert"));
+ 
+     @Override
+@@ -186,18 +_,6 @@
+         this.fogRenderer.close();
+     }
+ 
+-    public SubmitNodeStorage getSubmitNodeStorage() {
+-        return this.submitNodeStorage;
+-    }
+-
+-    public FeatureRenderDispatcher getFeatureRenderDispatcher() {
+-        return this.featureRenderDispatcher;
+-    }
+-
+-    public LevelRenderState getLevelRenderState() {
+-        return this.levelRenderState;
+-    }
+-
+     public void setRenderBlockOutline(boolean p_172776_) {
+         this.renderBlockOutline = p_172776_;
+     }
+@@ -212,7 +_,6 @@
+ 
+     public void clearPostEffect() {
+         this.postEffectId = null;
+-        this.effectActive = false;
+     }
+ 
+     public void togglePostEffect() {
+@@ -220,19 +_,15 @@
+     }
+ 
+     public void checkEntityPostEffect(@Nullable Entity p_109107_) {
+-        switch (p_109107_) {
+-            case Creeper creeper:
+-                this.setPostEffect(ResourceLocation.withDefaultNamespace("creeper"));
+-                break;
+-            case Spider spider:
+-                this.setPostEffect(ResourceLocation.withDefaultNamespace("spider"));
+-                break;
+-            case EnderMan enderman:
+-                this.setPostEffect(ResourceLocation.withDefaultNamespace("invert"));
+-                break;
+-            case null:
+-            default:
+-                this.clearPostEffect();
++        this.postEffectId = null;
++        if (p_109107_ instanceof Creeper) {
++            this.setPostEffect(ResourceLocation.withDefaultNamespace("creeper"));
++        } else if (p_109107_ instanceof Spider) {
++            this.setPostEffect(ResourceLocation.withDefaultNamespace("spider"));
++        } else if (p_109107_ instanceof EnderMan) {
++            this.setPostEffect(ResourceLocation.withDefaultNamespace("invert"));
 +        } else {
 +            net.neoforged.neoforge.client.ClientHooks.loadEntityShader(p_109107_, this);
          }
      }
  
-@@ -362,7 +_,7 @@
+@@ -401,7 +_,7 @@
                  f *= Mth.lerp(f2, 1.0F, 0.85714287F);
              }
  
@@ -41,7 +145,7 @@
          }
      }
  
-@@ -378,6 +_,10 @@
+@@ -417,6 +_,10 @@
                  return;
              }
  
@@ -52,17 +156,47 @@
              f2 /= livingentity.hurtDuration;
              f2 = Mth.sin(f2 * f2 * f2 * f2 * (float) Math.PI);
              float f3 = livingentity.getHurtDir();
-@@ -513,7 +_,8 @@
+@@ -440,8 +_,6 @@
+ 
+     private void renderItemInHand(float p_109123_, boolean p_415631_, Matrix4f p_333953_) {
+         if (!this.panoramicMode) {
+-            this.featureRenderDispatcher.renderAllFeatures();
+-            this.renderBuffers.bufferSource().endBatch();
+             PoseStack posestack = new PoseStack();
+             posestack.pushPose();
+             posestack.mulPose(p_333953_.invert(new Matrix4f()));
+@@ -461,7 +_,7 @@
+                     .renderHandsWithItems(
+                         p_109123_,
+                         posestack,
+-                        this.minecraft.gameRenderer.getSubmitNodeStorage(),
++                        this.renderBuffers.bufferSource(),
+                         this.minecraft.player,
+                         this.minecraft.getEntityRenderDispatcher().getPackedLightCoords(this.minecraft.player, p_109123_)
+                     );
+@@ -554,7 +_,8 @@
                  }
              } else if (flag && this.minecraft.screen != null) {
                  try {
--                    this.minecraft.screen.renderWithTooltip(guigraphics, i, j, p_348648_.getGameTimeDeltaTicks());
+-                    this.minecraft.screen.renderWithTooltipAndSubtitles(guigraphics, i, j, p_348648_.getGameTimeDeltaTicks());
 +                    // Neo: Wrap Screen#render to allow for GUI Layers and ScreenEvent.Render.[Pre/Post]
 +                    net.neoforged.neoforge.client.ClientHooks.drawScreen(this.minecraft.screen, guigraphics, i, j, p_348648_.getGameTimeDeltaTicks());
                  } catch (Throwable throwable1) {
                      CrashReport crashreport1 = CrashReport.forThrowable(throwable1, "Rendering screen");
                      CrashReportCategory crashreportcategory1 = crashreport1.addCategory("Screen render details");
-@@ -680,6 +_,8 @@
+@@ -585,11 +_,8 @@
+                 }
+             }
+ 
+-            this.minecraft.gui.renderDebugOverlay(guigraphics);
+-            this.minecraft.gui.renderDeferredSubtitles();
+             this.guiRenderer.render(this.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
+             this.guiRenderer.incrementFrameNumber();
+-            this.submitNodeStorage.endFrame();
+             this.resourcePool.endFrame();
+         }
+     }
+@@ -724,6 +_,8 @@
          GpuBufferSlice gpubufferslice = this.fogRenderer.getBuffer(FogRenderer.FogMode.WORLD);
          profilerfiller.popPush("level");
          this.minecraft.levelRenderer.renderLevel(this.resourcePool, p_348589_, flag, camera, matrix4f1, matrix4f, gpubufferslice, vector4f, !flag1);
@@ -71,3 +205,20 @@
          profilerfiller.popPush("hand");
          boolean flag2 = this.minecraft.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.minecraft.getCameraEntity()).isSleeping();
          RenderSystem.setProjectionMatrix(
+@@ -735,14 +_,11 @@
+         this.renderItemInHand(f, flag2, matrix4f1);
+         profilerfiller.popPush("screen effects");
+         MultiBufferSource.BufferSource multibuffersource$buffersource = this.renderBuffers.bufferSource();
+-        this.screenEffectRenderer.renderScreenEffect(flag2, f, this.submitNodeStorage);
+-        this.featureRenderDispatcher.renderAllFeatures();
++        this.screenEffectRenderer.renderScreenEffect(flag2, f);
+         multibuffersource$buffersource.endBatch();
+         profilerfiller.pop();
+         RenderSystem.setShaderFog(this.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
+-        if (this.minecraft.debugEntries.isCurrentlyEnabled(DebugScreenEntries.THREE_DIMENSIONAL_CROSSHAIR)
+-            && this.minecraft.options.getCameraType().isFirstPerson()
+-            && !this.minecraft.options.hideGui) {
++        if (this.minecraft.gui.shouldRenderDebugCrosshair()) {
+             this.minecraft.getDebugOverlay().render3dCrosshair(camera);
+         }
+     }

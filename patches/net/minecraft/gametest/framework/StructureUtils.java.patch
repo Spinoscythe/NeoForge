@@ -1,0 +1,34 @@
+--- a/net/minecraft/gametest/framework/StructureUtils.java
++++ b/net/minecraft/gametest/framework/StructureUtils.java
+@@ -82,10 +_,13 @@
+ 
+     public static void clearSpaceForStructure(BoundingBox p_127850_, ServerLevel p_127852_) {
+         int i = p_127850_.minY() - 1;
+-        BlockPos.betweenClosedStream(p_127850_).forEach(p_177748_ -> clearBlock(i, p_177748_, p_127852_));
+-        p_127852_.getBlockTicks().clearArea(p_127850_);
+-        p_127852_.clearBlockEvents(p_127850_);
+-        AABB aabb = AABB.of(p_127850_);
++        BoundingBox boundingbox = new BoundingBox(
++            p_127850_.minX() - 2, p_127850_.minY() - 3, p_127850_.minZ() - 3, p_127850_.maxX() + 3, p_127850_.maxY() + 20, p_127850_.maxZ() + 3
++        );
++        BlockPos.betweenClosedStream(boundingbox).forEach(p_177748_ -> clearBlock(i, p_177748_, p_127852_));
++        p_127852_.getBlockTicks().clearArea(boundingbox);
++        p_127852_.clearBlockEvents(boundingbox);
++        AABB aabb = AABB.of(boundingbox);
+         List<Entity> list = p_127852_.getEntitiesOfClass(Entity.class, aabb, p_177750_ -> !(p_177750_ instanceof Player));
+         list.forEach(Entity::discard);
+     }
+@@ -119,10 +_,10 @@
+     }
+ 
+     public static Stream<BlockPos> lookedAtTestPos(BlockPos p_397600_, Entity p_397674_, ServerLevel p_397378_) {
+-        int i = 250;
++        int i = 200;
+         Vec3 vec3 = p_397674_.getEyePosition();
+-        Vec3 vec31 = vec3.add(p_397674_.getLookAngle().scale(250.0));
+-        return findTestBlocks(p_397600_, 250, p_397378_)
++        Vec3 vec31 = vec3.add(p_397674_.getLookAngle().scale(200.0));
++        return findTestBlocks(p_397600_, 200, p_397378_)
+             .map(p_396415_ -> p_397378_.getBlockEntity(p_396415_, BlockEntityType.TEST_INSTANCE_BLOCK))
+             .flatMap(Optional::stream)
+             .filter(p_396413_ -> p_396413_.getStructureBounds().clip(vec3, vec31).isPresent())

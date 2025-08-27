@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/gui/screens/inventory/CommandBlockEditScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/CommandBlockEditScreen.java
+@@ -37,11 +_,6 @@
+     @Override
+     protected void init() {
+         super.init();
+-        this.enableControls(false);
+-    }
+-
+-    @Override
+-    protected void addExtraControls() {
+         this.modeButton = this.addRenderableWidget(
+             CycleButton.<CommandBlockEntity.Mode>builder(p_339280_ -> {
+                     return switch (p_339280_) {
+@@ -69,6 +_,7 @@
+                     this.width / 2 + 50 + 4, 165, 100, 20, Component.translatable("advMode.triggering"), (p_169724_, p_169725_) -> this.autoexec = p_169725_
+                 )
+         );
++        this.enableControls(false);
+     }
+ 
+     private void enableControls(boolean p_169730_) {

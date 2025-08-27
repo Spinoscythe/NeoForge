@@ -1,6 +1,22 @@
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
-@@ -281,6 +_,7 @@
+@@ -72,7 +_,6 @@
+ import net.minecraft.server.commands.EnchantCommand;
+ import net.minecraft.server.commands.ExecuteCommand;
+ import net.minecraft.server.commands.ExperienceCommand;
+-import net.minecraft.server.commands.FetchProfileCommand;
+ import net.minecraft.server.commands.FillBiomeCommand;
+ import net.minecraft.server.commands.FillCommand;
+ import net.minecraft.server.commands.ForceLoadCommand;
+@@ -217,7 +_,6 @@
+         RandomCommand.register(this.dispatcher);
+         ReloadCommand.register(this.dispatcher);
+         RecipeCommand.register(this.dispatcher);
+-        FetchProfileCommand.register(this.dispatcher);
+         ReturnCommand.register(this.dispatcher);
+         RideCommand.register(this.dispatcher);
+         RotateCommand.register(this.dispatcher);
+@@ -283,6 +_,7 @@
          if (p_230943_.includeIntegrated) {
              PublishCommand.register(this.dispatcher);
          }
@@ -8,7 +24,7 @@
  
          this.dispatcher.setConsumer(ExecutionCommandSource.resultConsumer());
      }
-@@ -302,6 +_,16 @@
+@@ -304,6 +_,16 @@
  
      public void performCommand(ParseResults<CommandSourceStack> p_242844_, String p_242841_) {
          CommandSourceStack commandsourcestack = p_242844_.getContext().getSource();
@@ -25,7 +41,7 @@
          Profiler.get().push(() -> "/" + p_242841_);
          ContextChain<CommandSourceStack> contextchain = finishParsing(p_242844_, p_242841_, commandsourcestack);
  
-@@ -398,10 +_,12 @@
+@@ -400,10 +_,12 @@
          Map<CommandNode<CommandSourceStack>, CommandNode<CommandSourceStack>> map = new HashMap<>();
          RootCommandNode<CommandSourceStack> rootcommandnode = new RootCommandNode<>();
          map.put(this.dispatcher.getRoot(), rootcommandnode);

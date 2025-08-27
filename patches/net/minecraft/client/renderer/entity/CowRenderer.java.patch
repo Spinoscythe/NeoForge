@@ -1,0 +1,26 @@
+--- a/net/minecraft/client/renderer/entity/CowRenderer.java
++++ b/net/minecraft/client/renderer/entity/CowRenderer.java
+@@ -6,7 +_,7 @@
+ import net.minecraft.client.model.AdultAndBabyModelPair;
+ import net.minecraft.client.model.CowModel;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.state.CowRenderState;
+ import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+ import net.minecraft.resources.ResourceLocation;
+@@ -54,10 +_,10 @@
+         p_401182_.variant = p_364800_.getVariant().value();
+     }
+ 
+-    public void submit(CowRenderState p_433637_, PoseStack p_434702_, SubmitNodeCollector p_435297_) {
+-        if (p_433637_.variant != null) {
+-            this.model = this.models.get(p_433637_.variant.modelAndTexture().model()).getModel(p_433637_.isBaby);
+-            super.submit(p_433637_, p_434702_, p_435297_);
++    public void render(CowRenderState p_401408_, PoseStack p_401206_, MultiBufferSource p_401086_, int p_401222_) {
++        if (p_401408_.variant != null) {
++            this.model = this.models.get(p_401408_.variant.modelAndTexture().model()).getModel(p_401408_.isBaby);
++            super.render(p_401408_, p_401206_, p_401086_, p_401222_);
+         }
+     }
+ }

@@ -1,6 +1,14 @@
 --- a/net/minecraft/client/gui/screens/ConnectScreen.java
 +++ b/net/minecraft/client/gui/screens/ConnectScreen.java
-@@ -102,6 +_,8 @@
+@@ -13,7 +_,6 @@
+ import net.minecraft.client.gui.GuiGraphics;
+ import net.minecraft.client.gui.components.Button;
+ import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
+-import net.minecraft.client.multiplayer.LevelLoadTracker;
+ import net.minecraft.client.multiplayer.ServerData;
+ import net.minecraft.client.multiplayer.TransferState;
+ import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
+@@ -103,6 +_,8 @@
                      }
  
                      if (optional.isEmpty()) {
@@ -9,3 +17,11 @@
                          p_251955_.execute(
                              () -> p_251955_.setScreen(
                                  new DisconnectedScreen(ConnectScreen.this.parent, ConnectScreen.this.connectFailedTitle, ConnectScreen.UNKNOWN_HOST_MESSAGE)
+@@ -148,7 +_,6 @@
+                                 false,
+                                 null,
+                                 ConnectScreen.this::updateStatus,
+-                                new LevelLoadTracker(),
+                                 p_320415_
+                             ),
+                             p_320415_ != null

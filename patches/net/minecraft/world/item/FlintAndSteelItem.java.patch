@@ -1,6 +1,14 @@
 --- a/net/minecraft/world/item/FlintAndSteelItem.java
 +++ b/net/minecraft/world/item/FlintAndSteelItem.java
-@@ -29,7 +_,8 @@
+@@ -6,6 +_,7 @@
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.sounds.SoundSource;
+ import net.minecraft.world.InteractionResult;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.context.UseOnContext;
+ import net.minecraft.world.level.Level;
+@@ -28,7 +_,8 @@
          Level level = p_41297_.getLevel();
          BlockPos blockpos = p_41297_.getClickedPos();
          BlockState blockstate = level.getBlockState(blockpos);
@@ -10,7 +18,16 @@
              BlockPos blockpos1 = blockpos.relative(p_41297_.getClickedFace());
              if (BaseFireBlock.canBePlacedAt(level, blockpos1, p_41297_.getHorizontalDirection())) {
                  level.playSound(player, blockpos1, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
-@@ -48,7 +_,7 @@
+@@ -38,7 +_,7 @@
+                 ItemStack itemstack = p_41297_.getItemInHand();
+                 if (player instanceof ServerPlayer) {
+                     CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)player, blockpos1, itemstack);
+-                    itemstack.hurtAndBreak(1, player, p_41297_.getHand().asEquipmentSlot());
++                    itemstack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(p_41297_.getHand()));
+                 }
+ 
+                 return InteractionResult.SUCCESS;
+@@ -47,13 +_,18 @@
              }
          } else {
              level.playSound(player, blockpos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);
@@ -18,8 +35,9 @@
 +            level.setBlock(blockpos, blockstate2, 11);
              level.gameEvent(player, GameEvent.BLOCK_CHANGE, blockpos);
              if (player != null) {
-                 p_41297_.getItemInHand().hurtAndBreak(1, player, LivingEntity.getSlotForHand(p_41297_.getHand()));
-@@ -56,5 +_,10 @@
+-                p_41297_.getItemInHand().hurtAndBreak(1, player, p_41297_.getHand().asEquipmentSlot());
++                p_41297_.getItemInHand().hurtAndBreak(1, player, LivingEntity.getSlotForHand(p_41297_.getHand()));
+             }
  
              return InteractionResult.SUCCESS;
          }

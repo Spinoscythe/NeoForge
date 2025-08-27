@@ -1,0 +1,18 @@
+--- a/net/minecraft/data/loot/packs/TradeRebalanceChestLoot.java
++++ b/net/minecraft/data/loot/packs/TradeRebalanceChestLoot.java
+@@ -171,7 +_,6 @@
+                     .add(LootItem.lootTableItem(Items.SPIDER_EYE).setWeight(25).apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 3.0F))))
+                     .add(LootItem.lootTableItem(Items.ROTTEN_FLESH).setWeight(25).apply(SetItemCountFunction.setCount(UniformGenerator.between(3.0F, 7.0F))))
+                     .add(LootItem.lootTableItem(Items.SADDLE).setWeight(20))
+-                    .add(LootItem.lootTableItem(Items.COPPER_HORSE_ARMOR).setWeight(15))
+                     .add(LootItem.lootTableItem(Items.IRON_HORSE_ARMOR).setWeight(15))
+                     .add(LootItem.lootTableItem(Items.GOLDEN_HORSE_ARMOR).setWeight(10))
+                     .add(LootItem.lootTableItem(Items.DIAMOND_HORSE_ARMOR).setWeight(5))
+@@ -298,7 +_,6 @@
+                     .add(LootItem.lootTableItem(Items.BONE).setWeight(20).apply(SetItemCountFunction.setCount(UniformGenerator.between(4.0F, 6.0F))))
+                     .add(LootItem.lootTableItem(Items.ROTTEN_FLESH).setWeight(16).apply(SetItemCountFunction.setCount(UniformGenerator.between(3.0F, 7.0F))))
+                     .add(LootItem.lootTableItem(Items.SADDLE).setWeight(3))
+-                    .add(LootItem.lootTableItem(Items.COPPER_HORSE_ARMOR))
+                     .add(LootItem.lootTableItem(Items.IRON_HORSE_ARMOR))
+                     .add(LootItem.lootTableItem(Items.GOLDEN_HORSE_ARMOR))
+                     .add(LootItem.lootTableItem(Items.DIAMOND_HORSE_ARMOR))

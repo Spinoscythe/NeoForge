@@ -1,6 +1,29 @@
 --- a/net/minecraft/network/syncher/EntityDataSerializers.java
 +++ b/net/minecraft/network/syncher/EntityDataSerializers.java
-@@ -132,17 +_,29 @@
+@@ -28,7 +_,6 @@
+ import net.minecraft.world.entity.animal.CowVariant;
+ import net.minecraft.world.entity.animal.PigVariant;
+ import net.minecraft.world.entity.animal.armadillo.Armadillo;
+-import net.minecraft.world.entity.animal.coppergolem.CopperGolemState;
+ import net.minecraft.world.entity.animal.frog.FrogVariant;
+ import net.minecraft.world.entity.animal.sniffer.Sniffer;
+ import net.minecraft.world.entity.animal.wolf.WolfSoundVariant;
+@@ -37,7 +_,6 @@
+ import net.minecraft.world.entity.npc.VillagerData;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.block.Block;
+-import net.minecraft.world.level.block.WeatheringCopper;
+ import net.minecraft.world.level.block.state.BlockState;
+ import org.joml.Quaternionf;
+ import org.joml.Vector3f;
+@@ -131,24 +_,32 @@
+         Armadillo.ArmadilloState.STREAM_CODEC
+     );
+     public static final EntityDataSerializer<Sniffer.State> SNIFFER_STATE = EntityDataSerializer.forValueType(Sniffer.State.STREAM_CODEC);
+-    public static final EntityDataSerializer<WeatheringCopper.WeatherState> WEATHERING_COPPER_STATE = EntityDataSerializer.forValueType(
+-        WeatheringCopper.WeatherState.STREAM_CODEC
+-    );
+-    public static final EntityDataSerializer<CopperGolemState> COPPER_GOLEM_STATE = EntityDataSerializer.forValueType(CopperGolemState.STREAM_CODEC);
      public static final EntityDataSerializer<Vector3f> VECTOR3 = EntityDataSerializer.forValueType(ByteBufCodecs.VECTOR3F);
      public static final EntityDataSerializer<Quaternionf> QUATERNION = EntityDataSerializer.forValueType(ByteBufCodecs.QUATERNIONF);
  
@@ -33,3 +56,12 @@
      }
  
      private EntityDataSerializers() {
+@@ -188,8 +_,6 @@
+         registerSerializer(PAINTING_VARIANT);
+         registerSerializer(SNIFFER_STATE);
+         registerSerializer(ARMADILLO_STATE);
+-        registerSerializer(COPPER_GOLEM_STATE);
+-        registerSerializer(WEATHERING_COPPER_STATE);
+         registerSerializer(VECTOR3);
+         registerSerializer(QUATERNION);
+     }

@@ -1,0 +1,35 @@
+--- a/net/minecraft/client/renderer/special/BedSpecialRenderer.java
++++ b/net/minecraft/client/renderer/special/BedSpecialRenderer.java
+@@ -5,8 +_,9 @@
+ import com.mojang.serialization.codecs.RecordCodecBuilder;
+ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+ import java.util.Set;
++import net.minecraft.client.model.geom.EntityModelSet;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.Sheets;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.blockentity.BedRenderer;
+ import net.minecraft.client.resources.model.Material;
+ import net.minecraft.resources.ResourceLocation;
+@@ -27,8 +_,8 @@
+     }
+ 
+     @Override
+-    public void submit(ItemDisplayContext p_440115_, PoseStack p_439551_, SubmitNodeCollector p_440198_, int p_439951_, int p_439919_, boolean p_440058_) {
+-        this.bedRenderer.submitSpecial(p_439551_, p_440198_, p_439951_, p_439919_, this.material);
++    public void render(ItemDisplayContext p_387275_, PoseStack p_387960_, MultiBufferSource p_386542_, int p_386921_, int p_387639_, boolean p_387936_) {
++        this.bedRenderer.renderInHand(p_387960_, p_386542_, p_386921_, p_387639_, this.material);
+     }
+ 
+     @Override
+@@ -53,8 +_,8 @@
+         }
+ 
+         @Override
+-        public SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext p_435542_) {
+-            return new BedSpecialRenderer(new BedRenderer(p_435542_), Sheets.BED_MAPPER.apply(this.texture));
++        public SpecialModelRenderer<?> bake(EntityModelSet p_386741_) {
++            return new BedSpecialRenderer(new BedRenderer(p_386741_), Sheets.BED_MAPPER.apply(this.texture));
+         }
+     }
+ }

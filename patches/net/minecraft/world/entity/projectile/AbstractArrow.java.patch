@@ -1,5 +1,19 @@
 --- a/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/net/minecraft/world/entity/projectile/AbstractArrow.java
+@@ -148,10 +_,10 @@
+     }
+ 
+     @Override
+-    public void lerpMotion(Vec3 p_436740_) {
+-        super.lerpMotion(p_436740_);
++    public void lerpMotion(double p_36786_, double p_36787_, double p_36788_) {
++        super.lerpMotion(p_36786_, p_36787_, p_36788_);
+         this.life = 0;
+-        if (this.isInGround() && p_436740_.lengthSqr() > 0.0) {
++        if (this.isInGround() && Mth.lengthSquared(p_36786_, p_36787_, p_36788_) > 0.0) {
+             this.setInGround(false);
+         }
+     }
 @@ -189,7 +_,8 @@
              this.shakeTime--;
          }
@@ -10,6 +24,15 @@
              this.clearFire();
          }
  
+@@ -207,7 +_,7 @@
+                 this.applyEffectsFromBlocks();
+             }
+ 
+-            if (!this.level().isClientSide()) {
++            if (!this.level().isClientSide) {
+                 this.setSharedFlagOnFire(this.getRemainingFireTicks() > 0);
+             }
+         } else {
 @@ -277,11 +_,15 @@
  
              if (entityhitresult == null) {
@@ -27,3 +50,56 @@
                  ProjectileDeflection projectiledeflection = this.hitTargetOrDeflectSelf(entityhitresult);
                  this.hasImpulse = true;
                  if (this.getPierceLevel() > 0 && projectiledeflection == ProjectileDeflection.NONE) {
+@@ -440,7 +_,7 @@
+             }
+ 
+             if (entity instanceof LivingEntity livingentity) {
+-                if (!this.level().isClientSide() && this.getPierceLevel() <= 0) {
++                if (!this.level().isClientSide && this.getPierceLevel() <= 0) {
+                     livingentity.setArrowCount(livingentity.getArrowCount() + 1);
+                 }
+ 
+@@ -458,7 +_,7 @@
+                     this.piercedAndKilledEntities.add(livingentity);
+                 }
+ 
+-                if (!this.level().isClientSide() && entity1 instanceof ServerPlayer serverplayer1) {
++                if (!this.level().isClientSide && entity1 instanceof ServerPlayer serverplayer1) {
+                     if (this.piercedAndKilledEntities != null) {
+                         CriteriaTriggers.KILLED_BY_ARROW.trigger(serverplayer1, this.piercedAndKilledEntities, this.firedFromWeapon);
+                     } else if (!entity.isAlive()) {
+@@ -473,7 +_,7 @@
+             }
+         } else {
+             entity.setRemainingFireTicks(i);
+-            this.deflect(ProjectileDeflection.REVERSE, entity, this.owner, false);
++            this.deflect(ProjectileDeflection.REVERSE, entity, this.getOwner(), false);
+             this.setDeltaMovement(this.getDeltaMovement().scale(0.2));
+             if (this.level() instanceof ServerLevel serverlevel2 && this.getDeltaMovement().lengthSqr() < 1.0E-7) {
+                 if (this.pickup == AbstractArrow.Pickup.ALLOWED) {
+@@ -535,7 +_,6 @@
+         );
+     }
+ 
+-    @Nullable
+     @Override
+     public ItemStack getWeaponItem() {
+         return this.firedFromWeapon;
+@@ -611,7 +_,7 @@
+ 
+     @Override
+     public void playerTouch(Player p_36766_) {
+-        if (!this.level().isClientSide() && (this.isInGround() || this.isNoPhysics()) && this.shakeTime <= 0) {
++        if (!this.level().isClientSide && (this.isInGround() || this.isNoPhysics()) && this.shakeTime <= 0) {
+             if (this.tryPickup(p_36766_)) {
+                 p_36766_.take(this, 1);
+                 this.discard();
+@@ -699,7 +_,7 @@
+     }
+ 
+     public boolean isNoPhysics() {
+-        return !this.level().isClientSide() ? this.noPhysics : (this.entityData.get(ID_FLAGS) & 2) != 0;
++        return !this.level().isClientSide ? this.noPhysics : (this.entityData.get(ID_FLAGS) & 2) != 0;
+     }
+ 
+     @Override

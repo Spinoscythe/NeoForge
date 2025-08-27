@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/DispenserBlock.java
++++ b/net/minecraft/world/level/block/DispenserBlock.java
+@@ -71,7 +_,7 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_52693_, Level p_52694_, BlockPos p_52695_, Player p_52696_, BlockHitResult p_52698_) {
+-        if (!p_52694_.isClientSide() && p_52694_.getBlockEntity(p_52695_) instanceof DispenserBlockEntity dispenserblockentity) {
++        if (!p_52694_.isClientSide && p_52694_.getBlockEntity(p_52695_) instanceof DispenserBlockEntity dispenserblockentity) {
+             p_52696_.openMenu(dispenserblockentity);
+             p_52696_.awardStat(dispenserblockentity instanceof DropperBlockEntity ? Stats.INSPECT_DROPPER : Stats.INSPECT_DISPENSER);
+         }
+@@ -164,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_52689_, Level p_52690_, BlockPos p_52691_, Direction p_435188_) {
++    protected int getAnalogOutputSignal(BlockState p_52689_, Level p_52690_, BlockPos p_52691_) {
+         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(p_52690_.getBlockEntity(p_52691_));
+     }
+ 

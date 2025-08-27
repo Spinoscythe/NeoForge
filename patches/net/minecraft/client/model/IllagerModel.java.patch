@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/model/IllagerModel.java
++++ b/net/minecraft/client/model/IllagerModel.java
+@@ -16,7 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class IllagerModel<S extends IllagerRenderState> extends EntityModel<S> implements ArmedModel<S>, HeadedModel {
++public class IllagerModel<S extends IllagerRenderState> extends EntityModel<S> implements ArmedModel, HeadedModel {
+     private final ModelPart head;
+     private final ModelPart hat;
+     private final ModelPart arms;
+@@ -175,7 +_,8 @@
+         return this.head;
+     }
+ 
+-    public void translateToHand(IllagerRenderState p_434042_, HumanoidArm p_102925_, PoseStack p_102926_) {
++    @Override
++    public void translateToHand(HumanoidArm p_102925_, PoseStack p_102926_) {
+         this.root.translateAndRotate(p_102926_);
+         this.getArm(p_102925_).translateAndRotate(p_102926_);
+     }

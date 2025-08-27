@@ -1,6 +1,15 @@
 --- a/net/minecraft/world/entity/animal/sheep/Sheep.java
 +++ b/net/minecraft/world/entity/animal/sheep/Sheep.java
-@@ -137,7 +_,7 @@
+@@ -89,7 +_,7 @@
+ 
+     @Override
+     public void aiStep() {
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             this.eatAnimationTick = Math.max(0, this.eatAnimationTick - 1);
+         }
+ 
+@@ -137,11 +_,11 @@
      @Override
      public InteractionResult mobInteract(Player p_404982_, InteractionHand p_404782_) {
          ItemStack itemstack = p_404982_.getItemInHand(p_404782_);
@@ -9,3 +18,8 @@
              if (this.level() instanceof ServerLevel serverlevel && this.readyForShearing()) {
                  this.shear(serverlevel, SoundSource.PLAYERS, itemstack);
                  this.gameEvent(GameEvent.SHEAR, p_404982_);
+-                itemstack.hurtAndBreak(1, p_404982_, p_404782_.asEquipmentSlot());
++                itemstack.hurtAndBreak(1, p_404982_, getSlotForHand(p_404782_));
+                 return InteractionResult.SUCCESS_SERVER;
+             } else {
+                 return InteractionResult.CONSUME;

@@ -1,0 +1,109 @@
+--- a/net/minecraft/client/gui/contextualbar/LocatorBarRenderer.java
++++ b/net/minecraft/client/gui/contextualbar/LocatorBarRenderer.java
+@@ -9,10 +_,7 @@
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.util.ARGB;
+ import net.minecraft.util.Mth;
+-import net.minecraft.world.TickRateManager;
+-import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.level.Level;
+-import net.minecraft.world.waypoints.PartialTickSupplier;
+ import net.minecraft.world.waypoints.TrackedWaypoint;
+ import net.minecraft.world.waypoints.Waypoint;
+ import net.neoforged.api.distmarker.Dist;
+@@ -45,56 +_,49 @@
+     @Override
+     public void render(GuiGraphics p_415579_, DeltaTracker p_416560_) {
+         int i = this.top(this.minecraft.getWindow());
+-        Entity entity = this.minecraft.getCameraEntity();
+-        if (entity != null) {
+-            Level level = entity.level();
+-            TickRateManager tickratemanager = level.tickRateManager();
+-            PartialTickSupplier partialticksupplier = p_437152_ -> p_416560_.getGameTimeDeltaPartialTick(!tickratemanager.isEntityFrozen(p_437152_));
+-            this.minecraft
+-                .player
+-                .connection
+-                .getWaypointManager()
+-                .forEachWaypoint(
+-                    entity,
+-                    p_437160_ -> {
+-                        if (!p_437160_.id().left().map(p_437154_ -> p_437154_.equals(entity.getUUID())).orElse(false)) {
+-                            double d0 = p_437160_.yawAngleToCamera(level, this.minecraft.gameRenderer.getMainCamera(), partialticksupplier);
+-                            if (!(d0 <= -60.0) && !(d0 > 60.0)) {
+-                                int j = Mth.ceil((p_415579_.guiWidth() - 9) / 2.0F);
+-                                Waypoint.Icon waypoint$icon = p_437160_.icon();
+-                                WaypointStyle waypointstyle = this.minecraft.getWaypointStyles().get(waypoint$icon.style);
+-                                float f = Mth.sqrt((float)p_437160_.distanceSquared(entity));
+-                                ResourceLocation resourcelocation = waypointstyle.sprite(f);
+-                                int k = waypoint$icon.color
+-                                    .orElseGet(
+-                                        () -> p_437160_.id()
+-                                            .map(
+-                                                p_419413_ -> ARGB.setBrightness(ARGB.color(255, p_419413_.hashCode()), 0.9F),
+-                                                p_419414_ -> ARGB.setBrightness(ARGB.color(255, p_419414_.hashCode()), 0.9F)
+-                                            )
+-                                    );
+-                                int l = Mth.floor(d0 * 173.0 / 2.0 / 60.0);
+-                                p_415579_.blitSprite(RenderPipelines.GUI_TEXTURED, resourcelocation, j + l, i - 2, 9, 9, k);
+-                                TrackedWaypoint.PitchDirection trackedwaypoint$pitchdirection = p_437160_.pitchDirectionToCamera(
+-                                    level, this.minecraft.gameRenderer, partialticksupplier
++        Level level = this.minecraft.cameraEntity.level();
++        this.minecraft
++            .player
++            .connection
++            .getWaypointManager()
++            .forEachWaypoint(
++                this.minecraft.cameraEntity,
++                p_421276_ -> {
++                    if (!p_421276_.id().left().map(p_416129_ -> p_416129_.equals(this.minecraft.cameraEntity.getUUID())).orElse(false)) {
++                        double d0 = p_421276_.yawAngleToCamera(level, this.minecraft.gameRenderer.getMainCamera());
++                        if (!(d0 <= -61.0) && !(d0 > 60.0)) {
++                            int j = Mth.ceil((p_415579_.guiWidth() - 9) / 2.0F);
++                            Waypoint.Icon waypoint$icon = p_421276_.icon();
++                            WaypointStyle waypointstyle = this.minecraft.getWaypointStyles().get(waypoint$icon.style);
++                            float f = Mth.sqrt((float)p_421276_.distanceSquared(this.minecraft.cameraEntity));
++                            ResourceLocation resourcelocation = waypointstyle.sprite(f);
++                            int k = waypoint$icon.color
++                                .orElseGet(
++                                    () -> p_421276_.id()
++                                        .map(
++                                            p_419413_ -> ARGB.setBrightness(ARGB.color(255, p_419413_.hashCode()), 0.9F),
++                                            p_419414_ -> ARGB.setBrightness(ARGB.color(255, p_419414_.hashCode()), 0.9F)
++                                        )
+                                 );
+-                                if (trackedwaypoint$pitchdirection != TrackedWaypoint.PitchDirection.NONE) {
+-                                    int i1;
+-                                    ResourceLocation resourcelocation1;
+-                                    if (trackedwaypoint$pitchdirection == TrackedWaypoint.PitchDirection.DOWN) {
+-                                        i1 = 6;
+-                                        resourcelocation1 = LOCATOR_BAR_ARROW_DOWN;
+-                                    } else {
+-                                        i1 = -6;
+-                                        resourcelocation1 = LOCATOR_BAR_ARROW_UP;
+-                                    }
+-
+-                                    p_415579_.blitSprite(RenderPipelines.GUI_TEXTURED, resourcelocation1, j + l + 1, i + i1, 7, 5);
++                            int l = (int)(d0 * 173.0 / 2.0 / 60.0);
++                            p_415579_.blitSprite(RenderPipelines.GUI_TEXTURED, resourcelocation, j + l, i - 2, 9, 9, k);
++                            TrackedWaypoint.PitchDirection trackedwaypoint$pitchdirection = p_421276_.pitchDirectionToCamera(level, this.minecraft.gameRenderer);
++                            if (trackedwaypoint$pitchdirection != TrackedWaypoint.PitchDirection.NONE) {
++                                int i1;
++                                ResourceLocation resourcelocation1;
++                                if (trackedwaypoint$pitchdirection == TrackedWaypoint.PitchDirection.DOWN) {
++                                    i1 = 6;
++                                    resourcelocation1 = LOCATOR_BAR_ARROW_DOWN;
++                                } else {
++                                    i1 = -6;
++                                    resourcelocation1 = LOCATOR_BAR_ARROW_UP;
+                                 }
++
++                                p_415579_.blitSprite(RenderPipelines.GUI_TEXTURED, resourcelocation1, j + l + 1, i + i1, 7, 5);
+                             }
+                         }
+                     }
+-                );
+-        }
++                }
++            );
+     }
+ }

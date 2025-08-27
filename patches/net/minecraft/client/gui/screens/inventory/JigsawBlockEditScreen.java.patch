@@ -1,0 +1,26 @@
+--- a/net/minecraft/client/gui/screens/inventory/JigsawBlockEditScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/JigsawBlockEditScreen.java
+@@ -177,6 +_,11 @@
+         this.setInitialFocus(this.poolEdit);
+     }
+ 
++    @Override
++    public void renderBackground(GuiGraphics p_334016_, int p_333942_, int p_334006_, float p_333770_) {
++        this.renderTransparentBackground(p_334016_);
++    }
++
+     public static boolean isValidResourceLocation(String p_352366_) {
+         return ResourceLocation.tryParse(p_352366_) != null;
+     }
+@@ -187,11 +_,6 @@
+             && isValidResourceLocation(this.poolEdit.getValue());
+         this.doneButton.active = flag;
+         this.generateButton.active = flag;
+-    }
+-
+-    @Override
+-    public boolean isInGameUi() {
+-        return true;
+     }
+ 
+     @Override

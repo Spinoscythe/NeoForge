@@ -1,0 +1,12 @@
+--- a/net/minecraft/world/phys/Vec3.java
++++ b/net/minecraft/world/phys/Vec3.java
+@@ -31,9 +_,6 @@
+         }
+     };
+     public static final Vec3 ZERO = new Vec3(0.0, 0.0, 0.0);
+-    public static final Vec3 X_AXIS = new Vec3(1.0, 0.0, 0.0);
+-    public static final Vec3 Y_AXIS = new Vec3(0.0, 1.0, 0.0);
+-    public static final Vec3 Z_AXIS = new Vec3(0.0, 0.0, 1.0);
+     public final double x;
+     public final double y;
+     public final double z;

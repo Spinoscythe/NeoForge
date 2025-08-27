@@ -1,0 +1,78 @@
+--- a/net/minecraft/server/players/OldUsersConverter.java
++++ b/net/minecraft/server/players/OldUsersConverter.java
+@@ -50,7 +_,7 @@
+     private static void lookupPlayers(MinecraftServer p_11087_, Collection<String> p_11088_, ProfileLookupCallback p_11089_) {
+         String[] astring = p_11088_.stream().filter(p_11077_ -> !StringUtil.isNullOrEmpty(p_11077_)).toArray(String[]::new);
+         if (p_11087_.usesAuthentication()) {
+-            p_11087_.services().profileRepository().findProfilesByNames(astring, p_11089_);
++            p_11087_.getProfileRepository().findProfilesByNames(astring, p_11089_);
+         } else {
+             for (String s : astring) {
+                 p_11089_.onProfileLookupSucceeded(UUIDUtil.createOfflineProfile(s));
+@@ -75,7 +_,7 @@
+                 ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback() {
+                     @Override
+                     public void onProfileLookupSucceeded(GameProfile p_11123_) {
+-                        p_11082_.services().nameToIdCache().add(p_11123_);
++                        p_11082_.getProfileCache().add(p_11123_);
+                         String[] astring = map.get(p_11123_.getName().toLowerCase(Locale.ROOT));
+                         if (astring == null) {
+                             OldUsersConverter.LOGGER.warn("Could not convert user banlist entry for {}", p_11123_.getName());
+@@ -85,7 +_,7 @@
+                             String s = astring.length > 2 ? astring[2] : null;
+                             Date date1 = astring.length > 3 ? OldUsersConverter.parseDate(astring[3], null) : null;
+                             String s1 = astring.length > 4 ? astring[4] : null;
+-                            userbanlist.add(new UserBanListEntry(new NameAndId(p_11123_), date, s, date1, s1));
++                            userbanlist.add(new UserBanListEntry(p_11123_, date, s, date1, s1));
+                         }
+                     }
+ 
+@@ -165,8 +_,8 @@
+                 ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback() {
+                     @Override
+                     public void onProfileLookupSucceeded(GameProfile p_11133_) {
+-                        p_11103_.services().nameToIdCache().add(p_11133_);
+-                        serveroplist.add(new ServerOpListEntry(new NameAndId(p_11133_), p_11103_.getOperatorUserPermissionLevel(), false));
++                        p_11103_.getProfileCache().add(p_11133_);
++                        serveroplist.add(new ServerOpListEntry(p_11133_, p_11103_.getOperatorUserPermissionLevel(), false));
+                     }
+ 
+                     @Override
+@@ -209,8 +_,8 @@
+                 ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback() {
+                     @Override
+                     public void onProfileLookupSucceeded(GameProfile p_11143_) {
+-                        p_11105_.services().nameToIdCache().add(p_11143_);
+-                        userwhitelist.add(new UserWhiteListEntry(new NameAndId(p_11143_)));
++                        p_11105_.getProfileCache().add(p_11143_);
++                        userwhitelist.add(new UserWhiteListEntry(p_11143_));
+                     }
+ 
+                     @Override
+@@ -240,7 +_,7 @@
+     @Nullable
+     public static UUID convertMobOwnerIfNecessary(final MinecraftServer p_11084_, String p_11085_) {
+         if (!StringUtil.isNullOrEmpty(p_11085_) && p_11085_.length() <= 16) {
+-            Optional<UUID> optional = p_11084_.services().nameToIdCache().get(p_11085_).map(NameAndId::id);
++            Optional<UUID> optional = p_11084_.getProfileCache().get(p_11085_).map(GameProfile::getId);
+             if (optional.isPresent()) {
+                 return optional.get();
+             } else if (!p_11084_.isSingleplayer() && p_11084_.usesAuthentication()) {
+@@ -248,7 +_,7 @@
+                 ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback() {
+                     @Override
+                     public void onProfileLookupSucceeded(GameProfile p_11153_) {
+-                        p_11084_.services().nameToIdCache().add(p_11153_);
++                        p_11084_.getProfileCache().add(p_11153_);
+                         list.add(p_11153_);
+                     }
+ 
+@@ -294,7 +_,7 @@
+                 ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback() {
+                     @Override
+                     public void onProfileLookupSucceeded(GameProfile p_11175_) {
+-                        p_11091_.services().nameToIdCache().add(p_11175_);
++                        p_11091_.getProfileCache().add(p_11175_);
+                         UUID uuid = p_11175_.getId();
+                         this.movePlayerFile(file2, this.getFileNameForProfile(p_11175_.getName()), uuid.toString());
+                     }

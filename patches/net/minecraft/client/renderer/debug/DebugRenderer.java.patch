@@ -1,0 +1,43 @@
+--- a/net/minecraft/client/renderer/debug/DebugRenderer.java
++++ b/net/minecraft/client/renderer/debug/DebugRenderer.java
+@@ -8,7 +_,6 @@
+ import net.minecraft.client.Camera;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.Font;
+-import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+ import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+ import net.minecraft.client.renderer.ShapeRenderer;
+@@ -54,6 +_,8 @@
+     public final BreezeDebugRenderer breezeDebugRenderer;
+     public final ChunkCullingDebugRenderer chunkCullingDebugRenderer;
+     public final OctreeDebugRenderer octreeDebugRenderer;
++    private boolean renderChunkborder;
++    private boolean renderOctree;
+ 
+     public DebugRenderer(Minecraft p_113433_) {
+         this.waterDebugRenderer = new WaterDebugRenderer(p_113433_);
+@@ -106,12 +_,21 @@
+         this.chunkCullingDebugRenderer.clear();
+     }
+ 
++    public boolean switchRenderChunkborder() {
++        this.renderChunkborder = !this.renderChunkborder;
++        return this.renderChunkborder;
++    }
++
++    public boolean toggleRenderOctree() {
++        return this.renderOctree = !this.renderOctree;
++    }
++
+     public void render(PoseStack p_113458_, Frustum p_366571_, MultiBufferSource.BufferSource p_113459_, double p_113460_, double p_113461_, double p_113462_) {
+-        if (Minecraft.getInstance().debugEntries.isCurrentlyEnabled(DebugScreenEntries.CHUNK_BORDERS) && !Minecraft.getInstance().showOnlyReducedInfo()) {
++        if (this.renderChunkborder && !Minecraft.getInstance().showOnlyReducedInfo()) {
+             this.chunkBorderRenderer.render(p_113458_, p_113459_, p_113460_, p_113461_, p_113462_);
+         }
+ 
+-        if (Minecraft.getInstance().debugEntries.isCurrentlyEnabled(DebugScreenEntries.CHUNK_SECTION_OCTREE)) {
++        if (this.renderOctree) {
+             this.octreeDebugRenderer.render(p_113458_, p_366571_, p_113459_, p_113460_, p_113461_, p_113462_);
+         }
+ 

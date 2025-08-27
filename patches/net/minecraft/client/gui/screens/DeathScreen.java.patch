@@ -1,0 +1,30 @@
+--- a/net/minecraft/client/gui/screens/DeathScreen.java
++++ b/net/minecraft/client/gui/screens/DeathScreen.java
+@@ -146,7 +_,7 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_95914_, double p_95915_, int p_95916_, boolean p_433128_) {
++    public boolean mouseClicked(double p_95914_, double p_95915_, int p_95916_) {
+         if (this.causeOfDeath != null && p_95915_ > 85.0 && p_95915_ < 85 + 9) {
+             Style style = this.getClickedComponentStyleAt((int)p_95914_);
+             if (style != null && style.getClickEvent() instanceof ClickEvent.OpenUrl clickevent$openurl) {
+@@ -154,17 +_,12 @@
+             }
+         }
+ 
+-        return super.mouseClicked(p_95914_, p_95915_, p_95916_, p_433128_);
++        return super.mouseClicked(p_95914_, p_95915_, p_95916_);
+     }
+ 
+     @Override
+     public boolean isPauseScreen() {
+         return false;
+-    }
+-
+-    @Override
+-    public boolean isAllowedInPortal() {
+-        return true;
+     }
+ 
+     @Override

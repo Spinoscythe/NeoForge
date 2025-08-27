@@ -1,0 +1,53 @@
+--- a/net/minecraft/client/gui/screens/inventory/LoomScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/LoomScreen.java
+@@ -22,7 +_,6 @@
+ import net.minecraft.world.inventory.Slot;
+ import net.minecraft.world.item.BannerItem;
+ import net.minecraft.world.item.DyeColor;
+-import net.minecraft.world.item.DyeItem;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.block.entity.BannerPattern;
+ import net.minecraft.world.level.block.entity.BannerPatternLayers;
+@@ -135,23 +_,18 @@
+ 
+                     int j2 = l2 + k1 * 14;
+                     int k2 = i3 + j1 * 14;
+-                    Holder<BannerPattern> holder = list.get(i2);
+                     boolean flag = p_283331_ >= j2 && p_283087_ >= k2 && p_283331_ < j2 + 14 && p_283087_ < k2 + 14;
+                     ResourceLocation resourcelocation1;
+                     if (i2 == this.menu.getSelectedBannerPatternIndex()) {
+                         resourcelocation1 = PATTERN_SELECTED_SPRITE;
+                     } else if (flag) {
+                         resourcelocation1 = PATTERN_HIGHLIGHTED_SPRITE;
+-                        DyeColor dyecolor1 = ((DyeItem)this.dyeStack.getItem()).getDyeColor();
+-                        p_282870_.setTooltipForNextFrame(
+-                            Component.translatable(holder.value().translationKey() + "." + dyecolor1.getName()), p_283331_, p_283087_
+-                        );
+                     } else {
+                         resourcelocation1 = PATTERN_SPRITE;
+                     }
+ 
+                     p_282870_.blitSprite(RenderPipelines.GUI_TEXTURED, resourcelocation1, j2, k2, 14, 14);
+-                    TextureAtlasSprite textureatlassprite = p_282870_.getSprite(Sheets.getBannerMaterial(holder));
++                    TextureAtlasSprite textureatlassprite = Sheets.getBannerMaterial(list.get(i2)).sprite();
+                     this.renderBannerOnButton(p_282870_, j2, k2, textureatlassprite);
+                 }
+             }
+@@ -176,7 +_,7 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_99083_, double p_99084_, int p_99085_, boolean p_433366_) {
++    public boolean mouseClicked(double p_99083_, double p_99084_, int p_99085_) {
+         this.scrolling = false;
+         if (this.displayPatterns) {
+             int i = this.leftPos + 60;
+@@ -203,7 +_,7 @@
+             }
+         }
+ 
+-        return super.mouseClicked(p_99083_, p_99084_, p_99085_, p_433366_);
++        return super.mouseClicked(p_99083_, p_99084_, p_99085_);
+     }
+ 
+     @Override

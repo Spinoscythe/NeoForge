@@ -1,0 +1,32 @@
+--- a/net/minecraft/client/renderer/entity/ThrownItemRenderer.java
++++ b/net/minecraft/client/renderer/entity/ThrownItemRenderer.java
+@@ -1,7 +_,7 @@
+ package net.minecraft.client.renderer.entity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.state.ThrownItemRenderState;
+ import net.minecraft.client.renderer.item.ItemModelResolver;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+@@ -34,13 +_,13 @@
+         return this.fullBright ? 15 : super.getBlockLightLevel(p_116092_, p_116093_);
+     }
+ 
+-    public void submit(ThrownItemRenderState p_434591_, PoseStack p_432777_, SubmitNodeCollector p_435755_) {
+-        p_432777_.pushPose();
+-        p_432777_.scale(this.scale, this.scale, this.scale);
+-        p_432777_.mulPose(this.entityRenderDispatcher.cameraOrientation());
+-        p_434591_.item.submit(p_432777_, p_435755_, p_434591_.lightCoords, OverlayTexture.NO_OVERLAY, p_434591_.outlineColor);
+-        p_432777_.popPose();
+-        super.submit(p_434591_, p_432777_, p_435755_);
++    public void render(ThrownItemRenderState p_363985_, PoseStack p_362764_, MultiBufferSource p_361995_, int p_362009_) {
++        p_362764_.pushPose();
++        p_362764_.scale(this.scale, this.scale, this.scale);
++        p_362764_.mulPose(this.entityRenderDispatcher.cameraOrientation());
++        p_363985_.item.render(p_362764_, p_361995_, p_362009_, OverlayTexture.NO_OVERLAY);
++        p_362764_.popPose();
++        super.render(p_363985_, p_362764_, p_361995_, p_362009_);
+     }
+ 
+     public ThrownItemRenderState createRenderState() {

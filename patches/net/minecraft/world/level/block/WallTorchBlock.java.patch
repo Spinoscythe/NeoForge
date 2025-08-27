@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/WallTorchBlock.java
++++ b/net/minecraft/world/level/block/WallTorchBlock.java
+@@ -25,8 +_,8 @@
+ 
+ public class WallTorchBlock extends TorchBlock {
+     public static final MapCodec<WallTorchBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432694_ -> p_432694_.group(PARTICLE_OPTIONS_FIELD.forGetter(p_304470_ -> p_304470_.flameParticle), propertiesCodec())
+-            .apply(p_432694_, WallTorchBlock::new)
++        p_368449_ -> p_368449_.group(PARTICLE_OPTIONS_FIELD.forGetter(p_304470_ -> p_304470_.flameParticle), propertiesCodec())
++            .apply(p_368449_, WallTorchBlock::new)
+     );
+     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
+     private static final Map<Direction, VoxelShape> SHAPES = Shapes.rotateHorizontal(Block.boxZ(5.0, 3.0, 13.0, 11.0, 16.0));

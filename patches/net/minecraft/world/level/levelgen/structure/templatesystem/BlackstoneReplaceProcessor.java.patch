@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/levelgen/structure/templatesystem/BlackstoneReplaceProcessor.java
++++ b/net/minecraft/world/level/levelgen/structure/templatesystem/BlackstoneReplaceProcessor.java
+@@ -39,7 +_,7 @@
+         p_74007_.put(Blocks.MOSSY_COBBLESTONE_WALL, Blocks.BLACKSTONE_WALL);
+         p_74007_.put(Blocks.CHISELED_STONE_BRICKS, Blocks.CHISELED_POLISHED_BLACKSTONE);
+         p_74007_.put(Blocks.CRACKED_STONE_BRICKS, Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS);
+-        p_74007_.put(Blocks.IRON_BARS, Blocks.IRON_CHAIN);
++        p_74007_.put(Blocks.IRON_BARS, Blocks.CHAIN);
+     });
+ 
+     private BlackstoneReplaceProcessor() {

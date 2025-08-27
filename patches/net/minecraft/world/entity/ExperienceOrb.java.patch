@@ -1,5 +1,32 @@
 --- a/net/minecraft/world/entity/ExperienceOrb.java
 +++ b/net/minecraft/world/entity/ExperienceOrb.java
+@@ -52,7 +_,7 @@
+     public ExperienceOrb(Level p_421802_, Vec3 p_421749_, Vec3 p_422564_, int p_421793_) {
+         this(EntityType.EXPERIENCE_ORB, p_421802_);
+         this.setPos(p_421749_);
+-        if (!p_421802_.isClientSide()) {
++        if (!p_421802_.isClientSide) {
+             this.setYRot(this.random.nextFloat() * 360.0F);
+             Vec3 vec3 = new Vec3(
+                 (this.random.nextDouble() * 0.2 - 0.1) * 2.0, this.random.nextDouble() * 0.2 * 2.0, (this.random.nextDouble() * 0.2 - 0.1) * 2.0
+@@ -102,7 +_,7 @@
+     @Override
+     public void tick() {
+         this.interpolation.interpolate();
+-        if (this.firstTick && this.level().isClientSide()) {
++        if (this.firstTick && this.level().isClientSide) {
+             this.firstTick = false;
+         } else {
+             super.tick();
+@@ -124,7 +_,7 @@
+             }
+ 
+             this.followNearbyPlayer();
+-            if (this.followingPlayer == null && !this.level().isClientSide() && flag) {
++            if (this.followingPlayer == null && !this.level().isClientSide && flag) {
+                 boolean flag1 = !this.level().noCollision(this.getBoundingBox().move(this.getDeltaMovement()));
+                 if (flag1) {
+                     this.moveTowardsClosestSpace(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
 @@ -137,7 +_,8 @@
              this.applyEffectsFromBlocks();
              float f = 0.98F;

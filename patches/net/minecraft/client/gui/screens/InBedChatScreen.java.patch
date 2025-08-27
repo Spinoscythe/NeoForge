@@ -1,0 +1,30 @@
+--- a/net/minecraft/client/gui/screens/InBedChatScreen.java
++++ b/net/minecraft/client/gui/screens/InBedChatScreen.java
+@@ -12,8 +_,8 @@
+ public class InBedChatScreen extends ChatScreen {
+     private Button leaveBedButton;
+ 
+-    public InBedChatScreen(String p_437222_, boolean p_437213_) {
+-        super(p_437222_, p_437213_);
++    public InBedChatScreen() {
++        super("");
+     }
+ 
+     @Override
+@@ -68,13 +_,10 @@
+     }
+ 
+     public void onPlayerWokeUp() {
+-        String s = this.input.getValue();
+-        if (!this.isDraft && !s.isEmpty()) {
+-            this.exitReason = ChatScreen.ExitReason.DONE;
+-            this.minecraft.setScreen(new ChatScreen(s, false));
+-        } else {
+-            this.exitReason = ChatScreen.ExitReason.INTERRUPTED;
++        if (this.input.getValue().isEmpty()) {
+             this.minecraft.setScreen(null);
++        } else {
++            this.minecraft.setScreen(new ChatScreen(this.input.getValue()));
+         }
+     }
+ }

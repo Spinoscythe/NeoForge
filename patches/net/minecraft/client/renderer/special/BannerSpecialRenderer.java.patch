@@ -1,0 +1,50 @@
+--- a/net/minecraft/client/renderer/special/BannerSpecialRenderer.java
++++ b/net/minecraft/client/renderer/special/BannerSpecialRenderer.java
+@@ -7,7 +_,8 @@
+ import java.util.Objects;
+ import java.util.Set;
+ import javax.annotation.Nullable;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.model.geom.EntityModelSet;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.blockentity.BannerRenderer;
+ import net.minecraft.core.component.DataComponents;
+ import net.minecraft.world.item.DyeColor;
+@@ -33,17 +_,17 @@
+         return p_387879_.get(DataComponents.BANNER_PATTERNS);
+     }
+ 
+-    public void submit(
+-        @Nullable BannerPatternLayers p_440269_,
+-        ItemDisplayContext p_438901_,
+-        PoseStack p_439572_,
+-        SubmitNodeCollector p_440255_,
+-        int p_439074_,
+-        int p_439999_,
+-        boolean p_439818_
++    public void render(
++        @Nullable BannerPatternLayers p_388526_,
++        ItemDisplayContext p_387517_,
++        PoseStack p_388611_,
++        MultiBufferSource p_388866_,
++        int p_387337_,
++        int p_386801_,
++        boolean p_387745_
+     ) {
+         this.bannerRenderer
+-            .submitSpecial(p_439572_, p_440255_, p_439074_, p_439999_, this.baseColor, Objects.requireNonNullElse(p_440269_, BannerPatternLayers.EMPTY));
++            .renderInHand(p_388611_, p_388866_, p_387337_, p_386801_, this.baseColor, Objects.requireNonNullElse(p_388526_, BannerPatternLayers.EMPTY));
+     }
+ 
+     @Override
+@@ -64,8 +_,8 @@
+         }
+ 
+         @Override
+-        public SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext p_434507_) {
+-            return new BannerSpecialRenderer(this.baseColor, new BannerRenderer(p_434507_));
++        public SpecialModelRenderer<?> bake(EntityModelSet p_388010_) {
++            return new BannerSpecialRenderer(this.baseColor, new BannerRenderer(p_388010_));
+         }
+     }
+ }

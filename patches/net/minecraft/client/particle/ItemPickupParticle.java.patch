@@ -1,14 +1,85 @@
 --- a/net/minecraft/client/particle/ItemPickupParticle.java
 +++ b/net/minecraft/client/particle/ItemPickupParticle.java
-@@ -99,4 +_,11 @@
+@@ -3,13 +_,12 @@
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.Camera;
+-import net.minecraft.client.Minecraft;
+ import net.minecraft.client.multiplayer.ClientLevel;
+ import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+-import net.minecraft.client.renderer.entity.state.EntityRenderState;
+ import net.minecraft.util.Mth;
+ import net.minecraft.world.entity.Entity;
++import net.minecraft.world.entity.item.ItemEntity;
+ import net.minecraft.world.phys.Vec3;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -17,10 +_,10 @@
+ @OnlyIn(Dist.CLIENT)
+ public class ItemPickupParticle extends Particle {
+     private static final int LIFE_TIME = 3;
++    private final Entity itemEntity;
+     private final Entity target;
+     private int life;
+     private final EntityRenderDispatcher entityRenderDispatcher;
+-    private final EntityRenderState itemRenderState;
+     private double targetX;
+     private double targetY;
+     private double targetZ;
+@@ -34,11 +_,15 @@
+ 
+     public ItemPickupParticle(EntityRenderDispatcher p_107023_, ClientLevel p_107025_, Entity p_107026_, Entity p_107027_, Vec3 p_382893_) {
+         super(p_107025_, p_107026_.getX(), p_107026_.getY(), p_107026_.getZ(), p_382893_.x, p_382893_.y, p_382893_.z);
++        this.itemEntity = this.getSafeCopy(p_107026_);
+         this.target = p_107027_;
+         this.entityRenderDispatcher = p_107023_;
+-        this.itemRenderState = p_107023_.extractEntity(p_107026_, 1.0F);
+         this.updatePosition();
+         this.saveOldPosition();
++    }
++
++    private Entity getSafeCopy(Entity p_107037_) {
++        return (Entity)(!(p_107037_ instanceof ItemEntity) ? p_107037_ : ((ItemEntity)p_107037_).copy());
+     }
+ 
+     @Override
+@@ -53,13 +_,20 @@
+         double d0 = Mth.lerp((double)p_382826_, this.targetXOld, this.targetX);
+         double d1 = Mth.lerp((double)p_382826_, this.targetYOld, this.targetY);
+         double d2 = Mth.lerp((double)p_382826_, this.targetZOld, this.targetZ);
+-        double d3 = Mth.lerp((double)f, this.itemRenderState.x, d0);
+-        double d4 = Mth.lerp((double)f, this.itemRenderState.y, d1);
+-        double d5 = Mth.lerp((double)f, this.itemRenderState.z, d2);
++        double d3 = Mth.lerp((double)f, this.itemEntity.getX(), d0);
++        double d4 = Mth.lerp((double)f, this.itemEntity.getY(), d1);
++        double d5 = Mth.lerp((double)f, this.itemEntity.getZ(), d2);
+         Vec3 vec3 = p_382930_.getPosition();
+         this.entityRenderDispatcher
+-            .submit(
+-                this.itemRenderState, d3 - vec3.x(), d4 - vec3.y(), d5 - vec3.z(), new PoseStack(), Minecraft.getInstance().gameRenderer.getSubmitNodeStorage()
++            .render(
++                this.itemEntity,
++                d3 - vec3.x(),
++                d4 - vec3.y(),
++                d5 - vec3.z(),
++                p_382826_,
++                new PoseStack(),
++                p_382868_,
++                this.entityRenderDispatcher.getPackedLightCoords(this.itemEntity, p_382826_)
+             );
+     }
+ 
+@@ -88,5 +_,12 @@
+         this.targetXOld = this.targetX;
          this.targetYOld = this.targetY;
          this.targetZOld = this.targetZ;
-     }
++    }
 +
 +    // Neo: Computing a bounding box for the pickup animation is annoying to patch in, and probably slower than
 +    // always rendering it
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(float partialTicks) {
 +        return net.minecraft.world.phys.AABB.INFINITE;
-+    }
+     }
  }

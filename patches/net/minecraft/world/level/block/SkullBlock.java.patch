@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/SkullBlock.java
++++ b/net/minecraft/world/level/block/SkullBlock.java
+@@ -22,8 +_,8 @@
+ 
+ public class SkullBlock extends AbstractSkullBlock {
+     public static final MapCodec<SkullBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432679_ -> p_432679_.group(SkullBlock.Type.CODEC.fieldOf("kind").forGetter(AbstractSkullBlock::getType), propertiesCodec())
+-            .apply(p_432679_, SkullBlock::new)
++        p_368436_ -> p_368436_.group(SkullBlock.Type.CODEC.fieldOf("kind").forGetter(AbstractSkullBlock::getType), propertiesCodec())
++            .apply(p_368436_, SkullBlock::new)
+     );
+     public static final int MAX = RotationSegment.getMaxSegmentIndex();
+     private static final int ROTATIONS = MAX + 1;

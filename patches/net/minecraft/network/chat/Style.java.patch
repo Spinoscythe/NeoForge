@@ -1,0 +1,139 @@
+--- a/net/minecraft/network/chat/Style.java
++++ b/net/minecraft/network/chat/Style.java
+@@ -11,10 +_,12 @@
+ import net.minecraft.network.RegistryFriendlyByteBuf;
+ import net.minecraft.network.codec.ByteBufCodecs;
+ import net.minecraft.network.codec.StreamCodec;
++import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.util.ExtraCodecs;
+ 
+-public final class Style {
++public class Style {
+     public static final Style EMPTY = new Style(null, null, null, null, null, null, null, null, null, null, null);
++    public static final ResourceLocation DEFAULT_FONT = ResourceLocation.withDefaultNamespace("default");
+     @Nullable
+     final TextColor color;
+     @Nullable
+@@ -36,7 +_,7 @@
+     @Nullable
+     final String insertion;
+     @Nullable
+-    final FontDescription font;
++    final ResourceLocation font;
+ 
+     private static Style create(
+         Optional<TextColor> p_237258_,
+@@ -49,7 +_,7 @@
+         Optional<ClickEvent> p_237265_,
+         Optional<HoverEvent> p_304921_,
+         Optional<String> p_304811_,
+-        Optional<FontDescription> p_383021_
++        Optional<ResourceLocation> p_383021_
+     ) {
+         Style style = new Style(
+             p_237258_.orElse(null),
+@@ -78,7 +_,7 @@
+         @Nullable ClickEvent p_131119_,
+         @Nullable HoverEvent p_131120_,
+         @Nullable String p_131121_,
+-        @Nullable FontDescription p_436800_
++        @Nullable ResourceLocation p_131122_
+     ) {
+         this.color = p_131113_;
+         this.shadowColor = p_383145_;
+@@ -90,7 +_,7 @@
+         this.clickEvent = p_131119_;
+         this.hoverEvent = p_131120_;
+         this.insertion = p_131121_;
+-        this.font = p_436800_;
++        this.font = p_131122_;
+     }
+ 
+     @Nullable
+@@ -142,8 +_,8 @@
+         return this.insertion;
+     }
+ 
+-    public FontDescription getFont() {
+-        return (FontDescription)(this.font != null ? this.font : FontDescription.DEFAULT);
++    public ResourceLocation getFont() {
++        return this.font != null ? this.font : DEFAULT_FONT;
+     }
+ 
+     private static <T> Style checkEmptyAfterChange(Style p_304840_, @Nullable T p_304483_, @Nullable T p_304384_) {
+@@ -181,25 +_,23 @@
+     }
+ 
+     public Style withShadowColor(int p_383134_) {
+-        return Objects.equals(this.shadowColor, p_383134_)
+-            ? this
+-            : checkEmptyAfterChange(
+-                new Style(
+-                    this.color,
+-                    p_383134_,
+-                    this.bold,
+-                    this.italic,
+-                    this.underlined,
+-                    this.strikethrough,
+-                    this.obfuscated,
+-                    this.clickEvent,
+-                    this.hoverEvent,
+-                    this.insertion,
+-                    this.font
+-                ),
+-                this.shadowColor,
+-                p_383134_
+-            );
++        return checkEmptyAfterChange(
++            new Style(
++                this.color,
++                p_383134_,
++                this.bold,
++                this.italic,
++                this.underlined,
++                this.strikethrough,
++                this.obfuscated,
++                this.clickEvent,
++                this.hoverEvent,
++                this.insertion,
++                this.font
++            ),
++            this.shadowColor,
++            p_383134_
++        );
+     }
+ 
+     public Style withBold(@Nullable Boolean p_131137_) {
+@@ -378,8 +_,8 @@
+             );
+     }
+ 
+-    public Style withFont(@Nullable FontDescription p_436716_) {
+-        return Objects.equals(this.font, p_436716_)
++    public Style withFont(@Nullable ResourceLocation p_131151_) {
++        return Objects.equals(this.font, p_131151_)
+             ? this
+             : checkEmptyAfterChange(
+                 new Style(
+@@ -393,10 +_,10 @@
+                     this.clickEvent,
+                     this.hoverEvent,
+                     this.insertion,
+-                    p_436716_
++                    p_131151_
+                 ),
+                 this.font,
+-                p_436716_
++                p_131151_
+             );
+     }
+ 
+@@ -628,7 +_,7 @@
+                     ClickEvent.CODEC.optionalFieldOf("click_event").forGetter(p_304578_ -> Optional.ofNullable(p_304578_.clickEvent)),
+                     HoverEvent.CODEC.optionalFieldOf("hover_event").forGetter(p_304424_ -> Optional.ofNullable(p_304424_.hoverEvent)),
+                     Codec.STRING.optionalFieldOf("insertion").forGetter(p_304670_ -> Optional.ofNullable(p_304670_.insertion)),
+-                    FontDescription.CODEC.optionalFieldOf("font").forGetter(p_436524_ -> Optional.ofNullable(p_436524_.font))
++                    ResourceLocation.CODEC.optionalFieldOf("font").forGetter(p_304448_ -> Optional.ofNullable(p_304448_.font))
+                 )
+                 .apply(p_382657_, Style::create)
+         );

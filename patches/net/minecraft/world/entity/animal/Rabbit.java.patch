@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/animal/Rabbit.java
 +++ b/net/minecraft/world/entity/animal/Rabbit.java
+@@ -147,7 +_,7 @@
+             }
+         }
+ 
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.level().broadcastEntityEvent(this, (byte)1);
+         }
+     }
 @@ -558,7 +_,7 @@
          @Override
          public boolean canUse() {

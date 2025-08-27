@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/StainedGlassBlock.java
++++ b/net/minecraft/world/level/block/StainedGlassBlock.java
+@@ -8,8 +_,8 @@
+ 
+ public class StainedGlassBlock extends TransparentBlock implements BeaconBeamBlock {
+     public static final MapCodec<StainedGlassBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432680_ -> p_432680_.group(DyeColor.CODEC.fieldOf("color").forGetter(StainedGlassBlock::getColor), propertiesCodec())
+-            .apply(p_432680_, StainedGlassBlock::new)
++        p_368437_ -> p_368437_.group(DyeColor.CODEC.fieldOf("color").forGetter(StainedGlassBlock::getColor), propertiesCodec())
++            .apply(p_368437_, StainedGlassBlock::new)
+     );
+     private final DyeColor color;
+ 

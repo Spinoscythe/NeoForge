@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/model/BeeStingerModel.java
++++ b/net/minecraft/client/model/BeeStingerModel.java
+@@ -7,12 +_,11 @@
+ import net.minecraft.client.model.geom.builders.MeshDefinition;
+ import net.minecraft.client.model.geom.builders.PartDefinition;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.util.Unit;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class BeeStingerModel extends Model<Unit> {
++public class BeeStingerModel extends Model {
+     public BeeStingerModel(ModelPart p_362384_) {
+         super(p_362384_, RenderType::entityCutout);
+     }

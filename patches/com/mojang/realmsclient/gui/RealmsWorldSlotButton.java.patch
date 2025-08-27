@@ -1,0 +1,27 @@
+--- a/com/mojang/realmsclient/gui/RealmsWorldSlotButton.java
++++ b/com/mojang/realmsclient/gui/RealmsWorldSlotButton.java
+@@ -67,13 +_,8 @@
+         this.setMessage(mutablecomponent);
+     }
+ 
+-    static RealmsWorldSlotButton.Action getAction(boolean p_87961_, boolean p_87962_, boolean p_433713_) {
+-        return p_87961_ || p_87962_ && p_433713_ ? RealmsWorldSlotButton.Action.NOTHING : RealmsWorldSlotButton.Action.SWITCH_SLOT;
+-    }
+-
+-    @Override
+-    public boolean isActive() {
+-        return this.state.action != RealmsWorldSlotButton.Action.NOTHING && super.isActive();
++    static RealmsWorldSlotButton.Action getAction(RealmsServer p_87960_, boolean p_87961_, boolean p_87962_) {
++        return p_87962_ || p_87961_ && p_87960_.expired ? RealmsWorldSlotButton.Action.NOTHING : RealmsWorldSlotButton.Action.SWITCH_SLOT;
+     }
+ 
+     @Override
+@@ -177,7 +_,7 @@
+                 this.activeSlot = p_307209_.activeSlot == p_307377_ && !p_307209_.isMinigameActive();
+             }
+ 
+-            this.action = RealmsWorldSlotButton.getAction(this.activeSlot, this.empty, p_307209_.expired);
++            this.action = RealmsWorldSlotButton.getAction(p_307209_, this.minigame, this.activeSlot);
+         }
+     }
+ }

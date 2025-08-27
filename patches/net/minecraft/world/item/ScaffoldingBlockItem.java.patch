@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/ScaffoldingBlockItem.java
++++ b/net/minecraft/world/item/ScaffoldingBlockItem.java
+@@ -39,7 +_,7 @@
+             BlockPos.MutableBlockPos blockpos$mutableblockpos = blockpos.mutable().move(direction);
+ 
+             while (i < 7) {
+-                if (!level.isClientSide() && !level.isInWorldBounds(blockpos$mutableblockpos)) {
++                if (!level.isClientSide && !level.isInWorldBounds(blockpos$mutableblockpos)) {
+                     Player player = p_43063_.getPlayer();
+                     int j = level.getMaxY();
+                     if (player instanceof ServerPlayer && blockpos$mutableblockpos.getY() > j) {

@@ -1,0 +1,48 @@
+--- a/net/minecraft/client/renderer/debug/ChunkCullingDebugRenderer.java
++++ b/net/minecraft/client/renderer/debug/ChunkCullingDebugRenderer.java
+@@ -3,7 +_,6 @@
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.Minecraft;
+-import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+ import net.minecraft.client.renderer.LevelRenderer;
+ import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+@@ -30,9 +_,7 @@
+     @Override
+     public void render(PoseStack p_362623_, MultiBufferSource p_361977_, double p_364318_, double p_361586_, double p_365009_) {
+         LevelRenderer levelrenderer = this.minecraft.levelRenderer;
+-        boolean flag = this.minecraft.debugEntries.isCurrentlyEnabled(DebugScreenEntries.CHUNK_SECTION_PATHS);
+-        boolean flag1 = this.minecraft.debugEntries.isCurrentlyEnabled(DebugScreenEntries.CHUNK_SECTION_VISIBILITY);
+-        if (flag || flag1) {
++        if (this.minecraft.sectionPath || this.minecraft.sectionVisibility) {
+             SectionOcclusionGraph sectionocclusiongraph = levelrenderer.getSectionOcclusionGraph();
+ 
+             for (SectionRenderDispatcher.RenderSection sectionrenderdispatcher$rendersection : levelrenderer.getVisibleSections()) {
+@@ -42,7 +_,7 @@
+                     p_362623_.pushPose();
+                     p_362623_.translate(blockpos.getX() - p_364318_, blockpos.getY() - p_361586_, blockpos.getZ() - p_365009_);
+                     Matrix4f matrix4f = p_362623_.last().pose();
+-                    if (flag) {
++                    if (this.minecraft.sectionPath) {
+                         VertexConsumer vertexconsumer = p_361977_.getBuffer(RenderType.lines());
+                         int i = sectionocclusiongraph$node.step == 0 ? 0 : Mth.hsvToRgb(sectionocclusiongraph$node.step / 50.0F, 0.9F, 0.9F);
+                         int j = i >> 16 & 0xFF;
+@@ -67,14 +_,14 @@
+                         }
+                     }
+ 
+-                    if (flag1 && sectionrenderdispatcher$rendersection.getSectionMesh().hasRenderableLayers()) {
++                    if (this.minecraft.sectionVisibility && sectionrenderdispatcher$rendersection.getSectionMesh().hasRenderableLayers()) {
+                         VertexConsumer vertexconsumer3 = p_361977_.getBuffer(RenderType.lines());
+                         int j1 = 0;
+ 
+                         for (Direction direction2 : DIRECTIONS) {
+                             for (Direction direction1 : DIRECTIONS) {
+-                                boolean flag2 = sectionrenderdispatcher$rendersection.getSectionMesh().facesCanSeeEachother(direction2, direction1);
+-                                if (!flag2) {
++                                boolean flag = sectionrenderdispatcher$rendersection.getSectionMesh().facesCanSeeEachother(direction2, direction1);
++                                if (!flag) {
+                                     j1++;
+                                     vertexconsumer3.addVertex(
+                                             matrix4f,

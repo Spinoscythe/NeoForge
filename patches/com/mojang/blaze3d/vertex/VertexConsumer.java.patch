@@ -1,6 +1,17 @@
 --- a/com/mojang/blaze3d/vertex/VertexConsumer.java
 +++ b/com/mojang/blaze3d/vertex/VertexConsumer.java
-@@ -133,11 +_,14 @@
+@@ -57,6 +_,10 @@
+         return this.setColor(ARGB.red(p_350809_), ARGB.green(p_350809_), ARGB.blue(p_350809_), ARGB.alpha(p_350809_));
+     }
+ 
++    default VertexConsumer setWhiteAlpha(int p_350979_) {
++        return this.setColor(ARGB.color(p_350979_, -1));
++    }
++
+     default VertexConsumer setLight(int p_350855_) {
+         return this.setUv2(p_350855_ & 65535, p_350855_ >> 16 & 65535);
+     }
+@@ -129,11 +_,14 @@
                      f5 = p_331397_[i1] * p_85992_ * 255.0F;
                  }
  
@@ -17,3 +28,15 @@
                  this.addVertex(vector3f1.x(), vector3f1.y(), vector3f1.z(), j1, f10, f9, p_85993_, k1, vector3f.x(), vector3f.y(), vector3f.z());
              }
          }
+@@ -156,9 +_,9 @@
+         return this.addVertex(vector3f.x(), vector3f.y(), vector3f.z());
+     }
+ 
+-    default VertexConsumer addVertexWith2DPose(Matrix3x2f p_415624_, float p_415815_, float p_416074_) {
++    default VertexConsumer addVertexWith2DPose(Matrix3x2f p_415624_, float p_415815_, float p_416074_, float p_415881_) {
+         Vector2f vector2f = p_415624_.transformPosition(p_415815_, p_416074_, new Vector2f());
+-        return this.addVertex(vector2f.x(), vector2f.y(), 0.0F);
++        return this.addVertex(vector2f.x(), vector2f.y(), p_415881_);
+     }
+ 
+     default VertexConsumer setNormal(PoseStack.Pose p_350592_, float p_350534_, float p_350411_, float p_350441_) {

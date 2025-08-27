@@ -119,15 +119,15 @@
      protected boolean canBurn(BlockState p_53489_) {
          return this.getIgniteOdds(p_53489_) > 0;
      }
-@@ -310,8 +_,21 @@
+@@ -310,10 +_,23 @@
      }
  
      public void setFlammable(Block p_53445_, int p_53446_, int p_53447_) {
 +        if (p_53445_ == Blocks.AIR) throw new IllegalArgumentException("Tried to set air on fire... This is bad.");
          this.igniteOdds.put(p_53445_, p_53446_);
          this.burnOdds.put(p_53445_, p_53447_);
-+    }
-+
+     }
+ 
 +    /**
 +     * Side sensitive version that calls the block function.
 +     *
@@ -138,6 +138,24 @@
 +     */
 +    public boolean canCatchFire(BlockGetter world, BlockPos pos, Direction face) {
 +        return world.getBlockState(pos).isFlammable(world, pos, face);
-     }
- 
++    }
++
      public static void bootStrap() {
+         FireBlock fireblock = (FireBlock)Blocks.FIRE;
+         fireblock.setFlammable(Blocks.OAK_PLANKS, 5, 20);
+@@ -512,15 +_,5 @@
+         fireblock.setFlammable(Blocks.GLOW_LICHEN, 15, 100);
+         fireblock.setFlammable(Blocks.FIREFLY_BUSH, 60, 100);
+         fireblock.setFlammable(Blocks.BUSH, 60, 100);
+-        fireblock.setFlammable(Blocks.ACACIA_SHELF, 30, 20);
+-        fireblock.setFlammable(Blocks.BAMBOO_SHELF, 30, 20);
+-        fireblock.setFlammable(Blocks.BIRCH_SHELF, 30, 20);
+-        fireblock.setFlammable(Blocks.CHERRY_SHELF, 30, 20);
+-        fireblock.setFlammable(Blocks.DARK_OAK_SHELF, 30, 20);
+-        fireblock.setFlammable(Blocks.JUNGLE_SHELF, 30, 20);
+-        fireblock.setFlammable(Blocks.MANGROVE_SHELF, 30, 20);
+-        fireblock.setFlammable(Blocks.OAK_SHELF, 30, 20);
+-        fireblock.setFlammable(Blocks.PALE_OAK_SHELF, 30, 20);
+-        fireblock.setFlammable(Blocks.SPRUCE_SHELF, 30, 20);
+     }
+ }

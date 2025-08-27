@@ -1,0 +1,18 @@
+--- a/net/minecraft/client/gui/narration/ScreenNarrationCollector.java
++++ b/net/minecraft/client/gui/narration/ScreenNarrationCollector.java
+@@ -43,7 +_,14 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    record EntryKey(NarratedElementType type, int depth) {
++    static class EntryKey {
++        final NarratedElementType type;
++        final int depth;
++
++        EntryKey(NarratedElementType p_169210_, int p_169211_) {
++            this.type = p_169210_;
++            this.depth = p_169211_;
++        }
+     }
+ 
+     @OnlyIn(Dist.CLIENT)

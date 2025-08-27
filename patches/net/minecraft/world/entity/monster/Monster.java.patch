@@ -1,6 +1,37 @@
 --- a/net/minecraft/world/entity/monster/Monster.java
 +++ b/net/minecraft/world/entity/monster/Monster.java
-@@ -137,11 +_,11 @@
+@@ -20,7 +_,6 @@
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.item.Items;
+ import net.minecraft.world.item.ProjectileWeaponItem;
+-import net.minecraft.world.level.GameRules;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelAccessor;
+ import net.minecraft.world.level.LevelReader;
+@@ -54,6 +_,11 @@
+     }
+ 
+     @Override
++    protected boolean shouldDespawnInPeaceful() {
++        return true;
++    }
++
++    @Override
+     protected SoundEvent getSwimSound() {
+         return SoundEvents.HOSTILE_SWIM;
+     }
+@@ -122,8 +_,8 @@
+     }
+ 
+     @Override
+-    protected boolean shouldDropLoot(ServerLevel p_434748_) {
+-        return p_434748_.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT);
++    protected boolean shouldDropLoot() {
++        return true;
+     }
+ 
+     public boolean isPreventingPlayerRest(ServerLevel p_376906_, Player p_33036_) {
+@@ -133,11 +_,11 @@
      @Override
      public ItemStack getProjectile(ItemStack p_33038_) {
          if (p_33038_.getItem() instanceof ProjectileWeaponItem) {

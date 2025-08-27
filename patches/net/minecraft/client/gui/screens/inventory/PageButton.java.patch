@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/gui/screens/inventory/PageButton.java
++++ b/net/minecraft/client/gui/screens/inventory/PageButton.java
+@@ -46,9 +_,4 @@
+             p_99231_.play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.0F));
+         }
+     }
+-
+-    @Override
+-    public boolean shouldTakeFocusAfterInteraction() {
+-        return false;
+-    }
+ }

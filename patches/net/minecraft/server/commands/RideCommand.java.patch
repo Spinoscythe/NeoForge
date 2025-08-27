@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/commands/RideCommand.java
++++ b/net/minecraft/server/commands/RideCommand.java
+@@ -69,7 +_,7 @@
+             throw ERROR_MOUNTING_LOOP.create();
+         } else if (p_265711_.level() != p_265339_.level()) {
+             throw ERROR_WRONG_DIMENSION.create();
+-        } else if (!p_265711_.startRiding(p_265339_, true, true)) {
++        } else if (!p_265711_.startRiding(p_265339_, true)) {
+             throw ERROR_MOUNT_FAILED.create(p_265711_.getDisplayName(), p_265339_.getDisplayName());
+         } else {
+             p_265285_.sendSuccess(() -> Component.translatable("commands.ride.mount.success", p_265711_.getDisplayName(), p_265339_.getDisplayName()), true);

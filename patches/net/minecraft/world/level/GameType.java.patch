@@ -1,0 +1,53 @@
+--- a/net/minecraft/world/level/GameType.java
++++ b/net/minecraft/world/level/GameType.java
+@@ -10,7 +_,6 @@
+ import net.minecraft.network.codec.StreamCodec;
+ import net.minecraft.util.ByIdMap;
+ import net.minecraft.util.StringRepresentable;
+-import net.minecraft.util.TriState;
+ import net.minecraft.world.entity.player.Abilities;
+ import org.jetbrains.annotations.Contract;
+ 
+@@ -61,30 +_,23 @@
+     }
+ 
+     public void updatePlayerAbilities(Abilities p_46399_) {
+-        this.updatePlayerAbilities(p_46399_, TriState.DEFAULT);
+-    }
+-
+-    public void updatePlayerAbilities(Abilities p_437294_, TriState p_439799_) {
+         if (this == CREATIVE) {
+-            p_437294_.mayfly = true;
+-            p_437294_.instabuild = true;
+-            p_437294_.invulnerable = true;
+-            if (p_439799_ != TriState.DEFAULT) {
+-                p_437294_.flying = p_439799_ == TriState.TRUE;
+-            }
++            p_46399_.mayfly = true;
++            p_46399_.instabuild = true;
++            p_46399_.invulnerable = true;
+         } else if (this == SPECTATOR) {
+-            p_437294_.mayfly = true;
+-            p_437294_.instabuild = false;
+-            p_437294_.invulnerable = true;
+-            p_437294_.flying = true;
++            p_46399_.mayfly = true;
++            p_46399_.instabuild = false;
++            p_46399_.invulnerable = true;
++            p_46399_.flying = true;
+         } else {
+-            p_437294_.mayfly = false;
+-            p_437294_.instabuild = false;
+-            p_437294_.invulnerable = false;
+-            p_437294_.flying = false;
++            p_46399_.mayfly = false;
++            p_46399_.instabuild = false;
++            p_46399_.invulnerable = false;
++            p_46399_.flying = false;
+         }
+ 
+-        p_437294_.mayBuild = !this.isBlockPlacingRestricted();
++        p_46399_.mayBuild = !this.isBlockPlacingRestricted();
+     }
+ 
+     public boolean isBlockPlacingRestricted() {

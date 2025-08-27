@@ -1,0 +1,23 @@
+--- a/net/minecraft/client/gui/render/pip/GuiEntityRenderer.java
++++ b/net/minecraft/client/gui/render/pip/GuiEntityRenderer.java
+@@ -6,7 +_,6 @@
+ import net.minecraft.client.gui.render.state.pip.GuiEntityRenderState;
+ import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+-import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ import org.joml.Quaternionf;
+@@ -36,9 +_,9 @@
+             this.entityRenderDispatcher.overrideCameraOrientation(quaternionf.conjugate(new Quaternionf()).rotateY((float) Math.PI));
+         }
+ 
+-        FeatureRenderDispatcher featurerenderdispatcher = Minecraft.getInstance().gameRenderer.getFeatureRenderDispatcher();
+-        this.entityRenderDispatcher.submit(p_416503_.renderState(), 0.0, 0.0, 0.0, p_415786_, featurerenderdispatcher.getSubmitNodeStorage());
+-        featurerenderdispatcher.renderAllFeatures();
++        this.entityRenderDispatcher.setRenderShadow(false);
++        this.entityRenderDispatcher.render(p_416503_.renderState(), 0.0, 0.0, 0.0, p_415786_, this.bufferSource, 15728880);
++        this.entityRenderDispatcher.setRenderShadow(true);
+     }
+ 
+     @Override

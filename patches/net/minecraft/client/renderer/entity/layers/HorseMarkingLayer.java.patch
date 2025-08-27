@@ -1,0 +1,43 @@
+--- a/net/minecraft/client/renderer/entity/layers/HorseMarkingLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/HorseMarkingLayer.java
+@@ -2,10 +_,11 @@
+ 
+ import com.google.common.collect.Maps;
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import java.util.Map;
+ import net.minecraft.client.model.HorseModel;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.HorseRenderState;
+@@ -36,22 +_,11 @@
+         super(p_117045_);
+     }
+ 
+-    public void submit(PoseStack p_434064_, SubmitNodeCollector p_435700_, int p_434375_, HorseRenderState p_433883_, float p_432898_, float p_432954_) {
+-        ResourceLocation resourcelocation = LOCATION_BY_MARKINGS.get(p_433883_.markings);
+-        if (resourcelocation != INVISIBLE_TEXTURE && !p_433883_.isInvisible) {
+-            p_435700_.order(1)
+-                .submitModel(
+-                    this.getParentModel(),
+-                    p_433883_,
+-                    p_434064_,
+-                    RenderType.entityTranslucent(resourcelocation),
+-                    p_434375_,
+-                    LivingEntityRenderer.getOverlayCoords(p_433883_, 0.0F),
+-                    -1,
+-                    null,
+-                    p_433883_.outlineColor,
+-                    null
+-                );
++    public void render(PoseStack p_117047_, MultiBufferSource p_117048_, int p_117049_, HorseRenderState p_365122_, float p_117051_, float p_117052_) {
++        ResourceLocation resourcelocation = LOCATION_BY_MARKINGS.get(p_365122_.markings);
++        if (resourcelocation != INVISIBLE_TEXTURE && !p_365122_.isInvisible) {
++            VertexConsumer vertexconsumer = p_117048_.getBuffer(RenderType.entityTranslucent(resourcelocation));
++            this.getParentModel().renderToBuffer(p_117047_, vertexconsumer, p_117049_, LivingEntityRenderer.getOverlayCoords(p_365122_, 0.0F));
+         }
+     }
+ }

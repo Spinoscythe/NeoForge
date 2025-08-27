@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/resources/server/DownloadedPackSource.java
++++ b/net/minecraft/client/resources/server/DownloadedPackSource.java
+@@ -38,7 +_,6 @@
+ import net.minecraft.server.packs.PackLocationInfo;
+ import net.minecraft.server.packs.PackSelectionConfig;
+ import net.minecraft.server.packs.PackType;
+-import net.minecraft.server.packs.metadata.pack.PackFormat;
+ import net.minecraft.server.packs.repository.Pack;
+ import net.minecraft.server.packs.repository.PackSource;
+ import net.minecraft.server.packs.repository.RepositorySource;
+@@ -244,8 +_,8 @@
+             Path path = packreloadconfig$idandpath.path();
+             PackLocationInfo packlocationinfo = new PackLocationInfo(s, SERVER_NAME, this.packType, Optional.empty());
+             Pack.ResourcesSupplier pack$resourcessupplier = new FilePackResources.FileResourcesSupplier(path);
+-            PackFormat packformat = SharedConstants.getCurrentVersion().packVersion(PackType.CLIENT_RESOURCES);
+-            Pack.Metadata pack$metadata = Pack.readPackMetadata(packlocationinfo, pack$resourcessupplier, packformat, PackType.CLIENT_RESOURCES);
++            int i = SharedConstants.getCurrentVersion().packVersion(PackType.CLIENT_RESOURCES);
++            Pack.Metadata pack$metadata = Pack.readPackMetadata(packlocationinfo, pack$resourcessupplier, i);
+             if (pack$metadata == null) {
+                 LOGGER.warn("Invalid pack metadata in {}, ignoring all", path);
+                 return null;

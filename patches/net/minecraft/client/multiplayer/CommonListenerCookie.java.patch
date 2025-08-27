@@ -1,11 +1,27 @@
 --- a/net/minecraft/client/multiplayer/CommonListenerCookie.java
 +++ b/net/minecraft/client/multiplayer/CommonListenerCookie.java
-@@ -25,6 +_,27 @@
-     Map<ResourceLocation, byte[]> serverCookies,
+@@ -2,7 +_,6 @@
+ 
+ import com.mojang.authlib.GameProfile;
+ import java.util.Map;
+-import java.util.UUID;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.gui.components.ChatComponent;
+ import net.minecraft.client.gui.screens.Screen;
+@@ -16,7 +_,6 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public record CommonListenerCookie(
+-    LevelLoadTracker levelLoadTracker,
+     GameProfile localGameProfile,
+     WorldSessionTelemetryManager telemetryManager,
+     RegistryAccess.Frozen receivedRegistries,
+@@ -28,7 +_,26 @@
      @Nullable ChatComponent.State chatState,
      Map<String, String> customReportDetails,
--    ServerLinks serverLinks
-+    ServerLinks serverLinks,
+     ServerLinks serverLinks,
+-    Map<UUID, PlayerInfo> seenPlayers,
+-    boolean seenInsecureChatWarning
 +    net.neoforged.neoforge.network.connection.ConnectionType connectionType
  ) {
 +    /**

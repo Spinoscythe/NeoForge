@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/level/block/HopperBlock.java
++++ b/net/minecraft/world/level/block/HopperBlock.java
+@@ -94,7 +_,7 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153378_, BlockState p_153379_, BlockEntityType<T> p_153380_) {
+-        return p_153378_.isClientSide() ? null : createTickerHelper(p_153380_, BlockEntityType.HOPPER, HopperBlockEntity::pushItemsTick);
++        return p_153378_.isClientSide ? null : createTickerHelper(p_153380_, BlockEntityType.HOPPER, HopperBlockEntity::pushItemsTick);
+     }
+ 
+     @Override
+@@ -106,7 +_,7 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_54071_, Level p_54072_, BlockPos p_54073_, Player p_54074_, BlockHitResult p_54076_) {
+-        if (!p_54072_.isClientSide() && p_54072_.getBlockEntity(p_54073_) instanceof HopperBlockEntity hopperblockentity) {
++        if (!p_54072_.isClientSide && p_54072_.getBlockEntity(p_54073_) instanceof HopperBlockEntity hopperblockentity) {
+             p_54074_.openMenu(hopperblockentity);
+             p_54074_.awardStat(Stats.INSPECT_HOPPER);
+         }
+@@ -137,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_54062_, Level p_54063_, BlockPos p_54064_, Direction p_433596_) {
++    protected int getAnalogOutputSignal(BlockState p_54062_, Level p_54063_, BlockPos p_54064_) {
+         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(p_54063_.getBlockEntity(p_54064_));
+     }
+ 

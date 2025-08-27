@@ -1,0 +1,57 @@
+--- a/net/minecraft/client/gui/components/OptionsList.java
++++ b/net/minecraft/client/gui/components/OptionsList.java
+@@ -4,6 +_,7 @@
+ import com.google.common.collect.ImmutableMap;
+ import java.util.List;
+ import java.util.Map;
++import java.util.Optional;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.OptionInstance;
+@@ -80,6 +_,18 @@
+         }
+     }
+ 
++    public Optional<GuiEventListener> getMouseOver(double p_94481_, double p_94482_) {
++        for (OptionsList.Entry optionslist$entry : this.children()) {
++            for (GuiEventListener guieventlistener : optionslist$entry.children()) {
++                if (guieventlistener.isMouseOver(p_94481_, p_94482_)) {
++                    return Optional.of(guieventlistener);
++                }
++            }
++        }
++
++        return Optional.empty();
++    }
++
+     @OnlyIn(Dist.CLIENT)
+     protected static class Entry extends ContainerObjectSelectionList.Entry<OptionsList.Entry> {
+         private final List<AbstractWidget> children;
+@@ -102,13 +_,24 @@
+         }
+ 
+         @Override
+-        public void renderContent(GuiGraphics p_440603_, int p_440287_, int p_439324_, boolean p_439478_, float p_440210_) {
++        public void render(
++            GuiGraphics p_281311_,
++            int p_94497_,
++            int p_94498_,
++            int p_94499_,
++            int p_94500_,
++            int p_94501_,
++            int p_94502_,
++            int p_94503_,
++            boolean p_94504_,
++            float p_94505_
++        ) {
+             int i = 0;
+             int j = this.screen.width / 2 - 155;
+ 
+             for (AbstractWidget abstractwidget : this.children) {
+-                abstractwidget.setPosition(j + i, this.getContentY());
+-                abstractwidget.render(p_440603_, p_440287_, p_439324_, p_440210_);
++                abstractwidget.setPosition(j + i, p_94498_);
++                abstractwidget.render(p_281311_, p_94502_, p_94503_, p_94505_);
+                 i += 160;
+             }
+         }

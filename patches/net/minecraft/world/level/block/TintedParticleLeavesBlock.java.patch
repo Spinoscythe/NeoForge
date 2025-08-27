@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/level/block/TintedParticleLeavesBlock.java
++++ b/net/minecraft/world/level/block/TintedParticleLeavesBlock.java
+@@ -14,10 +_,10 @@
+ 
+ public class TintedParticleLeavesBlock extends LeavesBlock {
+     public static final MapCodec<TintedParticleLeavesBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432685_ -> p_432685_.group(
++        p_400250_ -> p_400250_.group(
+                 ExtraCodecs.floatRange(0.0F, 1.0F).fieldOf("leaf_particle_chance").forGetter(p_399927_ -> p_399927_.leafParticleChance), propertiesCodec()
+             )
+-            .apply(p_432685_, TintedParticleLeavesBlock::new)
++            .apply(p_400250_, TintedParticleLeavesBlock::new)
+     );
+ 
+     public TintedParticleLeavesBlock(float p_400257_, BlockBehaviour.Properties p_399704_) {

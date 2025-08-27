@@ -1,0 +1,80 @@
+--- a/net/minecraft/client/gui/screens/worldselection/EditGameRulesScreen.java
++++ b/net/minecraft/client/gui/screens/worldselection/EditGameRulesScreen.java
+@@ -112,11 +_,22 @@
+         }
+ 
+         @Override
+-        public void renderContent(GuiGraphics p_439057_, int p_439789_, int p_439072_, boolean p_440132_, float p_440063_) {
+-            this.renderLabel(p_439057_, this.getContentY(), this.getContentX());
+-            this.checkbox.setX(this.getContentRight() - 45);
+-            this.checkbox.setY(this.getContentY());
+-            this.checkbox.render(p_439057_, p_439789_, p_439072_, p_440063_);
++        public void render(
++            GuiGraphics p_281587_,
++            int p_281471_,
++            int p_281257_,
++            int p_282541_,
++            int p_282993_,
++            int p_283543_,
++            int p_281322_,
++            int p_282930_,
++            boolean p_283227_,
++            float p_283364_
++        ) {
++            this.renderLabel(p_281587_, p_281257_, p_282541_);
++            this.checkbox.setX(p_282541_ + p_282993_ - 45);
++            this.checkbox.setY(p_281257_);
++            this.checkbox.render(p_281587_, p_281322_, p_282930_, p_283364_);
+         }
+     }
+ 
+@@ -130,8 +_,19 @@
+         }
+ 
+         @Override
+-        public void renderContent(GuiGraphics p_440317_, int p_439215_, int p_440653_, boolean p_439060_, float p_439068_) {
+-            p_440317_.drawCenteredString(EditGameRulesScreen.this.minecraft.font, this.label, this.getContentXMiddle(), this.getContentY() + 5, -1);
++        public void render(
++            GuiGraphics p_283335_,
++            int p_283214_,
++            int p_283476_,
++            int p_281365_,
++            int p_281817_,
++            int p_283006_,
++            int p_282893_,
++            int p_282500_,
++            boolean p_283421_,
++            float p_282445_
++        ) {
++            p_283335_.drawCenteredString(EditGameRulesScreen.this.minecraft.font, this.label, p_281365_ + p_281817_ / 2, p_283476_ + 5, -1);
+         }
+ 
+         @Override
+@@ -212,11 +_,22 @@
+         }
+ 
+         @Override
+-        public void renderContent(GuiGraphics p_439470_, int p_438942_, int p_439225_, boolean p_440092_, float p_440277_) {
+-            this.renderLabel(p_439470_, this.getContentY(), this.getContentX());
+-            this.input.setX(this.getContentRight() - 45);
+-            this.input.setY(this.getContentY());
+-            this.input.render(p_439470_, p_438942_, p_439225_, p_440277_);
++        public void render(
++            GuiGraphics p_281756_,
++            int p_281882_,
++            int p_281876_,
++            int p_283136_,
++            int p_283044_,
++            int p_282526_,
++            int p_282433_,
++            int p_281816_,
++            boolean p_282227_,
++            float p_281751_
++        ) {
++            this.renderLabel(p_281756_, p_281876_, p_283136_);
++            this.input.setX(p_283136_ + p_283044_ - 45);
++            this.input.setY(p_281876_);
++            this.input.render(p_281756_, p_282433_, p_281816_, p_281751_);
+         }
+     }
+ 

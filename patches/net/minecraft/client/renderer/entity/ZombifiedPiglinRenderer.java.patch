@@ -1,0 +1,35 @@
+--- a/net/minecraft/client/renderer/entity/ZombifiedPiglinRenderer.java
++++ b/net/minecraft/client/renderer/entity/ZombifiedPiglinRenderer.java
+@@ -1,5 +_,6 @@
+ package net.minecraft.client.renderer.entity;
+ 
++import net.minecraft.client.model.HumanoidArmorModel;
+ import net.minecraft.client.model.ZombifiedPiglinModel;
+ import net.minecraft.client.model.geom.ModelLayerLocation;
+ import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+@@ -17,8 +_,10 @@
+         EntityRendererProvider.Context p_361123_,
+         ModelLayerLocation p_360957_,
+         ModelLayerLocation p_363099_,
+-        ArmorModelSet<ModelLayerLocation> p_433299_,
+-        ArmorModelSet<ModelLayerLocation> p_434861_
++        ModelLayerLocation p_364580_,
++        ModelLayerLocation p_364456_,
++        ModelLayerLocation p_362058_,
++        ModelLayerLocation p_365154_
+     ) {
+         super(
+             p_361123_,
+@@ -30,8 +_,10 @@
+         this.addLayer(
+             new HumanoidArmorLayer<>(
+                 this,
+-                ArmorModelSet.bake(p_433299_, p_361123_.getModelSet(), ZombifiedPiglinModel::new),
+-                ArmorModelSet.bake(p_434861_, p_361123_.getModelSet(), ZombifiedPiglinModel::new),
++                new HumanoidArmorModel(p_361123_.bakeLayer(p_364580_)),
++                new HumanoidArmorModel(p_361123_.bakeLayer(p_364456_)),
++                new HumanoidArmorModel(p_361123_.bakeLayer(p_362058_)),
++                new HumanoidArmorModel(p_361123_.bakeLayer(p_365154_)),
+                 p_361123_.getEquipmentRenderer()
+             )
+         );

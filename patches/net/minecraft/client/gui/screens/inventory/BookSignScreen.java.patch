@@ -1,0 +1,23 @@
+--- a/net/minecraft/client/gui/screens/inventory/BookSignScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/BookSignScreen.java
+@@ -73,11 +_,6 @@
+     }
+ 
+     @Override
+-    public boolean isInGameUi() {
+-        return true;
+-    }
+-
+-    @Override
+     public boolean keyPressed(int p_421798_, int p_421882_, int p_421984_) {
+         if (!this.titleBox.isFocused() || this.titleBox.getValue().isEmpty() || p_421798_ != 257 && p_421798_ != 335) {
+             return super.keyPressed(p_421798_, p_421882_, p_421984_);
+@@ -102,7 +_,7 @@
+ 
+     @Override
+     public void renderBackground(GuiGraphics p_421786_, int p_422251_, int p_421978_, float p_421611_) {
+-        super.renderBackground(p_421786_, p_422251_, p_421978_, p_421611_);
++        this.renderTransparentBackground(p_421786_);
+         p_421786_.blit(RenderPipelines.GUI_TEXTURED, BookViewScreen.BOOK_LOCATION, (this.width - 192) / 2, 2, 0.0F, 0.0F, 192, 192, 256, 256);
+     }
+ }

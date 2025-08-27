@@ -1,0 +1,145 @@
+--- a/net/minecraft/world/level/levelgen/DensityFunctions.java
++++ b/net/minecraft/world/level/levelgen/DensityFunctions.java
+@@ -16,7 +_,6 @@
+ import net.minecraft.core.registries.BuiltInRegistries;
+ import net.minecraft.resources.ResourceKey;
+ import net.minecraft.util.CubicSpline;
+-import net.minecraft.util.ExtraCodecs;
+ import net.minecraft.util.KeyDispatchDataCodec;
+ import net.minecraft.util.Mth;
+ import net.minecraft.util.RandomSource;
+@@ -74,8 +_,7 @@
+ 
+         register(p_208343_, "spline", DensityFunctions.Spline.CODEC);
+         register(p_208343_, "constant", DensityFunctions.Constant.CODEC);
+-        register(p_208343_, "y_clamped_gradient", DensityFunctions.YClampedGradient.CODEC);
+-        return register(p_208343_, "find_top_surface", DensityFunctions.FindTopSurface.CODEC);
++        return register(p_208343_, "y_clamped_gradient", DensityFunctions.YClampedGradient.CODEC);
+     }
+ 
+     private static MapCodec<? extends DensityFunction> register(
+@@ -261,10 +_,6 @@
+         return add(mul(p_224031_, add(p_224033_, constant(-p_224032_))), constant(p_224032_));
+     }
+ 
+-    public static DensityFunction findTopSurface(DensityFunction p_433132_, DensityFunction p_434286_, int p_433324_, int p_434684_) {
+-        return new DensityFunctions.FindTopSurface(p_433132_, p_434286_, p_433324_, p_434684_);
+-    }
+-
+     record Ap2(DensityFunctions.TwoArgumentSimpleFunction.Type type, DensityFunction argument1, DensityFunction argument2, double minValue, double maxValue)
+         implements DensityFunctions.TwoArgumentSimpleFunction {
+         @Override
+@@ -568,64 +_,6 @@
+         }
+     }
+ 
+-    record FindTopSurface(DensityFunction density, DensityFunction upperBound, int lowerBound, int cellHeight) implements DensityFunction {
+-        private static final MapCodec<DensityFunctions.FindTopSurface> DATA_CODEC = RecordCodecBuilder.mapCodec(
+-            p_433249_ -> p_433249_.group(
+-                    DensityFunction.HOLDER_HELPER_CODEC.fieldOf("density").forGetter(DensityFunctions.FindTopSurface::density),
+-                    DensityFunction.HOLDER_HELPER_CODEC.fieldOf("upper_bound").forGetter(DensityFunctions.FindTopSurface::upperBound),
+-                    Codec.intRange(DimensionType.MIN_Y * 2, DimensionType.MAX_Y * 2)
+-                        .fieldOf("lower_bound")
+-                        .forGetter(DensityFunctions.FindTopSurface::lowerBound),
+-                    ExtraCodecs.POSITIVE_INT.fieldOf("cell_height").forGetter(DensityFunctions.FindTopSurface::cellHeight)
+-                )
+-                .apply(p_433249_, DensityFunctions.FindTopSurface::new)
+-        );
+-        public static final KeyDispatchDataCodec<DensityFunctions.FindTopSurface> CODEC = DensityFunctions.makeCodec(DATA_CODEC);
+-
+-        @Override
+-        public double compute(DensityFunction.FunctionContext p_434519_) {
+-            int i = Mth.floor(this.upperBound.compute(p_434519_) / this.cellHeight) * this.cellHeight;
+-            if (i <= this.lowerBound) {
+-                return this.lowerBound;
+-            } else {
+-                for (int j = i; j >= this.lowerBound; j -= this.cellHeight) {
+-                    if (this.density.compute(new DensityFunction.SinglePointContext(p_434519_.blockX(), j, p_434519_.blockZ())) > 0.0) {
+-                        return j;
+-                    }
+-                }
+-
+-                return this.lowerBound;
+-            }
+-        }
+-
+-        @Override
+-        public void fillArray(double[] p_435166_, DensityFunction.ContextProvider p_434289_) {
+-            p_434289_.fillAllDirectly(p_435166_, this);
+-        }
+-
+-        @Override
+-        public DensityFunction mapAll(DensityFunction.Visitor p_434292_) {
+-            return p_434292_.apply(
+-                new DensityFunctions.FindTopSurface(this.density.mapAll(p_434292_), this.upperBound.mapAll(p_434292_), this.lowerBound, this.cellHeight)
+-            );
+-        }
+-
+-        @Override
+-        public double minValue() {
+-            return this.lowerBound;
+-        }
+-
+-        @Override
+-        public double maxValue() {
+-            return Math.max((double)this.lowerBound, this.upperBound.maxValue());
+-        }
+-
+-        @Override
+-        public KeyDispatchDataCodec<? extends DensityFunction> codec() {
+-            return CODEC;
+-        }
+-    }
+-
+     @VisibleForDebug
+     public record HolderHolder(Holder<DensityFunction> function) implements DensityFunction {
+         @Override
+@@ -663,18 +_,11 @@
+         implements DensityFunctions.PureTransformer {
+         public static DensityFunctions.Mapped create(DensityFunctions.Mapped.Type p_208672_, DensityFunction p_208673_) {
+             double d0 = p_208673_.minValue();
+-            double d1 = p_208673_.maxValue();
+-            double d2 = transform(p_208672_, d0);
+-            double d3 = transform(p_208672_, d1);
+-            if (p_208672_ == DensityFunctions.Mapped.Type.INVERT) {
+-                return d0 < 0.0 && d1 > 0.0
+-                    ? new DensityFunctions.Mapped(p_208672_, p_208673_, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)
+-                    : new DensityFunctions.Mapped(p_208672_, p_208673_, d3, d2);
+-            } else {
+-                return p_208672_ != DensityFunctions.Mapped.Type.ABS && p_208672_ != DensityFunctions.Mapped.Type.SQUARE
+-                    ? new DensityFunctions.Mapped(p_208672_, p_208673_, d2, d3)
+-                    : new DensityFunctions.Mapped(p_208672_, p_208673_, Math.max(0.0, d0), Math.max(d2, d3));
+-            }
++            double d1 = transform(p_208672_, d0);
++            double d2 = transform(p_208672_, p_208673_.maxValue());
++            return p_208672_ != DensityFunctions.Mapped.Type.ABS && p_208672_ != DensityFunctions.Mapped.Type.SQUARE
++                ? new DensityFunctions.Mapped(p_208672_, p_208673_, d1, d2)
++                : new DensityFunctions.Mapped(p_208672_, p_208673_, Math.max(0.0, d0), Math.max(d1, d2));
+         }
+ 
+         private static double transform(DensityFunctions.Mapped.Type p_208669_, double p_208670_) {
+@@ -684,7 +_,6 @@
+                 case CUBE -> p_208670_ * p_208670_ * p_208670_;
+                 case HALF_NEGATIVE -> p_208670_ > 0.0 ? p_208670_ : p_208670_ * 0.5;
+                 case QUARTER_NEGATIVE -> p_208670_ > 0.0 ? p_208670_ : p_208670_ * 0.25;
+-                case INVERT -> 1.0 / p_208670_;
+                 case SQUEEZE -> {
+                     double d0 = Mth.clamp(p_208670_, -1.0, 1.0);
+                     yield d0 / 2.0 - d0 * d0 * d0 / 24.0;
+@@ -712,7 +_,6 @@
+             CUBE("cube"),
+             HALF_NEGATIVE("half_negative"),
+             QUARTER_NEGATIVE("quarter_negative"),
+-            INVERT("invert"),
+             SQUEEZE("squeeze");
+ 
+             private final String name;
+@@ -1240,7 +_,7 @@
+                 boolean flag = d0 >= d3;
+                 boolean flag1 = d1 >= d2;
+                 if (flag || flag1) {
+-                    LOGGER.warn("Creating a {} function between two non-overlapping inputs: {} and {}", p_209074_, p_209075_, p_209076_);
++                    LOGGER.warn("Creating a " + p_209074_ + " function between two non-overlapping inputs: " + p_209075_ + " and " + p_209076_);
+                 }
+             }
+             double d5 = switch (p_209074_) {

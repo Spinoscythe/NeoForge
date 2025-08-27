@@ -1,0 +1,152 @@
+--- a/net/minecraft/client/renderer/entity/DisplayRenderer.java
++++ b/net/minecraft/client/renderer/entity/DisplayRenderer.java
+@@ -10,8 +_,8 @@
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.Font;
+ import net.minecraft.client.renderer.LightTexture;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+ import net.minecraft.client.renderer.entity.state.BlockDisplayEntityRenderState;
+ import net.minecraft.client.renderer.entity.state.DisplayEntityRenderState;
+@@ -71,16 +_,16 @@
+         return display$renderstate == null ? 0.0F : display$renderstate.shadowStrength().get(p_383074_.interpolationProgress);
+     }
+ 
+-    public void submit(ST p_360624_, PoseStack p_270117_, SubmitNodeCollector p_435230_) {
++    public void render(ST p_360624_, PoseStack p_270117_, MultiBufferSource p_270319_, int p_270659_) {
+         Display.RenderState display$renderstate = p_360624_.renderState;
+         if (display$renderstate != null && p_360624_.hasSubState()) {
+             float f = p_360624_.interpolationProgress;
+-            super.submit(p_360624_, p_270117_, p_435230_);
++            super.render(p_360624_, p_270117_, p_270319_, p_270659_);
+             p_270117_.pushPose();
+             p_270117_.mulPose(this.calculateOrientation(display$renderstate, p_360624_, new Quaternionf()));
+             Transformation transformation = display$renderstate.transformation().get(f);
+             p_270117_.mulPose(transformation.getMatrix());
+-            this.submitInner(p_360624_, p_270117_, p_435230_, p_360624_.lightCoords, f);
++            this.renderInner(p_360624_, p_270117_, p_270319_, p_270659_, f);
+             p_270117_.popPose();
+         }
+     }
+@@ -112,7 +_,7 @@
+         return p_295884_.getXRot(p_294935_);
+     }
+ 
+-    protected abstract void submitInner(ST p_364455_, PoseStack p_277686_, SubmitNodeCollector p_433791_, int p_278023_, float p_277453_);
++    protected abstract void renderInner(ST p_364455_, PoseStack p_277686_, MultiBufferSource p_277429_, int p_278023_, float p_277453_);
+ 
+     public void extractRenderState(T p_362672_, ST p_361329_, float p_365301_) {
+         super.extractRenderState(p_362672_, p_361329_, p_365301_);
+@@ -141,8 +_,8 @@
+             p_363759_.blockRenderState = p_362697_.blockRenderState();
+         }
+ 
+-        public void submitInner(BlockDisplayEntityRenderState p_432901_, PoseStack p_434089_, SubmitNodeCollector p_433174_, int p_435266_, float p_435422_) {
+-            p_433174_.submitBlock(p_434089_, p_432901_.blockRenderState.blockState(), p_435266_, OverlayTexture.NO_OVERLAY, p_432901_.outlineColor);
++        public void renderInner(BlockDisplayEntityRenderState p_362193_, PoseStack p_277831_, MultiBufferSource p_277554_, int p_278071_, float p_277847_) {
++            this.blockRenderer.renderSingleBlock(p_362193_.blockRenderState.blockState(), p_277831_, p_277554_, p_278071_, OverlayTexture.NO_OVERLAY);
+         }
+     }
+ 
+@@ -172,10 +_,10 @@
+             }
+         }
+ 
+-        public void submitInner(ItemDisplayEntityRenderState p_433571_, PoseStack p_432839_, SubmitNodeCollector p_433402_, int p_434368_, float p_433057_) {
+-            if (!p_433571_.item.isEmpty()) {
+-                p_432839_.mulPose(Axis.YP.rotation((float) Math.PI));
+-                p_433571_.item.submit(p_432839_, p_433402_, p_434368_, OverlayTexture.NO_OVERLAY, p_433571_.outlineColor);
++        public void renderInner(ItemDisplayEntityRenderState p_364899_, PoseStack p_277361_, MultiBufferSource p_277912_, int p_277474_, float p_278032_) {
++            if (!p_364899_.item.isEmpty()) {
++                p_277361_.mulPose(Axis.YP.rotation((float) Math.PI));
++                p_364899_.item.render(p_277361_, p_277912_, p_277474_, OverlayTexture.NO_OVERLAY);
+             }
+         }
+     }
+@@ -213,41 +_,38 @@
+             return new Display.TextDisplay.CachedInfo(list1, i);
+         }
+ 
+-        public void submitInner(TextDisplayEntityRenderState p_436041_, PoseStack p_433746_, SubmitNodeCollector p_434372_, int p_435117_, float p_434778_) {
+-            Display.TextDisplay.TextRenderState display$textdisplay$textrenderstate = p_436041_.textRenderState;
++        public void renderInner(TextDisplayEntityRenderState p_363505_, PoseStack p_277503_, MultiBufferSource p_278036_, int p_278079_, float p_277784_) {
++            Display.TextDisplay.TextRenderState display$textdisplay$textrenderstate = p_363505_.textRenderState;
+             byte b0 = display$textdisplay$textrenderstate.flags();
+             boolean flag = (b0 & 2) != 0;
+             boolean flag1 = (b0 & 4) != 0;
+             boolean flag2 = (b0 & 1) != 0;
+             Display.TextDisplay.Align display$textdisplay$align = Display.TextDisplay.getAlign(b0);
+-            byte b1 = (byte)display$textdisplay$textrenderstate.textOpacity().get(p_434778_);
++            byte b1 = (byte)display$textdisplay$textrenderstate.textOpacity().get(p_277784_);
+             int i;
+             if (flag1) {
+                 float f = Minecraft.getInstance().options.getBackgroundOpacity(0.25F);
+                 i = (int)(f * 255.0F) << 24;
+             } else {
+-                i = display$textdisplay$textrenderstate.backgroundColor().get(p_434778_);
++                i = display$textdisplay$textrenderstate.backgroundColor().get(p_277784_);
+             }
+ 
+             float f2 = 0.0F;
+-            Matrix4f matrix4f = p_433746_.last().pose();
++            Matrix4f matrix4f = p_277503_.last().pose();
+             matrix4f.rotate((float) Math.PI, 0.0F, 1.0F, 0.0F);
+             matrix4f.scale(-0.025F, -0.025F, -0.025F);
+-            Display.TextDisplay.CachedInfo display$textdisplay$cachedinfo = p_436041_.cachedInfo;
++            Display.TextDisplay.CachedInfo display$textdisplay$cachedinfo = p_363505_.cachedInfo;
+             int j = 1;
+             int k = 9 + 1;
+             int l = display$textdisplay$cachedinfo.width();
+             int i1 = display$textdisplay$cachedinfo.lines().size() * k - 1;
+             matrix4f.translate(1.0F - l / 2.0F, -i1, 0.0F);
+             if (i != 0) {
+-                p_434372_.submitCustomGeometry(
+-                    p_433746_, flag ? RenderType.textBackgroundSeeThrough() : RenderType.textBackground(), (p_434840_, p_435597_) -> {
+-                        p_435597_.addVertex(p_434840_, -1.0F, -1.0F, 0.0F).setColor(i).setLight(p_435117_);
+-                        p_435597_.addVertex(p_434840_, -1.0F, (float)i1, 0.0F).setColor(i).setLight(p_435117_);
+-                        p_435597_.addVertex(p_434840_, (float)l, (float)i1, 0.0F).setColor(i).setLight(p_435117_);
+-                        p_435597_.addVertex(p_434840_, (float)l, -1.0F, 0.0F).setColor(i).setLight(p_435117_);
+-                    }
+-                );
++                VertexConsumer vertexconsumer = p_278036_.getBuffer(flag ? RenderType.textBackgroundSeeThrough() : RenderType.textBackground());
++                vertexconsumer.addVertex(matrix4f, -1.0F, -1.0F, 0.0F).setColor(i).setLight(p_278079_);
++                vertexconsumer.addVertex(matrix4f, -1.0F, (float)i1, 0.0F).setColor(i).setLight(p_278079_);
++                vertexconsumer.addVertex(matrix4f, (float)l, (float)i1, 0.0F).setColor(i).setLight(p_278079_);
++                vertexconsumer.addVertex(matrix4f, (float)l, -1.0F, 0.0F).setColor(i).setLight(p_278079_);
+             }
+ 
+             for (Display.TextDisplay.CachedLine display$textdisplay$cachedline : display$textdisplay$cachedinfo.lines()) {
+@@ -256,18 +_,19 @@
+                     case RIGHT -> l - display$textdisplay$cachedline.width();
+                     case CENTER -> l / 2.0F - display$textdisplay$cachedline.width() / 2.0F;
+                 };
+-                p_434372_.submitText(
+-                    p_433746_,
+-                    f1,
+-                    f2,
+-                    display$textdisplay$cachedline.contents(),
+-                    flag2,
+-                    flag ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
+-                    p_435117_,
+-                    b1 << 24 | 16777215,
+-                    0,
+-                    0
+-                );
++                this.font
++                    .drawInBatch(
++                        display$textdisplay$cachedline.contents(),
++                        f1,
++                        f2,
++                        b1 << 24 | 16777215,
++                        flag2,
++                        matrix4f,
++                        p_278036_,
++                        flag ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
++                        0,
++                        p_278079_
++                    );
+                 f2 += k;
+             }
+         }

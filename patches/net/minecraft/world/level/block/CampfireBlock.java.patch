@@ -1,5 +1,20 @@
 --- a/net/minecraft/world/level/block/CampfireBlock.java
 +++ b/net/minecraft/world/level/block/CampfireBlock.java
+@@ -56,12 +_,12 @@
+ 
+ public class CampfireBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+     public static final MapCodec<CampfireBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432639_ -> p_432639_.group(
++        p_368408_ -> p_368408_.group(
+                 Codec.BOOL.fieldOf("spawn_particles").forGetter(p_304361_ -> p_304361_.spawnParticles),
+                 Codec.intRange(0, 1000).fieldOf("fire_damage").forGetter(p_304360_ -> p_304360_.fireDamage),
+                 propertiesCodec()
+             )
+-            .apply(p_432639_, CampfireBlock::new)
++            .apply(p_368408_, CampfireBlock::new)
+     );
+     public static final BooleanProperty LIT = BlockStateProperties.LIT;
+     public static final BooleanProperty SIGNAL_FIRE = BlockStateProperties.SIGNAL_FIRE;
 @@ -265,7 +_,7 @@
                  return true;
              }

@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/chunk/storage/SimpleRegionStorage.java
++++ b/net/minecraft/world/level/chunk/storage/SimpleRegionStorage.java
+@@ -39,9 +_,7 @@
+     }
+ 
+     public Dynamic<Tag> upgradeChunkTag(Dynamic<Tag> p_321643_, int p_321759_) {
+-        int i = NbtUtils.getDataVersion(p_321643_, p_321759_);
+-        Dynamic<Tag> dynamic = this.dataFixType.updateToCurrentVersion(this.fixerUpper, p_321643_, i);
+-        return NbtUtils.addCurrentDataVersion(dynamic);
++        return this.dataFixType.updateToCurrentVersion(this.fixerUpper, p_321643_, p_321759_);
+     }
+ 
+     public CompletableFuture<Void> synchronize(boolean p_321682_) {

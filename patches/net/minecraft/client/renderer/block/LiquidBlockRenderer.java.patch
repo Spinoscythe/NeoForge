@@ -1,9 +1,33 @@
 --- a/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
 +++ b/net/minecraft/client/renderer/block/LiquidBlockRenderer.java
-@@ -37,12 +_,17 @@
-         this.waterIcons[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.WATER.defaultBlockState()).particleIcon();
-         this.waterIcons[1] = ModelBakery.WATER_FLOW.sprite();
-         this.waterOverlay = ModelBakery.WATER_OVERLAY.sprite();
+@@ -1,10 +_,10 @@
+ package net.minecraft.client.renderer.block;
+ 
+ import com.mojang.blaze3d.vertex.VertexConsumer;
++import net.minecraft.client.Minecraft;
+ import net.minecraft.client.renderer.BiomeColors;
+ import net.minecraft.client.renderer.LevelRenderer;
+ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+-import net.minecraft.client.resources.model.MaterialSet;
+ import net.minecraft.client.resources.model.ModelBakery;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+@@ -31,18 +_,23 @@
+     private final TextureAtlasSprite[] waterIcons = new TextureAtlasSprite[2];
+     private TextureAtlasSprite waterOverlay;
+ 
+-    protected void setupSprites(BlockModelShaper p_433960_, MaterialSet p_434648_) {
+-        this.lavaIcons[0] = p_433960_.getBlockModel(Blocks.LAVA.defaultBlockState()).particleIcon();
+-        this.lavaIcons[1] = p_434648_.get(ModelBakery.LAVA_FLOW);
+-        this.waterIcons[0] = p_433960_.getBlockModel(Blocks.WATER.defaultBlockState()).particleIcon();
+-        this.waterIcons[1] = p_434648_.get(ModelBakery.WATER_FLOW);
+-        this.waterOverlay = p_434648_.get(ModelBakery.WATER_OVERLAY);
++    protected void setupSprites() {
++        this.lavaIcons[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.LAVA.defaultBlockState()).particleIcon();
++        this.lavaIcons[1] = ModelBakery.LAVA_FLOW.sprite();
++        this.waterIcons[0] = Minecraft.getInstance().getModelManager().getBlockModelShaper().getBlockModel(Blocks.WATER.defaultBlockState()).particleIcon();
++        this.waterIcons[1] = ModelBakery.WATER_FLOW.sprite();
++        this.waterOverlay = ModelBakery.WATER_OVERLAY.sprite();
 +        net.neoforged.neoforge.client.textures.FluidSpriteCache.reload();
      }
  

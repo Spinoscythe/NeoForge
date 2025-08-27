@@ -1,0 +1,77 @@
+--- a/net/minecraft/client/renderer/entity/GuardianRenderer.java
++++ b/net/minecraft/client/renderer/entity/GuardianRenderer.java
+@@ -8,8 +_,8 @@
+ import net.minecraft.client.model.GuardianModel;
+ import net.minecraft.client.model.geom.ModelLayerLocation;
+ import net.minecraft.client.model.geom.ModelLayers;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.culling.Frustum;
+ import net.minecraft.client.renderer.entity.state.GuardianRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+@@ -61,19 +_,19 @@
+         return new Vec3(d0, d1, d2);
+     }
+ 
+-    public void submit(GuardianRenderState p_434515_, PoseStack p_434457_, SubmitNodeCollector p_435876_) {
+-        super.submit(p_434515_, p_434457_, p_435876_);
+-        Vec3 vec3 = p_434515_.attackTargetPosition;
++    public void render(GuardianRenderState p_363200_, PoseStack p_114793_, MultiBufferSource p_114794_, int p_114795_) {
++        super.render(p_363200_, p_114793_, p_114794_, p_114795_);
++        Vec3 vec3 = p_363200_.attackTargetPosition;
+         if (vec3 != null) {
+-            float f = p_434515_.attackTime * 0.5F % 1.0F;
+-            p_434457_.pushPose();
+-            p_434457_.translate(0.0F, p_434515_.eyeHeight, 0.0F);
+-            renderBeam(p_434457_, p_435876_, vec3.subtract(p_434515_.eyePosition), p_434515_.attackTime, p_434515_.attackScale, f);
+-            p_434457_.popPose();
++            float f = p_363200_.attackTime * 0.5F % 1.0F;
++            p_114793_.pushPose();
++            p_114793_.translate(0.0F, p_363200_.eyeHeight, 0.0F);
++            renderBeam(p_114793_, p_114794_.getBuffer(BEAM_RENDER_TYPE), vec3.subtract(p_363200_.eyePosition), p_363200_.attackTime, p_363200_.attackScale, f);
++            p_114793_.popPose();
+         }
+     }
+ 
+-    private static void renderBeam(PoseStack p_363906_, SubmitNodeCollector p_435106_, Vec3 p_360399_, float p_363920_, float p_363755_, float p_361709_) {
++    private static void renderBeam(PoseStack p_363906_, VertexConsumer p_365218_, Vec3 p_360399_, float p_363920_, float p_363755_, float p_361709_) {
+         float f = (float)(p_360399_.length() + 1.0);
+         p_360399_ = p_360399_.normalize();
+         float f1 = (float)Math.acos(p_360399_.y);
+@@ -107,21 +_,20 @@
+         float f24 = 0.4999F;
+         float f25 = -1.0F + p_361709_;
+         float f26 = f25 + f * 2.5F;
+-        p_435106_.submitCustomGeometry(p_363906_, BEAM_RENDER_TYPE, (p_432958_, p_433082_) -> {
+-            vertex(p_433082_, p_432958_, f15, f, f16, i, j, k, 0.4999F, f26);
+-            vertex(p_433082_, p_432958_, f15, 0.0F, f16, i, j, k, 0.4999F, f25);
+-            vertex(p_433082_, p_432958_, f17, 0.0F, f18, i, j, k, 0.0F, f25);
+-            vertex(p_433082_, p_432958_, f17, f, f18, i, j, k, 0.0F, f26);
+-            vertex(p_433082_, p_432958_, f19, f, f20, i, j, k, 0.4999F, f26);
+-            vertex(p_433082_, p_432958_, f19, 0.0F, f20, i, j, k, 0.4999F, f25);
+-            vertex(p_433082_, p_432958_, f21, 0.0F, f22, i, j, k, 0.0F, f25);
+-            vertex(p_433082_, p_432958_, f21, f, f22, i, j, k, 0.0F, f26);
+-            float f27 = Mth.floor(p_363920_) % 2 == 0 ? 0.5F : 0.0F;
+-            vertex(p_433082_, p_432958_, f7, f, f8, i, j, k, 0.5F, f27 + 0.5F);
+-            vertex(p_433082_, p_432958_, f9, f, f10, i, j, k, 1.0F, f27 + 0.5F);
+-            vertex(p_433082_, p_432958_, f13, f, f14, i, j, k, 1.0F, f27);
+-            vertex(p_433082_, p_432958_, f11, f, f12, i, j, k, 0.5F, f27);
+-        });
++        PoseStack.Pose posestack$pose = p_363906_.last();
++        vertex(p_365218_, posestack$pose, f15, f, f16, i, j, k, 0.4999F, f26);
++        vertex(p_365218_, posestack$pose, f15, 0.0F, f16, i, j, k, 0.4999F, f25);
++        vertex(p_365218_, posestack$pose, f17, 0.0F, f18, i, j, k, 0.0F, f25);
++        vertex(p_365218_, posestack$pose, f17, f, f18, i, j, k, 0.0F, f26);
++        vertex(p_365218_, posestack$pose, f19, f, f20, i, j, k, 0.4999F, f26);
++        vertex(p_365218_, posestack$pose, f19, 0.0F, f20, i, j, k, 0.4999F, f25);
++        vertex(p_365218_, posestack$pose, f21, 0.0F, f22, i, j, k, 0.0F, f25);
++        vertex(p_365218_, posestack$pose, f21, f, f22, i, j, k, 0.0F, f26);
++        float f27 = Mth.floor(p_363920_) % 2 == 0 ? 0.5F : 0.0F;
++        vertex(p_365218_, posestack$pose, f7, f, f8, i, j, k, 0.5F, f27 + 0.5F);
++        vertex(p_365218_, posestack$pose, f9, f, f10, i, j, k, 1.0F, f27 + 0.5F);
++        vertex(p_365218_, posestack$pose, f13, f, f14, i, j, k, 1.0F, f27);
++        vertex(p_365218_, posestack$pose, f11, f, f12, i, j, k, 0.5F, f27);
+     }
+ 
+     private static void vertex(

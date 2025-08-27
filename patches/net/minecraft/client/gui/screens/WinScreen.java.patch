@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/gui/screens/WinScreen.java
++++ b/net/minecraft/client/gui/screens/WinScreen.java
+@@ -310,11 +_,6 @@
+     }
+ 
+     @Override
+-    public boolean isAllowedInPortal() {
+-        return true;
+-    }
+-
+-    @Override
+     public void removed() {
+         this.minecraft.getMusicManager().stopPlaying(Musics.CREDITS);
+     }

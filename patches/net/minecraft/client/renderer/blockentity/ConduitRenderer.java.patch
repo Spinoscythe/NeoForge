@@ -1,13 +1,171 @@
 --- a/net/minecraft/client/renderer/blockentity/ConduitRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ConduitRenderer.java
-@@ -135,4 +_,10 @@
-             p_112401_.popPose();
-         }
+@@ -1,7 +_,7 @@
+ package net.minecraft.client.renderer.blockentity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+-import javax.annotation.Nullable;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.Camera;
+ import net.minecraft.client.model.geom.ModelLayers;
+ import net.minecraft.client.model.geom.ModelPart;
+@@ -12,13 +_,10 @@
+ import net.minecraft.client.model.geom.builders.MeshDefinition;
+ import net.minecraft.client.model.geom.builders.PartDefinition;
+ import net.minecraft.client.renderer.MaterialMapper;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+ import net.minecraft.client.renderer.texture.TextureAtlas;
+-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+ import net.minecraft.client.resources.model.Material;
+-import net.minecraft.client.resources.model.MaterialSet;
+ import net.minecraft.util.Mth;
+ import net.minecraft.world.level.block.entity.ConduitBlockEntity;
+ import net.minecraft.world.phys.Vec3;
+@@ -36,7 +_,6 @@
+     public static final Material VERTICAL_WIND_TEXTURE = MAPPER.defaultNamespaceApply("wind_vertical");
+     public static final Material OPEN_EYE_TEXTURE = MAPPER.defaultNamespaceApply("open_eye");
+     public static final Material CLOSED_EYE_TEXTURE = MAPPER.defaultNamespaceApply("closed_eye");
+-    private final MaterialSet materials;
+     private final ModelPart eye;
+     private final ModelPart wind;
+     private final ModelPart shell;
+@@ -44,8 +_,7 @@
+     private final BlockEntityRenderDispatcher renderer;
+ 
+     public ConduitRenderer(BlockEntityRendererProvider.Context p_173613_) {
+-        this.materials = p_173613_.materials();
+-        this.renderer = p_173613_.blockEntityRenderDispatcher();
++        this.renderer = p_173613_.getBlockEntityRenderDispatcher();
+         this.eye = p_173613_.bakeLayer(ModelLayers.CONDUIT_EYE);
+         this.wind = p_173613_.bakeLayer(ModelLayers.CONDUIT_WIND);
+         this.shell = p_173613_.bakeLayer(ModelLayers.CONDUIT_SHELL);
+@@ -82,76 +_,68 @@
+         return LayerDefinition.create(meshdefinition, 32, 16);
      }
+ 
+-    public void submit(
+-        ConduitBlockEntity p_439146_,
+-        float p_440502_,
+-        PoseStack p_439855_,
+-        int p_440589_,
+-        int p_439986_,
+-        Vec3 p_440185_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_439467_,
+-        SubmitNodeCollector p_439334_
++    public void render(
++        ConduitBlockEntity p_112399_, float p_112400_, PoseStack p_112401_, MultiBufferSource p_112402_, int p_112403_, int p_112404_, Vec3 p_401311_
+     ) {
+-        float f = p_439146_.tickCount + p_440502_;
+-        if (!p_439146_.isActive()) {
+-            float f5 = p_439146_.getActiveRotation(0.0F);
+-            p_439855_.pushPose();
+-            p_439855_.translate(0.5F, 0.5F, 0.5F);
+-            p_439855_.mulPose(new Quaternionf().rotationY(f5 * (float) (Math.PI / 180.0)));
+-            p_439334_.submitModelPart(
+-                this.shell, p_439855_, SHELL_TEXTURE.renderType(RenderType::entitySolid), p_440589_, p_439986_, this.materials.get(SHELL_TEXTURE)
+-            );
+-            p_439855_.popPose();
++        float f = p_112399_.tickCount + p_112400_;
++        if (!p_112399_.isActive()) {
++            float f5 = p_112399_.getActiveRotation(0.0F);
++            VertexConsumer vertexconsumer1 = SHELL_TEXTURE.buffer(p_112402_, RenderType::entitySolid);
++            p_112401_.pushPose();
++            p_112401_.translate(0.5F, 0.5F, 0.5F);
++            p_112401_.mulPose(new Quaternionf().rotationY(f5 * (float) (Math.PI / 180.0)));
++            this.shell.render(p_112401_, vertexconsumer1, p_112403_, p_112404_);
++            p_112401_.popPose();
+         } else {
+-            float f1 = p_439146_.getActiveRotation(p_440502_) * (180.0F / (float)Math.PI);
++            float f1 = p_112399_.getActiveRotation(p_112400_) * (180.0F / (float)Math.PI);
+             float f2 = Mth.sin(f * 0.1F) / 2.0F + 0.5F;
+             f2 = f2 * f2 + f2;
+-            p_439855_.pushPose();
+-            p_439855_.translate(0.5F, 0.3F + f2 * 0.2F, 0.5F);
++            p_112401_.pushPose();
++            p_112401_.translate(0.5F, 0.3F + f2 * 0.2F, 0.5F);
+             Vector3f vector3f = new Vector3f(0.5F, 1.0F, 0.5F).normalize();
+-            p_439855_.mulPose(new Quaternionf().rotationAxis(f1 * (float) (Math.PI / 180.0), vector3f));
+-            p_439334_.submitModelPart(
+-                this.cage,
+-                p_439855_,
+-                ACTIVE_SHELL_TEXTURE.renderType(RenderType::entityCutoutNoCull),
+-                p_440589_,
+-                p_439986_,
+-                this.materials.get(ACTIVE_SHELL_TEXTURE)
+-            );
+-            p_439855_.popPose();
+-            int i = p_439146_.tickCount / 66 % 3;
+-            p_439855_.pushPose();
+-            p_439855_.translate(0.5F, 0.5F, 0.5F);
++            p_112401_.mulPose(new Quaternionf().rotationAxis(f1 * (float) (Math.PI / 180.0), vector3f));
++            this.cage.render(p_112401_, ACTIVE_SHELL_TEXTURE.buffer(p_112402_, RenderType::entityCutoutNoCull), p_112403_, p_112404_);
++            p_112401_.popPose();
++            int i = p_112399_.tickCount / 66 % 3;
++            p_112401_.pushPose();
++            p_112401_.translate(0.5F, 0.5F, 0.5F);
+             if (i == 1) {
+-                p_439855_.mulPose(new Quaternionf().rotationX((float) (Math.PI / 2)));
++                p_112401_.mulPose(new Quaternionf().rotationX((float) (Math.PI / 2)));
+             } else if (i == 2) {
+-                p_439855_.mulPose(new Quaternionf().rotationZ((float) (Math.PI / 2)));
++                p_112401_.mulPose(new Quaternionf().rotationZ((float) (Math.PI / 2)));
+             }
+ 
+-            Material material = i == 1 ? VERTICAL_WIND_TEXTURE : WIND_TEXTURE;
+-            RenderType rendertype = material.renderType(RenderType::entityCutoutNoCull);
+-            TextureAtlasSprite textureatlassprite = this.materials.get(material);
+-            p_439334_.submitModelPart(this.wind, p_439855_, rendertype, p_440589_, p_439986_, textureatlassprite);
+-            p_439855_.popPose();
+-            p_439855_.pushPose();
+-            p_439855_.translate(0.5F, 0.5F, 0.5F);
+-            p_439855_.scale(0.875F, 0.875F, 0.875F);
+-            p_439855_.mulPose(new Quaternionf().rotationXYZ((float) Math.PI, 0.0F, (float) Math.PI));
+-            p_439334_.submitModelPart(this.wind, p_439855_, rendertype, p_440589_, p_439986_, textureatlassprite);
+-            p_439855_.popPose();
++            VertexConsumer vertexconsumer = (i == 1 ? VERTICAL_WIND_TEXTURE : WIND_TEXTURE).buffer(p_112402_, RenderType::entityCutoutNoCull);
++            this.wind.render(p_112401_, vertexconsumer, p_112403_, p_112404_);
++            p_112401_.popPose();
++            p_112401_.pushPose();
++            p_112401_.translate(0.5F, 0.5F, 0.5F);
++            p_112401_.scale(0.875F, 0.875F, 0.875F);
++            p_112401_.mulPose(new Quaternionf().rotationXYZ((float) Math.PI, 0.0F, (float) Math.PI));
++            this.wind.render(p_112401_, vertexconsumer, p_112403_, p_112404_);
++            p_112401_.popPose();
+             Camera camera = this.renderer.camera;
+-            p_439855_.pushPose();
+-            p_439855_.translate(0.5F, 0.3F + f2 * 0.2F, 0.5F);
+-            p_439855_.scale(0.5F, 0.5F, 0.5F);
++            p_112401_.pushPose();
++            p_112401_.translate(0.5F, 0.3F + f2 * 0.2F, 0.5F);
++            p_112401_.scale(0.5F, 0.5F, 0.5F);
+             float f3 = -camera.getYRot();
+-            p_439855_.mulPose(new Quaternionf().rotationYXZ(f3 * (float) (Math.PI / 180.0), camera.getXRot() * (float) (Math.PI / 180.0), (float) Math.PI));
++            p_112401_.mulPose(new Quaternionf().rotationYXZ(f3 * (float) (Math.PI / 180.0), camera.getXRot() * (float) (Math.PI / 180.0), (float) Math.PI));
+             float f4 = 1.3333334F;
+-            p_439855_.scale(1.3333334F, 1.3333334F, 1.3333334F);
+-            Material material1 = p_439146_.isHunting() ? OPEN_EYE_TEXTURE : CLOSED_EYE_TEXTURE;
+-            p_439334_.submitModelPart(
+-                this.eye, p_439855_, material1.renderType(RenderType::entityCutoutNoCull), p_440589_, p_439986_, this.materials.get(material1)
+-            );
+-            p_439855_.popPose();
++            p_112401_.scale(1.3333334F, 1.3333334F, 1.3333334F);
++            this.eye
++                .render(
++                    p_112401_,
++                    (p_112399_.isHunting() ? OPEN_EYE_TEXTURE : CLOSED_EYE_TEXTURE).buffer(p_112402_, RenderType::entityCutoutNoCull),
++                    p_112403_,
++                    p_112404_
++                );
++            p_112401_.popPose();
+         }
++    }
 +
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(ConduitBlockEntity blockEntity) {
 +        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
 +        return new net.minecraft.world.phys.AABB(pos.getX(), pos.getY() - .25, pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.25, pos.getZ() + 1.0);
-+    }
+     }
  }

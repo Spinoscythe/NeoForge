@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/screens/inventory/SignEditScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/SignEditScreen.java
+@@ -16,7 +_,7 @@
+     public static final float MAGIC_TEXT_SCALE = 0.9765628F;
+     private static final Vector3f TEXT_SCALE = new Vector3f(0.9765628F, 0.9765628F, 0.9765628F);
+     @Nullable
+-    private Model.Simple signModel;
++    private Model signModel;
+ 
+     public SignEditScreen(SignBlockEntity p_277919_, boolean p_277579_, boolean p_277693_) {
+         super(p_277919_, p_277579_, p_277693_);

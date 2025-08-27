@@ -1,16 +1,33 @@
 --- a/net/minecraft/client/particle/MobAppearanceParticle.java
 +++ b/net/minecraft/client/particle/MobAppearanceParticle.java
-@@ -56,6 +_,13 @@
-     public void render(VertexConsumer p_107125_, Camera p_107126_, float p_107127_) {
-     }
+@@ -12,7 +_,6 @@
+ import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+ import net.minecraft.client.renderer.entity.ElderGuardianRenderer;
+-import net.minecraft.client.renderer.entity.state.GuardianRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.core.particles.SimpleParticleType;
+ import net.minecraft.util.ARGB;
+@@ -22,7 +_,7 @@
  
+ @OnlyIn(Dist.CLIENT)
+ public class MobAppearanceParticle extends Particle {
+-    private final Model<GuardianRenderState> model;
++    private final Model model;
+     private final RenderType renderType = RenderType.entityTranslucent(ElderGuardianRenderer.GUARDIAN_ELDER_LOCATION);
+ 
+     public MobAppearanceParticle(ClientLevel p_107114_, double p_107115_, double p_107116_, double p_107117_) {
+@@ -55,6 +_,13 @@
+ 
+     @Override
+     public void render(VertexConsumer p_107125_, Camera p_107126_, float p_107127_) {
++    }
++
 +    // Neo: this "particle" is locked to the player's camera, a render BB at the particle's in-world position
 +    // therefore makes no sense
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(float partialTicks) {
 +        return net.minecraft.world.phys.AABB.INFINITE;
-+    }
-+
+     }
+ 
      @OnlyIn(Dist.CLIENT)
-     public static class Provider implements ParticleProvider<SimpleParticleType> {
-         public Particle createParticle(

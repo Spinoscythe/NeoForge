@@ -1,5 +1,14 @@
 --- a/net/minecraft/client/renderer/entity/HumanoidMobRenderer.java
 +++ b/net/minecraft/client/renderer/entity/HumanoidMobRenderer.java
+@@ -30,7 +_,7 @@
+ 
+     public HumanoidMobRenderer(EntityRendererProvider.Context p_361718_, M p_361903_, M p_360842_, float p_364257_, CustomHeadLayer.Transforms p_364599_) {
+         super(p_361718_, p_361903_, p_360842_, p_364257_);
+-        this.addLayer(new CustomHeadLayer<>(this, p_361718_.getModelSet(), p_361718_.getPlayerSkinRenderCache(), p_364599_));
++        this.addLayer(new CustomHeadLayer<>(this, p_361718_.getModelSet(), p_364599_));
+         this.addLayer(new WingsLayer<>(this, p_361718_.getModelSet(), p_361718_.getEquipmentRenderer()));
+         this.addLayer(new ItemInHandLayer<>(this));
+     }
 @@ -51,7 +_,7 @@
          p_362998_.isCrouching = p_365104_.isCrouching();
          p_362998_.isFallFlying = p_365104_.isFallFlying();

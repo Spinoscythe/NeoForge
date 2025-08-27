@@ -1,6 +1,170 @@
 --- a/net/minecraft/client/renderer/LevelRenderer.java
 +++ b/net/minecraft/client/renderer/LevelRenderer.java
-@@ -449,7 +_,7 @@
+@@ -18,6 +_,7 @@
+ import com.mojang.blaze3d.vertex.SheetedDecalTextureGenerator;
+ import com.mojang.blaze3d.vertex.VertexConsumer;
+ import com.mojang.blaze3d.vertex.VertexFormat;
++import com.mojang.blaze3d.vertex.VertexMultiConsumer;
+ import com.mojang.logging.LogUtils;
+ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+@@ -27,6 +_,7 @@
+ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+ import java.util.ArrayList;
++import java.util.Comparator;
+ import java.util.EnumMap;
+ import java.util.Iterator;
+ import java.util.List;
+@@ -60,9 +_,6 @@
+ import net.minecraft.client.renderer.chunk.TranslucencyPointOfView;
+ import net.minecraft.client.renderer.culling.Frustum;
+ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+-import net.minecraft.client.renderer.entity.state.EntityRenderState;
+-import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+ import net.minecraft.client.resources.model.ModelBakery;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.SectionPos;
+@@ -114,6 +_,7 @@
+     public static final int HALF_SECTION_SIZE = 8;
+     public static final int NEARBY_SECTION_DISTANCE_IN_BLOCKS = 32;
+     private static final int MINIMUM_TRANSPARENT_SORT_COUNT = 15;
++    private static final Comparator<Entity> ENTITY_COMPARATOR = Comparator.comparing(p_428750_ -> p_428750_.getType().hashCode());
+     private final Minecraft minecraft;
+     private final EntityRenderDispatcher entityRenderDispatcher;
+     private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
+@@ -146,6 +_,8 @@
+     @Nullable
+     private SectionRenderDispatcher sectionRenderDispatcher;
+     private int lastViewDistance = -1;
++    private final List<Entity> visibleEntities = new ArrayList<>();
++    private int visibleEntityCount;
+     private Frustum cullingFrustum;
+     private boolean captureFrustum;
+     @Nullable
+@@ -153,25 +_,12 @@
+     @Nullable
+     private BlockPos lastTranslucentSortBlockPos;
+     private int translucencyResortIterationIndex;
+-    private final LevelRenderState levelRenderState;
+-    private final SubmitNodeStorage submitNodeStorage;
+-    private final FeatureRenderDispatcher featureRenderDispatcher;
+ 
+-    public LevelRenderer(
+-        Minecraft p_234245_,
+-        EntityRenderDispatcher p_234246_,
+-        BlockEntityRenderDispatcher p_234247_,
+-        RenderBuffers p_234248_,
+-        LevelRenderState p_434390_,
+-        FeatureRenderDispatcher p_434347_
+-    ) {
++    public LevelRenderer(Minecraft p_234245_, EntityRenderDispatcher p_234246_, BlockEntityRenderDispatcher p_234247_, RenderBuffers p_234248_) {
+         this.minecraft = p_234245_;
+         this.entityRenderDispatcher = p_234246_;
+         this.blockEntityRenderDispatcher = p_234247_;
+         this.renderBuffers = p_234248_;
+-        this.submitNodeStorage = p_434347_.getSubmitNodeStorage();
+-        this.levelRenderState = p_434390_;
+-        this.featureRenderDispatcher = p_434347_;
+     }
+ 
+     public void tickParticles(Camera p_363405_) {
+@@ -230,11 +_,11 @@
+         this.lastCameraSectionX = Integer.MIN_VALUE;
+         this.lastCameraSectionY = Integer.MIN_VALUE;
+         this.lastCameraSectionZ = Integer.MIN_VALUE;
++        this.entityRenderDispatcher.setLevel(p_109702_);
+         this.level = p_109702_;
+         if (p_109702_ != null) {
+             this.allChanged();
+         } else {
+-            this.entityRenderDispatcher.resetCamera();
+             if (this.viewArea != null) {
+                 this.viewArea.releaseAllBuffers();
+                 this.viewArea = null;
+@@ -294,32 +_,26 @@
+         }
+     }
+ 
+-    @Nullable
+     public String getSectionStatistics() {
+-        if (this.viewArea == null) {
+-            return null;
+-        } else {
+-            int i = this.viewArea.sections.length;
+-            int j = this.countRenderedSections();
+-            return String.format(
+-                Locale.ROOT,
+-                "C: %d/%d %sD: %d, %s",
+-                j,
+-                i,
+-                this.minecraft.smartCull ? "(s) " : "",
+-                this.lastViewDistance,
+-                this.sectionRenderDispatcher == null ? "null" : this.sectionRenderDispatcher.getStats()
+-            );
+-        }
++        int i = this.viewArea.sections.length;
++        int j = this.countRenderedSections();
++        return String.format(
++            Locale.ROOT,
++            "C: %d/%d %sD: %d, %s",
++            j,
++            i,
++            this.minecraft.smartCull ? "(s) " : "",
++            this.lastViewDistance,
++            this.sectionRenderDispatcher == null ? "null" : this.sectionRenderDispatcher.getStats()
++        );
+     }
+ 
+-    @Nullable
+     public SectionRenderDispatcher getSectionRenderDispatcher() {
+         return this.sectionRenderDispatcher;
+     }
+ 
+     public double getTotalSections() {
+-        return this.viewArea == null ? 0.0 : this.viewArea.sections.length;
++        return this.viewArea.sections.length;
+     }
+ 
+     public double getLastViewDistance() {
+@@ -338,11 +_,8 @@
+         return i;
+     }
+ 
+-    @Nullable
+     public String getEntityStatistics() {
+-        return this.level == null
+-            ? null
+-            : "E: " + this.levelRenderState.entityRenderStates.size() + "/" + this.level.getEntityCount() + ", SD: " + this.level.getServerSimulationDistance();
++        return "E: " + this.visibleEntityCount + "/" + this.level.getEntityCount() + ", SD: " + this.level.getServerSimulationDistance();
+     }
+ 
+     private void setupRender(Camera p_194339_, Frustum p_194340_, boolean p_194341_, boolean p_194342_) {
+@@ -434,9 +_,8 @@
+         boolean p_426302_
+     ) {
+         float f = p_348530_.getGameTimeDeltaPartialTick(false);
+-        this.levelRenderState.reset();
+         this.blockEntityRenderDispatcher.prepare(this.level, p_109604_, this.minecraft.hitResult);
+-        this.entityRenderDispatcher.prepare(p_109604_, this.minecraft.crosshairPickEntity);
++        this.entityRenderDispatcher.prepare(this.level, p_109604_, this.minecraft.crosshairPickEntity);
+         final ProfilerFiller profilerfiller = Profiler.get();
+         profilerfiller.push("light_update_queue");
+         this.level.pollLightUpdates();
+@@ -456,8 +_,9 @@
+             this.captureFrustum = false;
+         }
+ 
+-        profilerfiller.popPush("extractEntities");
+-        this.extractVisibleEntities(p_109604_, frustum, p_348530_, this.levelRenderState);
++        profilerfiller.popPush("cullEntities");
++        boolean flag1 = this.collectVisibleEntities(p_109604_, frustum, this.visibleEntities);
++        this.visibleEntityCount = this.visibleEntities.size();
+         profilerfiller.popPush("terrain_setup");
+         this.setupRender(p_109604_, frustum, flag, this.minecraft.player.isSpectator());
+         profilerfiller.popPush("compile_sections");
+@@ -469,7 +_,7 @@
          this.targets.main = framegraphbuilder.importExternal("main", this.minecraft.getMainRenderTarget());
          int i = this.minecraft.getMainRenderTarget().width;
          int j = this.minecraft.getMainRenderTarget().height;
@@ -9,7 +173,7 @@
          PostChain postchain = this.getTransparencyChain();
          if (postchain != null) {
              this.targets.translucent = framegraphbuilder.createInternal("translucent", rendertargetdescriptor);
-@@ -463,6 +_,9 @@
+@@ -483,6 +_,9 @@
              this.targets.entityOutline = framegraphbuilder.importExternal("entity_outline", this.entityOutlineTarget);
          }
  
@@ -19,7 +183,7 @@
          FramePass framepass = framegraphbuilder.addPass("clear");
          this.targets.main = framepass.readsAndWrites(this.targets.main);
          framepass.executes(
-@@ -476,7 +_,7 @@
+@@ -496,16 +_,16 @@
              }
          );
          if (p_426302_) {
@@ -27,8 +191,11 @@
 +            this.addSkyPass(framegraphbuilder, p_109604_, f, p_425977_, p_254120_);
          }
  
-         this.addMainPass(framegraphbuilder, frustum, p_109604_, p_254120_, p_425977_, p_109603_, flag1, p_348530_, profilerfiller);
-@@ -485,7 +_,7 @@
+-        this.addMainPass(framegraphbuilder, frustum, p_109604_, p_254120_, p_425977_, p_109603_, this.levelRenderState, p_348530_, profilerfiller);
++        this.addMainPass(framegraphbuilder, frustum, p_109604_, p_254120_, p_425977_, p_109603_, flag1, p_348530_, profilerfiller);
+         PostChain postchain1 = this.minecraft.getShaderManager().getPostChain(ENTITY_OUTLINE_POST_CHAIN_ID, LevelTargetBundle.OUTLINE_TARGETS);
+-        if (this.levelRenderState.haveGlowingEntities && postchain1 != null) {
++        if (flag1 && postchain1 != null) {
              postchain1.addToFrame(framegraphbuilder, i, j, this.targets);
          }
  
@@ -37,7 +204,7 @@
          CloudStatus cloudstatus = this.minecraft.options.getCloudsType();
          if (cloudstatus != CloudStatus.OFF) {
              Optional<Integer> optional = this.level.dimensionType().cloudHeight();
-@@ -496,7 +_,7 @@
+@@ -516,7 +_,7 @@
              }
          }
  
@@ -46,7 +213,33 @@
          if (postchain != null) {
              postchain.addToFrame(framegraphbuilder, i, j, this.targets);
          }
-@@ -564,6 +_,9 @@
+@@ -534,6 +_,7 @@
+                 profilerfiller.pop();
+             }
+         });
++        this.visibleEntities.clear();
+         this.targets.clear();
+         matrix4fstack.popMatrix();
+         profilerfiller.pop();
+@@ -546,7 +_,7 @@
+         Matrix4f p_362420_,
+         GpuBufferSlice p_418185_,
+         boolean p_363964_,
+-        LevelRenderState p_435080_,
++        boolean p_362137_,
+         DeltaTracker p_360931_,
+         ProfilerFiller p_362234_
+     ) {
+@@ -564,7 +_,7 @@
+             this.targets.weather = framepass.readsAndWrites(this.targets.weather);
+         }
+ 
+-        if (p_435080_.haveGlowingEntities && this.targets.entityOutline != null) {
++        if (p_362137_ && this.targets.entityOutline != null) {
+             this.targets.entityOutline = framepass.readsAndWrites(this.targets.entityOutline);
+         }
+ 
+@@ -583,6 +_,9 @@
                  p_362234_.push("terrain");
                  ChunkSectionsToRender chunksectionstorender = this.prepareChunkRenders(p_362420_, d0, d1, d2);
                  chunksectionstorender.renderGroup(ChunkSectionLayerGroup.OPAQUE);
@@ -56,16 +249,26 @@
                  this.minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.LEVEL);
                  if (resourcehandle2 != null) {
                      resourcehandle2.get().copyDepthFrom(this.minecraft.getMainRenderTarget());
-@@ -583,6 +_,8 @@
-                 this.visibleEntities.sort(ENTITY_COMPARATOR);
-                 this.renderEntities(posestack, multibuffersource$buffersource, p_363453_, p_360931_, this.visibleEntities);
+@@ -599,13 +_,14 @@
+                 MultiBufferSource.BufferSource multibuffersource$buffersource = this.renderBuffers.bufferSource();
+                 MultiBufferSource.BufferSource multibuffersource$buffersource1 = this.renderBuffers.crumblingBufferSource();
+                 p_362234_.popPush("entities");
+-                this.submitEntities(posestack, p_363453_, p_435080_, this.submitNodeStorage);
+-                this.featureRenderDispatcher.renderAllFeatures();
++                this.visibleEntities.sort(ENTITY_COMPARATOR);
++                this.renderEntities(posestack, multibuffersource$buffersource, p_363453_, p_360931_, this.visibleEntities);
                  multibuffersource$buffersource.endLastBatch();
 +                p_362234_.popPush("neoforge_render_after_entities");
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterEntities(level, this, posestack, p_362420_, this.ticks, this.minecraft.getDeltaTracker(), p_363453_, p_366590_, this.getRenderableSections()));
                  this.checkPoseStack(posestack);
                  p_362234_.popPush("blockentities");
-                 this.renderBlockEntities(posestack, multibuffersource$buffersource, multibuffersource$buffersource1, p_363453_, f);
-@@ -599,6 +_,8 @@
+-                this.renderBlockEntities(posestack, p_363453_, f);
+-                this.featureRenderDispatcher.renderAllFeatures();
++                this.renderBlockEntities(posestack, multibuffersource$buffersource, multibuffersource$buffersource1, p_363453_, f);
+                 multibuffersource$buffersource.endLastBatch();
+                 this.checkPoseStack(posestack);
+                 multibuffersource$buffersource.endBatch(RenderType.solid());
+@@ -619,6 +_,8 @@
                  multibuffersource$buffersource.endBatch(Sheets.hangingSignSheet());
                  multibuffersource$buffersource.endBatch(Sheets.chestSheet());
                  this.renderBuffers.outlineBufferSource().endOutlineBatch();
@@ -74,7 +277,7 @@
                  if (p_363964_) {
                      this.renderBlockOutline(p_363453_, multibuffersource$buffersource, posestack, false);
                  }
-@@ -619,6 +_,11 @@
+@@ -639,6 +_,11 @@
                  multibuffersource$buffersource1.endBatch();
                  this.checkPoseStack(posestack);
                  multibuffersource$buffersource.endBatch(RenderType.waterMask());
@@ -86,7 +289,7 @@
                  multibuffersource$buffersource.endBatch();
                  if (resourcehandle1 != null) {
                      resourcehandle1.get().copyDepthFrom(resourcehandle.get());
-@@ -626,8 +_,12 @@
+@@ -646,8 +_,12 @@
  
                  p_362234_.popPush("translucent");
                  chunksectionstorender.renderGroup(ChunkSectionLayerGroup.TRANSLUCENT);
@@ -99,7 +302,7 @@
                  if (p_363964_) {
                      this.renderBlockOutline(p_363453_, multibuffersource$buffersource, posestack, true);
                  }
-@@ -638,7 +_,15 @@
+@@ -658,7 +_,15 @@
          );
      }
  
@@ -115,11 +318,12 @@
          FramePass framepass = p_363357_.addPass("particles");
          if (this.targets.particles != null) {
              this.targets.particles = framepass.readsAndWrites(this.targets.particles);
-@@ -655,11 +_,22 @@
+@@ -675,12 +_,22 @@
                  resourcehandle1.get().copyDepthFrom(resourcehandle.get());
              }
  
 -            this.minecraft.particleEngine.render(p_365299_, p_364282_, this.renderBuffers.bufferSource());
+-            this.featureRenderDispatcher.renderAllFeatures();
 +            this.minecraft.particleEngine.render(p_365299_, p_364282_, this.renderBuffers.bufferSource(), frustum, resourcehandle1 == null ? type -> type.translucent() : type -> true); // Neo: only render translucent particles here in Fast/Fancy
 +            Profiler.get().push("neoforge_render_after_particles");
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterParticles(level, this, null, modelViewMatrix, this.ticks, this.minecraft.getDeltaTracker(), p_365299_, getFrustum(), this.getRenderableSections()));
@@ -139,7 +343,7 @@
          FramePass framepass = p_361907_.addPass("clouds");
          if (this.targets.clouds != null) {
              this.targets.clouds = framepass.readsAndWrites(this.targets.clouds);
-@@ -667,10 +_,22 @@
+@@ -688,10 +_,22 @@
              this.targets.main = framepass.readsAndWrites(this.targets.main);
          }
  
@@ -163,7 +367,7 @@
          int i = this.minecraft.options.getEffectiveRenderDistance() * 16;
          float f = this.minecraft.gameRenderer.getDepthFar();
          FramePass framepass = p_364025_.addPass("weather");
-@@ -684,6 +_,9 @@
+@@ -705,6 +_,9 @@
              RenderSystem.setShaderFog(p_418104_);
              MultiBufferSource.BufferSource multibuffersource$buffersource = this.renderBuffers.bufferSource();
              this.weatherEffectRenderer.render(this.minecraft.level, multibuffersource$buffersource, this.ticks, p_362434_, p_360771_);
@@ -173,23 +377,120 @@
              this.worldBorderRenderer.render(this.level.getWorldBorder(), p_360771_, i, f);
              multibuffersource$buffersource.endBatch();
          });
-@@ -727,11 +_,14 @@
-                             || p_363510_.isDetached()
-                             || p_363510_.getEntity() instanceof LivingEntity && ((LivingEntity)p_363510_.getEntity()).isSleeping()
+@@ -722,88 +_,111 @@
+             RenderSystem.setShaderFog(p_418393_);
+             PoseStack posestack = new PoseStack();
+             MultiBufferSource.BufferSource multibuffersource$buffersource = this.renderBuffers.bufferSource();
+-            RenderSystem.outputColorTextureOverride = resourcehandle.get().getColorTextureView();
+-            RenderSystem.outputDepthTextureOverride = resourcehandle.get().getDepthTextureView();
+             this.minecraft.debugRenderer.renderAfterTranslucents(posestack, multibuffersource$buffersource, p_363812_.x, p_363812_.y, p_363812_.z);
+             multibuffersource$buffersource.endLastBatch();
+-            RenderSystem.outputColorTextureOverride = null;
+-            RenderSystem.outputDepthTextureOverride = null;
+             this.checkPoseStack(posestack);
+         });
+     }
+ 
+-    private void extractVisibleEntities(Camera p_435924_, Frustum p_434024_, DeltaTracker p_434683_, LevelRenderState p_433859_) {
+-        Vec3 vec3 = p_435924_.getPosition();
++    private boolean collectVisibleEntities(Camera p_363510_, Frustum p_361275_, List<Entity> p_363380_) {
++        Vec3 vec3 = p_363510_.getPosition();
+         double d0 = vec3.x();
+         double d1 = vec3.y();
+         double d2 = vec3.z();
+-        TickRateManager tickratemanager = this.minecraft.level.tickRateManager();
+-        boolean flag = this.shouldShowEntityOutlines();
++        boolean flag = false;
++        boolean flag1 = this.shouldShowEntityOutlines();
+         Entity.setViewScale(
+             Mth.clamp(this.minecraft.options.getEffectiveRenderDistance() / 8.0, 1.0, 2.5) * this.minecraft.options.entityDistanceScaling().get()
+         );
+ 
+         for (Entity entity : this.level.entitiesForRendering()) {
+-            if (this.entityRenderDispatcher.shouldRender(entity, p_434024_, d0, d1, d2) || entity.hasIndirectPassenger(this.minecraft.player)) {
++            if (this.entityRenderDispatcher.shouldRender(entity, p_361275_, d0, d1, d2) || entity.hasIndirectPassenger(this.minecraft.player)) {
+                 BlockPos blockpos = entity.blockPosition();
+                 if ((this.level.isOutsideBuildHeight(blockpos.getY()) || this.isSectionCompiled(blockpos))
+                     && (
+-                        entity != p_435924_.getEntity()
+-                            || p_435924_.isDetached()
+-                            || p_435924_.getEntity() instanceof LivingEntity && ((LivingEntity)p_435924_.getEntity()).isSleeping()
++                        entity != p_363510_.getEntity()
++                            || p_363510_.isDetached()
++                            || p_363510_.getEntity() instanceof LivingEntity && ((LivingEntity)p_363510_.getEntity()).isSleeping()
                      )
--                    && (!(entity instanceof LocalPlayer) || p_363510_.getEntity() == entity)) {
+-                    && (!(entity instanceof LocalPlayer) || p_435924_.getEntity() == entity)) {
+-                    if (entity.tickCount == 0) {
+-                        entity.xOld = entity.getX();
+-                        entity.yOld = entity.getY();
+-                        entity.zOld = entity.getZ();
 +                        && (!(entity instanceof LocalPlayer) || p_363510_.getEntity() == entity || (entity == minecraft.player && !minecraft.player.isSpectator()))) { // Neo: render local player entity when it is not the camera entity
-                     p_363380_.add(entity);
-                     if (flag1 && this.minecraft.shouldEntityAppearGlowing(entity)) {
-                         flag = true;
++                    p_363380_.add(entity);
++                    if (flag1 && this.minecraft.shouldEntityAppearGlowing(entity)) {
++                        flag = true;
                      }
+-
+-                    float f = p_434683_.getGameTimeDeltaPartialTick(!tickratemanager.isEntityFrozen(entity));
+-                    EntityRenderState entityrenderstate = this.extractEntity(entity, f);
+-                    p_433859_.entityRenderStates.add(entityrenderstate);
+-                    if (entityrenderstate.appearsGlowing() && flag) {
+-                        p_433859_.haveGlowingEntities = true;
 +                    else if (flag1 && entity.hasCustomOutlineRendering(this.minecraft.player)) { // FORGE: allow custom outline rendering
 +                        flag = true;
-+                    }
+                     }
                  }
              }
          }
-@@ -777,10 +_,12 @@
++
++        return flag;
+     }
+ 
+-    private void submitEntities(PoseStack p_434073_, Camera p_434731_, LevelRenderState p_434432_, SubmitNodeCollector p_433941_) {
+-        Vec3 vec3 = p_434731_.getPosition();
++    private void renderEntities(PoseStack p_363182_, MultiBufferSource.BufferSource p_360990_, Camera p_360717_, DeltaTracker p_362965_, List<Entity> p_362298_) {
++        Vec3 vec3 = p_360717_.getPosition();
+         double d0 = vec3.x();
+         double d1 = vec3.y();
+         double d2 = vec3.z();
+-
+-        for (EntityRenderState entityrenderstate : p_434432_.entityRenderStates) {
+-            if (!p_434432_.haveGlowingEntities) {
+-                entityrenderstate.outlineColor = 0;
+-            }
+-
+-            this.entityRenderDispatcher
+-                .submit(entityrenderstate, entityrenderstate.x - d0, entityrenderstate.y - d1, entityrenderstate.z - d2, p_434073_, p_433941_);
++        TickRateManager tickratemanager = this.minecraft.level.tickRateManager();
++        boolean flag = this.shouldShowEntityOutlines();
++
++        for (Entity entity : p_362298_) {
++            if (entity.tickCount == 0) {
++                entity.xOld = entity.getX();
++                entity.yOld = entity.getY();
++                entity.zOld = entity.getZ();
++            }
++
++            MultiBufferSource multibuffersource;
++            if (flag && this.minecraft.shouldEntityAppearGlowing(entity)) {
++                OutlineBufferSource outlinebuffersource = this.renderBuffers.outlineBufferSource();
++                multibuffersource = outlinebuffersource;
++                int i = entity.getTeamColor();
++                outlinebuffersource.setColor(ARGB.red(i), ARGB.green(i), ARGB.blue(i), 255);
++            } else {
++                multibuffersource = p_360990_;
++            }
++
++            float f = p_362965_.getGameTimeDeltaPartialTick(!tickratemanager.isEntityFrozen(entity));
++            this.renderEntity(entity, d0, d1, d2, f, p_363182_, multibuffersource);
+         }
+     }
+ 
+-    private void renderBlockEntities(PoseStack p_362832_, Camera p_362042_, float p_362089_) {
++    private void renderBlockEntities(
++        PoseStack p_362832_, MultiBufferSource.BufferSource p_363819_, MultiBufferSource.BufferSource p_361830_, Camera p_362042_, float p_362089_
++    ) {
+         Vec3 vec3 = p_362042_.getPosition();
+         double d0 = vec3.x();
          double d1 = vec3.y();
          double d2 = vec3.z();
  
@@ -200,9 +501,33 @@
                  for (BlockEntity blockentity : list) {
 +                    if (!net.neoforged.neoforge.client.ClientHooks.isBlockEntityRendererVisible(blockEntityRenderDispatcher, blockentity, frustum)) continue;
                      BlockPos blockpos = blockentity.getBlockPos();
-                     MultiBufferSource multibuffersource = p_363819_;
++                    MultiBufferSource multibuffersource = p_363819_;
                      p_362832_.pushPose();
-@@ -813,6 +_,7 @@
+                     p_362832_.translate(blockpos.getX() - d0, blockpos.getY() - d1, blockpos.getZ() - d2);
+                     SortedSet<BlockDestructionProgress> sortedset = this.destructionProgress.get(blockpos.asLong());
+-                    ModelFeatureRenderer.CrumblingOverlay modelfeaturerenderer$crumblingoverlay = sortedset != null && !sortedset.isEmpty()
+-                        ? new ModelFeatureRenderer.CrumblingOverlay(sortedset.last().getProgress(), p_362832_.last())
+-                        : null;
+-                    this.blockEntityRenderDispatcher.submit(blockentity, p_362089_, p_362832_, modelfeaturerenderer$crumblingoverlay, this.submitNodeStorage);
++                    if (sortedset != null && !sortedset.isEmpty()) {
++                        int i = sortedset.last().getProgress();
++                        if (i >= 0) {
++                            PoseStack.Pose posestack$pose = p_362832_.last();
++                            VertexConsumer vertexconsumer = new SheetedDecalTextureGenerator(
++                                p_361830_.getBuffer(ModelBakery.DESTROY_TYPES.get(i)), posestack$pose, 1.0F
++                            );
++                            multibuffersource = p_234298_ -> {
++                                VertexConsumer vertexconsumer1 = p_363819_.getBuffer(p_234298_);
++                                return p_234298_.affectsCrumbling() ? VertexMultiConsumer.create(vertexconsumer, vertexconsumer1) : vertexconsumer1;
++                            };
++                        }
++                    }
++
++                    this.blockEntityRenderDispatcher.render(blockentity, p_362089_, p_362832_, multibuffersource);
+                     p_362832_.popPose();
+                 }
+             }
+@@ -816,10 +_,11 @@
              if (blockentity1.isRemoved()) {
                  iterator.remove();
              } else {
@@ -210,7 +535,12 @@
                  BlockPos blockpos1 = blockentity1.getBlockPos();
                  p_362832_.pushPose();
                  p_362832_.translate(blockpos1.getX() - d0, blockpos1.getY() - d1, blockpos1.getZ() - d2);
-@@ -854,8 +_,9 @@
+-                this.blockEntityRenderDispatcher.submit(blockentity1, p_362089_, p_362832_, null, this.submitNodeStorage);
++                this.blockEntityRenderDispatcher.render(blockentity1, p_362089_, p_362832_, p_363819_);
+                 p_362832_.popPose();
+             }
+         }
+@@ -857,8 +_,9 @@
              if (blockhitresult.getType() != HitResult.Type.MISS) {
                  BlockPos blockpos = blockhitresult.getBlockPos();
                  BlockState blockstate = this.level.getBlockState(blockpos);
@@ -221,7 +551,33 @@
                      if (flag != p_361698_) {
                          return;
                      }
-@@ -1041,7 +_,15 @@
+@@ -885,8 +_,23 @@
+         }
+     }
+ 
+-    private EntityRenderState extractEntity(Entity p_434345_, float p_434712_) {
+-        return this.entityRenderDispatcher.extractEntity(p_434345_, p_434712_);
++    private void renderEntity(
++        Entity p_109518_, double p_109519_, double p_109520_, double p_109521_, float p_109522_, PoseStack p_109523_, MultiBufferSource p_109524_
++    ) {
++        double d0 = Mth.lerp((double)p_109522_, p_109518_.xOld, p_109518_.getX());
++        double d1 = Mth.lerp((double)p_109522_, p_109518_.yOld, p_109518_.getY());
++        double d2 = Mth.lerp((double)p_109522_, p_109518_.zOld, p_109518_.getZ());
++        this.entityRenderDispatcher
++            .render(
++                p_109518_,
++                d0 - p_109519_,
++                d1 - p_109520_,
++                d2 - p_109521_,
++                p_109522_,
++                p_109523_,
++                p_109524_,
++                this.entityRenderDispatcher.getPackedLightCoords(p_109518_, p_109522_)
++            );
+     }
+ 
+     private void scheduleTranslucentSectionResort(Vec3 p_361632_) {
+@@ -1029,7 +_,15 @@
          }
      }
  
@@ -237,26 +593,87 @@
          FogType fogtype = p_362177_.getFluidInCamera();
          if (fogtype != FogType.POWDER_SNOW && fogtype != FogType.LAVA && !this.doesMobEffectBlockSky(p_362177_)) {
              DimensionSpecialEffects dimensionspecialeffects = this.level.effects();
-@@ -1050,6 +_,7 @@
+@@ -1037,48 +_,40 @@
+             if (dimensionspecialeffects$skytype != DimensionSpecialEffects.SkyType.NONE) {
                  FramePass framepass = p_362870_.addPass("sky");
                  this.targets.main = framepass.readsAndWrites(this.targets.main);
-                 framepass.executes(() -> {
+-                framepass.executes(
+-                    () -> {
+-                        RenderSystem.setShaderFog(p_418294_);
+-                        if (dimensionspecialeffects$skytype == DimensionSpecialEffects.SkyType.END) {
+-                            this.skyRenderer.renderEndSky();
+-                            EndFlashState endflashstate = this.level.endFlashState();
+-                            if (endflashstate != null) {
+-                                float f7 = endflashstate.getIntensity(p_363799_);
+-                                if (f7 > 1.0E-5F) {
+-                                    PoseStack posestack1 = new PoseStack();
+-                                    MultiBufferSource.BufferSource multibuffersource$buffersource1 = this.renderBuffers.bufferSource();
+-                                    this.skyRenderer
+-                                        .renderEndFlash(multibuffersource$buffersource1, posestack1, f7, endflashstate.getXAngle(), endflashstate.getYAngle());
+-                                    multibuffersource$buffersource1.endBatch();
+-                                }
+-                            }
+-                        } else {
+-                            PoseStack posestack = new PoseStack();
+-                            float f = this.level.getSunAngle(p_363799_);
+-                            float f1 = this.level.getTimeOfDay(p_363799_);
+-                            float f2 = 1.0F - this.level.getRainLevel(p_363799_);
+-                            float f3 = this.level.getStarBrightness(p_363799_) * f2;
+-                            int i = dimensionspecialeffects.getSunriseOrSunsetColor(f1);
+-                            int j = this.level.getMoonPhase();
+-                            int k = this.level.getSkyColor(this.minecraft.gameRenderer.getMainCamera().getPosition(), p_363799_);
+-                            float f4 = ARGB.redFloat(k);
+-                            float f5 = ARGB.greenFloat(k);
+-                            float f6 = ARGB.blueFloat(k);
+-                            this.skyRenderer.renderSkyDisc(f4, f5, f6);
+-                            MultiBufferSource.BufferSource multibuffersource$buffersource = this.renderBuffers.bufferSource();
+-                            if (dimensionspecialeffects.isSunriseOrSunset(f1)) {
+-                                this.skyRenderer.renderSunriseAndSunset(posestack, multibuffersource$buffersource, f, i);
+-                            }
++                framepass.executes(() -> {
 +                    if (!level.effects().renderSky(level, ticks, p_363799_, modelViewMatrix, p_362177_, () -> RenderSystem.setShaderFog(p_418294_))) {
-                     RenderSystem.setShaderFog(p_418294_);
-                     if (dimensionspecialeffects$skytype == DimensionSpecialEffects.SkyType.END) {
-                         this.skyRenderer.renderEndSky();
-@@ -1077,6 +_,10 @@
-                             this.skyRenderer.renderDarkDisc();
++                    RenderSystem.setShaderFog(p_418294_);
++                    if (dimensionspecialeffects$skytype == DimensionSpecialEffects.SkyType.END) {
++                        this.skyRenderer.renderEndSky();
++                    } else {
++                        PoseStack posestack = new PoseStack();
++                        float f = this.level.getSunAngle(p_363799_);
++                        float f1 = this.level.getTimeOfDay(p_363799_);
++                        float f2 = 1.0F - this.level.getRainLevel(p_363799_);
++                        float f3 = this.level.getStarBrightness(p_363799_) * f2;
++                        int i = dimensionspecialeffects.getSunriseOrSunsetColor(f1);
++                        int j = this.level.getMoonPhase();
++                        int k = this.level.getSkyColor(this.minecraft.gameRenderer.getMainCamera().getPosition(), p_363799_);
++                        float f4 = ARGB.redFloat(k);
++                        float f5 = ARGB.greenFloat(k);
++                        float f6 = ARGB.blueFloat(k);
++                        this.skyRenderer.renderSkyDisc(f4, f5, f6);
++                        MultiBufferSource.BufferSource multibuffersource$buffersource = this.renderBuffers.bufferSource();
++                        if (dimensionspecialeffects.isSunriseOrSunset(f1)) {
++                            this.skyRenderer.renderSunriseAndSunset(posestack, multibuffersource$buffersource, f, i);
++                        }
+ 
+-                            this.skyRenderer.renderSunMoonAndStars(posestack, multibuffersource$buffersource, f1, j, f2, f3);
+-                            multibuffersource$buffersource.endBatch();
+-                            if (this.shouldRenderDarkDisc(p_363799_)) {
+-                                this.skyRenderer.renderDarkDisc();
+-                            }
++                        this.skyRenderer.renderSunMoonAndStars(posestack, multibuffersource$buffersource, f1, j, f2, f3);
++                        multibuffersource$buffersource.endBatch();
++                        if (this.shouldRenderDarkDisc(p_363799_)) {
++                            this.skyRenderer.renderDarkDisc();
                          }
                      }
+-                );
 +                    }
 +                    Profiler.get().push("neoforge_render_after_sky");
 +                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterSky(level, this, null, modelViewMatrix, this.ticks, this.minecraft.getDeltaTracker(), p_362177_, getFrustum(), this.getRenderableSections()));
 +                    Profiler.get().pop();
-                 });
++                });
              }
          }
-@@ -1366,7 +_,7 @@
+     }
+@@ -1367,7 +_,7 @@
          } else {
              int i = p_412967_.packedBrightness(p_109538_, p_109540_);
              int j = LightTexture.block(i);
@@ -265,7 +682,7 @@
              if (j < k) {
                  int l = LightTexture.sky(i);
                  return LightTexture.pack(k, l);
-@@ -1428,6 +_,26 @@
+@@ -1429,6 +_,26 @@
  
      public CloudRenderer getCloudRenderer() {
          return this.cloudRenderer;

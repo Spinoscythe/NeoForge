@@ -1,0 +1,26 @@
+--- a/net/minecraft/client/gui/screens/worldselection/ConfirmExperimentalFeaturesScreen.java
++++ b/net/minecraft/client/gui/screens/worldselection/ConfirmExperimentalFeaturesScreen.java
+@@ -161,9 +_,20 @@
+             }
+ 
+             @Override
+-            public void renderContent(GuiGraphics p_439291_, int p_440652_, int p_439867_, boolean p_439187_, float p_439661_) {
+-                p_439291_.drawString(DetailsScreen.this.minecraft.font, this.packId, this.getContentX(), this.getContentY(), -1);
+-                this.splitMessage.render(p_439291_, MultiLineLabel.Align.LEFT, this.getContentX(), this.getContentY() + 12, 9, true, -1);
++            public void render(
++                GuiGraphics p_282199_,
++                int p_282727_,
++                int p_283089_,
++                int p_283116_,
++                int p_281268_,
++                int p_283038_,
++                int p_283070_,
++                int p_282448_,
++                boolean p_281417_,
++                float p_283226_
++            ) {
++                p_282199_.drawString(DetailsScreen.this.minecraft.font, this.packId, p_283116_, p_283089_, -1);
++                this.splitMessage.renderLeftAligned(p_282199_, p_283116_, p_283089_ + 12, 9, -1);
+             }
+ 
+             @Override

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/npc/ClientSideMerchant.java
++++ b/net/minecraft/world/entity/npc/ClientSideMerchant.java
+@@ -48,7 +_,7 @@
+ 
+     @Override
+     public boolean isClientSide() {
+-        return this.source.level().isClientSide();
++        return this.source.level().isClientSide;
+     }
+ 
+     @Override

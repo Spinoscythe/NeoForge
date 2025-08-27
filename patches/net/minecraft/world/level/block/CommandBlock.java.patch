@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/level/block/CommandBlock.java
++++ b/net/minecraft/world/level/block/CommandBlock.java
+@@ -34,8 +_,8 @@
+ 
+ public class CommandBlock extends BaseEntityBlock implements GameMasterBlock {
+     public static final MapCodec<CommandBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432655_ -> p_432655_.group(Codec.BOOL.fieldOf("automatic").forGetter(p_304800_ -> p_304800_.automatic), propertiesCodec())
+-            .apply(p_432655_, CommandBlock::new)
++        p_368414_ -> p_368414_.group(Codec.BOOL.fieldOf("automatic").forGetter(p_304800_ -> p_304800_.automatic), propertiesCodec())
++            .apply(p_368414_, CommandBlock::new)
+     );
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public static final EnumProperty<Direction> FACING = DirectionalBlock.FACING;
+@@ -62,7 +_,7 @@
+ 
+     @Override
+     protected void neighborChanged(BlockState p_51838_, Level p_51839_, BlockPos p_51840_, Block p_51841_, @Nullable Orientation p_361514_, boolean p_51843_) {
+-        if (!p_51839_.isClientSide()) {
++        if (!p_51839_.isClientSide) {
+             if (p_51839_.getBlockEntity(p_51840_) instanceof CommandBlockEntity commandblockentity) {
+                 this.setPoweredAndUpdate(p_51839_, p_51840_, commandblockentity, p_51839_.hasNeighborSignal(p_51840_));
+             }
+@@ -141,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_51821_, Level p_51822_, BlockPos p_51823_, Direction p_433794_) {
++    protected int getAnalogOutputSignal(BlockState p_51821_, Level p_51822_, BlockPos p_51823_) {
+         BlockEntity blockentity = p_51822_.getBlockEntity(p_51823_);
+         return blockentity instanceof CommandBlockEntity ? ((CommandBlockEntity)blockentity).getCommandBlock().getSuccessCount() : 0;
+     }

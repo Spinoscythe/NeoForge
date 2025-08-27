@@ -69,7 +69,7 @@
              }
  
              if (structuretemplate$structureblockinfo1 != null) {
-@@ -485,22 +_,29 @@
+@@ -485,40 +_,49 @@
          return list1;
      }
  
@@ -114,21 +114,38 @@
                  ListTag listtag = new ListTag();
                  listtag.add(DoubleTag.valueOf(vec31.x));
                  listtag.add(DoubleTag.valueOf(vec31.y));
-@@ -510,10 +_,10 @@
-                 createEntityIgnoreException(p_421857_, p_74524_, compoundtag)
-                     .ifPresent(
-                         p_275190_ -> {
--                            float f = p_275190_.rotate(p_74527_);
--                            f += p_275190_.mirror(p_74526_) - p_275190_.getYRot();
+                 listtag.add(DoubleTag.valueOf(vec31.z));
+                 compoundtag.put("Pos", listtag);
+                 compoundtag.remove("UUID");
+-                createEntityIgnoreException(p_421857_, p_74524_, compoundtag).ifPresent(p_432733_ -> {
+-                    float f = p_432733_.rotate(p_74527_);
+-                    f += p_432733_.mirror(p_74526_) - p_432733_.getYRot();
+-                    p_432733_.snapTo(vec31.x, vec31.y, vec31.z, f, p_432733_.getXRot());
+-                    p_432733_.setYBodyRot(f);
+-                    p_432733_.setYHeadRot(f);
+-                    if (p_74530_ && p_432733_ instanceof Mob mob) {
+-                        mob.finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), EntitySpawnReason.STRUCTURE, null);
+-                    }
++                createEntityIgnoreException(p_421857_, p_74524_, compoundtag)
++                    .ifPresent(
++                        p_275190_ -> {
 +                            float f = p_275190_.rotate(placementIn.getRotation());
 +                            f += p_275190_.mirror(placementIn.getMirror()) - p_275190_.getYRot();
-                             p_275190_.snapTo(vec31.x, vec31.y, vec31.z, f, p_275190_.getXRot());
--                            if (p_74530_ && p_275190_ instanceof Mob) {
++                            p_275190_.snapTo(vec31.x, vec31.y, vec31.z, f, p_275190_.getXRot());
 +                            if (placementIn.shouldFinalizeEntities() && p_275190_ instanceof Mob) {
-                                 ((Mob)p_275190_)
-                                     .finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), EntitySpawnReason.STRUCTURE, null);
-                             }
-@@ -869,7 +_,7 @@
++                                ((Mob)p_275190_)
++                                    .finalizeSpawn(p_74524_, p_74524_.getCurrentDifficultyAt(BlockPos.containing(vec31)), EntitySpawnReason.STRUCTURE, null);
++                            }
+ 
+-                    p_74524_.addFreshEntityWithPassengers(p_432733_);
+-                });
++                            p_74524_.addFreshEntityWithPassengers(p_275190_);
++                        }
++                    );
+             }
+         }
+     }
+@@ -867,7 +_,7 @@
  
      public static final class Palette {
          private final List<StructureTemplate.StructureBlockInfo> blocks;

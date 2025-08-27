@@ -1,0 +1,30 @@
+--- a/net/minecraft/client/gui/components/ObjectSelectionList.java
++++ b/net/minecraft/client/gui/components/ObjectSelectionList.java
+@@ -19,6 +_,10 @@
+         super(p_94442_, p_94443_, p_94444_, p_94445_, p_94446_);
+     }
+ 
++    public ObjectSelectionList(Minecraft p_387766_, int p_387179_, int p_386885_, int p_386462_, int p_388637_, int p_386902_) {
++        super(p_387766_, p_387179_, p_386885_, p_386462_, p_388637_, p_386902_);
++    }
++
+     @Nullable
+     @Override
+     public ComponentPath nextFocusPath(FocusNavigationEvent p_265150_) {
+@@ -29,7 +_,6 @@
+             if (e1 != null) {
+                 return ComponentPath.path(this, ComponentPath.leaf(e1));
+             } else {
+-                this.setFocused(null);
+                 this.setSelected(null);
+                 return null;
+             }
+@@ -69,7 +_,7 @@
+         public abstract Component getNarration();
+ 
+         @Override
+-        public boolean mouseClicked(double p_331676_, double p_330254_, int p_331536_, boolean p_432750_) {
++        public boolean mouseClicked(double p_331676_, double p_330254_, int p_331536_) {
+             return true;
+         }
+ 

@@ -1,0 +1,40 @@
+--- a/net/minecraft/client/renderer/item/SelectItemModel.java
++++ b/net/minecraft/client/renderer/item/SelectItemModel.java
+@@ -16,7 +_,7 @@
+ import net.minecraft.client.resources.model.ResolvableModel;
+ import net.minecraft.util.ExtraCodecs;
+ import net.minecraft.util.RegistryContextSwapper;
+-import net.minecraft.world.entity.ItemOwner;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.minecraft.world.item.ItemStack;
+ import net.neoforged.api.distmarker.Dist;
+@@ -39,14 +_,14 @@
+         ItemModelResolver p_388842_,
+         ItemDisplayContext p_386961_,
+         @Nullable ClientLevel p_386907_,
+-        @Nullable ItemOwner p_435803_,
++        @Nullable LivingEntity p_387755_,
+         int p_386608_
+     ) {
+         p_387349_.appendModelIdentityElement(this);
+-        T t = this.property.get(p_386764_, p_386907_, p_435803_ == null ? null : p_435803_.asLivingEntity(), p_386608_, p_386961_);
++        T t = this.property.get(p_386764_, p_386907_, p_387755_, p_386608_, p_386961_);
+         ItemModel itemmodel = this.models.get(t, p_386907_);
+         if (itemmodel != null) {
+-            itemmodel.update(p_387349_, p_386764_, p_388842_, p_386961_, p_386907_, p_435803_, p_386608_);
++            itemmodel.update(p_387349_, p_386764_, p_388842_, p_386961_, p_386907_, p_387755_, p_386608_);
+         }
+     }
+ 
+@@ -129,8 +_,8 @@
+                         Object2ObjectMap<T, ItemModel> object2objectmap = new Object2ObjectOpenHashMap<>(p_400045_.size());
+                         object2objectmap.defaultReturnValue(itemmodel);
+                         p_400045_.forEach(
+-                            (p_432304_, p_432305_) -> p_399763_.swapTo(this.property.valueCodec(), (T)p_432304_, p_399349_.registryAccess())
+-                                .ifSuccess(p_399345_ -> object2objectmap.put((T)p_399345_, p_432305_))
++                            (p_425180_, p_425181_) -> p_399763_.swapTo(this.property.valueCodec(), (T)p_425180_, p_399349_.registryAccess())
++                                .ifSuccess(p_399345_ -> object2objectmap.put((T)p_399345_, p_425181_))
+                         );
+                         return object2objectmap;
+                     }

@@ -1,0 +1,57 @@
+--- a/net/minecraft/client/renderer/item/properties/numeric/Time.java
++++ b/net/minecraft/client/renderer/item/properties/numeric/Time.java
+@@ -4,11 +_,10 @@
+ import com.mojang.serialization.MapCodec;
+ import com.mojang.serialization.codecs.RecordCodecBuilder;
+ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+-import javax.annotation.Nullable;
+ import net.minecraft.client.multiplayer.ClientLevel;
+ import net.minecraft.util.RandomSource;
+ import net.minecraft.util.StringRepresentable;
+-import net.minecraft.world.entity.ItemOwner;
++import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.item.ItemStack;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -33,8 +_,8 @@
+     }
+ 
+     @Override
+-    protected float calculate(ItemStack p_387493_, ClientLevel p_387362_, int p_388783_, @Nullable ItemOwner p_434788_) {
+-        float f = this.source.get(p_387362_, p_387493_, p_434788_, this.randomSource);
++    protected float calculate(ItemStack p_387493_, ClientLevel p_387362_, int p_388783_, Entity p_388056_) {
++        float f = this.source.get(p_387362_, p_387493_, p_388056_, this.randomSource);
+         long i = p_387362_.getGameTime();
+         if (this.wobbler.shouldUpdate(i)) {
+             this.wobbler.update(i, f);
+@@ -52,19 +_,19 @@
+     public static enum TimeSource implements StringRepresentable {
+         RANDOM("random") {
+             @Override
+-            public float get(@Nullable ClientLevel p_390411_, ItemStack p_390382_, @Nullable ItemOwner p_432922_, RandomSource p_390409_) {
++            public float get(ClientLevel p_390411_, ItemStack p_390382_, Entity p_390443_, RandomSource p_390409_) {
+                 return p_390409_.nextFloat();
+             }
+         },
+         DAYTIME("daytime") {
+             @Override
+-            public float get(ClientLevel p_390440_, ItemStack p_390494_, @Nullable ItemOwner p_432770_, RandomSource p_390488_) {
++            public float get(ClientLevel p_390440_, ItemStack p_390494_, Entity p_390360_, RandomSource p_390488_) {
+                 return p_390440_.getTimeOfDay(1.0F);
+             }
+         },
+         MOON_PHASE("moon_phase") {
+             @Override
+-            public float get(ClientLevel p_390465_, ItemStack p_390476_, @Nullable ItemOwner p_435438_, RandomSource p_390375_) {
++            public float get(ClientLevel p_390465_, ItemStack p_390476_, Entity p_390363_, RandomSource p_390375_) {
+                 return p_390465_.getMoonPhase() / 8.0F;
+             }
+         };
+@@ -81,6 +_,6 @@
+             return this.name;
+         }
+ 
+-        abstract float get(ClientLevel p_390505_, ItemStack p_390478_, @Nullable ItemOwner p_435064_, RandomSource p_390390_);
++        abstract float get(ClientLevel p_390505_, ItemStack p_390478_, Entity p_390420_, RandomSource p_390390_);
+     }
+ }

@@ -1,6 +1,40 @@
 --- a/com/mojang/blaze3d/opengl/DirectStateAccess.java
 +++ b/com/mojang/blaze3d/opengl/DirectStateAccess.java
-@@ -41,7 +_,11 @@
+@@ -3,7 +_,6 @@
+ import java.nio.ByteBuffer;
+ import java.util.Set;
+ import javax.annotation.Nullable;
+-import net.minecraft.Util;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ import org.lwjgl.opengl.ARBBufferStorage;
+@@ -15,8 +_,7 @@
+ @OnlyIn(Dist.CLIENT)
+ public abstract class DirectStateAccess {
+     public static DirectStateAccess create(GLCapabilities p_412632_, Set<String> p_412533_) {
+-        boolean flag = Util.getPlatform() == Util.OS.WINDOWS && Util.isAarch64();
+-        if (p_412632_.GL_ARB_direct_state_access && GlDevice.USE_GL_ARB_direct_state_access && !flag) {
++        if (p_412632_.GL_ARB_direct_state_access && GlDevice.USE_GL_ARB_direct_state_access) {
+             p_412533_.add("GL_ARB_direct_state_access");
+             return new DirectStateAccess.Core();
+         } else {
+@@ -30,20 +_,24 @@
+ 
+     abstract void bufferData(int p_418091_, ByteBuffer p_418122_, int p_418335_);
+ 
+-    abstract void bufferSubData(int p_418475_, int p_418483_, ByteBuffer p_418182_, int p_435947_);
++    abstract void bufferSubData(int p_418475_, int p_418483_, ByteBuffer p_418182_);
+ 
+     abstract void bufferStorage(int p_418402_, long p_418519_, int p_418498_);
+ 
+     abstract void bufferStorage(int p_418285_, ByteBuffer p_418343_, int p_418263_);
+ 
+     @Nullable
+-    abstract ByteBuffer mapBufferRange(int p_418449_, int p_418139_, int p_418197_, int p_418283_, int p_434011_);
++    abstract ByteBuffer mapBufferRange(int p_418449_, int p_418139_, int p_418197_, int p_418283_);
+ 
+-    abstract void unmapBuffer(int p_418016_, int p_434489_);
++    abstract void unmapBuffer(int p_418016_);
  
      abstract int createFrameBufferObject();
  
@@ -13,7 +47,50 @@
  
      abstract void blitFrameBuffers(
          int p_412546_,
-@@ -111,9 +_,10 @@
+@@ -60,7 +_,7 @@
+         int p_412596_
+     );
+ 
+-    abstract void flushMappedBufferRange(int p_418119_, int p_418382_, int p_418111_, int p_433896_);
++    abstract void flushMappedBufferRange(int p_418119_, int p_418382_, int p_418111_);
+ 
+     abstract void copyBufferSubData(int p_428838_, int p_428829_, int p_428821_, int p_428837_, int p_428849_);
+ 
+@@ -82,28 +_,28 @@
+         }
+ 
+         @Override
+-        void bufferSubData(int p_418076_, int p_418299_, ByteBuffer p_418117_, int p_434651_) {
++        void bufferSubData(int p_418076_, int p_418299_, ByteBuffer p_418117_) {
+             ARBDirectStateAccess.glNamedBufferSubData(p_418076_, (long)p_418299_, p_418117_);
+         }
+ 
+         @Override
+         void bufferStorage(int p_418428_, long p_418019_, int p_418289_) {
+-            ARBDirectStateAccess.glNamedBufferStorage(p_418428_, p_418019_, GlConst.bufferUsageToGlFlag(p_418289_));
++            ARBDirectStateAccess.glNamedBufferStorage(p_418428_, p_418019_, p_418289_);
+         }
+ 
+         @Override
+         void bufferStorage(int p_418345_, ByteBuffer p_418031_, int p_418465_) {
+-            ARBDirectStateAccess.glNamedBufferStorage(p_418345_, p_418031_, GlConst.bufferUsageToGlFlag(p_418465_));
++            ARBDirectStateAccess.glNamedBufferStorage(p_418345_, p_418031_, p_418465_);
+         }
+ 
+         @Nullable
+         @Override
+-        ByteBuffer mapBufferRange(int p_418027_, int p_418408_, int p_418310_, int p_418214_, int p_433284_) {
++        ByteBuffer mapBufferRange(int p_418027_, int p_418408_, int p_418310_, int p_418214_) {
+             return ARBDirectStateAccess.glMapNamedBufferRange(p_418027_, p_418408_, p_418310_, p_418214_);
+         }
+ 
+         @Override
+-        void unmapBuffer(int p_418046_, int p_433042_) {
++        void unmapBuffer(int p_418046_) {
+             ARBDirectStateAccess.glUnmapNamedBuffer(p_418046_);
+         }
+ 
+@@ -113,9 +_,10 @@
          }
  
          @Override
@@ -26,7 +103,130 @@
              if (p_412591_ != 0) {
                  GlStateManager._glBindFramebuffer(p_412591_, p_412474_);
              }
-@@ -230,12 +_,13 @@
+@@ -142,7 +_,7 @@
+         }
+ 
+         @Override
+-        void flushMappedBufferRange(int p_418135_, int p_418262_, int p_418080_, int p_435688_) {
++        void flushMappedBufferRange(int p_418135_, int p_418262_, int p_418080_) {
+             ARBDirectStateAccess.glFlushMappedNamedBufferRange(p_418135_, p_418262_, p_418080_);
+         }
+ 
+@@ -154,16 +_,6 @@
+ 
+     @OnlyIn(Dist.CLIENT)
+     static class Emulated extends DirectStateAccess {
+-        private int selectBufferBindTarget(int p_435075_) {
+-            if ((p_435075_ & 32) != 0) {
+-                return 34962;
+-            } else if ((p_435075_ & 64) != 0) {
+-                return 34963;
+-            } else {
+-                return (p_435075_ & 128) != 0 ? 35345 : 36663;
+-            }
+-        }
+-
+         @Override
+         int createBuffer() {
+             return GlStateManager._glGenBuffers();
+@@ -171,68 +_,60 @@
+ 
+         @Override
+         void bufferData(int p_418415_, long p_418240_, int p_418204_) {
+-            int i = this.selectBufferBindTarget(p_418204_);
+-            GlStateManager._glBindBuffer(i, p_418415_);
+-            GlStateManager._glBufferData(i, p_418240_, GlConst.bufferUsageToGlEnum(p_418204_));
+-            GlStateManager._glBindBuffer(i, 0);
++            GlStateManager._glBindBuffer(36663, p_418415_);
++            GlStateManager._glBufferData(36663, p_418240_, GlConst.bufferUsageToGlEnum(p_418204_));
++            GlStateManager._glBindBuffer(36663, 0);
+         }
+ 
+         @Override
+         void bufferData(int p_418504_, ByteBuffer p_418319_, int p_418033_) {
+-            int i = this.selectBufferBindTarget(p_418033_);
+-            GlStateManager._glBindBuffer(i, p_418504_);
+-            GlStateManager._glBufferData(i, p_418319_, GlConst.bufferUsageToGlEnum(p_418033_));
+-            GlStateManager._glBindBuffer(i, 0);
++            GlStateManager._glBindBuffer(36663, p_418504_);
++            GlStateManager._glBufferData(36663, p_418319_, GlConst.bufferUsageToGlEnum(p_418033_));
++            GlStateManager._glBindBuffer(36663, 0);
+         }
+ 
+         @Override
+-        void bufferSubData(int p_418332_, int p_418165_, ByteBuffer p_418268_, int p_433134_) {
+-            int i = this.selectBufferBindTarget(p_433134_);
+-            GlStateManager._glBindBuffer(i, p_418332_);
+-            GlStateManager._glBufferSubData(i, p_418165_, p_418268_);
+-            GlStateManager._glBindBuffer(i, 0);
++        void bufferSubData(int p_418332_, int p_418165_, ByteBuffer p_418268_) {
++            GlStateManager._glBindBuffer(36663, p_418332_);
++            GlStateManager._glBufferSubData(36663, p_418165_, p_418268_);
++            GlStateManager._glBindBuffer(36663, 0);
+         }
+ 
+         @Override
+         void bufferStorage(int p_418279_, long p_418194_, int p_418045_) {
+-            int i = this.selectBufferBindTarget(p_418045_);
+-            GlStateManager._glBindBuffer(i, p_418279_);
+-            ARBBufferStorage.glBufferStorage(i, p_418194_, GlConst.bufferUsageToGlFlag(p_418045_));
+-            GlStateManager._glBindBuffer(i, 0);
++            GlStateManager._glBindBuffer(36663, p_418279_);
++            ARBBufferStorage.glBufferStorage(36663, p_418194_, p_418045_);
++            GlStateManager._glBindBuffer(36663, 0);
+         }
+ 
+         @Override
+         void bufferStorage(int p_418284_, ByteBuffer p_418011_, int p_418406_) {
+-            int i = this.selectBufferBindTarget(p_418406_);
+-            GlStateManager._glBindBuffer(i, p_418284_);
+-            ARBBufferStorage.glBufferStorage(i, p_418011_, GlConst.bufferUsageToGlFlag(p_418406_));
+-            GlStateManager._glBindBuffer(i, 0);
++            GlStateManager._glBindBuffer(36663, p_418284_);
++            ARBBufferStorage.glBufferStorage(36663, p_418011_, p_418406_);
++            GlStateManager._glBindBuffer(36663, 0);
+         }
+ 
+         @Nullable
+         @Override
+-        ByteBuffer mapBufferRange(int p_418226_, int p_418017_, int p_418092_, int p_418512_, int p_435186_) {
+-            int i = this.selectBufferBindTarget(p_435186_);
+-            GlStateManager._glBindBuffer(i, p_418226_);
+-            ByteBuffer bytebuffer = GlStateManager._glMapBufferRange(i, p_418017_, p_418092_, p_418512_);
+-            GlStateManager._glBindBuffer(i, 0);
++        ByteBuffer mapBufferRange(int p_418226_, int p_418017_, int p_418092_, int p_418512_) {
++            GlStateManager._glBindBuffer(36663, p_418226_);
++            ByteBuffer bytebuffer = GlStateManager._glMapBufferRange(36663, p_418017_, p_418092_, p_418512_);
++            GlStateManager._glBindBuffer(36663, 0);
+             return bytebuffer;
+         }
+ 
+         @Override
+-        void unmapBuffer(int p_418235_, int p_433066_) {
+-            int i = this.selectBufferBindTarget(p_433066_);
+-            GlStateManager._glBindBuffer(i, p_418235_);
+-            GlStateManager._glUnmapBuffer(i);
+-            GlStateManager._glBindBuffer(i, 0);
++        void unmapBuffer(int p_418235_) {
++            GlStateManager._glBindBuffer(36663, p_418235_);
++            GlStateManager._glUnmapBuffer(36663);
++            GlStateManager._glBindBuffer(36663, 0);
+         }
+ 
+         @Override
+-        void flushMappedBufferRange(int p_418330_, int p_418325_, int p_418530_, int p_435588_) {
+-            int i = this.selectBufferBindTarget(p_435588_);
+-            GlStateManager._glBindBuffer(i, p_418330_);
+-            GL30.glFlushMappedBufferRange(i, p_418325_, p_418530_);
+-            GlStateManager._glBindBuffer(i, 0);
++        void flushMappedBufferRange(int p_418330_, int p_418325_, int p_418530_) {
++            GlStateManager._glBindBuffer(36663, p_418330_);
++            GL30.glFlushMappedBufferRange(36663, p_418325_, p_418530_);
++            GlStateManager._glBindBuffer(36663, 0);
+         }
+ 
+         @Override
+@@ -250,12 +_,13 @@
          }
  
          @Override

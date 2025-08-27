@@ -1,6 +1,71 @@
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -398,6 +_,7 @@
+@@ -46,7 +_,6 @@
+ import java.util.function.IntFunction;
+ import java.util.function.IntSupplier;
+ import java.util.function.Supplier;
+-import java.util.stream.Stream;
+ import javax.annotation.Nullable;
+ import net.minecraft.CrashReport;
+ import net.minecraft.CrashReportCategory;
+@@ -60,6 +_,7 @@
+ import net.minecraft.network.protocol.Packet;
+ import net.minecraft.network.protocol.game.ClientboundChunksBiomesPacket;
+ import net.minecraft.network.protocol.game.ClientboundSetChunkCacheCenterPacket;
++import net.minecraft.server.level.progress.ChunkProgressListener;
+ import net.minecraft.server.network.ServerPlayerConnection;
+ import net.minecraft.util.CsvOutput;
+ import net.minecraft.util.Mth;
+@@ -135,8 +_,10 @@
+     private boolean modified;
+     private final ChunkTaskDispatcher worldgenTaskDispatcher;
+     private final ChunkTaskDispatcher lightTaskDispatcher;
++    private final ChunkProgressListener progressListener;
+     private final ChunkStatusUpdateListener chunkStatusListener;
+     private final ChunkMap.DistanceManager distanceManager;
++    private final AtomicInteger tickingGenerated = new AtomicInteger();
+     private final String storageName;
+     private final PlayerMap playerMap = new PlayerMap();
+     private final Int2ObjectMap<ChunkMap.TrackedEntity> entityMap = new Int2ObjectOpenHashMap<>();
+@@ -157,6 +_,7 @@
+         BlockableEventLoop<Runnable> p_214841_,
+         LightChunkGetter p_214842_,
+         ChunkGenerator p_214843_,
++        ChunkProgressListener p_214844_,
+         ChunkStatusUpdateListener p_214845_,
+         Supplier<DimensionDataStorage> p_214846_,
+         TicketStorage p_394462_,
+@@ -183,6 +_,7 @@
+         this.chunkGeneratorState = p_214843_.createState(registryaccess.lookupOrThrow(Registries.STRUCTURE_SET), this.randomState, i);
+         this.mainThreadExecutor = p_214841_;
+         ConsecutiveExecutor consecutiveexecutor1 = new ConsecutiveExecutor(p_214840_, "worldgen");
++        this.progressListener = p_214844_;
+         this.chunkStatusListener = p_214845_;
+         ConsecutiveExecutor consecutiveexecutor = new ConsecutiveExecutor(p_214840_, "light");
+         this.worldgenTaskDispatcher = new ChunkTaskDispatcher(consecutiveexecutor1, p_214840_);
+@@ -257,12 +_,6 @@
+         return this.visibleChunkMap.get(p_140328_);
+     }
+ 
+-    @Nullable
+-    public ChunkStatus getLatestStatus(long p_433983_) {
+-        ChunkHolder chunkholder = this.getVisibleChunkIfPresent(p_433983_);
+-        return chunkholder != null ? chunkholder.getLatestStatus() : null;
+-    }
+-
+     protected IntSupplier getChunkQueueLevel(long p_140372_) {
+         return () -> {
+             ChunkHolder chunkholder = this.getVisibleChunkIfPresent(p_140372_);
+@@ -294,7 +_,7 @@
+         }
+     }
+ 
+-    CompletableFuture<ChunkResult<List<ChunkAccess>>> getChunkRangeFuture(ChunkHolder p_281446_, int p_282030_, IntFunction<ChunkStatus> p_282923_) {
++    private CompletableFuture<ChunkResult<List<ChunkAccess>>> getChunkRangeFuture(ChunkHolder p_281446_, int p_282030_, IntFunction<ChunkStatus> p_282923_) {
+         if (p_282030_ == 0) {
+             ChunkStatus chunkstatus1 = p_282923_.apply(0);
+             return p_281446_.scheduleChunkGenerationTask(chunkstatus1, this).thenApply(p_329931_ -> p_329931_.map(List::of));
+@@ -400,6 +_,7 @@
                  this.modified = true;
              }
  
@@ -8,7 +73,7 @@
              return p_140179_;
          }
      }
-@@ -527,12 +_,15 @@
+@@ -529,17 +_,21 @@
              } else {
                  ChunkAccess chunkaccess = p_140183_.getLatestChunk();
                  if (this.pendingUnloads.remove(p_140182_, p_140183_) && chunkaccess != null) {
@@ -24,23 +89,118 @@
                          this.level.unload(levelchunk1);
                      }
  
-@@ -577,6 +_,7 @@
+                     this.lightEngine.updateChunkStatus(chunkaccess.getPos());
+                     this.lightEngine.tryScheduleUpdate();
++                    this.progressListener.onStatusChange(chunkaccess.getPos(), null);
+                     this.nextChunkSaveTime.remove(chunkaccess.getPos().toLong());
+                 }
+             }
+@@ -562,8 +_,8 @@
+ 
+     private CompletableFuture<ChunkAccess> scheduleChunkLoad(ChunkPos p_140418_) {
+         CompletableFuture<Optional<SerializableChunkData>> completablefuture = this.readChunk(p_140418_)
+-            .thenApplyAsync(p_359609_ -> p_359609_.map(p_432464_ -> {
+-                SerializableChunkData serializablechunkdata = SerializableChunkData.parse(this.level, this.level.registryAccess(), p_432464_);
++            .thenApplyAsync(p_359609_ -> p_359609_.map(p_425261_ -> {
++                SerializableChunkData serializablechunkdata = SerializableChunkData.parse(this.level, this.level.registryAccess(), p_425261_);
+                 if (serializablechunkdata == null) {
+                     LOGGER.error("Chunk file at {} is missing level data, skipping", p_140418_);
+                 }
+@@ -574,10 +_,11 @@
+         return completablefuture.<Object, Optional<SerializableChunkData>>thenCombine(
+                 (CompletionStage<? extends Object>)completablefuture1, (p_359602_, p_359603_) -> p_359602_
+             )
+-            .thenApplyAsync(p_432462_ -> {
++            .thenApplyAsync(p_372662_ -> {
                  Profiler.get().incrementCounter("chunkLoad");
-                 if (p_372662_.isPresent()) {
-                     ChunkAccess chunkaccess = p_372662_.get().read(this.level, this.poiManager, this.storageInfo(), p_140418_);
+-                if (p_432462_.isPresent()) {
+-                    ChunkAccess chunkaccess = p_432462_.get().read(this.level, this.poiManager, this.storageInfo(), p_140418_);
++                if (p_372662_.isPresent()) {
++                    ChunkAccess chunkaccess = p_372662_.get().read(this.level, this.poiManager, this.storageInfo(), p_140418_);
 +                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Load(chunkaccess, p_372662_.get()));
                      this.markPosition(p_140418_, chunkaccess.getPersistedStatus().getChunkType());
                      return chunkaccess;
                  } else {
-@@ -778,6 +_,7 @@
+@@ -592,7 +_,10 @@
+         Throwable throwable1 = throwable instanceof ReportedException reportedexception ? reportedexception.getCause() : throwable;
+         boolean flag1 = throwable1 instanceof Error;
+         boolean flag = throwable1 instanceof IOException || throwable1 instanceof NbtException;
+-        if (!flag1 && flag) {
++        if (!flag1) {
++            if (!flag) {
++            }
++
+             this.level.getServer().reportChunkLoadFailure(throwable1, this.storageInfo(), p_214903_);
+             return this.createEmptyChunk(p_214903_);
+         } else {
+@@ -641,7 +_,9 @@
+                 if (chunkaccess == null) {
+                     throw new IllegalStateException("Parent chunk missing");
+                 } else {
+-                    return p_347638_.apply(this.worldGenContext, p_347552_, chunkaccess);
++                    CompletableFuture<ChunkAccess> completablefuture = p_347638_.apply(this.worldGenContext, p_347552_, chunkaccess);
++                    this.progressListener.onStatusChange(chunkpos, p_347638_.targetStatus());
++                    return completablefuture;
+                 }
+             } catch (Exception exception) {
+                 exception.getStackTrace();
+@@ -684,19 +_,24 @@
+ 
+     public CompletableFuture<ChunkResult<LevelChunk>> prepareTickingChunk(ChunkHolder p_143054_) {
+         CompletableFuture<ChunkResult<List<ChunkAccess>>> completablefuture = this.getChunkRangeFuture(p_143054_, 1, p_329920_ -> ChunkStatus.FULL);
+-        return completablefuture.thenApplyAsync(p_359611_ -> p_359611_.map(p_381756_ -> {
++        CompletableFuture<ChunkResult<LevelChunk>> completablefuture1 = completablefuture.thenApplyAsync(p_359611_ -> p_359611_.map(p_381756_ -> {
+             LevelChunk levelchunk = (LevelChunk)p_381756_.get(p_381756_.size() / 2);
+             levelchunk.postProcessGeneration(this.level);
+             this.level.startTickingChunk(levelchunk);
+-            CompletableFuture<?> completablefuture1 = p_143054_.getSendSyncFuture();
+-            if (completablefuture1.isDone()) {
++            CompletableFuture<?> completablefuture2 = p_143054_.getSendSyncFuture();
++            if (completablefuture2.isDone()) {
+                 this.onChunkReadyToSend(p_143054_, levelchunk);
+             } else {
+-                completablefuture1.thenAcceptAsync(p_381759_ -> this.onChunkReadyToSend(p_143054_, levelchunk), this.mainThreadExecutor);
++                completablefuture2.thenAcceptAsync(p_381759_ -> this.onChunkReadyToSend(p_143054_, levelchunk), this.mainThreadExecutor);
+             }
+ 
+             return levelchunk;
+         }), this.mainThreadExecutor);
++        completablefuture1.handle((p_331041_, p_287365_) -> {
++            this.tickingGenerated.getAndIncrement();
++            return null;
++        });
++        return completablefuture1;
+     }
+ 
+     private void onChunkReadyToSend(ChunkHolder p_381769_, LevelChunk p_296003_) {
+@@ -716,9 +_,8 @@
+             .thenApply(p_329940_ -> p_329940_.map(p_203092_ -> (LevelChunk)p_203092_.get(p_203092_.size() / 2)));
+     }
+ 
+-    Stream<ChunkHolder> allChunksWithAtLeastStatus(ChunkStatus p_434983_) {
+-        int i = ChunkLevel.byStatus(p_434983_);
+-        return this.visibleChunkMap.values().stream().filter(p_432460_ -> p_432460_.getTicketLevel() <= i);
++    public int getTickingGenerated() {
++        return this.tickingGenerated.get();
+     }
+ 
+     private boolean saveChunkIfNeeded(ChunkHolder p_198875_, long p_361555_) {
+@@ -770,10 +_,11 @@
                  Profiler.get().incrementCounter("chunkSave");
                  this.activeChunkWrites.incrementAndGet();
                  SerializableChunkData serializablechunkdata = SerializableChunkData.copyOf(this.level, p_140259_);
 +                net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.level.ChunkDataEvent.Save(p_140259_, this.level, serializablechunkdata));
                  CompletableFuture<CompoundTag> completablefuture = CompletableFuture.supplyAsync(serializablechunkdata::write, Util.backgroundExecutor());
-                 this.write(chunkpos, completablefuture::join).handle((p_381690_, p_381691_) -> {
-                     if (p_381691_ != null) {
-@@ -844,9 +_,11 @@
+-                this.write(chunkpos, completablefuture::join).handle((p_432454_, p_432455_) -> {
+-                    if (p_432455_ != null) {
+-                        this.level.getServer().reportChunkSaveFailure(p_432455_, this.storageInfo(), chunkpos);
++                this.write(chunkpos, completablefuture::join).handle((p_381690_, p_381691_) -> {
++                    if (p_381691_ != null) {
++                        this.level.getServer().reportChunkSaveFailure(p_381691_, this.storageInfo(), chunkpos);
+                     }
+ 
+                     this.activeChunkWrites.decrementAndGet();
+@@ -836,9 +_,11 @@
  
      private static void markChunkPendingToSend(ServerPlayer p_295834_, LevelChunk p_296281_) {
          p_295834_.connection.chunkSender.markChunkPendingToSend(p_296281_);
@@ -52,7 +212,7 @@
          p_294215_.connection.chunkSender.dropChunk(p_294215_, p_294758_);
      }
  
-@@ -947,7 +_,7 @@
+@@ -939,7 +_,7 @@
              ChunkHolder chunkholder = this.visibleChunkMap.get(longiterator.nextLong());
              if (chunkholder != null) {
                  LevelChunk levelchunk = chunkholder.getTickingChunk();
@@ -61,7 +221,7 @@
                      p_401784_.add(levelchunk);
                  }
              }
-@@ -971,6 +_,18 @@
+@@ -963,6 +_,18 @@
          return tristate == TriState.DEFAULT ? this.anyPlayerCloseEnoughForSpawningInternal(p_183880_) : tristate.toBoolean(true);
      }
  
@@ -80,7 +240,7 @@
      private boolean anyPlayerCloseEnoughForSpawningInternal(ChunkPos p_363995_) {
          for (ServerPlayer serverplayer : this.playerMap.getAllPlayers()) {
              if (this.playerIsCloseEnoughForSpawning(serverplayer, p_363995_)) {
-@@ -1079,6 +_,7 @@
+@@ -1071,6 +_,7 @@
                  this.playerMap.unIgnorePlayer(p_140185_);
              }
  
@@ -88,7 +248,7 @@
              this.updateChunkTracking(p_140185_);
          }
      }
-@@ -1130,7 +_,7 @@
+@@ -1122,7 +_,7 @@
      }
  
      protected void addEntity(Entity p_140200_) {
@@ -97,7 +257,7 @@
              EntityType<?> entitytype = p_140200_.getType();
              int i = entitytype.clientTrackingRange() * 16;
              if (i != 0) {
-@@ -1260,6 +_,20 @@
+@@ -1252,6 +_,20 @@
          });
      }
  
@@ -118,7 +278,7 @@
      class DistanceManager extends net.minecraft.server.level.DistanceManager {
          protected DistanceManager(TicketStorage p_394597_, Executor p_140459_, Executor p_140460_) {
              super(p_394597_, p_140459_, p_140460_);
-@@ -1382,5 +_,20 @@
+@@ -1374,5 +_,20 @@
                  this.updatePlayer(serverplayer);
              }
          }

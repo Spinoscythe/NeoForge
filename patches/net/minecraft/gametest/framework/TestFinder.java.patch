@@ -1,0 +1,11 @@
+--- a/net/minecraft/gametest/framework/TestFinder.java
++++ b/net/minecraft/gametest/framework/TestFinder.java
+@@ -98,7 +_,7 @@
+         public TestFinder allNearby(CommandContext<CommandSourceStack> p_320216_) {
+             CommandSourceStack commandsourcestack = p_320216_.getSource();
+             BlockPos blockpos = BlockPos.containing(commandsourcestack.getPosition());
+-            return this.build(commandsourcestack, TestFinder.NO_FUNCTIONS, () -> StructureUtils.findTestBlocks(blockpos, 250, commandsourcestack.getLevel()));
++            return this.build(commandsourcestack, TestFinder.NO_FUNCTIONS, () -> StructureUtils.findTestBlocks(blockpos, 200, commandsourcestack.getLevel()));
+         }
+ 
+         public TestFinder lookedAt(CommandContext<CommandSourceStack> p_320178_) {

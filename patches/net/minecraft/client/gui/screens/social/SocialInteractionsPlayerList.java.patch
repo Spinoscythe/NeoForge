@@ -1,0 +1,71 @@
+--- a/net/minecraft/client/gui/screens/social/SocialInteractionsPlayerList.java
++++ b/net/minecraft/client/gui/screens/social/SocialInteractionsPlayerList.java
+@@ -12,7 +_,6 @@
+ import java.util.Map;
+ import java.util.Set;
+ import java.util.UUID;
+-import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.GuiGraphics;
+@@ -52,10 +_,6 @@
+     public void updatePlayerList(Collection<UUID> p_240798_, double p_240792_, boolean p_240829_) {
+         Map<UUID, PlayerEntry> map = new HashMap<>();
+         this.addOnlinePlayers(p_240798_, map);
+-        if (p_240829_) {
+-            this.addSeenPlayers(map);
+-        }
+-
+         this.updatePlayersFromChatLog(map, p_240829_);
+         this.updateFiltersAndScroll(map.values(), p_240792_);
+     }
+@@ -66,43 +_,27 @@
+         for (UUID uuid : p_240813_) {
+             PlayerInfo playerinfo = clientpacketlistener.getPlayerInfo(uuid);
+             if (playerinfo != null) {
+-                PlayerEntry playerentry = this.makePlayerEntry(uuid, playerinfo);
+-                p_240796_.put(uuid, playerentry);
++                boolean flag = playerinfo.hasVerifiableChat();
++                p_240796_.put(
++                    uuid, new PlayerEntry(this.minecraft, this.socialInteractionsScreen, uuid, playerinfo.getProfile().getName(), playerinfo::getSkin, flag)
++                );
+             }
+         }
+     }
+ 
+-    private void addSeenPlayers(Map<UUID, PlayerEntry> p_437266_) {
+-        Map<UUID, PlayerInfo> map = this.minecraft.player.connection.getSeenPlayers();
+-
+-        for (Map.Entry<UUID, PlayerInfo> entry : map.entrySet()) {
+-            p_437266_.computeIfAbsent(entry.getKey(), p_437162_ -> {
+-                PlayerEntry playerentry = this.makePlayerEntry(p_437162_, entry.getValue());
+-                playerentry.setRemoved(true);
+-                return playerentry;
+-            });
+-        }
+-    }
+-
+-    private PlayerEntry makePlayerEntry(UUID p_437253_, PlayerInfo p_437240_) {
+-        return new PlayerEntry(
+-            this.minecraft, this.socialInteractionsScreen, p_437253_, p_437240_.getProfile().getName(), p_437240_::getSkin, p_437240_.hasVerifiableChat()
+-        );
+-    }
+-
+     private void updatePlayersFromChatLog(Map<UUID, PlayerEntry> p_240780_, boolean p_240827_) {
+         for (GameProfile gameprofile : collectProfilesFromChatLog(this.minecraft.getReportingContext().chatLog())) {
+             PlayerEntry playerentry;
+             if (p_240827_) {
+                 playerentry = p_240780_.computeIfAbsent(
+                     gameprofile.getId(),
+-                    p_438746_ -> {
++                    p_293608_ -> {
+                         PlayerEntry playerentry1 = new PlayerEntry(
+                             this.minecraft,
+                             this.socialInteractionsScreen,
+                             gameprofile.getId(),
+                             gameprofile.getName(),
+-                            this.minecraft.getSkinManager().createLookup(gameprofile, true),
++                            this.minecraft.getSkinManager().lookupInsecure(gameprofile),
+                             true
+                         );
+                         playerentry1.setRemoved(true);

@@ -1,0 +1,53 @@
+--- a/net/minecraft/client/main/GameConfig.java
++++ b/net/minecraft/client/main/GameConfig.java
+@@ -1,5 +_,6 @@
+ package net.minecraft.client.main;
+ 
++import com.mojang.authlib.properties.PropertyMap;
+ import com.mojang.blaze3d.platform.DisplayData;
+ import java.io.File;
+ import java.net.Proxy;
+@@ -62,18 +_,8 @@
+         public final boolean disableChat;
+         public final boolean captureTracyImages;
+         public final boolean renderDebugLabels;
+-        public final boolean offlineDeveloperMode;
+ 
+-        public GameData(
+-            boolean p_101932_,
+-            String p_101933_,
+-            String p_101934_,
+-            boolean p_101935_,
+-            boolean p_101936_,
+-            boolean p_373077_,
+-            boolean p_410183_,
+-            boolean p_433953_
+-        ) {
++        public GameData(boolean p_101932_, String p_101933_, String p_101934_, boolean p_101935_, boolean p_101936_, boolean p_373077_, boolean p_410183_) {
+             this.demo = p_101932_;
+             this.launchVersion = p_101933_;
+             this.versionType = p_101934_;
+@@ -81,7 +_,6 @@
+             this.disableChat = p_101936_;
+             this.captureTracyImages = p_373077_;
+             this.renderDebugLabels = p_410183_;
+-            this.offlineDeveloperMode = p_433953_;
+         }
+     }
+ 
+@@ -138,10 +_,14 @@
+     @OnlyIn(Dist.CLIENT)
+     public static class UserData {
+         public final User user;
++        public final PropertyMap userProperties;
++        public final PropertyMap profileProperties;
+         public final Proxy proxy;
+ 
+-        public UserData(User p_101947_, Proxy p_101950_) {
++        public UserData(User p_101947_, PropertyMap p_101948_, PropertyMap p_101949_, Proxy p_101950_) {
+             this.user = p_101947_;
++            this.userProperties = p_101948_;
++            this.profileProperties = p_101949_;
+             this.proxy = p_101950_;
+         }
+     }

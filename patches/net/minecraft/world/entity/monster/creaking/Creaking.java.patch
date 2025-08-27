@@ -1,5 +1,32 @@
 --- a/net/minecraft/world/entity/monster/creaking/Creaking.java
 +++ b/net/minecraft/world/entity/monster/creaking/Creaking.java
+@@ -222,7 +_,7 @@
+             this.attackAnimationRemainingTicks--;
+         }
+ 
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             boolean flag = this.entityData.get(CAN_MOVE);
+             boolean flag1 = this.checkCanMove();
+             if (flag1 != flag) {
+@@ -243,7 +_,7 @@
+ 
+     @Override
+     public void tick() {
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             BlockPos blockpos = this.getHomePos();
+             if (blockpos != null) {
+                 boolean flag = this.level().getBlockEntity(blockpos) instanceof CreakingHeartBlockEntity creakingheartblockentity
+@@ -255,7 +_,7 @@
+         }
+ 
+         super.tick();
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             this.setupAnimationStates();
+             this.checkEyeBlink();
+         }
 @@ -485,7 +_,8 @@
              for (Player player : list) {
                  if (this.canAttack(player) && !this.isAlliedTo(player)) {

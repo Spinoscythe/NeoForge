@@ -1,0 +1,28 @@
+--- a/net/minecraft/client/renderer/entity/layers/RopesLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/RopesLayer.java
+@@ -4,8 +_,8 @@
+ import net.minecraft.client.model.HappyGhastModel;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.HappyGhastRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+@@ -27,10 +_,11 @@
+         this.babyModel = new HappyGhastModel(p_418398_.bakeLayer(ModelLayers.HAPPY_GHAST_BABY_ROPES));
+     }
+ 
+-    public void submit(PoseStack p_433539_, SubmitNodeCollector p_434725_, int p_434922_, HappyGhastRenderState p_434097_, float p_434010_, float p_435950_) {
+-        if (p_434097_.isLeashHolder && p_434097_.bodyItem.is(ItemTags.HARNESSES)) {
+-            HappyGhastModel happyghastmodel = p_434097_.isBaby ? this.babyModel : this.adultModel;
+-            p_434725_.submitModel(happyghastmodel, p_434097_, p_433539_, this.ropes, p_434922_, OverlayTexture.NO_OVERLAY, p_434097_.outlineColor, null);
++    public void render(PoseStack p_418168_, MultiBufferSource p_418100_, int p_418246_, HappyGhastRenderState p_418068_, float p_418482_, float p_418441_) {
++        if (p_418068_.isLeashHolder && p_418068_.bodyItem.is(ItemTags.HARNESSES)) {
++            HappyGhastModel happyghastmodel = p_418068_.isBaby ? this.babyModel : this.adultModel;
++            happyghastmodel.setupAnim(p_418068_);
++            happyghastmodel.renderToBuffer(p_418168_, p_418100_.getBuffer(this.ropes), p_418246_, OverlayTexture.NO_OVERLAY);
+         }
+     }
+ }

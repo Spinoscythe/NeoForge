@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/IronBarsBlock.java
++++ b/net/minecraft/world/level/block/IronBarsBlock.java
+@@ -83,7 +_,7 @@
+ 
+     @Override
+     protected boolean skipRendering(BlockState p_54207_, BlockState p_54208_, Direction p_54209_) {
+-        if (p_54208_.is(this) || p_54208_.is(BlockTags.BARS) && p_54207_.is(BlockTags.BARS)) {
++        if (p_54208_.is(this)) {
+             if (!p_54209_.getAxis().isHorizontal()) {
+                 return true;
+             }

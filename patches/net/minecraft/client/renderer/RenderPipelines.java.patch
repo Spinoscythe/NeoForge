@@ -1,9 +1,115 @@
 --- a/net/minecraft/client/renderer/RenderPipelines.java
 +++ b/net/minecraft/client/renderer/RenderPipelines.java
-@@ -713,4 +_,14 @@
+@@ -105,7 +_,6 @@
+         .withFragmentShader("core/gui")
+         .withBlend(BlendFunction.TRANSLUCENT)
+         .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
+-        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+         .buildSnippet();
+     public static final RenderPipeline.Snippet GUI_TEXTURED_SNIPPET = RenderPipeline.builder(MATRICES_PROJECTION_SNIPPET)
+         .withVertexShader("core/position_tex_color")
+@@ -113,10 +_,6 @@
+         .withSampler("Sampler0")
+         .withBlend(BlendFunction.TRANSLUCENT)
+         .withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS)
+-        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+-        .buildSnippet();
+-    public static final RenderPipeline.Snippet GUI_TEXT_SNIPPET = RenderPipeline.builder(TEXT_SNIPPET)
+-        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+         .buildSnippet();
+     public static final RenderPipeline.Snippet OUTLINE_SNIPPET = RenderPipeline.builder(MATRICES_PROJECTION_SNIPPET)
+         .withVertexShader("core/rendertype_outline")
+@@ -129,7 +_,8 @@
+     public static final RenderPipeline.Snippet POST_PROCESSING_SNIPPET = RenderPipeline.builder()
+         .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+         .withDepthWrite(false)
+-        .withVertexFormat(DefaultVertexFormat.EMPTY, VertexFormat.Mode.TRIANGLES)
++        .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
++        .withUniform("Projection", UniformType.UNIFORM_BUFFER)
+         .buildSnippet();
+     public static final RenderPipeline SOLID = register(RenderPipeline.builder(TERRAIN_SNIPPET).withLocation("pipeline/solid").build());
+     public static final RenderPipeline WIREFRAME = register(
+@@ -398,16 +_,6 @@
+             .withSampler("Sampler2")
+             .build()
+     );
+-    public static final RenderPipeline GUI_TEXT = register(
+-        RenderPipeline.builder(GUI_TEXT_SNIPPET, FOG_SNIPPET)
+-            .withLocation("pipeline/gui_text")
+-            .withVertexShader("core/rendertype_text")
+-            .withFragmentShader("core/rendertype_text")
+-            .withSampler("Sampler0")
+-            .withSampler("Sampler2")
+-            .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+-            .build()
+-    );
+     public static final RenderPipeline TEXT_BACKGROUND = register(
+         RenderPipeline.builder(TEXT_SNIPPET, FOG_SNIPPET)
+             .withLocation("pipeline/text_background")
+@@ -427,15 +_,6 @@
+             .withDepthBias(-1.0F, -10.0F)
+             .build()
+     );
+-    public static final RenderPipeline GUI_TEXT_INTENSITY = register(
+-        RenderPipeline.builder(GUI_TEXT_SNIPPET, FOG_SNIPPET)
+-            .withLocation("pipeline/gui_text_intensity")
+-            .withVertexShader("core/rendertype_text_intensity")
+-            .withFragmentShader("core/rendertype_text_intensity")
+-            .withSampler("Sampler0")
+-            .withSampler("Sampler2")
+-            .build()
+-    );
+     public static final RenderPipeline TEXT_POLYGON_OFFSET = register(
+         RenderPipeline.builder(TEXT_SNIPPET, FOG_SNIPPET)
+             .withLocation("pipeline/text_polygon_offset")
+@@ -680,25 +_,25 @@
+     public static final RenderPipeline ENTITY_OUTLINE_BLIT = register(
+         RenderPipeline.builder()
+             .withLocation("pipeline/entity_outline_blit")
+-            .withVertexShader("core/screenquad")
++            .withVertexShader("core/blit_screen")
+             .withFragmentShader("core/blit_screen")
+             .withSampler("InSampler")
+             .withBlend(BlendFunction.ENTITY_OUTLINE_BLIT)
+             .withDepthWrite(false)
+             .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+             .withColorWrite(true, false)
+-            .withVertexFormat(DefaultVertexFormat.EMPTY, VertexFormat.Mode.TRIANGLES)
++            .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
+             .build()
+     );
+     public static final RenderPipeline TRACY_BLIT = register(
+         RenderPipeline.builder()
+             .withLocation("pipeline/tracy_blit")
+-            .withVertexShader("core/screenquad")
++            .withVertexShader("core/blit_screen")
+             .withFragmentShader("core/blit_screen")
+             .withSampler("InSampler")
+             .withDepthWrite(false)
+             .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+-            .withVertexFormat(DefaultVertexFormat.EMPTY, VertexFormat.Mode.TRIANGLES)
++            .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
+             .build()
+     );
+     public static final RenderPipeline PANORAMA = register(
+@@ -719,10 +_,10 @@
+     public static final RenderPipeline LIGHTMAP = register(
+         RenderPipeline.builder()
+             .withLocation("pipeline/lightmap")
+-            .withVertexShader("core/screenquad")
++            .withVertexShader("core/blit_screen")
+             .withFragmentShader("core/lightmap")
+             .withUniform("LightmapInfo", UniformType.UNIFORM_BUFFER)
+-            .withVertexFormat(DefaultVertexFormat.EMPTY, VertexFormat.Mode.TRIANGLES)
++            .withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
+             .withDepthWrite(false)
+             .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+             .build()
+@@ -735,5 +_,15 @@
+ 
      public static List<RenderPipeline> getStaticPipelines() {
          return PIPELINES_BY_LOCATION.values().stream().toList();
-     }
++    }
 +
 +    @org.jetbrains.annotations.ApiStatus.Internal
 +    public static void registerCustomPipelines() {
@@ -13,5 +119,5 @@
 +            }
 +        });
 +        net.neoforged.fml.ModLoader.postEvent(event);
-+    }
+     }
  }

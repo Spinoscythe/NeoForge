@@ -1,0 +1,82 @@
+--- a/net/minecraft/network/PacketDecoder.java
++++ b/net/minecraft/network/PacketDecoder.java
+@@ -22,42 +_,48 @@
+     @Override
+     protected void decode(ChannelHandlerContext p_130535_, ByteBuf p_130536_, List<Object> p_130537_) throws Exception {
+         int i = p_130536_.readableBytes();
++        if (i != 0) {
++            Packet<? super T> packet;
++            try {
++                packet = this.protocolInfo.codec().decode(p_130536_);
++            } catch (Exception exception) {
++                if (exception instanceof SkipPacketException) {
++                    p_130536_.skipBytes(p_130536_.readableBytes());
++                }
+ 
+-        Packet<? super T> packet;
+-        try {
+-            packet = this.protocolInfo.codec().decode(p_130536_);
+-        } catch (Exception exception) {
+-            if (exception instanceof SkipPacketException) {
+-                p_130536_.skipBytes(p_130536_.readableBytes());
++                throw exception;
+             }
+ 
+-            throw exception;
+-        }
+-
+-        PacketType<? extends Packet<? super T>> packettype = packet.type();
+-        JvmProfiler.INSTANCE.onPacketReceived(this.protocolInfo.id(), packettype, p_130535_.channel().remoteAddress(), i);
+-        if (p_130536_.readableBytes() > 0) {
+-            throw new IOException(
+-                "Packet "
+-                    + this.protocolInfo.id().id()
+-                    + "/"
+-                    + packettype
+-                    + " ("
+-                    + packet.getClass().getSimpleName()
+-                    + ") was larger than I expected, found "
+-                    + p_130536_.readableBytes()
+-                    + " bytes extra whilst reading packet "
+-                    + packettype
+-            );
+-        } else {
+-            p_130537_.add(packet);
+-            if (LOGGER.isDebugEnabled()) {
+-                LOGGER.debug(
+-                    Connection.PACKET_RECEIVED_MARKER, " IN: [{}:{}] {} -> {} bytes", this.protocolInfo.id().id(), packettype, packet.getClass().getName(), i
++            PacketType<? extends Packet<? super T>> packettype = packet.type();
++            JvmProfiler.INSTANCE.onPacketReceived(this.protocolInfo.id(), packettype, p_130535_.channel().remoteAddress(), i);
++            if (p_130536_.readableBytes() > 0) {
++                throw new IOException(
++                    "Packet "
++                        + this.protocolInfo.id().id()
++                        + "/"
++                        + packettype
++                        + " ("
++                        + packet.getClass().getSimpleName()
++                        + ") was larger than I expected, found "
++                        + p_130536_.readableBytes()
++                        + " bytes extra whilst reading packet "
++                        + packettype
+                 );
+-            }
++            } else {
++                p_130537_.add(packet);
++                if (LOGGER.isDebugEnabled()) {
++                    LOGGER.debug(
++                        Connection.PACKET_RECEIVED_MARKER,
++                        " IN: [{}:{}] {} -> {} bytes",
++                        this.protocolInfo.id().id(),
++                        packettype,
++                        packet.getClass().getName(),
++                        i
++                    );
++                }
+ 
+-            ProtocolSwapHandler.handleInboundTerminalPacket(p_130535_, packet);
++                ProtocolSwapHandler.handleInboundTerminalPacket(p_130535_, packet);
++            }
+         }
+     }
+ }

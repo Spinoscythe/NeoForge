@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/gui/components/AbstractContainerWidget.java
++++ b/net/minecraft/client/gui/components/AbstractContainerWidget.java
+@@ -55,9 +_,9 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_313764_, double p_313832_, int p_313688_, boolean p_435133_) {
++    public boolean mouseClicked(double p_313764_, double p_313832_, int p_313688_) {
+         boolean flag = this.updateScrolling(p_313764_, p_313832_, p_313688_);
+-        return ContainerEventHandler.super.mouseClicked(p_313764_, p_313832_, p_313688_, p_435133_) || flag;
++        return ContainerEventHandler.super.mouseClicked(p_313764_, p_313832_, p_313688_) || flag;
+     }
+ 
+     @Override

@@ -1,6 +1,49 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -171,6 +_,10 @@
+@@ -10,7 +_,6 @@
+ import java.nio.file.Path;
+ import java.util.Arrays;
+ import java.util.List;
+-import java.util.Objects;
+ import java.util.Set;
+ import java.util.concurrent.CompletableFuture;
+ import java.util.concurrent.CompletionStage;
+@@ -25,6 +_,7 @@
+ import net.minecraft.core.SectionPos;
+ import net.minecraft.network.protocol.Packet;
+ import net.minecraft.server.MinecraftServer;
++import net.minecraft.server.level.progress.ChunkProgressListener;
+ import net.minecraft.util.VisibleForDebug;
+ import net.minecraft.util.profiling.Profiler;
+ import net.minecraft.util.profiling.ProfilerFiller;
+@@ -88,6 +_,7 @@
+         int p_214988_,
+         int p_214989_,
+         boolean p_214990_,
++        ChunkProgressListener p_214991_,
+         ChunkStatusUpdateListener p_214992_,
+         Supplier<DimensionDataStorage> p_214993_
+     ) {
+@@ -113,6 +_,7 @@
+             this.mainThreadProcessor,
+             this,
+             p_214987_,
++            p_214991_,
+             p_214992_,
+             p_214993_,
+             this.ticketStorage,
+@@ -134,6 +_,10 @@
+         return this.chunkMap.getVisibleChunkIfPresent(p_8365_);
+     }
+ 
++    public int getTickingGenerated() {
++        return this.chunkMap.getTickingGenerated();
++    }
++
+     private void storeInCache(long p_8367_, @Nullable ChunkAccess p_8368_, ChunkStatus p_331839_) {
+         for (int i = 3; i > 0; i--) {
+             this.lastChunkPos[i] = this.lastChunkPos[i - 1];
+@@ -165,6 +_,10 @@
                  }
              }
  
@@ -11,7 +54,7 @@
              profilerfiller.incrementCounter("getChunkCacheMiss");
              CompletableFuture<ChunkResult<ChunkAccess>> completablefuture = this.getChunkFutureMainThread(p_8360_, p_8361_, p_330876_, p_8363_);
              this.mainThreadProcessor.managedBlock(completablefuture::isDone);
-@@ -205,6 +_,7 @@
+@@ -199,6 +_,7 @@
              if (chunkholder == null) {
                  return null;
              } else {
@@ -19,3 +62,30 @@
                  ChunkAccess chunkaccess1 = chunkholder.getChunkIfPresent(ChunkStatus.FULL);
                  if (chunkaccess1 != null) {
                      this.storeInCache(i, chunkaccess1, ChunkStatus.FULL);
+@@ -482,26 +_,8 @@
+         });
+     }
+ 
+-    public boolean hasActiveTickets() {
+-        return this.ticketStorage.shouldKeepDimensionActive();
+-    }
+-
+     public void addTicket(Ticket p_394043_, ChunkPos p_394514_) {
+         this.ticketStorage.addTicket(p_394043_, p_394514_);
+-    }
+-
+-    public CompletableFuture<?> addTicketAndLoadWithRadius(TicketType p_434662_, ChunkPos p_433206_, int p_433269_) {
+-        if (!p_434662_.doesLoad()) {
+-            throw new IllegalStateException("Ticket type " + p_434662_ + " does not trigger chunk loading");
+-        } else if (p_434662_.canExpireIfUnloaded()) {
+-            throw new IllegalStateException("Ticket type " + p_434662_ + " can expire before it loads, cannot fetch asynchronously");
+-        } else {
+-            this.addTicketWithRadius(p_434662_, p_433206_, p_433269_);
+-            this.runDistanceManagerUpdates();
+-            ChunkHolder chunkholder = this.getVisibleChunkIfPresent(p_433206_.toLong());
+-            Objects.requireNonNull(chunkholder, "No chunk was scheduled for loading");
+-            return this.chunkMap.getChunkRangeFuture(chunkholder, p_433269_, p_432465_ -> ChunkStatus.FULL);
+-        }
+     }
+ 
+     public void addTicketWithRadius(TicketType p_394166_, ChunkPos p_394235_, int p_393501_) {

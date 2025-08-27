@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/ChainBlock.java
++++ b/net/minecraft/world/level/block/ChainBlock.java
+@@ -28,7 +_,7 @@
+     private static final Map<Direction.Axis, VoxelShape> SHAPES = Shapes.rotateAllAxis(Block.cube(3.0, 3.0, 16.0));
+ 
+     @Override
+-    public MapCodec<? extends ChainBlock> codec() {
++    public MapCodec<ChainBlock> codec() {
+         return CODEC;
+     }
+ 

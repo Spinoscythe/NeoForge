@@ -1,0 +1,19 @@
+--- a/net/minecraft/server/packs/resources/ResourceManagerReloadListener.java
++++ b/net/minecraft/server/packs/resources/ResourceManagerReloadListener.java
+@@ -8,14 +_,11 @@
+ 
+ public interface ResourceManagerReloadListener extends PreparableReloadListener {
+     @Override
+-    default CompletableFuture<Void> reload(
+-        PreparableReloadListener.SharedState p_433115_, Executor p_10756_, PreparableReloadListener.PreparationBarrier p_10752_, Executor p_10757_
+-    ) {
+-        ResourceManager resourcemanager = p_433115_.resourceManager();
++    default CompletableFuture<Void> reload(PreparableReloadListener.PreparationBarrier p_10752_, ResourceManager p_10753_, Executor p_10756_, Executor p_10757_) {
+         return p_10752_.wait(Unit.INSTANCE).thenRunAsync(() -> {
+             ProfilerFiller profilerfiller = Profiler.get();
+             profilerfiller.push("listener");
+-            this.onResourceManagerReload(resourcemanager);
++            this.onResourceManagerReload(p_10753_);
+             profilerfiller.pop();
+         }, p_10757_);
+     }

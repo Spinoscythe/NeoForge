@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/TestBlock.java
++++ b/net/minecraft/world/level/block/TestBlock.java
+@@ -65,7 +_,7 @@
+             if (!p_397362_.canUseGameMasterBlocks()) {
+                 return InteractionResult.PASS;
+             } else {
+-                if (p_397230_.isClientSide()) {
++                if (p_397230_.isClientSide) {
+                     p_397362_.openTestBlock(testblockentity);
+                 }
+ 

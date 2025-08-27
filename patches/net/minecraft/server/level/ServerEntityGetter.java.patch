@@ -1,0 +1,44 @@
+--- a/net/minecraft/server/level/ServerEntityGetter.java
++++ b/net/minecraft/server/level/ServerEntityGetter.java
+@@ -3,8 +_,6 @@
+ import java.util.ArrayList;
+ import java.util.List;
+ import javax.annotation.Nullable;
+-import net.minecraft.tags.TagKey;
+-import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+ import net.minecraft.world.entity.player.Player;
+@@ -40,32 +_,6 @@
+         AABB p_376622_
+     ) {
+         return this.getNearestEntity(this.getEntitiesOfClass(p_376776_, p_376622_, p_376664_ -> true), p_376521_, p_376321_, p_376605_, p_376504_, p_376604_);
+-    }
+-
+-    @Nullable
+-    default LivingEntity getNearestEntity(
+-        TagKey<EntityType<?>> p_437299_,
+-        TargetingConditions p_437268_,
+-        @Nullable LivingEntity p_437233_,
+-        double p_437231_,
+-        double p_437391_,
+-        double p_437403_,
+-        AABB p_437396_
+-    ) {
+-        double d0 = Double.MAX_VALUE;
+-        LivingEntity livingentity = null;
+-
+-        for (LivingEntity livingentity1 : this.getEntitiesOfClass(LivingEntity.class, p_437396_, p_437182_ -> p_437182_.getType().is(p_437299_))) {
+-            if (p_437268_.test(this.getLevel(), p_437233_, livingentity1)) {
+-                double d1 = livingentity1.distanceToSqr(p_437231_, p_437391_, p_437403_);
+-                if (d1 < d0) {
+-                    d0 = d1;
+-                    livingentity = livingentity1;
+-                }
+-            }
+-        }
+-
+-        return livingentity;
+     }
+ 
+     @Nullable

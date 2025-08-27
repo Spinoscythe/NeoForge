@@ -1,17 +1,29 @@
 --- a/net/minecraft/client/gui/screens/Screen.java
 +++ b/net/minecraft/client/gui/screens/Screen.java
-@@ -103,6 +_,11 @@
-     public final void renderWithTooltip(GuiGraphics p_282345_, int p_283456_, int p_283586_, float p_282339_) {
-         p_282345_.nextStratum();
-         this.renderBackground(p_282345_, p_283456_, p_283586_, p_282339_);
+@@ -100,12 +_,17 @@
+         return this.getTitle();
+     }
+ 
+-    public final void renderWithTooltipAndSubtitles(GuiGraphics p_434220_, int p_435721_, int p_435145_, float p_435742_) {
+-        p_434220_.nextStratum();
+-        this.renderBackground(p_434220_, p_435721_, p_435145_, p_435742_);
+-        p_434220_.nextStratum();
+-        this.render(p_434220_, p_435721_, p_435145_, p_435742_);
+-        p_434220_.renderDeferredElements();
++    public final void renderWithTooltip(GuiGraphics p_282345_, int p_283456_, int p_283586_, float p_282339_) {
++        p_282345_.nextStratum();
++        this.renderBackground(p_282345_, p_283456_, p_283586_, p_282339_);
 +        // Neo: We cannot post this event in the renderBackground method, since many screens override it and don't call super.
 +        if (this instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> containerScreen) {
 +            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ContainerScreenEvent.Render.Background(containerScreen, p_282345_, p_283456_, p_283586_));
 +        }
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.ScreenEvent.Render.Background(this, p_282345_, p_283456_, p_283586_, p_282339_));
-         p_282345_.nextStratum();
-         this.render(p_282345_, p_283456_, p_283586_, p_282339_);
-         p_282345_.renderDeferredTooltip();
++        p_282345_.nextStratum();
++        this.render(p_282345_, p_283456_, p_283586_, p_282339_);
++        p_282345_.renderDeferredTooltip();
+     }
+ 
+     @Override
 @@ -191,7 +_,7 @@
      }
  
@@ -21,7 +33,18 @@
      }
  
      protected <T extends GuiEventListener & Renderable & NarratableEntry> T addRenderableWidget(T p_169406_) {
-@@ -232,7 +_,7 @@
+@@ -219,10 +_,6 @@
+             this.narratables.remove((NarratableEntry)p_169412_);
+         }
+ 
+-        if (this.getFocused() == p_169412_) {
+-            this.clearFocus();
+-        }
+-
+         this.children.remove(p_169412_);
+     }
+ 
+@@ -236,7 +_,7 @@
          return p_282833_.getTooltipLines(
              Item.TooltipContext.of(p_281881_.level),
              p_281881_.player,
@@ -30,7 +53,7 @@
          );
      }
  
-@@ -339,8 +_,11 @@
+@@ -343,26 +_,28 @@
          this.width = p_96608_;
          this.height = p_96609_;
          if (!this.initialized) {
@@ -42,7 +65,17 @@
          } else {
              this.repositionElements();
          }
-@@ -353,8 +_,11 @@
+ 
+         this.initialized = true;
+         this.triggerImmediateNarration(false);
+-        if (p_96607_.getLastInputType().isKeyboard()) {
+-            this.setNarrationSuppressTime(Long.MAX_VALUE);
+-        } else {
+-            this.suppressNarration(NARRATE_SUPPRESS_AFTER_INIT_TIME);
+-        }
++        this.suppressNarration(NARRATE_SUPPRESS_AFTER_INIT_TIME);
+     }
+ 
      protected void rebuildWidgets() {
          this.clearWidgets();
          this.clearFocus();
@@ -54,7 +87,58 @@
      }
  
      protected void fadeWidgets(float p_421625_) {
-@@ -496,6 +_,10 @@
+@@ -391,18 +_,12 @@
+     }
+ 
+     public void renderBackground(GuiGraphics p_283688_, int p_296369_, int p_296477_, float p_294317_) {
+-        if (this.isInGameUi()) {
+-            this.renderTransparentBackground(p_283688_);
+-        } else {
+-            if (this.minecraft.level == null) {
+-                this.renderPanorama(p_283688_, p_294317_);
+-            }
+-
+-            this.renderBlurredBackground(p_283688_);
+-            this.renderMenuBackground(p_283688_);
++        if (this.minecraft.level == null) {
++            this.renderPanorama(p_283688_, p_294317_);
+         }
+ 
+-        this.minecraft.gui.renderDeferredSubtitles();
++        this.renderBlurredBackground(p_283688_);
++        this.renderMenuBackground(p_283688_);
+     }
+ 
+     protected void renderBlurredBackground(GuiGraphics p_420069_) {
+@@ -413,7 +_,7 @@
+     }
+ 
+     protected void renderPanorama(GuiGraphics p_331628_, float p_331316_) {
+-        this.minecraft.gameRenderer.getPanorama().render(p_331628_, this.width, this.height, this.panoramaShouldSpin());
++        this.minecraft.gameRenderer.getPanorama().render(p_331628_, this.width, this.height, true);
+     }
+ 
+     protected void renderMenuBackground(GuiGraphics p_331074_) {
+@@ -441,18 +_,6 @@
+         return true;
+     }
+ 
+-    public boolean isInGameUi() {
+-        return false;
+-    }
+-
+-    protected boolean panoramaShouldSpin() {
+-        return true;
+-    }
+-
+-    public boolean isAllowedInPortal() {
+-        return this.isPauseScreen();
+-    }
+-
+     public static boolean hasControlDown() {
+         return Minecraft.ON_OSX
+             ? InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 343)
+@@ -522,6 +_,10 @@
      public void onFilesDrop(List<Path> p_96591_) {
      }
  
@@ -65,10 +149,45 @@
      private void scheduleNarration(long p_169381_, boolean p_169382_) {
          this.nextNarrationTime = Util.getMillis() + p_169381_;
          if (p_169382_) {
-@@ -655,5 +_,13 @@
-             this.index = p_169425_;
-             this.priority = p_169426_;
-         }
+@@ -530,11 +_,7 @@
+     }
+ 
+     private void suppressNarration(long p_169379_) {
+-        this.setNarrationSuppressTime(Util.getMillis() + p_169379_);
+-    }
+-
+-    private void setNarrationSuppressTime(long p_434675_) {
+-        this.narrationSuppressTime = p_434675_;
++        this.narrationSuppressTime = Util.getMillis() + p_169379_;
+     }
+ 
+     public void afterMouseMove() {
+@@ -664,10 +_,6 @@
+         return false;
+     }
+ 
+-    public boolean canInterruptWithAnotherScreen() {
+-        return this.shouldCloseOnEsc();
+-    }
+-
+     @Override
+     public ScreenRectangle getRectangle() {
+         return new ScreenRectangle(0, 0, this.width, this.height);
+@@ -679,6 +_,23 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    public record NarratableSearchResult(NarratableEntry entry, int index, NarratableEntry.NarrationPriority priority) {
++    public static class NarratableSearchResult {
++        public final NarratableEntry entry;
++        public final int index;
++        public final NarratableEntry.NarrationPriority priority;
++
++        public NarratableSearchResult(NarratableEntry p_169424_, int p_169425_, NarratableEntry.NarrationPriority p_169426_) {
++            this.entry = p_169424_;
++            this.index = p_169425_;
++            this.priority = p_169426_;
++        }
 +    }
 +
 +    private void addEventWidget(GuiEventListener b) {

@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/screens/GenericWaitingScreen.java
++++ b/net/minecraft/client/gui/screens/GenericWaitingScreen.java
+@@ -74,7 +_,7 @@
+             String s = LoadingDotsText.get(Util.getMillis());
+             p_283537_.drawCenteredString(this.font, s, this.width / 2, 120, -6250336);
+         } else {
+-            this.message.render(p_283537_, MultiLineLabel.Align.CENTER, this.width / 2, 120, 9, true, -1);
++            this.message.renderCentered(p_283537_, this.width / 2, 120);
+         }
+     }
+ 

@@ -1,0 +1,46 @@
+--- a/net/minecraft/world/level/block/FrostedIceBlock.java
++++ b/net/minecraft/world/level/block/FrostedIceBlock.java
+@@ -11,7 +_,6 @@
+ import net.minecraft.world.level.BlockGetter;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelReader;
+-import net.minecraft.world.level.LightLayer;
+ import net.minecraft.world.level.block.state.BlockBehaviour;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.block.state.StateDefinition;
+@@ -43,24 +_,21 @@
+ 
+     @Override
+     protected void tick(BlockState p_221233_, ServerLevel p_221234_, BlockPos p_221235_, RandomSource p_221236_) {
+-        if (p_221236_.nextInt(3) == 0 || this.fewerNeigboursThan(p_221234_, p_221235_, 4)) {
+-            int i = p_221234_.dimension() == Level.END ? p_221234_.getBrightness(LightLayer.BLOCK, p_221235_) : p_221234_.getMaxLocalRawBrightness(p_221235_);
+-            if (i > 11 - p_221233_.getValue(AGE) - p_221233_.getLightBlock() && this.slightlyMelt(p_221233_, p_221234_, p_221235_)) {
+-                BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
++        if ((p_221236_.nextInt(3) == 0 || this.fewerNeigboursThan(p_221234_, p_221235_, 4))
++            && p_221234_.getMaxLocalRawBrightness(p_221235_) > 11 - p_221233_.getValue(AGE) - p_221233_.getLightBlock()
++            && this.slightlyMelt(p_221233_, p_221234_, p_221235_)) {
++            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+ 
+-                for (Direction direction : Direction.values()) {
+-                    blockpos$mutableblockpos.setWithOffset(p_221235_, direction);
+-                    BlockState blockstate = p_221234_.getBlockState(blockpos$mutableblockpos);
+-                    if (blockstate.is(this) && !this.slightlyMelt(blockstate, p_221234_, blockpos$mutableblockpos)) {
+-                        p_221234_.scheduleTick(blockpos$mutableblockpos, this, Mth.nextInt(p_221236_, 20, 40));
+-                    }
++            for (Direction direction : Direction.values()) {
++                blockpos$mutableblockpos.setWithOffset(p_221235_, direction);
++                BlockState blockstate = p_221234_.getBlockState(blockpos$mutableblockpos);
++                if (blockstate.is(this) && !this.slightlyMelt(blockstate, p_221234_, blockpos$mutableblockpos)) {
++                    p_221234_.scheduleTick(blockpos$mutableblockpos, this, Mth.nextInt(p_221236_, 20, 40));
+                 }
+-
+-                return;
+             }
++        } else {
++            p_221234_.scheduleTick(p_221235_, this, Mth.nextInt(p_221236_, 20, 40));
+         }
+-
+-        p_221234_.scheduleTick(p_221235_, this, Mth.nextInt(p_221236_, 20, 40));
+     }
+ 
+     private boolean slightlyMelt(BlockState p_53593_, Level p_53594_, BlockPos p_53595_) {

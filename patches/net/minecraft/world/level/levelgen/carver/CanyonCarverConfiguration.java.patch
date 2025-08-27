@@ -1,0 +1,21 @@
+--- a/net/minecraft/world/level/levelgen/carver/CanyonCarverConfiguration.java
++++ b/net/minecraft/world/level/levelgen/carver/CanyonCarverConfiguration.java
+@@ -43,15 +_,15 @@
+ 
+     public static class CanyonShapeConfiguration {
+         public static final Codec<CanyonCarverConfiguration.CanyonShapeConfiguration> CODEC = RecordCodecBuilder.create(
+-            p_432719_ -> p_432719_.group(
++            p_159007_ -> p_159007_.group(
+                     FloatProvider.CODEC.fieldOf("distance_factor").forGetter(p_159019_ -> p_159019_.distanceFactor),
+                     FloatProvider.CODEC.fieldOf("thickness").forGetter(p_159017_ -> p_159017_.thickness),
+-                    ExtraCodecs.POSITIVE_INT.fieldOf("width_smoothness").forGetter(p_159015_ -> p_159015_.widthSmoothness),
++                    ExtraCodecs.NON_NEGATIVE_INT.fieldOf("width_smoothness").forGetter(p_159015_ -> p_159015_.widthSmoothness),
+                     FloatProvider.CODEC.fieldOf("horizontal_radius_factor").forGetter(p_159013_ -> p_159013_.horizontalRadiusFactor),
+                     Codec.FLOAT.fieldOf("vertical_radius_default_factor").forGetter(p_159011_ -> p_159011_.verticalRadiusDefaultFactor),
+                     Codec.FLOAT.fieldOf("vertical_radius_center_factor").forGetter(p_159009_ -> p_159009_.verticalRadiusCenterFactor)
+                 )
+-                .apply(p_432719_, CanyonCarverConfiguration.CanyonShapeConfiguration::new)
++                .apply(p_159007_, CanyonCarverConfiguration.CanyonShapeConfiguration::new)
+         );
+         public final FloatProvider distanceFactor;
+         public final FloatProvider thickness;

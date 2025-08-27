@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/item/EnderEyeItem.java
++++ b/net/minecraft/world/item/EnderEyeItem.java
+@@ -39,7 +_,7 @@
+         BlockState blockstate = level.getBlockState(blockpos);
+         if (!blockstate.is(Blocks.END_PORTAL_FRAME) || blockstate.getValue(EndPortalFrameBlock.HAS_EYE)) {
+             return InteractionResult.PASS;
+-        } else if (level.isClientSide()) {
++        } else if (level.isClientSide) {
+             return InteractionResult.SUCCESS;
+         } else {
+             BlockState blockstate1 = blockstate.setValue(EndPortalFrameBlock.HAS_EYE, true);

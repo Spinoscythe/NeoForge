@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/gui/screens/options/VideoSettingsScreen.java
++++ b/net/minecraft/client/gui/screens/options/VideoSettingsScreen.java
+@@ -139,8 +_,8 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_345069_, double p_346434_, int p_344934_, boolean p_434065_) {
+-        if (super.mouseClicked(p_345069_, p_346434_, p_344934_, p_434065_)) {
++    public boolean mouseClicked(double p_345069_, double p_346434_, int p_344934_) {
++        if (super.mouseClicked(p_345069_, p_346434_, p_344934_)) {
+             if (this.gpuWarnlistManager.isShowingWarning()) {
+                 List<Component> list = Lists.newArrayList(WARNING_MESSAGE, CommonComponents.NEW_LINE);
+                 String s = this.gpuWarnlistManager.getRendererWarnings();

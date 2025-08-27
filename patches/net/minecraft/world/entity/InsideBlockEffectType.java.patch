@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/entity/InsideBlockEffectType.java
++++ b/net/minecraft/world/entity/InsideBlockEffectType.java
+@@ -10,7 +_,6 @@
+             p_405140_.setTicksFrozen(Math.min(p_405140_.getTicksRequiredToFreeze(), p_405140_.getTicksFrozen() + 1));
+         }
+     }),
+-    CLEAR_FREEZE(Entity::clearFreeze),
+     FIRE_IGNITE(BaseFireBlock::fireIgnite),
+     LAVA_IGNITE(Entity::lavaIgnite),
+     EXTINGUISH(Entity::clearFire);

@@ -1,0 +1,103 @@
+--- a/net/minecraft/core/BlockPos.java
++++ b/net/minecraft/core/BlockPos.java
+@@ -7,7 +_,6 @@
+ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+ import it.unimi.dsi.fastutil.longs.LongSet;
+ import java.util.ArrayDeque;
+-import java.util.List;
+ import java.util.Optional;
+ import java.util.Queue;
+ import java.util.function.BiConsumer;
+@@ -518,92 +_,6 @@
+         }
+ 
+         return i;
+-    }
+-
+-    public static Iterable<BlockPos> betweenCornersInDirection(AABB p_436580_, Vec3 p_436651_) {
+-        Vec3 vec3 = p_436580_.getMinPosition();
+-        int i = Mth.floor(vec3.x());
+-        int j = Mth.floor(vec3.y());
+-        int k = Mth.floor(vec3.z());
+-        Vec3 vec31 = p_436580_.getMaxPosition();
+-        int l = Mth.floor(vec31.x());
+-        int i1 = Mth.floor(vec31.y());
+-        int j1 = Mth.floor(vec31.z());
+-        return betweenCornersInDirection(i, j, k, l, i1, j1, p_436651_);
+-    }
+-
+-    public static Iterable<BlockPos> betweenCornersInDirection(BlockPos p_436609_, BlockPos p_436634_, Vec3 p_436652_) {
+-        return betweenCornersInDirection(p_436609_.getX(), p_436609_.getY(), p_436609_.getZ(), p_436634_.getX(), p_436634_.getY(), p_436634_.getZ(), p_436652_);
+-    }
+-
+-    public static Iterable<BlockPos> betweenCornersInDirection(
+-        int p_436748_, int p_436597_, int p_436677_, int p_436793_, int p_436592_, int p_436588_, Vec3 p_436683_
+-    ) {
+-        int i = Math.min(p_436748_, p_436793_);
+-        int j = Math.min(p_436597_, p_436592_);
+-        int k = Math.min(p_436677_, p_436588_);
+-        int l = Math.max(p_436748_, p_436793_);
+-        int i1 = Math.max(p_436597_, p_436592_);
+-        int j1 = Math.max(p_436677_, p_436588_);
+-        int k1 = l - i;
+-        int l1 = i1 - j;
+-        int i2 = j1 - k;
+-        int j2 = p_436683_.x >= 0.0 ? i : l;
+-        int k2 = p_436683_.y >= 0.0 ? j : i1;
+-        int l2 = p_436683_.z >= 0.0 ? k : j1;
+-        List<Direction.Axis> list = Direction.axisStepOrder(p_436683_);
+-        Direction.Axis direction$axis = list.get(0);
+-        Direction.Axis direction$axis1 = list.get(1);
+-        Direction.Axis direction$axis2 = list.get(2);
+-        Direction direction = p_436683_.get(direction$axis) >= 0.0 ? direction$axis.getPositive() : direction$axis.getNegative();
+-        Direction direction1 = p_436683_.get(direction$axis1) >= 0.0 ? direction$axis1.getPositive() : direction$axis1.getNegative();
+-        Direction direction2 = p_436683_.get(direction$axis2) >= 0.0 ? direction$axis2.getPositive() : direction$axis2.getNegative();
+-        int i3 = direction$axis.choose(k1, l1, i2);
+-        int j3 = direction$axis1.choose(k1, l1, i2);
+-        int k3 = direction$axis2.choose(k1, l1, i2);
+-        return () -> new AbstractIterator<BlockPos>() {
+-            private final BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+-            private int firstIndex;
+-            private int secondIndex;
+-            private int thirdIndex;
+-            private boolean end;
+-            private final int firstDirX = direction.getStepX();
+-            private final int firstDirY = direction.getStepY();
+-            private final int firstDirZ = direction.getStepZ();
+-            private final int secondDirX = direction1.getStepX();
+-            private final int secondDirY = direction1.getStepY();
+-            private final int secondDirZ = direction1.getStepZ();
+-            private final int thirdDirX = direction2.getStepX();
+-            private final int thirdDirY = direction2.getStepY();
+-            private final int thirdDirZ = direction2.getStepZ();
+-
+-            protected BlockPos computeNext() {
+-                if (this.end) {
+-                    return this.endOfData();
+-                } else {
+-                    this.cursor
+-                        .set(
+-                            j2 + this.firstDirX * this.firstIndex + this.secondDirX * this.secondIndex + this.thirdDirX * this.thirdIndex,
+-                            k2 + this.firstDirY * this.firstIndex + this.secondDirY * this.secondIndex + this.thirdDirY * this.thirdIndex,
+-                            l2 + this.firstDirZ * this.firstIndex + this.secondDirZ * this.secondIndex + this.thirdDirZ * this.thirdIndex
+-                        );
+-                    if (this.thirdIndex < k3) {
+-                        this.thirdIndex++;
+-                    } else if (this.secondIndex < j3) {
+-                        this.secondIndex++;
+-                        this.thirdIndex = 0;
+-                    } else if (this.firstIndex < i3) {
+-                        this.firstIndex++;
+-                        this.thirdIndex = 0;
+-                        this.secondIndex = 0;
+-                    } else {
+-                        this.end = true;
+-                    }
+-
+-                    return this.cursor;
+-                }
+-            }
+-        };
+     }
+ 
+     public static class MutableBlockPos extends BlockPos {

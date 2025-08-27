@@ -1,0 +1,55 @@
+--- a/net/minecraft/client/gui/font/glyphs/EmptyGlyph.java
++++ b/net/minecraft/client/gui/font/glyphs/EmptyGlyph.java
+@@ -1,39 +_,21 @@
+ package net.minecraft.client.gui.font.glyphs;
+ 
+-import com.mojang.blaze3d.font.GlyphInfo;
+-import com.mojang.blaze3d.font.UnbakedGlyph;
+-import javax.annotation.Nullable;
+-import net.minecraft.client.gui.font.TextRenderable;
+-import net.minecraft.network.chat.Style;
++import com.mojang.blaze3d.vertex.VertexConsumer;
++import net.minecraft.client.gui.font.GlyphRenderTypes;
++import net.minecraft.resources.ResourceLocation;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
++import org.joml.Matrix4f;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class EmptyGlyph implements UnbakedGlyph {
+-    final GlyphInfo info;
+-
+-    public EmptyGlyph(float p_439922_) {
+-        this.info = GlyphInfo.simple(p_439922_);
+-    }
+-
+-    @Override
+-    public GlyphInfo info() {
+-        return this.info;
+-    }
+-
+-    @Override
+-    public BakedGlyph bake(UnbakedGlyph.Stitcher p_439453_) {
+-        return new BakedGlyph() {
+-            @Override
+-            public GlyphInfo info() {
+-                return EmptyGlyph.this.info;
+-            }
+-
+-            @Nullable
+-            @Override
+-            public TextRenderable createGlyph(float p_439459_, float p_440447_, int p_439996_, int p_440639_, Style p_439498_, float p_439464_, float p_439851_) {
+-                return null;
+-            }
+-        };
++public class EmptyGlyph extends BakedGlyph {
++    public static final EmptyGlyph INSTANCE = new EmptyGlyph();
++
++    public EmptyGlyph() {
++        super(GlyphRenderTypes.createForColorTexture(ResourceLocation.withDefaultNamespace("")), null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
++    }
++
++    @Override
++    public void renderChar(BakedGlyph.GlyphInstance p_381033_, Matrix4f p_253794_, VertexConsumer p_95282_, int p_95287_, boolean p_427377_) {
+     }
+ }

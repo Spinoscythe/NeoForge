@@ -1,14 +1,33 @@
 --- a/com/mojang/blaze3d/pipeline/RenderTarget.java
 +++ b/com/mojang/blaze3d/pipeline/RenderTarget.java
-@@ -25,6 +_,7 @@
-     public int viewHeight;
+@@ -1,5 +_,6 @@
+ package com.mojang.blaze3d.pipeline;
+ 
++import com.mojang.blaze3d.buffers.GpuBuffer;
+ import com.mojang.blaze3d.systems.GpuDevice;
+ import com.mojang.blaze3d.systems.RenderPass;
+ import com.mojang.blaze3d.systems.RenderSystem;
+@@ -8,6 +_,7 @@
+ import com.mojang.blaze3d.textures.GpuTexture;
+ import com.mojang.blaze3d.textures.GpuTextureView;
+ import com.mojang.blaze3d.textures.TextureFormat;
++import com.mojang.blaze3d.vertex.VertexFormat;
+ import java.util.OptionalInt;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.renderer.RenderPipelines;
+@@ -19,8 +_,11 @@
+     private static int UNNAMED_RENDER_TARGETS = 0;
+     public int width;
+     public int height;
++    public int viewWidth;
++    public int viewHeight;
      protected final String label;
      public final boolean useDepth;
 +    public final boolean useStencil;
      @Nullable
      protected GpuTexture colorTexture;
      @Nullable
-@@ -36,8 +_,16 @@
+@@ -32,8 +_,16 @@
      public FilterMode filterMode;
  
      public RenderTarget(@Nullable String p_405387_, boolean p_166199_) {
@@ -25,7 +44,12 @@
      }
  
      public void resize(int p_83942_, int p_83943_) {
-@@ -92,7 +_,8 @@
+@@ -83,10 +_,13 @@
+         GpuDevice gpudevice = RenderSystem.getDevice();
+         int i = gpudevice.getMaxTextureSize();
+         if (p_83951_ > 0 && p_83951_ <= i && p_83952_ > 0 && p_83952_ <= i) {
++            this.viewWidth = p_83951_;
++            this.viewHeight = p_83952_;
              this.width = p_83951_;
              this.height = p_83952_;
              if (this.useDepth) {
@@ -35,3 +59,24 @@
                  this.depthTextureView = gpudevice.createTextureView(this.depthTexture);
                  this.depthTexture.setTextureFilter(FilterMode.NEAREST, false);
                  this.depthTexture.setAddressMode(AddressMode.CLAMP_TO_EDGE);
+@@ -126,14 +_,19 @@
+ 
+     public void blitAndBlendToTexture(GpuTextureView p_423552_) {
+         RenderSystem.assertOnRenderThread();
++        RenderSystem.AutoStorageIndexBuffer rendersystem$autostorageindexbuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
++        GpuBuffer gpubuffer = rendersystem$autostorageindexbuffer.getBuffer(6);
++        GpuBuffer gpubuffer1 = RenderSystem.getQuadVertexBuffer();
+ 
+         try (RenderPass renderpass = RenderSystem.getDevice()
+                 .createCommandEncoder()
+                 .createRenderPass(() -> "Blit render target", p_423552_, OptionalInt.empty())) {
+             renderpass.setPipeline(RenderPipelines.ENTITY_OUTLINE_BLIT);
+             RenderSystem.bindDefaultUniforms(renderpass);
++            renderpass.setVertexBuffer(0, gpubuffer1);
++            renderpass.setIndexBuffer(gpubuffer, rendersystem$autostorageindexbuffer.type());
+             renderpass.bindSampler("InSampler", this.colorTextureView);
+-            renderpass.draw(0, 3);
++            renderpass.drawIndexed(0, 0, 6, 1);
+         }
+     }
+ 

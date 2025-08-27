@@ -1,0 +1,111 @@
+--- a/net/minecraft/client/renderer/feature/ModelFeatureRenderer.java
++++ /dev/null
+@@ -1,108 +_,0 @@
+-package net.minecraft.client.renderer.feature;
+-
+-import com.mojang.blaze3d.vertex.PoseStack;
+-import com.mojang.blaze3d.vertex.SheetedDecalTextureGenerator;
+-import com.mojang.blaze3d.vertex.VertexConsumer;
+-import java.util.Comparator;
+-import java.util.List;
+-import java.util.Map;
+-import java.util.Map.Entry;
+-import net.minecraft.client.model.Model;
+-import net.minecraft.client.renderer.MultiBufferSource;
+-import net.minecraft.client.renderer.OutlineBufferSource;
+-import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollection;
+-import net.minecraft.client.renderer.SubmitNodeStorage;
+-import net.minecraft.client.resources.model.ModelBakery;
+-import net.neoforged.api.distmarker.Dist;
+-import net.neoforged.api.distmarker.OnlyIn;
+-
+-@OnlyIn(Dist.CLIENT)
+-public class ModelFeatureRenderer {
+-    private final PoseStack poseStack = new PoseStack();
+-
+-    public void render(
+-        SubmitNodeCollection p_440688_, MultiBufferSource.BufferSource p_440021_, OutlineBufferSource p_439307_, MultiBufferSource.BufferSource p_440318_
+-    ) {
+-        this.renderBatch(p_440021_, p_439307_, p_440688_.getOpaqueModelSubmits(), p_440318_);
+-        p_440688_.getTranslucentModelSubmits().sort(Comparator.comparingDouble(p_439003_ -> -p_439003_.position().lengthSquared()));
+-        this.renderTranslucents(p_440021_, p_439307_, p_440688_.getTranslucentModelSubmits(), p_440318_);
+-    }
+-
+-    private void renderTranslucents(
+-        MultiBufferSource.BufferSource p_439004_,
+-        OutlineBufferSource p_439192_,
+-        List<SubmitNodeStorage.TranslucentModelSubmit<?>> p_439940_,
+-        MultiBufferSource.BufferSource p_440658_
+-    ) {
+-        for (SubmitNodeStorage.TranslucentModelSubmit<?> translucentmodelsubmit : p_439940_) {
+-            this.renderModel(
+-                translucentmodelsubmit.modelSubmit(),
+-                translucentmodelsubmit.renderType(),
+-                p_439004_.getBuffer(translucentmodelsubmit.renderType()),
+-                p_439192_,
+-                p_440658_
+-            );
+-        }
+-    }
+-
+-    private void renderBatch(
+-        MultiBufferSource.BufferSource p_440096_,
+-        OutlineBufferSource p_439188_,
+-        Map<RenderType, List<SubmitNodeStorage.ModelSubmit<?>>> p_440629_,
+-        MultiBufferSource.BufferSource p_440563_
+-    ) {
+-        for (Entry<RenderType, List<SubmitNodeStorage.ModelSubmit<?>>> entry : p_440629_.entrySet()) {
+-            VertexConsumer vertexconsumer = p_440096_.getBuffer(entry.getKey());
+-
+-            for (SubmitNodeStorage.ModelSubmit<?> modelsubmit : entry.getValue()) {
+-                this.renderModel(modelsubmit, entry.getKey(), vertexconsumer, p_439188_, p_440563_);
+-            }
+-        }
+-    }
+-
+-    private <S> void renderModel(
+-        SubmitNodeStorage.ModelSubmit<S> p_440177_,
+-        RenderType p_439279_,
+-        VertexConsumer p_439575_,
+-        OutlineBufferSource p_439507_,
+-        MultiBufferSource.BufferSource p_439974_
+-    ) {
+-        this.poseStack.pushPose();
+-        this.poseStack.last().set(p_440177_.pose());
+-        Model<? super S> model = p_440177_.model();
+-        VertexConsumer vertexconsumer = p_440177_.sprite() == null ? p_439575_ : p_440177_.sprite().wrap(p_439575_);
+-        model.setupAnim(p_440177_.state());
+-        model.renderToBuffer(this.poseStack, vertexconsumer, p_440177_.lightCoords(), p_440177_.overlayCoords(), p_440177_.tintedColor());
+-        if (p_440177_.outlineColor() != 0 && (p_439279_.outline().isPresent() || p_439279_.isOutline())) {
+-            p_439507_.setColor(p_440177_.outlineColor());
+-            VertexConsumer vertexconsumer1 = p_439507_.getBuffer(p_439279_);
+-            model.renderToBuffer(
+-                this.poseStack,
+-                p_440177_.sprite() == null ? vertexconsumer1 : p_440177_.sprite().wrap(vertexconsumer1),
+-                p_440177_.lightCoords(),
+-                p_440177_.overlayCoords(),
+-                p_440177_.tintedColor()
+-            );
+-        }
+-
+-        if (p_440177_.crumblingOverlay() != null && p_439279_.affectsCrumbling() && p_440177_.crumblingOverlay().progress() != 0) {
+-            VertexConsumer vertexconsumer2 = new SheetedDecalTextureGenerator(
+-                p_439974_.getBuffer(ModelBakery.DESTROY_TYPES.get(p_440177_.crumblingOverlay().progress())), p_440177_.crumblingOverlay().cameraPose(), 1.0F
+-            );
+-            model.renderToBuffer(
+-                this.poseStack,
+-                p_440177_.sprite() == null ? vertexconsumer2 : p_440177_.sprite().wrap(vertexconsumer2),
+-                p_440177_.lightCoords(),
+-                p_440177_.overlayCoords(),
+-                p_440177_.tintedColor()
+-            );
+-        }
+-
+-        this.poseStack.popPose();
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    public record CrumblingOverlay(int progress, PoseStack.Pose cameraPose) {
+-    }
+-}

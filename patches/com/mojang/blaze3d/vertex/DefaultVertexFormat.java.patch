@@ -1,0 +1,10 @@
+--- a/com/mojang/blaze3d/vertex/DefaultVertexFormat.java
++++ b/com/mojang/blaze3d/vertex/DefaultVertexFormat.java
+@@ -5,6 +_,7 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class DefaultVertexFormat {
++    public static final VertexFormat BLIT_SCREEN = VertexFormat.builder().add("Position", VertexFormatElement.POSITION).build();
+     public static final VertexFormat EMPTY = VertexFormat.builder().build();
+     public static final VertexFormat BLOCK = VertexFormat.builder()
+         .add("Position", VertexFormatElement.POSITION)

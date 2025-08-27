@@ -10,7 +10,15 @@
  public enum ItemDisplayContext implements StringRepresentable, net.neoforged.fml.common.asm.enumextension.IExtensibleEnum {
      NONE(0, "none"),
      THIRD_PERSON_LEFT_HAND(1, "thirdperson_lefthand"),
-@@ -20,10 +_,22 @@
+@@ -14,17 +_,28 @@
+     HEAD(5, "head"),
+     GUI(6, "gui"),
+     GROUND(7, "ground"),
+-    FIXED(8, "fixed"),
+-    ON_SHELF(9, "on_shelf");
++    FIXED(8, "fixed");
+ 
+     public static final Codec<ItemDisplayContext> CODEC = StringRepresentable.fromEnum(ItemDisplayContext::values);
      public static final IntFunction<ItemDisplayContext> BY_ID = ByIdMap.continuous(ItemDisplayContext::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
      private final byte id;
      private final String name;
@@ -33,7 +41,7 @@
      }
  
      @Override
-@@ -41,5 +_,18 @@
+@@ -42,5 +_,18 @@
  
      public boolean leftHand() {
          return this == FIRST_PERSON_LEFT_HAND || this == THIRD_PERSON_LEFT_HAND;

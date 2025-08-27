@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/entity/projectile/windcharge/AbstractWindCharge.java
++++ b/net/minecraft/world/entity/projectile/windcharge/AbstractWindCharge.java
+@@ -101,7 +_,7 @@
+     @Override
+     protected void onHitBlock(BlockHitResult p_325933_) {
+         super.onHitBlock(p_325933_);
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             Vec3i vec3i = p_325933_.getDirection().getUnitVec3i();
+             Vec3 vec3 = Vec3.atLowerCornerOf(vec3i).multiply(0.25, 0.25, 0.25);
+             Vec3 vec31 = p_325933_.getLocation().add(vec3);
+@@ -113,7 +_,7 @@
+     @Override
+     protected void onHit(HitResult p_326337_) {
+         super.onHit(p_326337_);
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.discard();
+         }
+     }
+@@ -146,7 +_,7 @@
+ 
+     @Override
+     public void tick() {
+-        if (!this.level().isClientSide() && this.getBlockY() > this.level().getMaxY() + 30) {
++        if (!this.level().isClientSide && this.getBlockY() > this.level().getMaxY() + 30) {
+             this.explode(this.position());
+             this.discard();
+         } else {

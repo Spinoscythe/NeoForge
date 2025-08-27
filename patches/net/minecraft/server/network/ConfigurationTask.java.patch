@@ -1,6 +1,13 @@
 --- a/net/minecraft/server/network/ConfigurationTask.java
 +++ b/net/minecraft/server/network/ConfigurationTask.java
-@@ -9,6 +_,10 @@
+@@ -6,13 +_,13 @@
+ public interface ConfigurationTask {
+     void start(Consumer<Packet<?>> p_294184_);
+ 
+-    default boolean tick() {
+-        return false;
+-    }
+-
      ConfigurationTask.Type type();
  
      public record Type(String id) {

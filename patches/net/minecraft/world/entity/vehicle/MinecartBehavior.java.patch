@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/entity/vehicle/MinecartBehavior.java
++++ b/net/minecraft/world/entity/vehicle/MinecartBehavior.java
+@@ -19,8 +_,8 @@
+         return null;
+     }
+ 
+-    public void lerpMotion(Vec3 p_436767_) {
+-        this.setDeltaMovement(p_436767_);
++    public void lerpMotion(double p_363918_, double p_364438_, double p_365344_) {
++        this.setDeltaMovement(p_363918_, p_364438_, p_365344_);
+     }
+ 
+     public abstract void tick();

@@ -1,0 +1,15 @@
+--- a/net/minecraft/util/profiling/metrics/MetricSampler.java
++++ b/net/minecraft/util/profiling/metrics/MetricSampler.java
+@@ -45,11 +_,7 @@
+     }
+ 
+     public static <T> MetricSampler.MetricSamplerBuilder<T> builder(String p_146014_, MetricCategory p_146015_, ToDoubleFunction<T> p_146016_, T p_146017_) {
+-        if (p_146016_ == null) {
+-            throw new IllegalStateException();
+-        } else {
+-            return new MetricSampler.MetricSamplerBuilder<>(p_146014_, p_146015_, p_146016_, p_146017_);
+-        }
++        return new MetricSampler.MetricSamplerBuilder<>(p_146014_, p_146015_, p_146016_, p_146017_);
+     }
+ 
+     public void onStartTick() {

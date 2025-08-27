@@ -1,0 +1,17 @@
+--- a/net/minecraft/world/level/block/AmethystClusterBlock.java
++++ b/net/minecraft/world/level/block/AmethystClusterBlock.java
+@@ -28,12 +_,12 @@
+ 
+ public class AmethystClusterBlock extends AmethystBlock implements SimpleWaterloggedBlock {
+     public static final MapCodec<AmethystClusterBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432599_ -> p_432599_.group(
++        p_367977_ -> p_367977_.group(
+                 Codec.FLOAT.fieldOf("height").forGetter(p_304411_ -> p_304411_.height),
+                 Codec.FLOAT.fieldOf("width").forGetter(p_393317_ -> p_393317_.width),
+                 propertiesCodec()
+             )
+-            .apply(p_432599_, AmethystClusterBlock::new)
++            .apply(p_367977_, AmethystClusterBlock::new)
+     );
+     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+     public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;

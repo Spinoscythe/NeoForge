@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/ConversionType.java
++++ b/net/minecraft/world/entity/ConversionType.java
+@@ -33,7 +_,7 @@
+             Entity entity2 = p_371283_.getVehicle();
+             if (entity2 != null) {
+                 p_371283_.stopRiding();
+-                p_371774_.startRiding(entity2, false, false);
++                p_371774_.startRiding(entity2);
+             }
+ 
+             if (p_371350_.keepEquipment()) {

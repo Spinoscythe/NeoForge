@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/screens/worldselection/SwitchGrid.java
++++ b/net/minecraft/client/gui/screens/worldselection/SwitchGrid.java
+@@ -144,7 +_,7 @@
+ 
+         SwitchGrid.LabeledSwitch build(SwitchGrid.Builder p_270513_, GridLayout p_271004_, int p_270506_) {
+             p_270513_.increaseRow();
+-            StringWidget stringwidget = new StringWidget(this.label, Minecraft.getInstance().font);
++            StringWidget stringwidget = new StringWidget(this.label, Minecraft.getInstance().font).alignLeft();
+             p_271004_.addChild(stringwidget, p_270513_.rowCount, p_270506_, p_271004_.newCellSettings().align(0.0F, 0.5F).paddingLeft(p_270513_.paddingLeft));
+             Optional<SwitchGrid.InfoUnderneathSettings> optional = p_270513_.infoUnderneath;
+             CycleButton.Builder<Boolean> builder = CycleButton.onOffBuilder(this.stateSupplier.getAsBoolean());

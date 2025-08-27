@@ -1,0 +1,49 @@
+--- a/net/minecraft/client/renderer/entity/LlamaSpitRenderer.java
++++ b/net/minecraft/client/renderer/entity/LlamaSpitRenderer.java
+@@ -1,10 +_,11 @@
+ package net.minecraft.client.renderer.entity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import com.mojang.math.Axis;
+ import net.minecraft.client.model.LlamaSpitModel;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.state.LlamaSpitRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.resources.ResourceLocation;
+@@ -22,23 +_,16 @@
+         this.model = new LlamaSpitModel(p_174296_.bakeLayer(ModelLayers.LLAMA_SPIT));
+     }
+ 
+-    public void submit(LlamaSpitRenderState p_436031_, PoseStack p_434928_, SubmitNodeCollector p_435853_) {
+-        p_434928_.pushPose();
+-        p_434928_.translate(0.0F, 0.15F, 0.0F);
+-        p_434928_.mulPose(Axis.YP.rotationDegrees(p_436031_.yRot - 90.0F));
+-        p_434928_.mulPose(Axis.ZP.rotationDegrees(p_436031_.xRot));
+-        p_435853_.submitModel(
+-            this.model,
+-            p_436031_,
+-            p_434928_,
+-            this.model.renderType(LLAMA_SPIT_LOCATION),
+-            p_436031_.lightCoords,
+-            OverlayTexture.NO_OVERLAY,
+-            p_436031_.outlineColor,
+-            null
+-        );
+-        p_434928_.popPose();
+-        super.submit(p_436031_, p_434928_, p_435853_);
++    public void render(LlamaSpitRenderState p_365428_, PoseStack p_115376_, MultiBufferSource p_115377_, int p_115378_) {
++        p_115376_.pushPose();
++        p_115376_.translate(0.0F, 0.15F, 0.0F);
++        p_115376_.mulPose(Axis.YP.rotationDegrees(p_365428_.yRot - 90.0F));
++        p_115376_.mulPose(Axis.ZP.rotationDegrees(p_365428_.xRot));
++        this.model.setupAnim(p_365428_);
++        VertexConsumer vertexconsumer = p_115377_.getBuffer(this.model.renderType(LLAMA_SPIT_LOCATION));
++        this.model.renderToBuffer(p_115376_, vertexconsumer, p_115378_, OverlayTexture.NO_OVERLAY);
++        p_115376_.popPose();
++        super.render(p_365428_, p_115376_, p_115377_, p_115378_);
+     }
+ 
+     public LlamaSpitRenderState createRenderState() {

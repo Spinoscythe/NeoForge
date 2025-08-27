@@ -1,6 +1,13 @@
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
-@@ -36,6 +_,7 @@
+@@ -31,11 +_,12 @@
+ 
+ public class FlowerPotBlock extends Block {
+     public static final MapCodec<FlowerPotBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432666_ -> p_432666_.group(BuiltInRegistries.BLOCK.byNameCodec().fieldOf("potted").forGetter(p_304928_ -> p_304928_.potted), propertiesCodec())
+-            .apply(p_432666_, FlowerPotBlock::new)
++        p_368424_ -> p_368424_.group(BuiltInRegistries.BLOCK.byNameCodec().fieldOf("potted").forGetter(p_304928_ -> p_304928_.potted), propertiesCodec())
++            .apply(p_368424_, FlowerPotBlock::new)
      );
      private static final Map<Block, Block> POTTED_BY_CONTENT = Maps.newHashMap();
      private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 6.0);

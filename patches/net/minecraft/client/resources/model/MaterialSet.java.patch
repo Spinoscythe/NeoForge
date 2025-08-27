@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/resources/model/MaterialSet.java
++++ /dev/null
+@@ -1,10 +_,0 @@
+-package net.minecraft.client.resources.model;
+-
+-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+-import net.neoforged.api.distmarker.Dist;
+-import net.neoforged.api.distmarker.OnlyIn;
+-
+-@OnlyIn(Dist.CLIENT)
+-public interface MaterialSet {
+-    TextureAtlasSprite get(Material p_433654_);
+-}

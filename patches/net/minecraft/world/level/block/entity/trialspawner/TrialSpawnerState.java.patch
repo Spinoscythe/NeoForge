@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerState.java
++++ b/net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerState.java
+@@ -93,8 +_,8 @@
+                             yield WAITING_FOR_REWARD_EJECTION;
+                         }
+                     } else if (trialspawnerstatedata.isReadyToSpawnNextMob(p_311974_, trialspawnerconfig, i)) {
+-                        p_311912_.spawnMob(p_311974_, p_312221_).ifPresent(p_432717_ -> {
+-                            trialspawnerstatedata.currentMobs.add(p_432717_);
++                        p_311912_.spawnMob(p_311974_, p_312221_).ifPresent(p_428185_ -> {
++                            trialspawnerstatedata.currentMobs.add(p_428185_);
+                             trialspawnerstatedata.totalMobsSpawned++;
+                             trialspawnerstatedata.nextMobSpawnsAt = p_311974_.getGameTime() + trialspawnerconfig.ticksBetweenSpawn();
+                             trialspawnerconfig.spawnPotentialsDefinition().getRandom(p_311974_.getRandom()).ifPresent(p_421425_ -> {

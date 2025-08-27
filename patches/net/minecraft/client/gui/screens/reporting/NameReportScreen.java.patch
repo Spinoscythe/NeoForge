@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/gui/screens/reporting/NameReportScreen.java
++++ b/net/minecraft/client/gui/screens/reporting/NameReportScreen.java
+@@ -41,8 +_,8 @@
+                 new StringWidget(Component.translatable("gui.abuseReport.name.reporting", component), this.font),
+                 p_359100_ -> p_359100_.alignHorizontallyCenter().padding(0, 8)
+             );
+-        this.commentBox = this.createCommentBox(280, 9 * 8, p_436489_ -> {
+-            this.reportBuilder.setComments(p_436489_);
++        this.commentBox = this.createCommentBox(280, 9 * 8, p_419425_ -> {
++            this.reportBuilder.setComments(p_419425_);
+             this.onReportChanged();
+         });
+         this.layout.addChild(CommonLayouts.labeledElement(this.font, this.commentBox, COMMENT_BOX_LABEL, p_299902_ -> p_299902_.paddingBottom(12)));

@@ -1,0 +1,56 @@
+--- a/net/minecraft/world/entity/Relative.java
++++ b/net/minecraft/world/entity/Relative.java
+@@ -35,53 +_,6 @@
+         return hashset;
+     }
+ 
+-    public static Set<Relative> rotation(boolean p_436779_, boolean p_436783_) {
+-        Set<Relative> set = EnumSet.noneOf(Relative.class);
+-        if (p_436779_) {
+-            set.add(Y_ROT);
+-        }
+-
+-        if (p_436783_) {
+-            set.add(X_ROT);
+-        }
+-
+-        return set;
+-    }
+-
+-    public static Set<Relative> position(boolean p_436742_, boolean p_436759_, boolean p_436761_) {
+-        Set<Relative> set = EnumSet.noneOf(Relative.class);
+-        if (p_436742_) {
+-            set.add(X);
+-        }
+-
+-        if (p_436759_) {
+-            set.add(Y);
+-        }
+-
+-        if (p_436761_) {
+-            set.add(Z);
+-        }
+-
+-        return set;
+-    }
+-
+-    public static Set<Relative> direction(boolean p_436582_, boolean p_436667_, boolean p_436747_) {
+-        Set<Relative> set = EnumSet.noneOf(Relative.class);
+-        if (p_436582_) {
+-            set.add(DELTA_X);
+-        }
+-
+-        if (p_436667_) {
+-            set.add(DELTA_Y);
+-        }
+-
+-        if (p_436747_) {
+-            set.add(DELTA_Z);
+-        }
+-
+-        return set;
+-    }
+-
+     private Relative(int p_371238_) {
+         this.bit = p_371238_;
+     }

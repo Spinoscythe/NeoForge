@@ -1,0 +1,34 @@
+--- a/com/mojang/blaze3d/opengl/GlShaderModule.java
++++ b/com/mojang/blaze3d/opengl/GlShaderModule.java
+@@ -2,9 +_,11 @@
+ 
+ import com.mojang.blaze3d.shaders.ShaderType;
+ import com.mojang.blaze3d.systems.RenderSystem;
++import net.minecraft.client.renderer.ShaderManager;
+ import net.minecraft.resources.ResourceLocation;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
++import org.apache.commons.lang3.StringUtils;
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class GlShaderModule implements AutoCloseable {
+@@ -18,6 +_,19 @@
+         this.id = p_409685_;
+         this.shaderId = p_410278_;
+         this.type = p_409901_;
++    }
++
++    public static GlShaderModule compile(ResourceLocation p_409598_, ShaderType p_410122_, String p_410840_) throws ShaderManager.CompilationException {
++        RenderSystem.assertOnRenderThread();
++        int i = GlStateManager.glCreateShader(GlConst.toGl(p_410122_));
++        GlStateManager.glShaderSource(i, p_410840_);
++        GlStateManager.glCompileShader(i);
++        if (GlStateManager.glGetShaderi(i, 35713) == 0) {
++            String s = StringUtils.trim(GlStateManager.glGetShaderInfoLog(i, 32768));
++            throw new ShaderManager.CompilationException("Couldn't compile " + p_410122_.getName() + " shader (" + p_409598_ + ") : " + s);
++        } else {
++            return new GlShaderModule(i, p_409598_, p_410122_);
++        }
+     }
+ 
+     @Override

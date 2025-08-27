@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/entity/BellBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/BellBlockEntity.java
+@@ -108,7 +_,7 @@
+             this.nearbyEntities = this.level.getEntitiesOfClass(LivingEntity.class, aabb);
+         }
+ 
+-        if (!this.level.isClientSide()) {
++        if (!this.level.isClientSide) {
+             for (LivingEntity livingentity : this.nearbyEntities) {
+                 if (livingentity.isAlive() && !livingentity.isRemoved() && blockpos.closerToCenterThan(livingentity.position(), 32.0)) {
+                     livingentity.getBrain().setMemory(MemoryModuleType.HEARD_BELL_TIME, this.level.getGameTime());

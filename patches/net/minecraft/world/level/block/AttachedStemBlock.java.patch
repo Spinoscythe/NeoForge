@@ -1,5 +1,21 @@
 --- a/net/minecraft/world/level/block/AttachedStemBlock.java
 +++ b/net/minecraft/world/level/block/AttachedStemBlock.java
+@@ -26,13 +_,13 @@
+ 
+ public class AttachedStemBlock extends VegetationBlock {
+     public static final MapCodec<AttachedStemBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432600_ -> p_432600_.group(
++        p_367978_ -> p_367978_.group(
+                 ResourceKey.codec(Registries.BLOCK).fieldOf("fruit").forGetter(p_304711_ -> p_304711_.fruit),
+                 ResourceKey.codec(Registries.BLOCK).fieldOf("stem").forGetter(p_304975_ -> p_304975_.stem),
+                 ResourceKey.codec(Registries.ITEM).fieldOf("seed").forGetter(p_304775_ -> p_304775_.seed),
+                 propertiesCodec()
+             )
+-            .apply(p_432600_, AttachedStemBlock::new)
++            .apply(p_367978_, AttachedStemBlock::new)
+     );
+     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
+     private static final Map<Direction, VoxelShape> SHAPES = Shapes.rotateHorizontal(Block.boxZ(4.0, 0.0, 10.0, 0.0, 10.0));
 @@ -81,7 +_,7 @@
  
      @Override

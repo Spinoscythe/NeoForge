@@ -1,0 +1,11 @@
+--- a/com/mojang/blaze3d/font/GlyphProvider.java
++++ b/com/mojang/blaze3d/font/GlyphProvider.java
+@@ -15,7 +_,7 @@
+     }
+ 
+     @Nullable
+-    default UnbakedGlyph getGlyph(int p_231091_) {
++    default GlyphInfo getGlyph(int p_231091_) {
+         return null;
+     }
+ 

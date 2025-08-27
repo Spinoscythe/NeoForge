@@ -1,0 +1,59 @@
+--- a/net/minecraft/client/gui/components/MultiLineEditBox.java
++++ b/net/minecraft/client/gui/components/MultiLineEditBox.java
+@@ -83,13 +_,9 @@
+     }
+ 
+     @Override
+-    public void onClick(double p_388397_, double p_388871_, boolean p_434523_) {
+-        if (p_434523_) {
+-            this.textField.selectWordAtCursor();
+-        } else {
+-            this.textField.setSelecting(Screen.hasShiftDown());
+-            this.seekCursorScreen(p_388397_, p_388871_);
+-        }
++    public void onClick(double p_388397_, double p_388871_) {
++        this.textField.setSelecting(Screen.hasShiftDown());
++        this.seekCursorScreen(p_388397_, p_388871_);
+     }
+ 
+     @Override
+@@ -126,25 +_,20 @@
+             int j = 0;
+             int k = 0;
+             int l = this.getInnerTop();
+-            boolean flag2 = false;
+ 
+             for (MultilineTextField.StringView multilinetextfield$stringview : this.textField.iterateLines()) {
+-                boolean flag3 = this.withinContentAreaTopBottom(l, l + 9);
++                boolean flag2 = this.withinContentAreaTopBottom(l, l + 9);
+                 int i1 = this.getInnerLeft();
+-                if (flag && flag1 && i >= multilinetextfield$stringview.beginIndex() && i <= multilinetextfield$stringview.endIndex()) {
+-                    if (flag3) {
++                if (flag && flag1 && i >= multilinetextfield$stringview.beginIndex() && i < multilinetextfield$stringview.endIndex()) {
++                    if (flag2) {
+                         String s2 = s.substring(multilinetextfield$stringview.beginIndex(), i);
+                         p_283676_.drawString(this.font, s2, i1, l, this.textColor, this.textShadow);
+                         j = i1 + this.font.width(s2);
+-                        if (!flag2) {
+-                            p_283676_.fill(j, l - 1, j + 1, l + 1 + 9, this.cursorColor);
+-                            flag2 = true;
+-                        }
+-
++                        p_283676_.fill(j, l - 1, j + 1, l + 1 + 9, this.cursorColor);
+                         p_283676_.drawString(this.font, s.substring(i, multilinetextfield$stringview.endIndex()), j, l, this.textColor, this.textShadow);
+                     }
+                 } else {
+-                    if (flag3) {
++                    if (flag2) {
+                         String s1 = s.substring(multilinetextfield$stringview.beginIndex(), multilinetextfield$stringview.endIndex());
+                         p_283676_.drawString(this.font, s1, i1, l, this.textColor, this.textShadow);
+                         j = i1 + this.font.width(s1) - 1;
+@@ -157,7 +_,7 @@
+             }
+ 
+             if (flag && !flag1 && this.withinContentAreaTopBottom(k, k + 9)) {
+-                p_283676_.drawString(this.font, "_", j + 1, k, this.cursorColor, this.textShadow);
++                p_283676_.drawString(this.font, "_", j, k, this.cursorColor, this.textShadow);
+             }
+ 
+             if (this.textField.hasSelection()) {

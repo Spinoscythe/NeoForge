@@ -1,0 +1,41 @@
+--- a/net/minecraft/client/gui/screens/recipebook/RecipeBookPage.java
++++ b/net/minecraft/client/gui/screens/recipebook/RecipeBookPage.java
+@@ -149,13 +_,11 @@
+         this.overlay.setVisible(false);
+     }
+ 
+-    public boolean mouseClicked(
+-        double p_100410_, double p_100411_, int p_100412_, int p_100413_, int p_100414_, int p_100415_, int p_100416_, boolean p_435386_
+-    ) {
++    public boolean mouseClicked(double p_100410_, double p_100411_, int p_100412_, int p_100413_, int p_100414_, int p_100415_, int p_100416_) {
+         this.lastClickedRecipe = null;
+         this.lastClickedRecipeCollection = null;
+         if (this.overlay.isVisible()) {
+-            if (this.overlay.mouseClicked(p_100410_, p_100411_, p_100412_, p_435386_)) {
++            if (this.overlay.mouseClicked(p_100410_, p_100411_, p_100412_)) {
+                 this.lastClickedRecipe = this.overlay.getLastRecipeClicked();
+                 this.lastClickedRecipeCollection = this.overlay.getRecipeCollection();
+             } else {
+@@ -163,11 +_,11 @@
+             }
+ 
+             return true;
+-        } else if (this.forwardButton.mouseClicked(p_100410_, p_100411_, p_100412_, p_435386_)) {
++        } else if (this.forwardButton.mouseClicked(p_100410_, p_100411_, p_100412_)) {
+             this.currentPage++;
+             this.updateButtonsForPage();
+             return true;
+-        } else if (this.backButton.mouseClicked(p_100410_, p_100411_, p_100412_, p_435386_)) {
++        } else if (this.backButton.mouseClicked(p_100410_, p_100411_, p_100412_)) {
+             this.currentPage--;
+             this.updateButtonsForPage();
+             return true;
+@@ -175,7 +_,7 @@
+             ContextMap contextmap = SlotDisplayContext.fromLevel(this.minecraft.level);
+ 
+             for (RecipeButton recipebutton : this.buttons) {
+-                if (recipebutton.mouseClicked(p_100410_, p_100411_, p_100412_, p_435386_)) {
++                if (recipebutton.mouseClicked(p_100410_, p_100411_, p_100412_)) {
+                     if (p_100412_ == 0) {
+                         this.lastClickedRecipe = recipebutton.getCurrentRecipe();
+                         this.lastClickedRecipeCollection = recipebutton.getCollection();

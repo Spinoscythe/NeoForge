@@ -1,6 +1,61 @@
 --- a/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
 +++ b/net/minecraft/client/gui/screens/worldselection/CreateWorldScreen.java
-@@ -168,6 +_,7 @@
+@@ -109,7 +_,8 @@
+     private boolean recreated;
+     private final DirectoryValidator packValidator;
+     private final CreateWorldCallback createWorldCallback;
+-    private final Runnable onClose;
++    @Nullable
++    private final Screen lastScreen;
+     @Nullable
+     private Path tempDataPackDir;
+     @Nullable
+@@ -117,21 +_,21 @@
+     @Nullable
+     private TabNavigationBar tabNavigationBar;
+ 
+-    public static void openFresh(Minecraft p_232897_, Runnable p_439284_) {
+-        openFresh(p_232897_, p_439284_, (p_373659_, p_373660_, p_373661_, p_373662_) -> p_373659_.createNewWorld(p_373660_, p_373661_));
++    public static void openFresh(Minecraft p_232897_, @Nullable Screen p_232898_) {
++        openFresh(p_232897_, p_232898_, (p_373659_, p_373660_, p_373661_, p_373662_) -> p_373659_.createNewWorld(p_373660_, p_373661_));
+     }
+ 
+-    public static void openFresh(Minecraft p_374172_, Runnable p_440425_, CreateWorldCallback p_374333_) {
++    public static void openFresh(Minecraft p_374172_, @Nullable Screen p_374534_, CreateWorldCallback p_374333_) {
+         WorldCreationContextMapper worldcreationcontextmapper = (p_372525_, p_372526_, p_372527_) -> new WorldCreationContext(
+             p_372527_.worldGenSettings(), p_372526_, p_372525_, p_372527_.dataConfiguration()
+         );
+         Function<WorldLoader.DataLoadContext, WorldGenSettings> function = p_372520_ -> new WorldGenSettings(
+             WorldOptions.defaultWithRandomSeed(), WorldPresets.createNormalWorldDimensions(p_372520_.datapackWorldgen())
+         );
+-        openCreateWorldScreen(p_374172_, p_440425_, function, worldcreationcontextmapper, WorldPresets.NORMAL, p_374333_);
++        openCreateWorldScreen(p_374172_, p_374534_, function, worldcreationcontextmapper, WorldPresets.NORMAL, p_374333_);
+     }
+ 
+-    public static void testWorld(Minecraft p_372996_, Runnable p_440130_) {
++    public static void testWorld(Minecraft p_372996_, @Nullable Screen p_372908_) {
+         WorldCreationContextMapper worldcreationcontextmapper = (p_372521_, p_372522_, p_372523_) -> new WorldCreationContext(
+             p_372523_.worldGenSettings().options(),
+             p_372523_.worldGenSettings().dimensions(),
+@@ -149,7 +_,7 @@
+         );
+         openCreateWorldScreen(
+             p_372996_,
+-            p_440130_,
++            p_372908_,
+             function,
+             worldcreationcontextmapper,
+             WorldPresets.FLAT,
+@@ -159,7 +_,7 @@
+ 
+     private static void openCreateWorldScreen(
+         Minecraft p_372818_,
+-        Runnable p_440386_,
++        @Nullable Screen p_373021_,
+         Function<WorldLoader.DataLoadContext, WorldGenSettings> p_372913_,
+         WorldCreationContextMapper p_372864_,
+         ResourceKey<WorldPreset> p_372962_,
+@@ -167,6 +_,7 @@
      ) {
          queueLoadScreen(p_372818_, PREPARING_WORLD_DATA);
          PackRepository packrepository = new PackRepository(new ServerPacksSource(p_372818_.directoryValidator()));
@@ -8,7 +63,52 @@
          WorldDataConfiguration worlddataconfiguration = SharedConstants.IS_RUNNING_IN_IDE
              ? new WorldDataConfiguration(new DataPackConfig(List.of("vanilla", "tests"), List.of()), FeatureFlags.DEFAULT_FLAGS)
              : WorldDataConfiguration.DEFAULT;
-@@ -309,6 +_,10 @@
+@@ -184,15 +_,15 @@
+             p_372818_
+         );
+         p_372818_.managedBlock(completablefuture::isDone);
+-        p_372818_.setScreen(new CreateWorldScreen(p_372818_, p_440386_, completablefuture.join(), Optional.of(p_372962_), OptionalLong.empty(), p_374549_));
++        p_372818_.setScreen(new CreateWorldScreen(p_372818_, p_373021_, completablefuture.join(), Optional.of(p_372962_), OptionalLong.empty(), p_374549_));
+     }
+ 
+     public static CreateWorldScreen createFromExisting(
+-        Minecraft p_276017_, Runnable p_439226_, LevelSettings p_276055_, WorldCreationContext p_276028_, @Nullable Path p_276040_
++        Minecraft p_276017_, @Nullable Screen p_276029_, LevelSettings p_276055_, WorldCreationContext p_276028_, @Nullable Path p_276040_
+     ) {
+         CreateWorldScreen createworldscreen = new CreateWorldScreen(
+             p_276017_,
+-            p_439226_,
++            p_276029_,
+             p_276028_,
+             WorldPresets.fromSettings(p_276028_.selectedDimensions()),
+             OptionalLong.of(p_276028_.options().seed()),
+@@ -217,14 +_,14 @@
+ 
+     private CreateWorldScreen(
+         Minecraft p_276053_,
+-        Runnable p_440288_,
++        @Nullable Screen p_276049_,
+         WorldCreationContext p_276047_,
+         Optional<ResourceKey<WorldPreset>> p_276013_,
+         OptionalLong p_276031_,
+         CreateWorldCallback p_374578_
+     ) {
+         super(Component.translatable("selectWorld.create"));
+-        this.onClose = p_440288_;
++        this.lastScreen = p_276049_;
+         this.packValidator = p_276053_.directoryValidator();
+         this.createWorldCallback = p_374578_;
+         this.uiState = new WorldCreationUiState(p_276053_.getLevelSource().getBaseDir(), p_276047_, p_276013_, p_276031_);
+@@ -270,7 +_,7 @@
+     }
+ 
+     private static void queueLoadScreen(Minecraft p_232900_, Component p_232901_) {
+-        p_232900_.setScreenAndShow(new GenericMessageScreen(p_232901_));
++        p_232900_.forceSetScreen(new GenericMessageScreen(p_232901_));
+     }
+ 
+     private void onCreate() {
+@@ -308,6 +_,10 @@
              SystemToast.onPackCopyFailure(this.minecraft, s);
              return false;
          } else {
@@ -19,7 +119,25 @@
              this.minecraft
                  .createWorldOpenFlows()
                  .createLevelFromExistingSettings(optional.get(), worldcreationcontext.dataPackResources(), p_249152_, p_374211_);
-@@ -485,7 +_,7 @@
+@@ -354,7 +_,7 @@
+     }
+ 
+     public void popScreen() {
+-        this.onClose.run();
++        this.minecraft.setScreen(this.lastScreen);
+         this.removeTempDataPackDir();
+     }
+ 
+@@ -435,7 +_,7 @@
+     }
+ 
+     private void applyNewPackConfig(PackRepository p_270272_, WorldDataConfiguration p_270573_, Consumer<WorldDataConfiguration> p_270552_) {
+-        this.minecraft.setScreenAndShow(new GenericMessageScreen(Component.translatable("dataPack.validation.working")));
++        this.minecraft.forceSetScreen(new GenericMessageScreen(Component.translatable("dataPack.validation.working")));
+         WorldLoader.InitConfig worldloader$initconfig = createDefaultLoadConfig(p_270272_, p_270573_);
+         WorldLoader.<DataPackReloadCookie, WorldCreationContext>load(
+                 worldloader$initconfig,
+@@ -484,7 +_,7 @@
                                          if (p_269627_) {
                                              p_270552_.accept(this.uiState.getSettings().dataConfiguration());
                                          } else {
@@ -28,7 +146,7 @@
                                          }
                                      },
                                      Component.translatable("dataPack.validation.failed"),
-@@ -599,6 +_,7 @@
+@@ -598,6 +_,7 @@
          if (path != null) {
              if (this.tempDataPackRepository == null) {
                  this.tempDataPackRepository = ServerPacksSource.createPackRepository(path, this.packValidator);

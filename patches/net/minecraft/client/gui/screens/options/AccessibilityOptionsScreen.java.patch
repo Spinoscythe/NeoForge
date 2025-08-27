@@ -1,0 +1,61 @@
+--- a/net/minecraft/client/gui/screens/options/AccessibilityOptionsScreen.java
++++ b/net/minecraft/client/gui/screens/options/AccessibilityOptionsScreen.java
+@@ -1,16 +_,13 @@
+ package net.minecraft.client.gui.screens.options;
+ 
+-import java.util.Arrays;
+ import net.minecraft.client.OptionInstance;
+ import net.minecraft.client.Options;
+ import net.minecraft.client.gui.components.AbstractWidget;
+ import net.minecraft.client.gui.components.Button;
+ import net.minecraft.client.gui.components.Tooltip;
+ import net.minecraft.client.gui.layouts.LinearLayout;
+-import net.minecraft.client.gui.screens.AccessibilityOnboardingScreen;
+ import net.minecraft.client.gui.screens.ConfirmLinkScreen;
+ import net.minecraft.client.gui.screens.Screen;
+-import net.minecraft.client.gui.screens.options.controls.ControlsScreen;
+ import net.minecraft.network.chat.CommonComponents;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.util.CommonLinks;
+@@ -27,6 +_,7 @@
+             p_345629_.narrator(),
+             p_345629_.showSubtitles(),
+             p_345629_.highContrast(),
++            p_345629_.autoJump(),
+             p_345629_.menuBackgroundBlurriness(),
+             p_345629_.textBackgroundOpacity(),
+             p_345629_.backgroundForChatOnly(),
+@@ -35,6 +_,8 @@
+             p_345629_.chatDelay(),
+             p_345629_.notificationDisplayTime(),
+             p_345629_.bobView(),
++            p_345629_.toggleCrouch(),
++            p_345629_.toggleSprint(),
+             p_345629_.screenEffectScale(),
+             p_345629_.fovEffectScale(),
+             p_345629_.darknessEffectScale(),
+@@ -72,11 +_,7 @@
+ 
+     @Override
+     protected void addOptions() {
+-        OptionInstance<?>[] optioninstance = options(this.options);
+-        Button button = Button.builder(OptionsScreen.CONTROLS, p_432226_ -> this.minecraft.setScreen(new ControlsScreen(this, this.options))).build();
+-        OptionInstance<?> optioninstance1 = optioninstance[0];
+-        this.list.addSmall(optioninstance1.createButton(this.options), button);
+-        this.list.addSmall(Arrays.stream(optioninstance).filter(p_432228_ -> p_432228_ != optioninstance1).toArray(OptionInstance[]::new));
++        this.list.addSmall(options(this.options));
+     }
+ 
+     @Override
+@@ -86,11 +_,6 @@
+             Button.builder(Component.translatable("options.accessibility.link"), ConfirmLinkScreen.confirmLink(this, CommonLinks.ACCESSIBILITY_HELP)).build()
+         );
+         linearlayout.addChild(Button.builder(CommonComponents.GUI_DONE, p_345508_ -> this.minecraft.setScreen(this.lastScreen)).build());
+-    }
+-
+-    @Override
+-    protected boolean panoramaShouldSpin() {
+-        return !(this.lastScreen instanceof AccessibilityOnboardingScreen);
+     }
+ 
+     private boolean isMinecartOptionEnabled() {

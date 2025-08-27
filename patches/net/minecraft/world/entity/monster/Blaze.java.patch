@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/monster/Blaze.java
++++ b/net/minecraft/world/entity/monster/Blaze.java
+@@ -87,7 +_,7 @@
+             this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, 0.6, 1.0));
+         }
+ 
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             if (this.random.nextInt(24) == 0 && !this.isSilent()) {
+                 this.level()
+                     .playLocalSound(

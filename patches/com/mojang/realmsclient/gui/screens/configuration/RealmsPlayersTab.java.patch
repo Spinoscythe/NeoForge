@@ -1,0 +1,362 @@
+--- a/com/mojang/realmsclient/gui/screens/configuration/RealmsPlayersTab.java
++++ b/com/mojang/realmsclient/gui/screens/configuration/RealmsPlayersTab.java
+@@ -14,11 +_,9 @@
+ import java.util.function.Supplier;
+ import net.minecraft.ChatFormatting;
+ import net.minecraft.client.Minecraft;
+-import net.minecraft.client.gui.Font;
+ import net.minecraft.client.gui.GuiGraphics;
+ import net.minecraft.client.gui.components.Button;
+ import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+-import net.minecraft.client.gui.components.FocusableTextWidget;
+ import net.minecraft.client.gui.components.SpriteIconButton;
+ import net.minecraft.client.gui.components.events.GuiEventListener;
+ import net.minecraft.client.gui.components.tabs.GridLayoutTab;
+@@ -28,7 +_,6 @@
+ import net.minecraft.client.gui.navigation.ScreenRectangle;
+ import net.minecraft.network.chat.CommonComponents;
+ import net.minecraft.network.chat.Component;
+-import net.minecraft.network.chat.MutableComponent;
+ import net.minecraft.resources.ResourceLocation;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -42,15 +_,13 @@
+     private static final int PADDING = 8;
+     final RealmsConfigureWorldScreen configurationScreen;
+     final Minecraft minecraft;
+-    final Font font;
+     RealmsServer serverData;
+-    final RealmsPlayersTab.InvitedObjectSelectionList invitedList;
++    private final RealmsPlayersTab.InvitedObjectSelectionList invitedList;
+ 
+     RealmsPlayersTab(RealmsConfigureWorldScreen p_420029_, Minecraft p_420009_, RealmsServer p_419501_) {
+         super(TITLE);
+         this.configurationScreen = p_420029_;
+         this.minecraft = p_420009_;
+-        this.font = p_420029_.getFont();
+         this.serverData = p_419501_;
+         GridLayout.RowHelper gridlayout$rowhelper = this.layout.spacing(8).createRowHelper(1);
+         this.invitedList = gridlayout$rowhelper.addChild(
+@@ -74,105 +_,22 @@
+ 
+     @Override
+     public void doLayout(ScreenRectangle p_419767_) {
+-        this.invitedList.updateSizeAndPosition(this.configurationScreen.width, this.calculateListHeight(), this.configurationScreen.layout.getHeaderHeight());
++        this.invitedList.setSize(this.configurationScreen.width, this.calculateListHeight());
+         super.doLayout(p_419767_);
+     }
+ 
+     @Override
+     public void updateData(RealmsServer p_419463_) {
+         this.serverData = p_419463_;
+-        this.invitedList.updateList(p_419463_);
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    abstract static class Entry extends ContainerObjectSelectionList.Entry<RealmsPlayersTab.Entry> {
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    class HeaderEntry extends RealmsPlayersTab.Entry {
+-        private final Font font;
+-        private String cachedNumberOfInvites = "";
+-        private final FocusableTextWidget invitedWidget;
+-
+-        public HeaderEntry(Font p_439776_) {
+-            this.font = p_439776_;
+-            this.invitedWidget = new FocusableTextWidget(
+-                RealmsPlayersTab.this.invitedList.getRowWidth(),
+-                Component.translatable("mco.configure.world.invited.number", "").withStyle(ChatFormatting.UNDERLINE),
+-                p_439776_,
+-                false,
+-                FocusableTextWidget.BackgroundFill.ON_FOCUS,
+-                4
+-            );
+-        }
+-
+-        @Override
+-        public void renderContent(GuiGraphics p_440278_, int p_440194_, int p_440165_, boolean p_440275_, float p_439884_) {
+-            String s = RealmsPlayersTab.this.serverData.players != null ? Integer.toString(RealmsPlayersTab.this.serverData.players.size()) : "0";
+-            if (!s.equals(this.cachedNumberOfInvites)) {
+-                this.cachedNumberOfInvites = s;
+-                MutableComponent mutablecomponent = Component.translatable("mco.configure.world.invited.number", s);
+-                this.invitedWidget.setMessage(mutablecomponent.withStyle(ChatFormatting.UNDERLINE));
+-            }
+-
+-            this.invitedWidget
+-                .setPosition(
+-                    this.getX() + this.getWidth() / 2 - this.font.width(this.invitedWidget.getMessage()) / 2, this.getY() + this.getHeight() / 2 - 9 / 2
+-                );
+-            this.invitedWidget.render(p_440278_, p_440194_, p_440165_, p_439884_);
+-        }
+-
+-        @Override
+-        public List<? extends NarratableEntry> narratables() {
+-            return List.of(this.invitedWidget);
+-        }
+-
+-        @Override
+-        public List<? extends GuiEventListener> children() {
+-            return List.of(this.invitedWidget);
+-        }
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    class InvitedObjectSelectionList extends ContainerObjectSelectionList<RealmsPlayersTab.Entry> {
+-        private static final int PLAYER_ENTRY_HEIGHT = 36;
+-
+-        public InvitedObjectSelectionList(int p_420026_, int p_419521_) {
+-            super(Minecraft.getInstance(), p_420026_, p_419521_, RealmsPlayersTab.this.configurationScreen.getHeaderHeight(), 36);
+-        }
+-
+-        void updateList(RealmsServer p_439336_) {
+-            this.clearEntries();
+-            this.populateList(p_439336_);
+-        }
+-
+-        private void populateList(RealmsServer p_440272_) {
+-            this.addEntry(RealmsPlayersTab.this.new HeaderEntry(RealmsPlayersTab.this.font), (int)(9.0F * 1.5F));
+-
+-            for (RealmsPlayersTab.PlayerEntry realmsplayerstab$playerentry : p_440272_.players
+-                .stream()
+-                .map(p_439372_ -> RealmsPlayersTab.this.new PlayerEntry(p_439372_))
+-                .toList()) {
+-                this.addEntry(realmsplayerstab$playerentry);
+-            }
+-        }
+-
+-        @Override
+-        protected void renderListBackground(GuiGraphics p_419974_) {
+-        }
+-
+-        @Override
+-        protected void renderListSeparators(GuiGraphics p_419993_) {
+-        }
+-
+-        @Override
+-        public int getRowWidth() {
+-            return 300;
+-        }
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    class PlayerEntry extends RealmsPlayersTab.Entry {
++        this.invitedList.children().clear();
++
++        for (PlayerInfo playerinfo : p_419463_.players) {
++            this.invitedList.children().add(new RealmsPlayersTab.Entry(playerinfo));
++        }
++    }
++
++    @OnlyIn(Dist.CLIENT)
++    class Entry extends ContainerObjectSelectionList.Entry<RealmsPlayersTab.Entry> {
+         protected static final int SKIN_FACE_SIZE = 32;
+         private static final Component NORMAL_USER_TEXT = Component.translatable("mco.configure.world.invites.normal.tooltip");
+         private static final Component OP_TEXT = Component.translatable("mco.configure.world.invites.ops.tooltip");
+@@ -187,78 +_,78 @@
+         private final Button makeOpButton;
+         private final Button removeOpButton;
+ 
+-        public PlayerEntry(PlayerInfo p_440441_) {
+-            this.playerInfo = p_440441_;
++        public Entry(PlayerInfo p_419792_) {
++            this.playerInfo = p_419792_;
+             int i = RealmsPlayersTab.this.serverData.players.indexOf(this.playerInfo);
+-            this.makeOpButton = SpriteIconButton.builder(NORMAL_USER_TEXT, p_440611_ -> this.op(i), false)
++            this.makeOpButton = SpriteIconButton.builder(NORMAL_USER_TEXT, p_419596_ -> this.op(i), false)
+                 .sprite(MAKE_OP_SPRITE, 8, 7)
+                 .width(16 + RealmsPlayersTab.this.configurationScreen.getFont().width(NORMAL_USER_TEXT))
+                 .narration(
+-                    p_439959_ -> CommonComponents.joinForNarration(
+-                        Component.translatable("mco.invited.player.narration", p_440441_.getName()),
+-                        p_439959_.get(),
++                    p_420041_ -> CommonComponents.joinForNarration(
++                        Component.translatable("mco.invited.player.narration", p_419792_.getName()),
++                        p_420041_.get(),
+                         Component.translatable("narration.cycle_button.usage.focused", OP_TEXT)
+                     )
+                 )
+                 .build();
+-            this.removeOpButton = SpriteIconButton.builder(OP_TEXT, p_439171_ -> this.deop(i), false)
++            this.removeOpButton = SpriteIconButton.builder(OP_TEXT, p_419838_ -> this.deop(i), false)
+                 .sprite(REMOVE_OP_SPRITE, 8, 7)
+                 .width(16 + RealmsPlayersTab.this.configurationScreen.getFont().width(OP_TEXT))
+                 .narration(
+-                    p_439085_ -> CommonComponents.joinForNarration(
+-                        Component.translatable("mco.invited.player.narration", p_440441_.getName()),
+-                        p_439085_.get(),
++                    p_419705_ -> CommonComponents.joinForNarration(
++                        Component.translatable("mco.invited.player.narration", p_419792_.getName()),
++                        p_419705_.get(),
+                         Component.translatable("narration.cycle_button.usage.focused", NORMAL_USER_TEXT)
+                     )
+                 )
+                 .build();
+-            this.removeButton = SpriteIconButton.builder(REMOVE_TEXT, p_439258_ -> this.uninvite(i), false)
++            this.removeButton = SpriteIconButton.builder(REMOVE_TEXT, p_419895_ -> this.uninvite(i), false)
+                 .sprite(REMOVE_PLAYER_SPRITE, 8, 7)
+                 .width(16 + RealmsPlayersTab.this.configurationScreen.getFont().width(REMOVE_TEXT))
+                 .narration(
+-                    p_439727_ -> CommonComponents.joinForNarration(Component.translatable("mco.invited.player.narration", p_440441_.getName()), p_439727_.get())
++                    p_419760_ -> CommonComponents.joinForNarration(Component.translatable("mco.invited.player.narration", p_419792_.getName()), p_419760_.get())
+                 )
+                 .build();
+             this.updateOpButtons();
+         }
+ 
+-        private void op(int p_438923_) {
+-            UUID uuid = RealmsPlayersTab.this.serverData.players.get(p_438923_).getUuid();
++        private void op(int p_419741_) {
++            UUID uuid = RealmsPlayersTab.this.serverData.players.get(p_419741_).getUuid();
+             RealmsUtil.<Ops>supplyAsync(
+-                    p_439318_ -> p_439318_.op(RealmsPlayersTab.this.serverData.id, uuid),
+-                    p_439830_ -> RealmsPlayersTab.LOGGER.error("Couldn't op the user", (Throwable)p_439830_)
++                    p_428663_ -> p_428663_.op(RealmsPlayersTab.this.serverData.id, uuid),
++                    p_428657_ -> RealmsPlayersTab.LOGGER.error("Couldn't op the user", (Throwable)p_428657_)
+                 )
+-                .thenAcceptAsync(p_439825_ -> {
+-                    this.updateOps(p_439825_);
++                .thenAcceptAsync(p_428650_ -> {
++                    this.updateOps(p_428650_);
+                     this.updateOpButtons();
+                     this.setFocused(this.removeOpButton);
+                 }, RealmsPlayersTab.this.minecraft);
+         }
+ 
+-        private void deop(int p_439100_) {
+-            UUID uuid = RealmsPlayersTab.this.serverData.players.get(p_439100_).getUuid();
++        private void deop(int p_419591_) {
++            UUID uuid = RealmsPlayersTab.this.serverData.players.get(p_419591_).getUuid();
+             RealmsUtil.<Ops>supplyAsync(
+-                    p_440264_ -> p_440264_.deop(RealmsPlayersTab.this.serverData.id, uuid),
+-                    p_438905_ -> RealmsPlayersTab.LOGGER.error("Couldn't deop the user", (Throwable)p_438905_)
++                    p_428659_ -> p_428659_.deop(RealmsPlayersTab.this.serverData.id, uuid),
++                    p_428661_ -> RealmsPlayersTab.LOGGER.error("Couldn't deop the user", (Throwable)p_428661_)
+                 )
+-                .thenAcceptAsync(p_439926_ -> {
+-                    this.updateOps(p_439926_);
++                .thenAcceptAsync(p_428660_ -> {
++                    this.updateOps(p_428660_);
+                     this.updateOpButtons();
+                     this.setFocused(this.makeOpButton);
+                 }, RealmsPlayersTab.this.minecraft);
+         }
+ 
+-        private void uninvite(int p_439281_) {
+-            if (p_439281_ >= 0 && p_439281_ < RealmsPlayersTab.this.serverData.players.size()) {
+-                PlayerInfo playerinfo = RealmsPlayersTab.this.serverData.players.get(p_439281_);
++        private void uninvite(int p_420017_) {
++            if (p_420017_ >= 0 && p_420017_ < RealmsPlayersTab.this.serverData.players.size()) {
++                PlayerInfo playerinfo = RealmsPlayersTab.this.serverData.players.get(p_420017_);
+                 RealmsConfirmScreen realmsconfirmscreen = new RealmsConfirmScreen(
+-                    p_440157_ -> {
+-                        if (p_440157_) {
++                    p_428653_ -> {
++                        if (p_428653_) {
+                             RealmsUtil.runAsync(
+-                                p_440142_ -> p_440142_.uninvite(RealmsPlayersTab.this.serverData.id, playerinfo.getUuid()),
+-                                p_439194_ -> RealmsPlayersTab.LOGGER.error("Couldn't uninvite user", (Throwable)p_439194_)
++                                p_428656_ -> p_428656_.uninvite(RealmsPlayersTab.this.serverData.id, playerinfo.getUuid()),
++                                p_428654_ -> RealmsPlayersTab.LOGGER.error("Couldn't uninvite user", (Throwable)p_428654_)
+                             );
+-                            RealmsPlayersTab.this.serverData.players.remove(p_439281_);
++                            RealmsPlayersTab.this.serverData.players.remove(p_420017_);
+                             RealmsPlayersTab.this.updateData(RealmsPlayersTab.this.serverData);
+                         }
+ 
+@@ -271,9 +_,9 @@
+             }
+         }
+ 
+-        private void updateOps(Ops p_439795_) {
++        private void updateOps(Ops p_419986_) {
+             for (PlayerInfo playerinfo : RealmsPlayersTab.this.serverData.players) {
+-                playerinfo.setOperator(p_439795_.ops.contains(playerinfo.getName()));
++                playerinfo.setOperator(p_419986_.ops.contains(playerinfo.getName()));
+             }
+         }
+ 
+@@ -297,7 +_,18 @@
+         }
+ 
+         @Override
+-        public void renderContent(GuiGraphics p_439457_, int p_440311_, int p_440163_, boolean p_440552_, float p_440331_) {
++        public void render(
++            GuiGraphics p_419900_,
++            int p_419784_,
++            int p_419710_,
++            int p_419805_,
++            int p_419646_,
++            int p_419873_,
++            int p_419592_,
++            int p_419863_,
++            boolean p_419468_,
++            float p_419542_
++        ) {
+             int i;
+             if (!this.playerInfo.getAccepted()) {
+                 i = -6250336;
+@@ -307,19 +_,54 @@
+                 i = -1;
+             }
+ 
+-            int j = this.getContentYMiddle() - 16;
+-            RealmsUtil.renderPlayerFace(p_439457_, this.getContentX(), j, 32, this.playerInfo.getUuid());
+-            int k = this.getContentYMiddle() - 9 / 2;
+-            p_439457_.drawString(RealmsPlayersTab.this.font, this.playerInfo.getName(), this.getContentX() + 8 + 32, k, i);
+-            int l = this.getContentYMiddle() - 10;
+-            int i1 = this.getContentRight() - this.removeButton.getWidth();
++            int j = p_419710_ + p_419873_ / 2 - 16;
++            RealmsUtil.renderPlayerFace(p_419900_, p_419805_, j, 32, this.playerInfo.getUuid());
++            int k = p_419710_ + p_419873_ / 2 - 9 / 2;
++            p_419900_.drawString(RealmsPlayersTab.this.configurationScreen.getFont(), this.playerInfo.getName(), p_419805_ + 8 + 32, k, i);
++            int l = p_419710_ + p_419873_ / 2 - 10;
++            int i1 = p_419805_ + p_419646_ - this.removeButton.getWidth();
+             this.removeButton.setPosition(i1, l);
+-            this.removeButton.render(p_439457_, p_440311_, p_440163_, p_440331_);
++            this.removeButton.render(p_419900_, p_419592_, p_419863_, p_419542_);
+             int j1 = i1 - this.activeOpButton().getWidth() - 8;
+             this.makeOpButton.setPosition(j1, l);
+-            this.makeOpButton.render(p_439457_, p_440311_, p_440163_, p_440331_);
++            this.makeOpButton.render(p_419900_, p_419592_, p_419863_, p_419542_);
+             this.removeOpButton.setPosition(j1, l);
+-            this.removeOpButton.render(p_439457_, p_440311_, p_440163_, p_440331_);
++            this.removeOpButton.render(p_419900_, p_419592_, p_419863_, p_419542_);
++        }
++    }
++
++    @OnlyIn(Dist.CLIENT)
++    class InvitedObjectSelectionList extends ContainerObjectSelectionList<RealmsPlayersTab.Entry> {
++        private static final int ITEM_HEIGHT = 36;
++
++        public InvitedObjectSelectionList(int p_420026_, int p_419521_) {
++            super(Minecraft.getInstance(), p_420026_, p_419521_, RealmsPlayersTab.this.configurationScreen.getHeaderHeight(), 36, (int)(9.0F * 1.5F));
++        }
++
++        @Override
++        protected void renderHeader(GuiGraphics p_419750_, int p_419702_, int p_419712_) {
++            String s = RealmsPlayersTab.this.serverData.players != null ? Integer.toString(RealmsPlayersTab.this.serverData.players.size()) : "0";
++            Component component = Component.translatable("mco.configure.world.invited.number", s).withStyle(ChatFormatting.UNDERLINE);
++            p_419750_.drawString(
++                RealmsPlayersTab.this.configurationScreen.getFont(),
++                component,
++                p_419702_ + this.getRowWidth() / 2 - RealmsPlayersTab.this.configurationScreen.getFont().width(component) / 2,
++                p_419712_,
++                -1
++            );
++        }
++
++        @Override
++        protected void renderListBackground(GuiGraphics p_419974_) {
++        }
++
++        @Override
++        protected void renderListSeparators(GuiGraphics p_419993_) {
++        }
++
++        @Override
++        public int getRowWidth() {
++            return 300;
+         }
+     }
+ }

@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/InfestedRotatedPillarBlock.java
++++ b/net/minecraft/world/level/block/InfestedRotatedPillarBlock.java
+@@ -12,8 +_,8 @@
+ 
+ public class InfestedRotatedPillarBlock extends InfestedBlock {
+     public static final MapCodec<InfestedRotatedPillarBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432669_ -> p_432669_.group(BuiltInRegistries.BLOCK.byNameCodec().fieldOf("host").forGetter(InfestedBlock::getHostBlock), propertiesCodec())
+-            .apply(p_432669_, InfestedRotatedPillarBlock::new)
++        p_368427_ -> p_368427_.group(BuiltInRegistries.BLOCK.byNameCodec().fieldOf("host").forGetter(InfestedBlock::getHostBlock), propertiesCodec())
++            .apply(p_368427_, InfestedRotatedPillarBlock::new)
+     );
+ 
+     @Override

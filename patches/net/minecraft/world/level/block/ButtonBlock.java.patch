@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/level/block/ButtonBlock.java
++++ b/net/minecraft/world/level/block/ButtonBlock.java
+@@ -42,12 +_,12 @@
+ 
+ public class ButtonBlock extends FaceAttachedHorizontalDirectionalBlock {
+     public static final MapCodec<ButtonBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432634_ -> p_432634_.group(
++        p_368403_ -> p_368403_.group(
+                 BlockSetType.CODEC.fieldOf("block_set_type").forGetter(p_304607_ -> p_304607_.type),
+                 Codec.intRange(1, 1024).fieldOf("ticks_to_stay_pressed").forGetter(p_304953_ -> p_304953_.ticksToStayPressed),
+                 propertiesCodec()
+             )
+-            .apply(p_432634_, ButtonBlock::new)
++            .apply(p_368403_, ButtonBlock::new)
+     );
+     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+     private final BlockSetType type;
+@@ -151,7 +_,7 @@
+ 
+     @Override
+     protected void entityInside(BlockState p_51083_, Level p_51084_, BlockPos p_51085_, Entity p_51086_, InsideBlockEffectApplier p_405475_) {
+-        if (!p_51084_.isClientSide() && this.type.canButtonBeActivatedByArrows() && !p_51083_.getValue(POWERED)) {
++        if (!p_51084_.isClientSide && this.type.canButtonBeActivatedByArrows() && !p_51083_.getValue(POWERED)) {
+             this.checkPressed(p_51083_, p_51084_, p_51085_);
+         }
+     }

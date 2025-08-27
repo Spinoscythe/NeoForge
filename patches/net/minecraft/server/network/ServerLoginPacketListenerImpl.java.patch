@@ -1,0 +1,40 @@
+--- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+@@ -36,7 +_,6 @@
+ import net.minecraft.network.protocol.login.ServerboundKeyPacket;
+ import net.minecraft.network.protocol.login.ServerboundLoginAcknowledgedPacket;
+ import net.minecraft.server.MinecraftServer;
+-import net.minecraft.server.players.NameAndId;
+ import net.minecraft.server.players.PlayerList;
+ import net.minecraft.util.Crypt;
+ import net.minecraft.util.CryptException;
+@@ -138,7 +_,7 @@
+ 
+     private void verifyLoginAndFinishConnectionSetup(GameProfile p_294502_) {
+         PlayerList playerlist = this.server.getPlayerList();
+-        Component component = playerlist.canPlayerLogin(this.connection.getRemoteAddress(), new NameAndId(p_294502_));
++        Component component = playerlist.canPlayerLogin(this.connection.getRemoteAddress(), p_294502_);
+         if (component != null) {
+             this.disconnect(component);
+         } else {
+@@ -150,7 +_,7 @@
+                     );
+             }
+ 
+-            boolean flag = playerlist.disconnectAllPlayersWithProfile(p_294502_.getId());
++            boolean flag = playerlist.disconnectAllPlayersWithProfile(p_294502_);
+             if (flag) {
+                 this.state = ServerLoginPacketListenerImpl.State.WAITING_FOR_DUPE_DISCONNECT;
+             } else {
+@@ -191,10 +_,7 @@
+                 String s1 = Objects.requireNonNull(ServerLoginPacketListenerImpl.this.requestedUsername, "Player name not initialized");
+ 
+                 try {
+-                    ProfileResult profileresult = ServerLoginPacketListenerImpl.this.server
+-                        .services()
+-                        .sessionService()
+-                        .hasJoinedServer(s1, s, this.getAddress());
++                    ProfileResult profileresult = ServerLoginPacketListenerImpl.this.server.getSessionService().hasJoinedServer(s1, s, this.getAddress());
+                     if (profileresult != null) {
+                         GameProfile gameprofile = profileresult.profile();
+                         ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", gameprofile.getName(), gameprofile.getId());

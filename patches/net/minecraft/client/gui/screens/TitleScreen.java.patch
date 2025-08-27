@@ -19,16 +19,20 @@
          }
  
          l = this.createTestWorldButton(l, 24);
-@@ -151,7 +_,7 @@
+@@ -150,10 +_,8 @@
+     private int createTestWorldButton(int p_373114_, int p_372852_) {
          if (SharedConstants.IS_RUNNING_IN_IDE) {
              this.addRenderableWidget(
-                 Button.builder(Component.literal("Create Test World"), p_372504_ -> CreateWorldScreen.testWorld(this.minecraft, this))
+-                Button.builder(
+-                        Component.literal("Create Test World"), p_438731_ -> CreateWorldScreen.testWorld(this.minecraft, () -> this.minecraft.setScreen(this))
+-                    )
 -                    .bounds(this.width / 2 - 100, p_373114_ += p_372852_, 200, 20)
++                Button.builder(Component.literal("Create Test World"), p_372504_ -> CreateWorldScreen.testWorld(this.minecraft, this))
 +                    .bounds(this.width / 2 - 100, p_373114_ += p_372852_, 98, 20) // Neo: reduce button width to fit the mods button next to it
                      .build()
              );
          }
-@@ -291,6 +_,7 @@
+@@ -293,6 +_,7 @@
          this.renderPanorama(p_282860_, p_282628_);
          super.render(p_282860_, p_281753_, p_283539_, p_282628_);
          this.logoRenderer.renderLogo(p_282860_, this.width, this.logoRenderer.keepLogoThroughFade() ? 1.0F : f);
@@ -36,7 +40,7 @@
          if (this.splash != null && !this.minecraft.options.hideSplashTexts().get()) {
              this.splash.render(p_282860_, this.width, this.font, f);
          }
-@@ -306,7 +_,13 @@
+@@ -308,7 +_,13 @@
              s = s + I18n.get("menu.modded");
          }
  
@@ -51,3 +55,28 @@
          if (this.realmsNotificationsEnabled() && f >= 1.0F) {
              this.realmsNotificationsScreen.render(p_282860_, p_281753_, p_283539_, p_282628_);
          }
+@@ -319,10 +_,10 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_96735_, double p_96736_, int p_96737_, boolean p_435005_) {
+-        return super.mouseClicked(p_96735_, p_96736_, p_96737_, p_435005_)
++    public boolean mouseClicked(double p_96735_, double p_96736_, int p_96737_) {
++        return super.mouseClicked(p_96735_, p_96736_, p_96737_)
+             ? true
+-            : this.realmsNotificationsEnabled() && this.realmsNotificationsScreen.mouseClicked(p_96735_, p_96736_, p_96737_, p_435005_);
++            : this.realmsNotificationsEnabled() && this.realmsNotificationsScreen.mouseClicked(p_96735_, p_96736_, p_96737_);
+     }
+ 
+     @Override
+@@ -351,10 +_,5 @@
+         }
+ 
+         this.minecraft.setScreen(this);
+-    }
+-
+-    @Override
+-    public boolean canInterruptWithAnotherScreen() {
+-        return true;
+     }
+ }

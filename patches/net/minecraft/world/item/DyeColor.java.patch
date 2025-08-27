@@ -18,12 +18,10 @@
          this.textureDiffuseColor = ARGB.opaque(p_41048_);
          this.fireworkColor = p_41050_;
      }
-@@ -110,6 +_,36 @@
-     @Override
-     public String getSerializedName() {
+@@ -112,11 +_,41 @@
          return this.name;
-+    }
-+
+     }
+ 
 +    /**
 +     * Gets the tag key representing the set of items which provide this dye color.
 +     * @return A {@link net.minecraft.tags.TagKey<Item>} representing the set of items which provide this dye color.
@@ -52,6 +50,14 @@
 +        }
 +
 +        return null;
-     }
- 
++    }
++
      public static DyeColor getMixedColor(ServerLevel p_386897_, DyeColor p_388832_, DyeColor p_386710_) {
+         CraftingInput craftinginput = makeCraftColorInput(p_388832_, p_386710_);
+         return p_386897_.recipeAccess()
+             .getRecipeFor(RecipeType.CRAFTING, craftinginput, p_386897_)
+-            .map(p_432575_ -> p_432575_.value().assemble(craftinginput, p_386897_.registryAccess()))
++            .map(p_425453_ -> p_425453_.value().assemble(craftinginput, p_386897_.registryAccess()))
+             .map(ItemStack::getItem)
+             .filter(DyeItem.class::isInstance)
+             .map(DyeItem.class::cast)

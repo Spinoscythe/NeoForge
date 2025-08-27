@@ -1,0 +1,78 @@
+--- a/net/minecraft/client/renderer/entity/EntityRendererProvider.java
++++ b/net/minecraft/client/renderer/entity/EntityRendererProvider.java
+@@ -5,16 +_,12 @@
+ import net.minecraft.client.model.geom.ModelLayerLocation;
+ import net.minecraft.client.model.geom.ModelPart;
+ import net.minecraft.client.renderer.MapRenderer;
+-import net.minecraft.client.renderer.PlayerSkinRenderCache;
++import net.minecraft.client.renderer.Sheets;
+ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+ import net.minecraft.client.renderer.entity.layers.EquipmentLayerRenderer;
+ import net.minecraft.client.renderer.item.ItemModelResolver;
+-import net.minecraft.client.renderer.texture.TextureAtlas;
+-import net.minecraft.client.resources.model.AtlasManager;
+ import net.minecraft.client.resources.model.EquipmentAssetManager;
+-import net.minecraft.client.resources.model.MaterialSet;
+-import net.minecraft.data.AtlasIds;
+-import net.minecraft.resources.ResourceLocation;
++import net.minecraft.client.resources.model.ModelManager;
+ import net.minecraft.server.packs.resources.ResourceManager;
+ import net.minecraft.world.entity.Entity;
+ import net.neoforged.api.distmarker.Dist;
+@@ -36,8 +_,6 @@
+         private final EquipmentAssetManager equipmentAssets;
+         private final Font font;
+         private final EquipmentLayerRenderer equipmentRenderer;
+-        private final AtlasManager atlasManager;
+-        private final PlayerSkinRenderCache playerSkinRenderCache;
+ 
+         public Context(
+             EntityRenderDispatcher p_234590_,
+@@ -47,9 +_,7 @@
+             ResourceManager p_234594_,
+             EntityModelSet p_234595_,
+             EquipmentAssetManager p_386725_,
+-            AtlasManager p_435823_,
+-            Font p_234596_,
+-            PlayerSkinRenderCache p_440590_
++            Font p_234596_
+         ) {
+             this.entityRenderDispatcher = p_234590_;
+             this.itemModelResolver = p_387990_;
+@@ -59,9 +_,7 @@
+             this.modelSet = p_234595_;
+             this.equipmentAssets = p_386725_;
+             this.font = p_234596_;
+-            this.atlasManager = p_435823_;
+-            this.playerSkinRenderCache = p_440590_;
+-            this.equipmentRenderer = new EquipmentLayerRenderer(p_386725_, p_435823_.getAtlasOrThrow(AtlasIds.ARMOR_TRIMS));
++            this.equipmentRenderer = new EquipmentLayerRenderer(p_386725_, this.getModelManager().getAtlas(Sheets.ARMOR_TRIMS_SHEET));
+         }
+ 
+         public EntityRenderDispatcher getEntityRenderDispatcher() {
+@@ -96,12 +_,8 @@
+             return this.equipmentRenderer;
+         }
+ 
+-        public MaterialSet getMaterials() {
+-            return this.atlasManager;
+-        }
+-
+-        public TextureAtlas getAtlas(ResourceLocation p_435163_) {
+-            return this.atlasManager.getAtlasOrThrow(p_435163_);
++        public ModelManager getModelManager() {
++            return this.blockRenderDispatcher.getBlockModelShaper().getModelManager();
+         }
+ 
+         public ModelPart bakeLayer(ModelLayerLocation p_174024_) {
+@@ -110,10 +_,6 @@
+ 
+         public Font getFont() {
+             return this.font;
+-        }
+-
+-        public PlayerSkinRenderCache getPlayerSkinRenderCache() {
+-            return this.playerSkinRenderCache;
+         }
+     }
+ }

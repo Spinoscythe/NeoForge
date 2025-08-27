@@ -1,6 +1,24 @@
 --- a/net/minecraft/world/item/BlockItem.java
 +++ b/net/minecraft/world/item/BlockItem.java
-@@ -77,11 +_,11 @@
+@@ -5,6 +_,7 @@
+ import net.minecraft.advancements.CriteriaTriggers;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.component.DataComponents;
++import net.minecraft.core.registries.Registries;
+ import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.sounds.SoundEvent;
+ import net.minecraft.sounds.SoundSource;
+@@ -13,8 +_,8 @@
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.flag.FeatureFlagSet;
+ import net.minecraft.world.item.component.BlockItemStateProperties;
++import net.minecraft.world.item.component.CustomData;
+ import net.minecraft.world.item.component.ItemContainerContents;
+-import net.minecraft.world.item.component.TypedEntityData;
+ import net.minecraft.world.item.context.BlockPlaceContext;
+ import net.minecraft.world.item.context.UseOnContext;
+ import net.minecraft.world.level.Level;
+@@ -76,11 +_,11 @@
                          }
                      }
  
@@ -14,18 +32,76 @@
                          SoundSource.BLOCKS,
                          (soundtype.getVolume() + 1.0F) / 2.0F,
                          soundtype.getPitch() * 0.8F
-@@ -94,8 +_,14 @@
+@@ -93,10 +_,16 @@
          }
      }
  
 +    @Deprecated //Forge: Use more sensitive version {@link BlockItem#getPlaceSound(BlockState, IBlockReader, BlockPos, Entity) }
      protected SoundEvent getPlaceSound(BlockState p_40588_) {
          return p_40588_.getSoundType().getPlaceSound();
-+    }
-+
+     }
+ 
 +    //Forge: Sensitive version of BlockItem#getPlaceSound
 +    protected SoundEvent getPlaceSound(BlockState state, Level world, BlockPos pos, Player entity) {
 +        return state.getSoundType(world, pos, entity).getPlaceSound();
++    }
++
+     @Nullable
+     public BlockPlaceContext updatePlacementContext(BlockPlaceContext p_40609_) {
+         return p_40609_;
+@@ -149,20 +_,25 @@
      }
  
-     @Nullable
+     public static boolean updateCustomBlockEntityTag(Level p_40583_, @Nullable Player p_40584_, BlockPos p_40585_, ItemStack p_40586_) {
+-        if (p_40583_.isClientSide()) {
++        if (p_40583_.isClientSide) {
+             return false;
+         } else {
+-            TypedEntityData<BlockEntityType<?>> typedentitydata = p_40586_.get(DataComponents.BLOCK_ENTITY_DATA);
+-            if (typedentitydata != null) {
++            CustomData customdata = p_40586_.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY);
++            if (!customdata.isEmpty()) {
++                BlockEntityType<?> blockentitytype = customdata.parseEntityType(p_40583_.registryAccess(), Registries.BLOCK_ENTITY_TYPE);
++                if (blockentitytype == null) {
++                    return false;
++                }
++
+                 BlockEntity blockentity = p_40583_.getBlockEntity(p_40585_);
+                 if (blockentity != null) {
+-                    BlockEntityType<?> blockentitytype = blockentity.getType();
+-                    if (blockentitytype != typedentitydata.type()) {
++                    BlockEntityType<?> blockentitytype1 = blockentity.getType();
++                    if (blockentitytype1 != blockentitytype) {
+                         return false;
+                     }
+ 
+-                    if (!blockentitytype.onlyOpCanSetNbt() || p_40584_ != null && p_40584_.canUseGameMasterBlocks()) {
+-                        return typedentitydata.loadInto(blockentity, p_40583_.registryAccess());
++                    if (!blockentitytype1.onlyOpCanSetNbt() || p_40584_ != null && p_40584_.canUseGameMasterBlocks()) {
++                        return customdata.loadInto(blockentity, p_40583_.registryAccess());
+                     }
+ 
+                     return false;
+@@ -176,9 +_,10 @@
+     @Override
+     public boolean shouldPrintOpWarning(ItemStack p_387255_, @Nullable Player p_387661_) {
+         if (p_387661_ != null && p_387661_.getPermissionLevel() >= 2) {
+-            TypedEntityData<BlockEntityType<?>> typedentitydata = p_387255_.get(DataComponents.BLOCK_ENTITY_DATA);
+-            if (typedentitydata != null) {
+-                return typedentitydata.type().onlyOpCanSetNbt();
++            CustomData customdata = p_387255_.get(DataComponents.BLOCK_ENTITY_DATA);
++            if (customdata != null) {
++                BlockEntityType<?> blockentitytype = customdata.parseEntityType(p_387661_.level().registryAccess(), Registries.BLOCK_ENTITY_TYPE);
++                return blockentitytype != null && blockentitytype.onlyOpCanSetNbt();
+             }
+         }
+ 
+@@ -212,7 +_,7 @@
+             p_186339_.remove(DataComponents.BLOCK_ENTITY_DATA);
+         } else {
+             BlockEntity.addEntityType(p_422630_, p_186340_);
+-            p_186339_.set(DataComponents.BLOCK_ENTITY_DATA, TypedEntityData.of(p_186340_, p_422630_.buildResult()));
++            p_186339_.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(p_422630_.buildResult()));
+         }
+     }
+ 

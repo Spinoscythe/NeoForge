@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/renderer/entity/CreakingRenderer.java
++++ b/net/minecraft/client/renderer/entity/CreakingRenderer.java
+@@ -19,12 +_,7 @@
+         super(p_379341_, new CreakingModel(p_379341_.bakeLayer(ModelLayers.CREAKING)), 0.6F);
+         this.addLayer(
+             new LivingEntityEmissiveLayer<>(
+-                this,
+-                p_432292_ -> EYES_TEXTURE_LOCATION,
+-                (p_432290_, p_432291_) -> p_432290_.eyesGlowing ? 1.0F : 0.0F,
+-                new CreakingModel(p_379341_.bakeLayer(ModelLayers.CREAKING_EYES)),
+-                RenderType::eyes,
+-                true
++                this, EYES_TEXTURE_LOCATION, (p_379361_, p_380081_) -> 1.0F, CreakingModel::getHeadModelParts, RenderType::eyes, true
+             )
+         );
+     }

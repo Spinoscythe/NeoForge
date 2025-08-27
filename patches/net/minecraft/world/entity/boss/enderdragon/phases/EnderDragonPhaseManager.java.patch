@@ -1,0 +1,16 @@
+--- a/net/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager.java
++++ b/net/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager.java
+@@ -24,11 +_,11 @@
+             }
+ 
+             this.currentPhase = this.getPhase((EnderDragonPhase<DragonPhaseInstance>)p_31417_);
+-            if (!this.dragon.level().isClientSide()) {
++            if (!this.dragon.level().isClientSide) {
+                 this.dragon.getEntityData().set(EnderDragon.DATA_PHASE, p_31417_.getId());
+             }
+ 
+-            LOGGER.debug("Dragon is now in phase {} on the {}", p_31417_, this.dragon.level().isClientSide() ? "client" : "server");
++            LOGGER.debug("Dragon is now in phase {} on the {}", p_31417_, this.dragon.level().isClientSide ? "client" : "server");
+             this.currentPhase.begin();
+         }
+     }

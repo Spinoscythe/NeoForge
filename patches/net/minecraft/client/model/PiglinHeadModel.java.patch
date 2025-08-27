@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/model/PiglinHeadModel.java
++++ b/net/minecraft/client/model/PiglinHeadModel.java
+@@ -25,12 +_,12 @@
+         return meshdefinition;
+     }
+ 
+-    public void setupAnim(SkullModelBase.State p_435242_) {
+-        super.setupAnim(p_435242_);
+-        this.head.yRot = p_435242_.yRot * (float) (Math.PI / 180.0);
+-        this.head.xRot = p_435242_.xRot * (float) (Math.PI / 180.0);
++    @Override
++    public void setupAnim(float p_261561_, float p_261750_, float p_261549_) {
++        this.head.yRot = p_261750_ * (float) (Math.PI / 180.0);
++        this.head.xRot = p_261549_ * (float) (Math.PI / 180.0);
+         float f = 1.2F;
+-        this.leftEar.zRot = (float)(-(Math.cos(p_435242_.animationPos * (float) Math.PI * 0.2F * 1.2F) + 2.5)) * 0.2F;
+-        this.rightEar.zRot = (float)(Math.cos(p_435242_.animationPos * (float) Math.PI * 0.2F) + 2.5) * 0.2F;
++        this.leftEar.zRot = (float)(-(Math.cos(p_261561_ * (float) Math.PI * 0.2F * 1.2F) + 2.5)) * 0.2F;
++        this.rightEar.zRot = (float)(Math.cos(p_261561_ * (float) Math.PI * 0.2F) + 2.5) * 0.2F;
+     }
+ }

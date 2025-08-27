@@ -1,0 +1,59 @@
+--- a/net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket.java
++++ b/net/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket.java
+@@ -9,7 +_,6 @@
+ import java.util.UUID;
+ import javax.annotation.Nullable;
+ import net.minecraft.Optionull;
+-import net.minecraft.Util;
+ import net.minecraft.network.FriendlyByteBuf;
+ import net.minecraft.network.RegistryFriendlyByteBuf;
+ import net.minecraft.network.chat.Component;
+@@ -109,36 +_,35 @@
+     }
+ 
+     public static enum Action {
+-        ADD_PLAYER(
+-            (p_438838_, p_438839_) -> p_438838_.profile = Util.createGameProfile(
+-                p_438838_.profileId, ByteBufCodecs.PLAYER_NAME.decode(p_438839_), ByteBufCodecs.GAME_PROFILE_PROPERTIES.decode(p_438839_)
+-            ),
+-            (p_438840_, p_438841_) -> {
+-                GameProfile gameprofile = Objects.requireNonNull(p_438841_.profile());
+-                ByteBufCodecs.PLAYER_NAME.encode(p_438840_, gameprofile.getName());
+-                ByteBufCodecs.GAME_PROFILE_PROPERTIES.encode(p_438840_, gameprofile.getProperties());
+-            }
+-        ),
++        ADD_PLAYER((p_329872_, p_329873_) -> {
++            GameProfile gameprofile = new GameProfile(p_329872_.profileId, p_329873_.readUtf(16));
++            gameprofile.getProperties().putAll(ByteBufCodecs.GAME_PROFILE_PROPERTIES.decode(p_329873_));
++            p_329872_.profile = gameprofile;
++        }, (p_329874_, p_329875_) -> {
++            GameProfile gameprofile = Objects.requireNonNull(p_329875_.profile());
++            p_329874_.writeUtf(gameprofile.getName(), 16);
++            ByteBufCodecs.GAME_PROFILE_PROPERTIES.encode(p_329874_, gameprofile.getProperties());
++        }),
+         INITIALIZE_CHAT(
+             (p_323155_, p_323156_) -> p_323155_.chatSession = p_323156_.readNullable(RemoteChatSession.Data::read),
+             (p_323151_, p_323152_) -> p_323151_.writeNullable(p_323152_.chatSession, RemoteChatSession.Data::write)
+         ),
+         UPDATE_GAME_MODE(
+-            (p_436529_, p_436530_) -> p_436529_.gameMode = GameType.byId(p_436530_.readVarInt()),
++            (p_323161_, p_323162_) -> p_323161_.gameMode = GameType.byId(p_323162_.readVarInt()),
+             (p_323157_, p_323158_) -> p_323157_.writeVarInt(p_323158_.gameMode().getId())
+         ),
+         UPDATE_LISTED(
+             (p_323167_, p_323168_) -> p_323167_.listed = p_323168_.readBoolean(), (p_323171_, p_323172_) -> p_323171_.writeBoolean(p_323172_.listed())
+         ),
+         UPDATE_LATENCY(
+-            (p_436525_, p_436526_) -> p_436525_.latency = p_436526_.readVarInt(), (p_323153_, p_323154_) -> p_323153_.writeVarInt(p_323154_.latency())
++            (p_323165_, p_323166_) -> p_323165_.latency = p_323166_.readVarInt(), (p_323153_, p_323154_) -> p_323153_.writeVarInt(p_323154_.latency())
+         ),
+         UPDATE_DISPLAY_NAME(
+             (p_329878_, p_329879_) -> p_329878_.displayName = FriendlyByteBuf.readNullable(p_329879_, ComponentSerialization.TRUSTED_STREAM_CODEC),
+             (p_329876_, p_329877_) -> FriendlyByteBuf.writeNullable(p_329876_, p_329877_.displayName(), ComponentSerialization.TRUSTED_STREAM_CODEC)
+         ),
+         UPDATE_LIST_ORDER(
+-            (p_436527_, p_436528_) -> p_436527_.listOrder = p_436528_.readVarInt(), (p_359474_, p_359475_) -> p_359474_.writeVarInt(p_359475_.listOrder)
++            (p_359476_, p_359477_) -> p_359476_.listOrder = p_359477_.readVarInt(), (p_359474_, p_359475_) -> p_359474_.writeVarInt(p_359475_.listOrder)
+         ),
+         UPDATE_HAT((p_382658_, p_382659_) -> p_382658_.showHat = p_382659_.readBoolean(), (p_382660_, p_382661_) -> p_382660_.writeBoolean(p_382661_.showHat));
+ 

@@ -1,0 +1,93 @@
+--- a/net/minecraft/client/gui/screens/inventory/AbstractCommandBlockEditScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/AbstractCommandBlockEditScreen.java
+@@ -44,7 +_,23 @@
+ 
+     @Override
+     protected void init() {
++        this.doneButton = this.addRenderableWidget(
++            Button.builder(CommonComponents.GUI_DONE, p_97691_ -> this.onDone()).bounds(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20).build()
++        );
++        this.cancelButton = this.addRenderableWidget(
++            Button.builder(CommonComponents.GUI_CANCEL, p_425144_ -> this.onClose()).bounds(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20).build()
++        );
+         boolean flag = this.getCommandBlock().isTrackOutput();
++        this.outputButton = this.addRenderableWidget(
++            CycleButton.booleanBuilder(Component.literal("O"), Component.literal("X"))
++                .withInitialValue(flag)
++                .displayOnlyValue()
++                .create(this.width / 2 + 150 - 20, this.getPreviousY(), 20, 20, Component.translatable("advMode.trackOutput"), (p_169596_, p_169597_) -> {
++                    BaseCommandBlock basecommandblock = this.getCommandBlock();
++                    basecommandblock.setTrackOutput(p_169597_);
++                    this.updatePreviousOutput(p_169597_);
++                })
++        );
+         this.commandEdit = new EditBox(this.font, this.width / 2 - 150, 50, 300, 20, Component.translatable("advMode.command")) {
+             @Override
+             protected MutableComponent createNarrationMessage() {
+@@ -59,32 +_,12 @@
+         this.previousEdit.setEditable(false);
+         this.previousEdit.setValue("-");
+         this.addWidget(this.previousEdit);
+-        this.outputButton = this.addRenderableWidget(
+-            CycleButton.booleanBuilder(Component.literal("O"), Component.literal("X"))
+-                .withInitialValue(flag)
+-                .displayOnlyValue()
+-                .create(this.width / 2 + 150 - 20, this.getPreviousY(), 20, 20, Component.translatable("advMode.trackOutput"), (p_169596_, p_169597_) -> {
+-                    BaseCommandBlock basecommandblock = this.getCommandBlock();
+-                    basecommandblock.setTrackOutput(p_169597_);
+-                    this.updatePreviousOutput(p_169597_);
+-                })
+-        );
+-        this.addExtraControls();
+-        this.doneButton = this.addRenderableWidget(
+-            Button.builder(CommonComponents.GUI_DONE, p_97691_ -> this.onDone()).bounds(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20).build()
+-        );
+-        this.cancelButton = this.addRenderableWidget(
+-            Button.builder(CommonComponents.GUI_CANCEL, p_432223_ -> this.onClose()).bounds(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20).build()
+-        );
+         this.commandSuggestions = new CommandSuggestions(this.minecraft, this, this.commandEdit, this.font, true, true, 0, 7, false, Integer.MIN_VALUE);
+         this.commandSuggestions.setAllowSuggestions(true);
+         this.commandSuggestions.updateCommandInfo();
+         this.updatePreviousOutput(flag);
+     }
+ 
+-    protected void addExtraControls() {
+-    }
+-
+     @Override
+     protected void setInitialFocus() {
+         this.setInitialFocus(this.commandEdit);
+@@ -124,11 +_,6 @@
+     }
+ 
+     @Override
+-    public boolean isInGameUi() {
+-        return true;
+-    }
+-
+-    @Override
+     public boolean keyPressed(int p_97667_, int p_97668_, int p_97669_) {
+         if (this.commandSuggestions.keyPressed(p_97667_, p_97668_, p_97669_)) {
+             return true;
+@@ -148,8 +_,8 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_97663_, double p_97664_, int p_97665_, boolean p_433099_) {
+-        return this.commandSuggestions.mouseClicked(p_97663_, p_97664_, p_97665_) ? true : super.mouseClicked(p_97663_, p_97664_, p_97665_, p_433099_);
++    public boolean mouseClicked(double p_97663_, double p_97664_, int p_97665_) {
++        return this.commandSuggestions.mouseClicked(p_97663_, p_97664_, p_97665_) ? true : super.mouseClicked(p_97663_, p_97664_, p_97665_);
+     }
+ 
+     @Override
+@@ -166,5 +_,10 @@
+         }
+ 
+         this.commandSuggestions.render(p_283074_, p_97673_, p_97674_);
++    }
++
++    @Override
++    public void renderBackground(GuiGraphics p_333760_, int p_333752_, int p_333931_, float p_333774_) {
++        this.renderTransparentBackground(p_333760_);
+     }
+ }

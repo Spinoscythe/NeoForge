@@ -1,0 +1,118 @@
+--- a/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/ChiseledBookShelfBlockEntity.java
+@@ -2,6 +_,7 @@
+ 
+ import com.mojang.logging.LogUtils;
+ import java.util.Objects;
++import java.util.function.Predicate;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.NonNullList;
+ import net.minecraft.core.component.DataComponentGetter;
+@@ -21,7 +_,7 @@
+ import net.minecraft.world.level.storage.ValueOutput;
+ import org.slf4j.Logger;
+ 
+-public class ChiseledBookShelfBlockEntity extends BlockEntity implements ListBackedContainer {
++public class ChiseledBookShelfBlockEntity extends BlockEntity implements Container {
+     public static final int MAX_BOOKS_IN_STORAGE = 6;
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final int DEFAULT_LAST_INTERACTED_SLOT = -1;
+@@ -65,20 +_,34 @@
+         p_422265_.putInt("last_interacted_slot", this.lastInteractedSlot);
+     }
+ 
+-    @Override
+-    public int getMaxStackSize() {
+-        return 1;
+-    }
+-
+-    @Override
+-    public boolean acceptsItemType(ItemStack p_433750_) {
+-        return p_433750_.is(ItemTags.BOOKSHELF_BOOKS);
++    public int count() {
++        return (int)this.items.stream().filter(Predicate.not(ItemStack::isEmpty)).count();
++    }
++
++    @Override
++    public void clearContent() {
++        this.items.clear();
++    }
++
++    @Override
++    public int getContainerSize() {
++        return 6;
++    }
++
++    @Override
++    public boolean isEmpty() {
++        return this.items.stream().allMatch(ItemStack::isEmpty);
++    }
++
++    @Override
++    public ItemStack getItem(int p_256203_) {
++        return this.items.get(p_256203_);
+     }
+ 
+     @Override
+     public ItemStack removeItem(int p_255828_, int p_255673_) {
+-        ItemStack itemstack = Objects.requireNonNullElse(this.getItems().get(p_255828_), ItemStack.EMPTY);
+-        this.getItems().set(p_255828_, ItemStack.EMPTY);
++        ItemStack itemstack = Objects.requireNonNullElse(this.items.get(p_255828_), ItemStack.EMPTY);
++        this.items.set(p_255828_, ItemStack.EMPTY);
+         if (!itemstack.isEmpty()) {
+             this.updateState(p_255828_);
+         }
+@@ -87,33 +_,43 @@
+     }
+ 
+     @Override
++    public ItemStack removeItemNoUpdate(int p_255874_) {
++        return this.removeItem(p_255874_, 1);
++    }
++
++    @Override
+     public void setItem(int p_256610_, ItemStack p_255789_) {
+-        if (this.acceptsItemType(p_255789_)) {
+-            this.getItems().set(p_256610_, p_255789_);
++        if (p_255789_.is(ItemTags.BOOKSHELF_BOOKS)) {
++            this.items.set(p_256610_, p_255789_);
+             this.updateState(p_256610_);
+         } else if (p_255789_.isEmpty()) {
+-            this.removeItem(p_256610_, this.getMaxStackSize());
++            this.removeItem(p_256610_, 1);
+         }
+     }
+ 
+     @Override
+-    public boolean canTakeItem(Container p_437377_, int p_437398_, ItemStack p_437308_) {
+-        return p_437377_.hasAnyMatching(
+-            p_437333_ -> p_437333_.isEmpty()
++    public boolean canTakeItem(Container p_282172_, int p_281387_, ItemStack p_283257_) {
++        return p_282172_.hasAnyMatching(
++            p_335300_ -> p_335300_.isEmpty()
+                 ? true
+-                : ItemStack.isSameItemSameComponents(p_437308_, p_437333_)
+-                    && p_437333_.getCount() + p_437308_.getCount() <= p_437377_.getMaxStackSize(p_437333_)
++                : ItemStack.isSameItemSameComponents(p_283257_, p_335300_)
++                    && p_335300_.getCount() + p_283257_.getCount() <= p_282172_.getMaxStackSize(p_335300_)
+         );
+     }
+ 
+     @Override
+-    public NonNullList<ItemStack> getItems() {
+-        return this.items;
++    public int getMaxStackSize() {
++        return 1;
+     }
+ 
+     @Override
+     public boolean stillValid(Player p_256481_) {
+         return Container.stillValidBlockEntity(this, p_256481_);
++    }
++
++    @Override
++    public boolean canPlaceItem(int p_256567_, ItemStack p_255922_) {
++        return p_255922_.is(ItemTags.BOOKSHELF_BOOKS) && this.getItem(p_256567_).isEmpty() && p_255922_.getCount() == this.getMaxStackSize();
+     }
+ 
+     public int getLastInteractedSlot() {

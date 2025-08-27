@@ -1,14 +1,278 @@
 --- a/net/minecraft/client/renderer/blockentity/BannerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BannerRenderer.java
-@@ -149,4 +_,11 @@
+@@ -3,22 +_,17 @@
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.math.Axis;
+ import java.util.Set;
+-import javax.annotation.Nullable;
+ import net.minecraft.client.model.BannerFlagModel;
+ import net.minecraft.client.model.BannerModel;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
+ import net.minecraft.client.model.geom.ModelPart;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+ import net.minecraft.client.renderer.Sheets;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+-import net.minecraft.client.renderer.special.SpecialModelRenderer;
+ import net.minecraft.client.resources.model.Material;
+-import net.minecraft.client.resources.model.MaterialSet;
+ import net.minecraft.client.resources.model.ModelBakery;
+ import net.minecraft.core.BlockPos;
+-import net.minecraft.util.Unit;
+ import net.minecraft.world.item.DyeColor;
+ import net.minecraft.world.level.block.BannerBlock;
+ import net.minecraft.world.level.block.WallBannerBlock;
+@@ -35,39 +_,26 @@
+ public class BannerRenderer implements BlockEntityRenderer<BannerBlockEntity> {
+     private static final int MAX_PATTERNS = 16;
+     private static final float SIZE = 0.6666667F;
+-    private final MaterialSet materials;
+     private final BannerModel standingModel;
+     private final BannerModel wallModel;
+     private final BannerFlagModel standingFlagModel;
+     private final BannerFlagModel wallFlagModel;
+ 
+     public BannerRenderer(BlockEntityRendererProvider.Context p_173521_) {
+-        this(p_173521_.entityModelSet(), p_173521_.materials());
+-    }
+-
+-    public BannerRenderer(SpecialModelRenderer.BakingContext p_435832_) {
+-        this(p_435832_.entityModelSet(), p_435832_.materials());
+-    }
+-
+-    public BannerRenderer(EntityModelSet p_433084_, MaterialSet p_433697_) {
+-        this.materials = p_433697_;
+-        this.standingModel = new BannerModel(p_433084_.bakeLayer(ModelLayers.STANDING_BANNER));
+-        this.wallModel = new BannerModel(p_433084_.bakeLayer(ModelLayers.WALL_BANNER));
+-        this.standingFlagModel = new BannerFlagModel(p_433084_.bakeLayer(ModelLayers.STANDING_BANNER_FLAG));
+-        this.wallFlagModel = new BannerFlagModel(p_433084_.bakeLayer(ModelLayers.WALL_BANNER_FLAG));
+-    }
+-
+-    public void submit(
+-        BannerBlockEntity p_440670_,
+-        float p_440293_,
+-        PoseStack p_438894_,
+-        int p_440016_,
+-        int p_440262_,
+-        Vec3 p_439815_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440081_,
+-        SubmitNodeCollector p_440361_
++        this(p_173521_.getModelSet());
++    }
++
++    public BannerRenderer(EntityModelSet p_387622_) {
++        this.standingModel = new BannerModel(p_387622_.bakeLayer(ModelLayers.STANDING_BANNER));
++        this.wallModel = new BannerModel(p_387622_.bakeLayer(ModelLayers.WALL_BANNER));
++        this.standingFlagModel = new BannerFlagModel(p_387622_.bakeLayer(ModelLayers.STANDING_BANNER_FLAG));
++        this.wallFlagModel = new BannerFlagModel(p_387622_.bakeLayer(ModelLayers.WALL_BANNER_FLAG));
++    }
++
++    public void render(
++        BannerBlockEntity p_112052_, float p_112053_, PoseStack p_112054_, MultiBufferSource p_112055_, int p_112056_, int p_112057_, Vec3 p_401132_
+     ) {
+-        BlockState blockstate = p_440670_.getBlockState();
++        BlockState blockstate = p_112052_.getBlockState();
+         BannerModel bannermodel;
+         BannerFlagModel bannerflagmodel;
+         float f;
+@@ -81,115 +_,82 @@
+             bannerflagmodel = this.wallFlagModel;
+         }
+ 
+-        long i = p_440670_.getLevel().getGameTime();
+-        BlockPos blockpos = p_440670_.getBlockPos();
+-        float f1 = ((float)Math.floorMod(blockpos.getX() * 7 + blockpos.getY() * 9 + blockpos.getZ() * 13 + i, 100L) + p_440293_) / 100.0F;
+-        submitBanner(
+-            this.materials,
+-            p_438894_,
+-            p_440361_,
+-            p_440016_,
+-            p_440262_,
+-            f,
+-            bannermodel,
+-            bannerflagmodel,
+-            f1,
+-            p_440670_.getBaseColor(),
+-            p_440670_.getPatterns(),
+-            p_440081_
+-        );
+-    }
+-
+-    public void submitSpecial(
+-        PoseStack p_440281_, SubmitNodeCollector p_440300_, int p_439135_, int p_439629_, DyeColor p_440022_, BannerPatternLayers p_438875_
+-    ) {
+-        submitBanner(
+-            this.materials, p_440281_, p_440300_, p_439135_, p_439629_, 0.0F, this.standingModel, this.standingFlagModel, 0.0F, p_440022_, p_438875_, null
+-        );
+-    }
+-
+-    private static void submitBanner(
+-        MaterialSet p_439579_,
+-        PoseStack p_439517_,
+-        SubmitNodeCollector p_439053_,
+-        int p_440110_,
+-        int p_439479_,
+-        float p_439639_,
+-        BannerModel p_438931_,
+-        BannerFlagModel p_440241_,
+-        float p_440294_,
+-        DyeColor p_439197_,
+-        BannerPatternLayers p_440310_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440357_
+-    ) {
+-        p_439517_.pushPose();
+-        p_439517_.translate(0.5F, 0.0F, 0.5F);
+-        p_439517_.mulPose(Axis.YP.rotationDegrees(p_439639_));
+-        p_439517_.scale(0.6666667F, -0.6666667F, -0.6666667F);
+-        Material material = ModelBakery.BANNER_BASE;
+-        p_439053_.submitModel(
+-            p_438931_, Unit.INSTANCE, p_439517_, material.renderType(RenderType::entitySolid), p_440110_, p_439479_, -1, p_439579_.get(material), 0, p_440357_
+-        );
+-        p_440241_.setupAnim(p_440294_);
+-        submitPatterns(p_439579_, p_439517_, p_439053_, p_440110_, p_439479_, p_440241_.root(), material, true, p_439197_, p_440310_);
+-        p_439517_.popPose();
+-    }
+-
+-    public static void submitPatterns(
+-        MaterialSet p_440183_,
+-        PoseStack p_440515_,
+-        SubmitNodeCollector p_439454_,
+-        int p_440371_,
+-        int p_440649_,
+-        ModelPart p_439106_,
+-        Material p_439637_,
+-        boolean p_439954_,
+-        DyeColor p_439618_,
+-        BannerPatternLayers p_439876_
+-    ) {
+-        submitPatterns(p_440183_, p_440515_, p_439454_, p_440371_, p_440649_, p_439106_, p_439637_, p_439954_, p_439618_, p_439876_, false, true);
+-    }
+-
+-    public static void submitPatterns(
+-        MaterialSet p_439666_,
+-        PoseStack p_439757_,
+-        SubmitNodeCollector p_440040_,
+-        int p_438926_,
+-        int p_439595_,
+-        ModelPart p_439016_,
+-        Material p_439561_,
+-        boolean p_439402_,
+-        DyeColor p_440444_,
+-        BannerPatternLayers p_439142_,
+-        boolean p_439911_,
+-        boolean p_439232_
+-    ) {
+-        p_440040_.submitModelPart(
+-            p_439016_, p_439757_, p_439561_.renderType(RenderType::entitySolid), p_438926_, p_439595_, p_439666_.get(p_439561_), p_439232_, p_439911_
+-        );
+-        submitPatternLayer(p_439666_, p_439757_, p_440040_, p_438926_, p_439595_, p_439016_, p_439402_ ? Sheets.BANNER_BASE : Sheets.SHIELD_BASE, p_440444_);
+-
+-        for (int i = 0; i < 16 && i < p_439142_.layers().size(); i++) {
+-            BannerPatternLayers.Layer bannerpatternlayers$layer = p_439142_.layers().get(i);
+-            Material material = p_439402_
++        long i = p_112052_.getLevel().getGameTime();
++        BlockPos blockpos = p_112052_.getBlockPos();
++        float f1 = ((float)Math.floorMod(blockpos.getX() * 7 + blockpos.getY() * 9 + blockpos.getZ() * 13 + i, 100L) + p_112053_) / 100.0F;
++        renderBanner(p_112054_, p_112055_, p_112056_, p_112057_, f, bannermodel, bannerflagmodel, f1, p_112052_.getBaseColor(), p_112052_.getPatterns());
++    }
++
++    public void renderInHand(PoseStack p_387128_, MultiBufferSource p_387289_, int p_386943_, int p_387938_, DyeColor p_388253_, BannerPatternLayers p_388428_) {
++        renderBanner(p_387128_, p_387289_, p_386943_, p_387938_, 0.0F, this.standingModel, this.standingFlagModel, 0.0F, p_388253_, p_388428_);
++    }
++
++    private static void renderBanner(
++        PoseStack p_388373_,
++        MultiBufferSource p_388314_,
++        int p_386449_,
++        int p_388689_,
++        float p_387344_,
++        BannerModel p_386469_,
++        BannerFlagModel p_387874_,
++        float p_387444_,
++        DyeColor p_388367_,
++        BannerPatternLayers p_388938_
++    ) {
++        p_388373_.pushPose();
++        p_388373_.translate(0.5F, 0.0F, 0.5F);
++        p_388373_.mulPose(Axis.YP.rotationDegrees(p_387344_));
++        p_388373_.scale(0.6666667F, -0.6666667F, -0.6666667F);
++        p_386469_.renderToBuffer(p_388373_, ModelBakery.BANNER_BASE.buffer(p_388314_, RenderType::entitySolid), p_386449_, p_388689_);
++        p_387874_.setupAnim(p_387444_);
++        renderPatterns(p_388373_, p_388314_, p_386449_, p_388689_, p_387874_.root(), ModelBakery.BANNER_BASE, true, p_388367_, p_388938_);
++        p_388373_.popPose();
++    }
++
++    public static void renderPatterns(
++        PoseStack p_112066_,
++        MultiBufferSource p_112067_,
++        int p_112068_,
++        int p_112069_,
++        ModelPart p_112070_,
++        Material p_112071_,
++        boolean p_112072_,
++        DyeColor p_332660_,
++        BannerPatternLayers p_330986_
++    ) {
++        renderPatterns(p_112066_, p_112067_, p_112068_, p_112069_, p_112070_, p_112071_, p_112072_, p_332660_, p_330986_, false, true);
++    }
++
++    public static void renderPatterns(
++        PoseStack p_112075_,
++        MultiBufferSource p_112076_,
++        int p_112077_,
++        int p_112078_,
++        ModelPart p_112079_,
++        Material p_112080_,
++        boolean p_112081_,
++        DyeColor p_332652_,
++        BannerPatternLayers p_331851_,
++        boolean p_332823_,
++        boolean p_364162_
++    ) {
++        p_112079_.render(p_112075_, p_112080_.buffer(p_112076_, RenderType::entitySolid, p_364162_, p_332823_), p_112077_, p_112078_);
++        renderPatternLayer(p_112075_, p_112076_, p_112077_, p_112078_, p_112079_, p_112081_ ? Sheets.BANNER_BASE : Sheets.SHIELD_BASE, p_332652_);
++
++        for (int i = 0; i < 16 && i < p_331851_.layers().size(); i++) {
++            BannerPatternLayers.Layer bannerpatternlayers$layer = p_331851_.layers().get(i);
++            Material material = p_112081_
+                 ? Sheets.getBannerMaterial(bannerpatternlayers$layer.pattern())
+                 : Sheets.getShieldMaterial(bannerpatternlayers$layer.pattern());
+-            submitPatternLayer(p_439666_, p_439757_, p_440040_, p_438926_, p_439595_, p_439016_, material, bannerpatternlayers$layer.color());
++            renderPatternLayer(p_112075_, p_112076_, p_112077_, p_112078_, p_112079_, material, bannerpatternlayers$layer.color());
+         }
+     }
+ 
+-    private static void submitPatternLayer(
+-        MaterialSet p_439333_,
+-        PoseStack p_439424_,
+-        SubmitNodeCollector p_439806_,
+-        int p_439519_,
+-        int p_439952_,
+-        ModelPart p_439531_,
+-        Material p_440466_,
+-        DyeColor p_440408_
++    private static void renderPatternLayer(
++        PoseStack p_332737_, MultiBufferSource p_332758_, int p_332821_, int p_332828_, ModelPart p_332732_, Material p_332704_, DyeColor p_332728_
+     ) {
+-        int i = p_440408_.getTextureDiffuseColor();
+-        p_439806_.submitModelPart(p_439531_, p_439424_, p_440466_.renderType(RenderType::entityNoOutline), p_439519_, p_439952_, p_439333_.get(p_440466_), i);
++        int i = p_332728_.getTextureDiffuseColor();
++        p_332732_.render(p_332737_, p_332704_.buffer(p_332758_, RenderType::entityNoOutline), p_332821_, p_332828_, i);
+     }
+ 
+     public void getExtents(Set<Vector3f> p_428247_) {
+@@ -199,5 +_,12 @@
+         this.standingModel.root().getExtentsForGui(posestack, p_428247_);
          this.standingFlagModel.setupAnim(0.0F);
          this.standingFlagModel.root().getExtentsForGui(posestack, p_428247_);
-     }
++    }
 +
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(BannerBlockEntity blockEntity) {
 +        BlockPos pos = blockEntity.getBlockPos();
 +        boolean standing = blockEntity.getBlockState().getBlock() instanceof BannerBlock;
 +        return net.minecraft.world.phys.AABB.encapsulatingFullBlocks(pos, standing ? pos.above() : pos.below());
-+    }
+     }
  }

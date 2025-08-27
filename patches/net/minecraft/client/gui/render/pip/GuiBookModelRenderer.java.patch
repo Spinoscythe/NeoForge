@@ -1,0 +1,24 @@
+--- a/net/minecraft/client/gui/render/pip/GuiBookModelRenderer.java
++++ b/net/minecraft/client/gui/render/pip/GuiBookModelRenderer.java
+@@ -16,8 +_,6 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class GuiBookModelRenderer extends PictureInPictureRenderer<GuiBookModelRenderState> {
+-    private final BookModel.State bookState = new BookModel.State();
+-
+     public GuiBookModelRenderer(MultiBufferSource.BufferSource p_415972_) {
+         super(p_415972_);
+     }
+@@ -39,11 +_,7 @@
+         float f2 = Mth.clamp(Mth.frac(f1 + 0.25F) * 1.6F - 0.3F, 0.0F, 1.0F);
+         float f3 = Mth.clamp(Mth.frac(f1 + 0.75F) * 1.6F - 0.3F, 0.0F, 1.0F);
+         BookModel bookmodel = p_415749_.bookModel();
+-        this.bookState.animationPos = 0.0F;
+-        this.bookState.pageFlip1 = f2;
+-        this.bookState.pageFlip2 = f3;
+-        this.bookState.open = f;
+-        bookmodel.setupAnim(this.bookState);
++        bookmodel.setupAnim(0.0F, f2, f3, f);
+         ResourceLocation resourcelocation = p_415749_.texture();
+         VertexConsumer vertexconsumer = this.bufferSource.getBuffer(bookmodel.renderType(resourcelocation));
+         bookmodel.renderToBuffer(p_416266_, vertexconsumer, 15728880, OverlayTexture.NO_OVERLAY);

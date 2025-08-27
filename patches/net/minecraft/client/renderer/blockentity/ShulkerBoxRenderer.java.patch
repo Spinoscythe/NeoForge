@@ -1,6 +1,127 @@
 --- a/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/ShulkerBoxRenderer.java
-@@ -72,6 +_,12 @@
+@@ -1,19 +_,16 @@
+ package net.minecraft.client.renderer.blockentity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import java.util.Set;
+-import javax.annotation.Nullable;
+ import net.minecraft.client.model.Model;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
+ import net.minecraft.client.model.geom.ModelPart;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+ import net.minecraft.client.renderer.Sheets;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+-import net.minecraft.client.renderer.special.SpecialModelRenderer;
+ import net.minecraft.client.resources.model.Material;
+-import net.minecraft.client.resources.model.MaterialSet;
+ import net.minecraft.core.Direction;
+ import net.minecraft.world.item.DyeColor;
+ import net.minecraft.world.level.block.ShulkerBoxBlock;
+@@ -25,34 +_,21 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class ShulkerBoxRenderer implements BlockEntityRenderer<ShulkerBoxBlockEntity> {
+-    private final MaterialSet materials;
+     private final ShulkerBoxRenderer.ShulkerBoxModel model;
+ 
+     public ShulkerBoxRenderer(BlockEntityRendererProvider.Context p_173626_) {
+-        this(p_173626_.entityModelSet(), p_173626_.materials());
+-    }
+-
+-    public ShulkerBoxRenderer(SpecialModelRenderer.BakingContext p_435273_) {
+-        this(p_435273_.entityModelSet(), p_435273_.materials());
+-    }
+-
+-    public ShulkerBoxRenderer(EntityModelSet p_435039_, MaterialSet p_434694_) {
+-        this.materials = p_434694_;
+-        this.model = new ShulkerBoxRenderer.ShulkerBoxModel(p_435039_.bakeLayer(ModelLayers.SHULKER_BOX));
+-    }
+-
+-    public void submit(
+-        ShulkerBoxBlockEntity p_440217_,
+-        float p_438930_,
+-        PoseStack p_440464_,
+-        int p_440430_,
+-        int p_439594_,
+-        Vec3 p_440308_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_439506_,
+-        SubmitNodeCollector p_440414_
++        this(p_173626_.getModelSet());
++    }
++
++    public ShulkerBoxRenderer(EntityModelSet p_388849_) {
++        this.model = new ShulkerBoxRenderer.ShulkerBoxModel(p_388849_.bakeLayer(ModelLayers.SHULKER_BOX));
++    }
++
++    public void render(
++        ShulkerBoxBlockEntity p_112478_, float p_112479_, PoseStack p_112480_, MultiBufferSource p_112481_, int p_112482_, int p_112483_, Vec3 p_401208_
+     ) {
+-        Direction direction = p_440217_.getBlockState().getValueOrElse(ShulkerBoxBlock.FACING, Direction.UP);
+-        DyeColor dyecolor = p_440217_.getColor();
++        Direction direction = p_112478_.getBlockState().getValueOrElse(ShulkerBoxBlock.FACING, Direction.UP);
++        DyeColor dyecolor = p_112478_.getColor();
+         Material material;
+         if (dyecolor == null) {
+             material = Sheets.DEFAULT_SHULKER_TEXTURE_LOCATION;
+@@ -60,35 +_,16 @@
+             material = Sheets.getShulkerBoxMaterial(dyecolor);
+         }
+ 
+-        float f = p_440217_.getProgress(p_438930_);
+-        this.submit(p_440464_, p_440414_, p_440430_, p_439594_, direction, f, p_439506_, material);
++        float f = p_112478_.getProgress(p_112479_);
++        this.render(p_112480_, p_112481_, p_112482_, p_112483_, direction, f, material);
+     }
+ 
+-    public void submit(
+-        PoseStack p_440659_,
+-        SubmitNodeCollector p_440531_,
+-        int p_440374_,
+-        int p_440011_,
+-        Direction p_439059_,
+-        float p_439448_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440691_,
+-        Material p_439769_
+-    ) {
+-        p_440659_.pushPose();
+-        this.prepareModel(p_440659_, p_439059_, p_439448_);
+-        p_440531_.submitModel(
+-            this.model,
+-            p_439448_,
+-            p_440659_,
+-            p_439769_.renderType(this.model::renderType),
+-            p_440374_,
+-            p_440011_,
+-            -1,
+-            this.materials.get(p_439769_),
+-            0,
+-            p_440691_
+-        );
+-        p_440659_.popPose();
++    public void render(PoseStack p_388735_, MultiBufferSource p_386677_, int p_388822_, int p_386683_, Direction p_387528_, float p_387342_, Material p_387103_) {
++        p_388735_.pushPose();
++        this.prepareModel(p_388735_, p_387528_, p_387342_);
++        VertexConsumer vertexconsumer = p_387103_.buffer(p_386677_, this.model::renderType);
++        this.model.renderToBuffer(p_388735_, vertexconsumer, p_388822_, p_386683_);
++        p_388735_.popPose();
+     }
+ 
+     private void prepareModel(PoseStack p_428342_, Direction p_428479_, float p_428538_) {
+@@ -98,7 +_,7 @@
+         p_428342_.mulPose(p_428479_.getRotation());
+         p_428342_.scale(1.0F, -1.0F, -1.0F);
+         p_428342_.translate(0.0F, -1.0F, 0.0F);
+-        this.model.setupAnim(p_428538_);
++        this.model.animate(p_428538_);
+     }
+ 
+     public void getExtents(Direction p_428199_, float p_428569_, Set<Vector3f> p_428287_) {
+@@ -107,8 +_,14 @@
          this.model.root().getExtentsForGui(posestack, p_428287_);
      }
  
@@ -11,5 +132,22 @@
 +    }
 +
      @OnlyIn(Dist.CLIENT)
-     static class ShulkerBoxModel extends Model {
+-    static class ShulkerBoxModel extends Model<Float> {
++    static class ShulkerBoxModel extends Model {
          private final ModelPart lid;
+ 
+         public ShulkerBoxModel(ModelPart p_361240_) {
+@@ -116,10 +_,9 @@
+             this.lid = p_361240_.getChild("lid");
+         }
+ 
+-        public void setupAnim(Float p_434331_) {
+-            super.setupAnim(p_434331_);
+-            this.lid.setPos(0.0F, 24.0F - p_434331_ * 0.5F * 16.0F, 0.0F);
+-            this.lid.yRot = 270.0F * p_434331_ * (float) (Math.PI / 180.0);
++        public void animate(float p_365330_) {
++            this.lid.setPos(0.0F, 24.0F - p_365330_ * 0.5F * 16.0F, 0.0F);
++            this.lid.yRot = 270.0F * p_365330_ * (float) (Math.PI / 180.0);
+         }
+     }
+ }

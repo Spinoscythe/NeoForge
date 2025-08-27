@@ -1,0 +1,17 @@
+--- a/net/minecraft/world/level/block/WeightedPressurePlateBlock.java
++++ b/net/minecraft/world/level/block/WeightedPressurePlateBlock.java
+@@ -17,12 +_,12 @@
+ 
+ public class WeightedPressurePlateBlock extends BasePressurePlateBlock {
+     public static final MapCodec<WeightedPressurePlateBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432702_ -> p_432702_.group(
++        p_368457_ -> p_368457_.group(
+                 Codec.intRange(1, 1024).fieldOf("max_weight").forGetter(p_304500_ -> p_304500_.maxWeight),
+                 BlockSetType.CODEC.fieldOf("block_set_type").forGetter(p_304629_ -> p_304629_.type),
+                 propertiesCodec()
+             )
+-            .apply(p_432702_, WeightedPressurePlateBlock::new)
++            .apply(p_368457_, WeightedPressurePlateBlock::new)
+     );
+     public static final IntegerProperty POWER = BlockStateProperties.POWER;
+     private final int maxWeight;

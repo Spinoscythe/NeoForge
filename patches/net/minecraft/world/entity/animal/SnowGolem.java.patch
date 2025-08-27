@@ -9,7 +9,7 @@
                  return;
              }
  
-@@ -136,7 +_,7 @@
+@@ -136,11 +_,11 @@
      @Override
      protected InteractionResult mobInteract(Player p_29920_, InteractionHand p_29921_) {
          ItemStack itemstack = p_29920_.getItemInHand(p_29921_);
@@ -18,3 +18,8 @@
              if (this.level() instanceof ServerLevel serverlevel) {
                  this.shear(serverlevel, SoundSource.PLAYERS, itemstack);
                  this.gameEvent(GameEvent.SHEAR, p_29920_);
+-                itemstack.hurtAndBreak(1, p_29920_, p_29921_.asEquipmentSlot());
++                itemstack.hurtAndBreak(1, p_29920_, getSlotForHand(p_29921_));
+             }
+ 
+             return InteractionResult.SUCCESS;

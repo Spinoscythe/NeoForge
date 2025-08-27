@@ -1,0 +1,98 @@
+--- a/net/minecraft/client/gui/components/StringWidget.java
++++ b/net/minecraft/client/gui/components/StringWidget.java
+@@ -12,10 +_,7 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class StringWidget extends AbstractStringWidget {
+-    private int maxWidth = 0;
+-    private int cachedWidth = 0;
+-    private boolean cachedWidthDirty = true;
+-    private StringWidget.TextOverflow textOverflow = StringWidget.TextOverflow.CLAMPED;
++    private float alignX = 0.5F;
+ 
+     public StringWidget(Component p_268211_, Font p_267963_) {
+         this(0, 0, p_267963_.width(p_268211_.getVisualOrderText()), 9, p_268211_, p_267963_);
+@@ -35,67 +_,38 @@
+         return this;
+     }
+ 
+-    @Override
+-    public void setMessage(Component p_439249_) {
+-        super.setMessage(p_439249_);
+-        this.cachedWidthDirty = true;
+-    }
+-
+-    public StringWidget setMaxWidth(int p_438945_) {
+-        return this.setMaxWidth(p_438945_, StringWidget.TextOverflow.CLAMPED);
+-    }
+-
+-    public StringWidget setMaxWidth(int p_440434_, StringWidget.TextOverflow p_440485_) {
+-        this.maxWidth = p_440434_;
+-        this.textOverflow = p_440485_;
++    private StringWidget horizontalAlignment(float p_267947_) {
++        this.alignX = p_267947_;
+         return this;
+     }
+ 
+-    @Override
+-    public int getWidth() {
+-        if (this.maxWidth > 0) {
+-            if (this.cachedWidthDirty) {
+-                this.cachedWidth = Math.min(this.maxWidth, this.getFont().width(this.getMessage().getVisualOrderText()));
+-                this.cachedWidthDirty = false;
+-            }
+-
+-            return this.cachedWidth;
+-        } else {
+-            return super.getWidth();
+-        }
++    public StringWidget alignLeft() {
++        return this.horizontalAlignment(0.0F);
++    }
++
++    public StringWidget alignCenter() {
++        return this.horizontalAlignment(0.5F);
++    }
++
++    public StringWidget alignRight() {
++        return this.horizontalAlignment(1.0F);
+     }
+ 
+     @Override
+     public void renderWidget(GuiGraphics p_281367_, int p_268221_, int p_268001_, float p_268214_) {
+         Component component = this.getMessage();
+         Font font = this.getFont();
+-        int i = this.maxWidth > 0 ? this.maxWidth : this.getWidth();
++        int i = this.getWidth();
+         int j = font.width(component);
+-        int k = this.getX();
++        int k = this.getX() + Math.round(this.alignX * (i - j));
+         int l = this.getY() + (this.getHeight() - 9) / 2;
+-        boolean flag = j > i;
+-        if (flag) {
+-            switch (this.textOverflow) {
+-                case CLAMPED:
+-                    p_281367_.drawString(font, this.clipText(component, i), k, l, this.getColor());
+-                    break;
+-                case SCROLLING:
+-                    this.renderScrollingString(p_281367_, font, 2, this.getColor());
+-            }
+-        } else {
+-            p_281367_.drawString(font, component.getVisualOrderText(), k, l, this.getColor());
+-        }
++        FormattedCharSequence formattedcharsequence = j > i ? this.clipText(component, i) : component.getVisualOrderText();
++        p_281367_.drawString(font, formattedcharsequence, k, l, this.getColor());
+     }
+ 
+     private FormattedCharSequence clipText(Component p_296006_, int p_295055_) {
+         Font font = this.getFont();
+         FormattedText formattedtext = font.substrByWidth(p_296006_, p_295055_ - font.width(CommonComponents.ELLIPSIS));
+         return Language.getInstance().getVisualOrder(FormattedText.composite(formattedtext, CommonComponents.ELLIPSIS));
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    public static enum TextOverflow {
+-        CLAMPED,
+-        SCROLLING;
+     }
+ }

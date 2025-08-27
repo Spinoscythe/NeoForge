@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Bogged.java
 +++ b/net/minecraft/world/entity/monster/Bogged.java
-@@ -72,7 +_,7 @@
+@@ -72,11 +_,11 @@
      @Override
      protected InteractionResult mobInteract(Player p_330736_, InteractionHand p_331786_) {
          ItemStack itemstack = p_330736_.getItemInHand(p_331786_);
@@ -9,3 +9,8 @@
              if (this.level() instanceof ServerLevel serverlevel) {
                  this.shear(serverlevel, SoundSource.PLAYERS, itemstack);
                  this.gameEvent(GameEvent.SHEAR, p_330736_);
+-                itemstack.hurtAndBreak(1, p_330736_, p_331786_.asEquipmentSlot());
++                itemstack.hurtAndBreak(1, p_330736_, getSlotForHand(p_331786_));
+             }
+ 
+             return InteractionResult.SUCCESS;

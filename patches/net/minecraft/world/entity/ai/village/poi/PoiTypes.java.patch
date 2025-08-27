@@ -1,15 +1,28 @@
 --- a/net/minecraft/world/entity/ai/village/poi/PoiTypes.java
 +++ b/net/minecraft/world/entity/ai/village/poi/PoiTypes.java
-@@ -67,7 +_,7 @@
+@@ -67,20 +_,7 @@
          .stream()
          .flatMap(p_218093_ -> p_218093_.getStateDefinition().getPossibleStates().stream())
          .collect(ImmutableSet.toImmutableSet());
+-    private static final Set<BlockState> LIGHTNING_RODS = ImmutableList.of(
+-            Blocks.LIGHTNING_ROD,
+-            Blocks.EXPOSED_LIGHTNING_ROD,
+-            Blocks.WEATHERED_LIGHTNING_ROD,
+-            Blocks.OXIDIZED_LIGHTNING_ROD,
+-            Blocks.WAXED_LIGHTNING_ROD,
+-            Blocks.WAXED_EXPOSED_LIGHTNING_ROD,
+-            Blocks.WAXED_WEATHERED_LIGHTNING_ROD,
+-            Blocks.WAXED_OXIDIZED_LIGHTNING_ROD
+-        )
+-        .stream()
+-        .flatMap(p_432542_ -> p_432542_.getStateDefinition().getPossibleStates().stream())
+-        .collect(ImmutableSet.toImmutableSet());
 -    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = Maps.newHashMap();
 +    private static final Map<BlockState, Holder<PoiType>> TYPE_BY_STATE = net.neoforged.neoforge.registries.GameData.getBlockStatePointOfInterestTypeMap();
  
      private static Set<BlockState> getBlockStates(Block p_218074_) {
          return ImmutableSet.copyOf(p_218074_.getStateDefinition().getPossibleStates());
-@@ -85,6 +_,7 @@
+@@ -98,6 +_,7 @@
      }
  
      private static void registerBlockStates(Holder<PoiType> p_250815_, Set<BlockState> p_250679_) {
@@ -17,3 +30,11 @@
          p_250679_.forEach(
              p_218081_ -> {
                  Holder<PoiType> holder = TYPE_BY_STATE.put(p_218081_, p_250815_);
+@@ -139,6 +_,6 @@
+         register(p_218083_, NETHER_PORTAL, getBlockStates(Blocks.NETHER_PORTAL), 0, 1);
+         register(p_218083_, LODESTONE, getBlockStates(Blocks.LODESTONE), 0, 1);
+         register(p_218083_, TEST_INSTANCE, getBlockStates(Blocks.TEST_INSTANCE_BLOCK), 0, 1);
+-        return register(p_218083_, LIGHTNING_ROD, LIGHTNING_RODS, 0, 1);
++        return register(p_218083_, LIGHTNING_ROD, getBlockStates(Blocks.LIGHTNING_ROD), 0, 1);
+     }
+ }

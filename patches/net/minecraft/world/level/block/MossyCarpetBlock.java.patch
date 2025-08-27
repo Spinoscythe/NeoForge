@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/MossyCarpetBlock.java
++++ b/net/minecraft/world/level/block/MossyCarpetBlock.java
+@@ -185,7 +_,7 @@
+ 
+     @Override
+     public void setPlacedBy(Level p_380310_, BlockPos p_380202_, BlockState p_379659_, @Nullable LivingEntity p_379877_, ItemStack p_380344_) {
+-        if (!p_380310_.isClientSide()) {
++        if (!p_380310_.isClientSide) {
+             RandomSource randomsource = p_380310_.getRandom();
+             BlockState blockstate = createTopperWithSideChance(p_380310_, p_380202_, randomsource::nextBoolean);
+             if (!blockstate.isAir()) {

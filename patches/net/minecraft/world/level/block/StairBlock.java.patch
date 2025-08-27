@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/StairBlock.java
++++ b/net/minecraft/world/level/block/StairBlock.java
+@@ -30,8 +_,8 @@
+ 
+ public class StairBlock extends Block implements SimpleWaterloggedBlock {
+     public static final MapCodec<StairBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432682_ -> p_432682_.group(BlockState.CODEC.fieldOf("base_state").forGetter(p_304378_ -> p_304378_.baseState), propertiesCodec())
+-            .apply(p_432682_, StairBlock::new)
++        p_368439_ -> p_368439_.group(BlockState.CODEC.fieldOf("base_state").forGetter(p_304378_ -> p_304378_.baseState), propertiesCodec())
++            .apply(p_368439_, StairBlock::new)
+     );
+     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
+     public static final EnumProperty<Half> HALF = BlockStateProperties.HALF;

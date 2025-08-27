@@ -10,3 +10,51 @@
                  recipebooktabbutton.visible = true;
                  recipebooktabbutton.setPosition(i, j + 27 * l++);
              } else if (recipebooktabbutton.updateVisibility(this.book)) {
+@@ -339,9 +_,9 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_100294_, double p_100295_, int p_100296_, boolean p_435607_) {
++    public boolean mouseClicked(double p_100294_, double p_100295_, int p_100296_) {
+         if (this.isVisible() && !this.minecraft.player.isSpectator()) {
+-            if (this.recipeBookPage.mouseClicked(p_100294_, p_100295_, p_100296_, this.getXOrigin(), this.getYOrigin(), 147, 166, p_435607_)) {
++            if (this.recipeBookPage.mouseClicked(p_100294_, p_100295_, p_100296_, this.getXOrigin(), this.getYOrigin(), 147, 166)) {
+                 RecipeDisplayId recipedisplayid = this.recipeBookPage.getLastClickedRecipe();
+                 RecipeCollection recipecollection = this.recipeBookPage.getLastClickedRecipeCollection();
+                 if (recipedisplayid != null && recipecollection != null) {
+@@ -360,7 +_,7 @@
+             } else {
+                 if (this.searchBox != null) {
+                     boolean flag = this.magnifierIconPlacement != null && this.magnifierIconPlacement.containsPoint(Mth.floor(p_100294_), Mth.floor(p_100295_));
+-                    if (flag || this.searchBox.mouseClicked(p_100294_, p_100295_, p_100296_, p_435607_)) {
++                    if (flag || this.searchBox.mouseClicked(p_100294_, p_100295_, p_100296_)) {
+                         this.searchBox.setFocused(true);
+                         return true;
+                     }
+@@ -368,7 +_,7 @@
+                     this.searchBox.setFocused(false);
+                 }
+ 
+-                if (this.filterButton.mouseClicked(p_100294_, p_100295_, p_100296_, p_435607_)) {
++                if (this.filterButton.mouseClicked(p_100294_, p_100295_, p_100296_)) {
+                     boolean flag1 = this.toggleFiltering();
+                     this.filterButton.setStateTriggered(flag1);
+                     this.updateFilterButtonTooltip();
+@@ -377,7 +_,7 @@
+                     return true;
+                 } else {
+                     for (RecipeBookTabButton recipebooktabbutton : this.tabButtons) {
+-                        if (recipebooktabbutton.mouseClicked(p_100294_, p_100295_, p_100296_, p_435607_)) {
++                        if (recipebooktabbutton.mouseClicked(p_100294_, p_100295_, p_100296_)) {
+                             if (this.selectedTab != recipebooktabbutton) {
+                                 if (this.selectedTab != null) {
+                                     this.selectedTab.setStateTriggered(false);
+@@ -563,7 +_,7 @@
+         list.addAll(this.tabButtons);
+         Screen.NarratableSearchResult screen$narratablesearchresult = Screen.findNarratableWidget(list, null);
+         if (screen$narratablesearchresult != null) {
+-            screen$narratablesearchresult.entry().updateNarration(p_170046_.nest());
++            screen$narratablesearchresult.entry.updateNarration(p_170046_.nest());
+         }
+     }
+ 

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/storage/loot/parameters/LootContextParams.java
++++ b/net/minecraft/world/level/storage/loot/parameters/LootContextParams.java
+@@ -11,8 +_,6 @@
+ 
+ public class LootContextParams {
+     public static final ContextKey<Entity> THIS_ENTITY = ContextKey.vanilla("this_entity");
+-    public static final ContextKey<Entity> INTERACTING_ENTITY = ContextKey.vanilla("interacting_entity");
+-    public static final ContextKey<Entity> TARGET_ENTITY = ContextKey.vanilla("target_entity");
+     public static final ContextKey<Player> LAST_DAMAGE_PLAYER = ContextKey.vanilla("last_damage_player");
+     public static final ContextKey<DamageSource> DAMAGE_SOURCE = ContextKey.vanilla("damage_source");
+     public static final ContextKey<Entity> ATTACKING_ENTITY = ContextKey.vanilla("attacking_entity");

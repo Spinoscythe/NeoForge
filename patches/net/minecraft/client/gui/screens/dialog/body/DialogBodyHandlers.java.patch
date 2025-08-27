@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/gui/screens/dialog/body/DialogBodyHandlers.java
++++ b/net/minecraft/client/gui/screens/dialog/body/DialogBodyHandlers.java
+@@ -81,9 +_,7 @@
+                 );
+                 linearlayout.addChild(itemdisplaywidget);
+                 linearlayout.addChild(
+-                    new FocusableTextWidget(
+-                            plainmessage.width(), plainmessage.contents(), p_428557_.getFont(), false, FocusableTextWidget.BackgroundFill.NEVER, 4
+-                        )
++                    new FocusableTextWidget(plainmessage.width(), plainmessage.contents(), p_428557_.getFont(), false, false, 4)
+                         .configureStyleHandling(true, p_428473_ -> DialogBodyHandlers.runActionOnParent(p_428557_, p_428473_))
+                 );
+                 return linearlayout;
+@@ -106,7 +_,7 @@
+     @OnlyIn(Dist.CLIENT)
+     static class PlainMessageHandler implements DialogBodyHandler<PlainMessage> {
+         public LayoutElement createControls(DialogScreen<?> p_428310_, PlainMessage p_428489_) {
+-            return new FocusableTextWidget(p_428489_.width(), p_428489_.contents(), p_428310_.getFont(), false, FocusableTextWidget.BackgroundFill.NEVER, 4)
++            return new FocusableTextWidget(p_428489_.width(), p_428489_.contents(), p_428310_.getFont(), false, false, 4)
+                 .configureStyleHandling(true, p_428435_ -> DialogBodyHandlers.runActionOnParent(p_428310_, p_428435_))
+                 .setCentered(true);
+         }

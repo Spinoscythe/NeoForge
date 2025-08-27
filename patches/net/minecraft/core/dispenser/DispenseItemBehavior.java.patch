@@ -1,6 +1,48 @@
 --- a/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -171,7 +_,7 @@
+@@ -82,29 +_,20 @@
+             @Override
+             public ItemStack execute(BlockSource p_338275_, ItemStack p_338216_) {
+                 Direction direction = p_338275_.state().getValue(DispenserBlock.FACING);
+-                EntityType<?> entitytype = ((SpawnEggItem)p_338216_.getItem()).getType(p_338216_);
+-                if (entitytype == null) {
+-                    return p_338216_;
+-                } else {
+-                    try {
+-                        entitytype.spawn(
+-                            p_338275_.level(),
+-                            p_338216_,
+-                            null,
+-                            p_338275_.pos().relative(direction),
+-                            EntitySpawnReason.DISPENSER,
+-                            direction != Direction.UP,
+-                            false
+-                        );
+-                    } catch (Exception exception) {
+-                        LOGGER.error("Error while dispensing spawn egg from dispenser at {}", p_338275_.pos(), exception);
+-                        return ItemStack.EMPTY;
+-                    }
++                EntityType<?> entitytype = ((SpawnEggItem)p_338216_.getItem()).getType(p_338275_.level().registryAccess(), p_338216_);
+ 
+-                    p_338216_.shrink(1);
+-                    p_338275_.level().gameEvent(null, GameEvent.ENTITY_PLACE, p_338275_.pos());
+-                    return p_338216_;
++                try {
++                    entitytype.spawn(
++                        p_338275_.level(), p_338216_, null, p_338275_.pos().relative(direction), EntitySpawnReason.DISPENSER, direction != Direction.UP, false
++                    );
++                } catch (Exception exception) {
++                    LOGGER.error("Error while dispensing spawn egg from dispenser at {}", p_338275_.pos(), exception);
++                    return ItemStack.EMPTY;
+                 }
++
++                p_338216_.shrink(1);
++                p_338275_.level().gameEvent(null, GameEvent.ENTITY_PLACE, p_338275_.pos());
++                return p_338216_;
+             }
+         };
+ 
+@@ -180,7 +_,7 @@
                  DispensibleContainerItem dispensiblecontaineritem = (DispensibleContainerItem)p_338600_.getItem();
                  BlockPos blockpos = p_338193_.pos().relative(p_338193_.state().getValue(DispenserBlock.FACING));
                  Level level = p_338193_.level();
@@ -9,7 +51,7 @@
                      dispensiblecontaineritem.checkExtraContent(null, level, p_338600_, blockpos);
                      return this.consumeWithRemainder(p_338193_, p_338600_, new ItemStack(Items.BUCKET));
                  } else {
-@@ -219,11 +_,12 @@
+@@ -228,11 +_,12 @@
                  if (BaseFireBlock.canBePlacedAt(serverlevel, blockpos, direction)) {
                      serverlevel.setBlockAndUpdate(blockpos, BaseFireBlock.getState(serverlevel, blockpos));
                      serverlevel.gameEvent(null, GameEvent.BLOCK_PLACE, blockpos);
@@ -26,3 +68,39 @@
                          serverlevel.removeBlock(blockpos, false);
                      } else {
                          this.setSuccess(false);
+@@ -256,7 +_,7 @@
+                 BlockPos blockpos = p_338386_.pos().relative(p_338386_.state().getValue(DispenserBlock.FACING));
+                 if (!BoneMealItem.growCrop(p_338526_, level, blockpos) && !BoneMealItem.growWaterPlant(p_338526_, level, blockpos, null)) {
+                     this.setSuccess(false);
+-                } else if (!level.isClientSide()) {
++                } else if (!level.isClientSide) {
+                     level.levelEvent(1505, blockpos, 15);
+                 }
+ 
+@@ -319,7 +_,7 @@
+                 BlockPos blockpos = p_302430_.pos().relative(p_302430_.state().getValue(DispenserBlock.FACING));
+                 CarvedPumpkinBlock carvedpumpkinblock = (CarvedPumpkinBlock)Blocks.CARVED_PUMPKIN;
+                 if (level.isEmptyBlock(blockpos) && carvedpumpkinblock.canSpawnGolem(level, blockpos)) {
+-                    if (!level.isClientSide()) {
++                    if (!level.isClientSide) {
+                         level.setBlock(blockpos, carvedpumpkinblock.defaultBlockState(), 3);
+                         level.gameEvent(null, GameEvent.BLOCK_PLACE, blockpos);
+                     }
+@@ -404,7 +_,7 @@
+                     return p_123542_;
+                 } else {
+                     for (Armadillo armadillo : list) {
+-                        if (armadillo.brushOffScute(null, p_123542_)) {
++                        if (armadillo.brushOffScute()) {
+                             p_123542_.hurtAndBreak(16, serverlevel, null, p_397327_ -> {});
+                             return p_123542_;
+                         }
+@@ -450,7 +_,7 @@
+                         if (!serverlevel.getBlockState(blockpos1).is(BlockTags.CONVERTABLE_TO_MUD)) {
+                             return this.defaultDispenseItemBehavior.dispense(p_302423_, p_123557_);
+                         } else {
+-                            if (!serverlevel.isClientSide()) {
++                            if (!serverlevel.isClientSide) {
+                                 for (int i = 0; i < 5; i++) {
+                                     serverlevel.sendParticles(
+                                         ParticleTypes.SPLASH,

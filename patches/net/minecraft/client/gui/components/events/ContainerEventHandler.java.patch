@@ -1,0 +1,27 @@
+--- a/net/minecraft/client/gui/components/events/ContainerEventHandler.java
++++ b/net/minecraft/client/gui/components/events/ContainerEventHandler.java
+@@ -35,13 +_,13 @@
+     }
+ 
+     @Override
+-    default boolean mouseClicked(double p_94695_, double p_94696_, int p_94697_, boolean p_434187_) {
++    default boolean mouseClicked(double p_94695_, double p_94696_, int p_94697_) {
+         Optional<GuiEventListener> optional = this.getChildAt(p_94695_, p_94696_);
+         if (optional.isEmpty()) {
+             return false;
+         } else {
+             GuiEventListener guieventlistener = optional.get();
+-            if (guieventlistener.mouseClicked(p_94695_, p_94696_, p_94697_, p_434187_) && guieventlistener.shouldTakeFocusAfterInteraction()) {
++            if (guieventlistener.mouseClicked(p_94695_, p_94696_, p_94697_)) {
+                 this.setFocused(guieventlistener);
+                 if (p_94697_ == 0) {
+                     this.setDragging(true);
+@@ -141,7 +_,7 @@
+         boolean flag = p_265354_.forward();
+         GuiEventListener guieventlistener = this.getFocused();
+         List<? extends GuiEventListener> list = new ArrayList<>(this.children());
+-        Collections.sort(list, Comparator.comparingInt(p_438724_ -> p_438724_.getTabOrderGroup()));
++        Collections.sort(list, Comparator.comparingInt(p_419412_ -> p_419412_.getTabOrderGroup()));
+         int j = list.indexOf(guieventlistener);
+         int i;
+         if (guieventlistener != null && j >= 0) {

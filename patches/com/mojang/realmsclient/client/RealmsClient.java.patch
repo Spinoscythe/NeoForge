@@ -1,0 +1,20 @@
+--- a/com/mojang/realmsclient/client/RealmsClient.java
++++ b/com/mojang/realmsclient/client/RealmsClient.java
+@@ -51,6 +_,7 @@
+ import net.minecraft.SharedConstants;
+ import net.minecraft.Util;
+ import net.minecraft.client.Minecraft;
++import net.minecraft.client.User;
+ import net.minecraft.util.LenientJsonParser;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -154,7 +_,8 @@
+     }
+ 
+     private Set<String> fetchFeatureFlags() {
+-        if (Minecraft.getInstance().isOfflineDeveloperMode()) {
++        User user = Minecraft.getInstance().getUser();
++        if (user.getType() != User.Type.MSA) {
+             return Set.of();
+         } else {
+             String s = url("feature/v1", null, false);

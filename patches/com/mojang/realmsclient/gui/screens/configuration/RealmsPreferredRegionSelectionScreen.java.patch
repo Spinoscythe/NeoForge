@@ -1,0 +1,39 @@
+--- a/com/mojang/realmsclient/gui/screens/configuration/RealmsPreferredRegionSelectionScreen.java
++++ b/com/mojang/realmsclient/gui/screens/configuration/RealmsPreferredRegionSelectionScreen.java
+@@ -141,20 +_,31 @@
+             }
+ 
+             @Override
+-            public void renderContent(GuiGraphics p_438873_, int p_439141_, int p_439882_, boolean p_440139_, float p_440313_) {
+-                p_438873_.drawString(RealmsPreferredRegionSelectionScreen.this.font, this.name, this.getContentX() + 5, this.getContentY() + 2, -1);
++            public void render(
++                GuiGraphics p_419543_,
++                int p_419601_,
++                int p_419551_,
++                int p_419789_,
++                int p_419492_,
++                int p_419930_,
++                int p_419642_,
++                int p_419914_,
++                boolean p_419487_,
++                float p_420047_
++            ) {
++                p_419543_.drawString(RealmsPreferredRegionSelectionScreen.this.font, this.name, p_419789_ + 5, p_419551_ + 2, -1);
+                 if (this.regionSelection.region() != null
+                     && RealmsPreferredRegionSelectionScreen.this.regionServiceQuality.containsKey(this.regionSelection.region())) {
+                     ServiceQuality servicequality = RealmsPreferredRegionSelectionScreen.this.regionServiceQuality
+                         .getOrDefault(this.regionSelection.region(), ServiceQuality.UNKNOWN);
+-                    p_438873_.blitSprite(RenderPipelines.GUI_TEXTURED, servicequality.getIcon(), this.getContentRight() - 18, this.getContentY() + 2, 10, 8);
++                    p_419543_.blitSprite(RenderPipelines.GUI_TEXTURED, servicequality.getIcon(), p_419789_ + p_419492_ - 18, p_419551_ + 2, 10, 8);
+                 }
+             }
+ 
+             @Override
+-            public boolean mouseClicked(double p_419613_, double p_419852_, int p_419990_, boolean p_434634_) {
++            public boolean mouseClicked(double p_419613_, double p_419852_, int p_419990_) {
+                 RegionSelectionList.this.setSelected(this);
+-                return super.mouseClicked(p_419613_, p_419852_, p_419990_, p_434634_);
++                return super.mouseClicked(p_419613_, p_419852_, p_419990_);
+             }
+         }
+     }

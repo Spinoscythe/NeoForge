@@ -1,0 +1,44 @@
+--- a/net/minecraft/client/renderer/entity/layers/EnergySwirlLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/EnergySwirlLayer.java
+@@ -1,9 +_,10 @@
+ package net.minecraft.client.renderer.entity.layers;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.model.EntityModel;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.EntityRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+@@ -18,23 +_,13 @@
+     }
+ 
+     @Override
+-    public void submit(PoseStack p_433050_, SubmitNodeCollector p_433355_, int p_434382_, S p_433262_, float p_434698_, float p_433860_) {
+-        if (this.isPowered(p_433262_)) {
+-            float f = p_433262_.ageInTicks;
++    public void render(PoseStack p_116970_, MultiBufferSource p_116971_, int p_116972_, S p_360567_, float p_116974_, float p_116975_) {
++        if (this.isPowered(p_360567_)) {
++            float f = p_360567_.ageInTicks;
+             M m = this.model();
+-            p_433355_.order(1)
+-                .submitModel(
+-                    m,
+-                    p_433262_,
+-                    p_433050_,
+-                    RenderType.energySwirl(this.getTextureLocation(), this.xOffset(f) % 1.0F, f * 0.01F % 1.0F),
+-                    p_434382_,
+-                    OverlayTexture.NO_OVERLAY,
+-                    -8355712,
+-                    null,
+-                    p_433262_.outlineColor,
+-                    null
+-                );
++            VertexConsumer vertexconsumer = p_116971_.getBuffer(RenderType.energySwirl(this.getTextureLocation(), this.xOffset(f) % 1.0F, f * 0.01F % 1.0F));
++            m.setupAnim(p_360567_);
++            m.renderToBuffer(p_116970_, vertexconsumer, p_116972_, OverlayTexture.NO_OVERLAY, -8355712);
+         }
+     }
+ 

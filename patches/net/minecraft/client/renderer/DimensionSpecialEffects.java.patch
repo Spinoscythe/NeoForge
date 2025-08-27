@@ -1,6 +1,19 @@
 --- a/net/minecraft/client/renderer/DimensionSpecialEffects.java
 +++ b/net/minecraft/client/renderer/DimensionSpecialEffects.java
-@@ -32,7 +_,7 @@
+@@ -22,17 +_,17 @@
+         p_108881_.put(BuiltinDimensionTypes.END_EFFECTS, new DimensionSpecialEffects.EndEffects());
+     });
+     private final DimensionSpecialEffects.SkyType skyType;
++    private final boolean forceBrightLightmap;
+     private final boolean constantAmbientLight;
+-    private final boolean hasEndFlashes;
+ 
+     public DimensionSpecialEffects(DimensionSpecialEffects.SkyType p_108868_, boolean p_108867_, boolean p_108869_) {
+         this.skyType = p_108868_;
+-        this.constantAmbientLight = p_108867_;
+-        this.hasEndFlashes = p_108869_;
++        this.forceBrightLightmap = p_108867_;
++        this.constantAmbientLight = p_108869_;
      }
  
      public static DimensionSpecialEffects forType(DimensionType p_108877_) {
@@ -9,3 +22,36 @@
      }
  
      public boolean isSunriseOrSunset(float p_365312_) {
+@@ -51,18 +_,18 @@
+         return this.skyType;
+     }
+ 
++    public boolean forceBrightLightmap() {
++        return this.forceBrightLightmap;
++    }
++
+     public boolean constantAmbientLight() {
+         return this.constantAmbientLight;
+     }
+ 
+-    public boolean hasEndFlashes() {
+-        return this.hasEndFlashes;
+-    }
+-
+     @OnlyIn(Dist.CLIENT)
+     public static class EndEffects extends DimensionSpecialEffects {
+         public EndEffects() {
+-            super(DimensionSpecialEffects.SkyType.END, false, true);
++            super(DimensionSpecialEffects.SkyType.END, true, false);
+         }
+ 
+         @Override
+@@ -79,7 +_,7 @@
+     @OnlyIn(Dist.CLIENT)
+     public static class NetherEffects extends DimensionSpecialEffects {
+         public NetherEffects() {
+-            super(DimensionSpecialEffects.SkyType.NONE, true, false);
++            super(DimensionSpecialEffects.SkyType.NONE, false, true);
+         }
+ 
+         @Override

@@ -1,0 +1,94 @@
+--- a/net/minecraft/client/gui/font/FontTexture.java
++++ b/net/minecraft/client/gui/font/FontTexture.java
+@@ -1,7 +_,6 @@
+ package net.minecraft.client.gui.font;
+ 
+-import com.mojang.blaze3d.font.GlyphBitmap;
+-import com.mojang.blaze3d.font.GlyphInfo;
++import com.mojang.blaze3d.font.SheetGlyphInfo;
+ import com.mojang.blaze3d.platform.TextureUtil;
+ import com.mojang.blaze3d.systems.GpuDevice;
+ import com.mojang.blaze3d.systems.RenderSystem;
+@@ -10,7 +_,7 @@
+ import java.nio.file.Path;
+ import java.util.function.Supplier;
+ import javax.annotation.Nullable;
+-import net.minecraft.client.gui.font.glyphs.BakedSheetGlyph;
++import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+ import net.minecraft.client.renderer.texture.AbstractTexture;
+ import net.minecraft.client.renderer.texture.Dumpable;
+ import net.minecraft.resources.ResourceLocation;
+@@ -35,28 +_,27 @@
+     }
+ 
+     @Nullable
+-    public BakedSheetGlyph add(GlyphInfo p_440102_, GlyphBitmap p_439576_) {
+-        if (p_439576_.isColored() != this.colored) {
++    public BakedGlyph add(SheetGlyphInfo p_232569_) {
++        if (p_232569_.isColored() != this.colored) {
+             return null;
+         } else {
+-            FontTexture.Node fonttexture$node = this.root.insert(p_439576_);
++            FontTexture.Node fonttexture$node = this.root.insert(p_232569_);
+             if (fonttexture$node != null && this.texture != null && this.textureView != null) {
+-                p_439576_.upload(fonttexture$node.x, fonttexture$node.y, this.texture);
++                p_232569_.upload(fonttexture$node.x, fonttexture$node.y, this.texture);
+                 float f = 256.0F;
+                 float f1 = 256.0F;
+                 float f2 = 0.01F;
+-                return new BakedSheetGlyph(
+-                    p_440102_,
++                return new BakedGlyph(
+                     this.renderTypes,
+                     this.textureView,
+                     (fonttexture$node.x + 0.01F) / 256.0F,
+-                    (fonttexture$node.x - 0.01F + p_439576_.getPixelWidth()) / 256.0F,
++                    (fonttexture$node.x - 0.01F + p_232569_.getPixelWidth()) / 256.0F,
+                     (fonttexture$node.y + 0.01F) / 256.0F,
+-                    (fonttexture$node.y - 0.01F + p_439576_.getPixelHeight()) / 256.0F,
+-                    p_439576_.getLeft(),
+-                    p_439576_.getRight(),
+-                    p_439576_.getTop(),
+-                    p_439576_.getBottom()
++                    (fonttexture$node.y - 0.01F + p_232569_.getPixelHeight()) / 256.0F,
++                    p_232569_.getLeft(),
++                    p_232569_.getRight(),
++                    p_232569_.getTop(),
++                    p_232569_.getBottom()
+                 );
+             } else {
+                 return null;
+@@ -92,19 +_,19 @@
+         }
+ 
+         @Nullable
+-        FontTexture.Node insert(GlyphBitmap p_439823_) {
++        FontTexture.Node insert(SheetGlyphInfo p_232571_) {
+             if (this.left != null && this.right != null) {
+-                FontTexture.Node fonttexture$node = this.left.insert(p_439823_);
++                FontTexture.Node fonttexture$node = this.left.insert(p_232571_);
+                 if (fonttexture$node == null) {
+-                    fonttexture$node = this.right.insert(p_439823_);
++                    fonttexture$node = this.right.insert(p_232571_);
+                 }
+ 
+                 return fonttexture$node;
+             } else if (this.occupied) {
+                 return null;
+             } else {
+-                int i = p_439823_.getPixelWidth();
+-                int j = p_439823_.getPixelHeight();
++                int i = p_232571_.getPixelWidth();
++                int j = p_232571_.getPixelHeight();
+                 if (i > this.width || j > this.height) {
+                     return null;
+                 } else if (i == this.width && j == this.height) {
+@@ -121,7 +_,7 @@
+                         this.right = new FontTexture.Node(this.x, this.y + j + 1, this.width, this.height - j - 1);
+                     }
+ 
+-                    return this.left.insert(p_439823_);
++                    return this.left.insert(p_232571_);
+                 }
+             }
+         }

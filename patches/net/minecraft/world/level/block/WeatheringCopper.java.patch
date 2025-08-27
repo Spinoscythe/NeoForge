@@ -1,6 +1,17 @@
 --- a/net/minecraft/world/level/block/WeatheringCopper.java
 +++ b/net/minecraft/world/level/block/WeatheringCopper.java
-@@ -10,6 +_,10 @@
+@@ -4,17 +_,16 @@
+ import com.google.common.collect.BiMap;
+ import com.google.common.collect.ImmutableBiMap;
+ import com.mojang.serialization.Codec;
+-import io.netty.buffer.ByteBuf;
+ import java.util.Optional;
+-import java.util.function.IntFunction;
+ import java.util.function.Supplier;
+-import net.minecraft.network.codec.ByteBufCodecs;
+-import net.minecraft.network.codec.StreamCodec;
+-import net.minecraft.util.ByIdMap;
+ import net.minecraft.util.StringRepresentable;
  import net.minecraft.world.level.block.state.BlockState;
  
  public interface WeatheringCopper extends ChangeOverTimeBlock<WeatheringCopper.WeatherState> {
@@ -11,8 +22,28 @@
      Supplier<BiMap<Block, Block>> NEXT_BY_BLOCK = Suppliers.memoize(
          () -> ImmutableBiMap.<Block, Block>builder()
              .put(Blocks.COPPER_BLOCK, Blocks.EXPOSED_COPPER)
-@@ -41,16 +_,20 @@
+@@ -38,36 +_,28 @@
+             .put(Blocks.COPPER_TRAPDOOR, Blocks.EXPOSED_COPPER_TRAPDOOR)
+             .put(Blocks.EXPOSED_COPPER_TRAPDOOR, Blocks.WEATHERED_COPPER_TRAPDOOR)
+             .put(Blocks.WEATHERED_COPPER_TRAPDOOR, Blocks.OXIDIZED_COPPER_TRAPDOOR)
+-            .putAll(Blocks.COPPER_BARS.weatheringMapping())
+             .put(Blocks.COPPER_GRATE, Blocks.EXPOSED_COPPER_GRATE)
+             .put(Blocks.EXPOSED_COPPER_GRATE, Blocks.WEATHERED_COPPER_GRATE)
+             .put(Blocks.WEATHERED_COPPER_GRATE, Blocks.OXIDIZED_COPPER_GRATE)
+             .put(Blocks.COPPER_BULB, Blocks.EXPOSED_COPPER_BULB)
+             .put(Blocks.EXPOSED_COPPER_BULB, Blocks.WEATHERED_COPPER_BULB)
              .put(Blocks.WEATHERED_COPPER_BULB, Blocks.OXIDIZED_COPPER_BULB)
+-            .putAll(Blocks.COPPER_LANTERN.weatheringMapping())
+-            .put(Blocks.COPPER_CHEST, Blocks.EXPOSED_COPPER_CHEST)
+-            .put(Blocks.EXPOSED_COPPER_CHEST, Blocks.WEATHERED_COPPER_CHEST)
+-            .put(Blocks.WEATHERED_COPPER_CHEST, Blocks.OXIDIZED_COPPER_CHEST)
+-            .put(Blocks.COPPER_GOLEM_STATUE, Blocks.EXPOSED_COPPER_GOLEM_STATUE)
+-            .put(Blocks.EXPOSED_COPPER_GOLEM_STATUE, Blocks.WEATHERED_COPPER_GOLEM_STATUE)
+-            .put(Blocks.WEATHERED_COPPER_GOLEM_STATUE, Blocks.OXIDIZED_COPPER_GOLEM_STATUE)
+-            .put(Blocks.LIGHTNING_ROD, Blocks.EXPOSED_LIGHTNING_ROD)
+-            .put(Blocks.EXPOSED_LIGHTNING_ROD, Blocks.WEATHERED_LIGHTNING_ROD)
+-            .put(Blocks.WEATHERED_LIGHTNING_ROD, Blocks.OXIDIZED_LIGHTNING_ROD)
+-            .putAll(Blocks.COPPER_CHAIN.weatheringMapping())
              .build()
      );
 +    /**
@@ -34,7 +65,7 @@
              block = block1;
          }
  
-@@ -62,7 +_,7 @@
+@@ -79,7 +_,7 @@
      }
  
      static Optional<Block> getNext(Block p_154905_) {
@@ -43,3 +74,28 @@
      }
  
      static BlockState getFirst(BlockState p_154907_) {
+@@ -102,9 +_,7 @@
+         WEATHERED("weathered"),
+         OXIDIZED("oxidized");
+ 
+-        public static final IntFunction<WeatheringCopper.WeatherState> BY_ID = ByIdMap.continuous(Enum::ordinal, values(), ByIdMap.OutOfBoundsStrategy.CLAMP);
+         public static final Codec<WeatheringCopper.WeatherState> CODEC = StringRepresentable.fromEnum(WeatheringCopper.WeatherState::values);
+-        public static final StreamCodec<ByteBuf, WeatheringCopper.WeatherState> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Enum::ordinal);
+         private final String name;
+ 
+         private WeatherState(String p_304569_) {
+@@ -114,14 +_,6 @@
+         @Override
+         public String getSerializedName() {
+             return this.name;
+-        }
+-
+-        public WeatheringCopper.WeatherState next() {
+-            return BY_ID.apply(this.ordinal() + 1);
+-        }
+-
+-        public WeatheringCopper.WeatherState previous() {
+-            return BY_ID.apply(this.ordinal() - 1);
+         }
+     }
+ }

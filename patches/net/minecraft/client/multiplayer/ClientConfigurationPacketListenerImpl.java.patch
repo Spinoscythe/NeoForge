@@ -1,6 +1,55 @@
 --- a/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/client/multiplayer/ClientConfigurationPacketListenerImpl.java
-@@ -54,6 +_,9 @@
+@@ -3,14 +_,16 @@
+ import com.mojang.authlib.GameProfile;
+ import com.mojang.logging.LogUtils;
+ import java.util.List;
++import java.util.Optional;
+ import java.util.function.Function;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.components.ChatComponent;
+ import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.client.gui.screens.dialog.DialogConnectionAccess;
+-import net.minecraft.client.gui.screens.multiplayer.CodeOfConductScreen;
++import net.minecraft.core.Holder;
+ import net.minecraft.core.RegistryAccess;
++import net.minecraft.nbt.Tag;
+ import net.minecraft.network.Connection;
+ import net.minecraft.network.DisconnectionDetails;
+ import net.minecraft.network.RegistryFriendlyByteBuf;
+@@ -18,18 +_,20 @@
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.protocol.PacketUtils;
+ import net.minecraft.network.protocol.common.ClientboundUpdateTagsPacket;
++import net.minecraft.network.protocol.common.ServerboundCustomClickActionPacket;
+ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+ import net.minecraft.network.protocol.configuration.ClientConfigurationPacketListener;
+-import net.minecraft.network.protocol.configuration.ClientboundCodeOfConductPacket;
+ import net.minecraft.network.protocol.configuration.ClientboundFinishConfigurationPacket;
+ import net.minecraft.network.protocol.configuration.ClientboundRegistryDataPacket;
+ import net.minecraft.network.protocol.configuration.ClientboundResetChatPacket;
+ import net.minecraft.network.protocol.configuration.ClientboundSelectKnownPacks;
+ import net.minecraft.network.protocol.configuration.ClientboundUpdateEnabledFeaturesPacket;
+-import net.minecraft.network.protocol.configuration.ServerboundAcceptCodeOfConductPacket;
+ import net.minecraft.network.protocol.configuration.ServerboundFinishConfigurationPacket;
+ import net.minecraft.network.protocol.configuration.ServerboundSelectKnownPacks;
+ import net.minecraft.network.protocol.game.GameProtocols;
++import net.minecraft.resources.ResourceLocation;
++import net.minecraft.server.ServerLinks;
++import net.minecraft.server.dialog.Dialog;
+ import net.minecraft.server.packs.repository.KnownPack;
+ import net.minecraft.server.packs.resources.CloseableResourceManager;
+ import net.minecraft.server.packs.resources.ResourceProvider;
+@@ -42,7 +_,6 @@
+ @OnlyIn(Dist.CLIENT)
+ public class ClientConfigurationPacketListenerImpl extends ClientCommonPacketListenerImpl implements ClientConfigurationPacketListener, TickablePacketListener {
+     static final Logger LOGGER = LogUtils.getLogger();
+-    private final LevelLoadTracker levelLoadTracker;
+     private final GameProfile localGameProfile;
+     private FeatureFlagSet enabledFeatures;
+     private final RegistryAccess.Frozen receivedRegistries;
+@@ -51,10 +_,12 @@
      private KnownPacksManager knownPacks;
      @Nullable
      protected ChatComponent.State chatState;
@@ -10,7 +59,11 @@
  
      public ClientConfigurationPacketListenerImpl(Minecraft p_295262_, Connection p_296339_, CommonListenerCookie p_294706_) {
          super(p_295262_, p_296339_, p_294706_);
-@@ -92,6 +_,11 @@
+-        this.levelLoadTracker = p_294706_.levelLoadTracker();
+         this.localGameProfile = p_294706_.localGameProfile();
+         this.receivedRegistries = p_294706_.receivedRegistries();
+         this.enabledFeatures = p_294706_.enabledFeatures();
+@@ -90,6 +_,11 @@
      @Override
      public void handleEnabledFeatures(ClientboundUpdateEnabledFeaturesPacket p_294410_) {
          this.enabledFeatures = FeatureFlags.REGISTRY.fromNames(p_294410_.features());
@@ -22,7 +75,32 @@
      }
  
      @Override
-@@ -131,7 +_,7 @@
+@@ -122,24 +_,6 @@
+     }
+ 
+     @Override
+-    public void handleCodeOfConduct(ClientboundCodeOfConductPacket p_439724_) {
+-        String s = p_439724_.codeOfConduct();
+-        if (this.serverData != null && this.serverData.hasAcceptedCodeOfConduct(s)) {
+-            this.send(ServerboundAcceptCodeOfConductPacket.INSTANCE);
+-        } else {
+-            Screen screen = this.minecraft.screen;
+-            this.minecraft.execute(() -> this.minecraft.setScreen(new CodeOfConductScreen(this.serverData, s, p_438767_ -> {
+-                if (p_438767_) {
+-                    this.send(ServerboundAcceptCodeOfConductPacket.INSTANCE);
+-                    this.minecraft.setScreen(screen);
+-                } else {
+-                    this.minecraft.disconnectFromWorld(Component.translatable("multiplayer.disconnect.code_of_conduct"));
+-                }
+-            })));
+-        }
+-    }
+-
+-    @Override
+     public void handleConfigurationFinished(ClientboundFinishConfigurationPacket p_294585_) {
+         PacketUtils.ensureRunningOnSameThread(p_294585_, this, this.minecraft);
+         RegistryAccess.Frozen registryaccess$frozen = this.runWithResources(
+@@ -147,12 +_,11 @@
          );
          this.connection
              .setupInboundProtocol(
@@ -31,12 +109,17 @@
                  new ClientPacketListener(
                      this.minecraft,
                      this.connection,
-@@ -146,14 +_,22 @@
-                         this.serverCookies,
+                     new CommonListenerCookie(
+-                        this.levelLoadTracker,
+                         this.localGameProfile,
+                         this.telemetryManager,
+                         registryaccess$frozen,
+@@ -164,15 +_,21 @@
                          this.chatState,
                          this.customReportDetails,
--                        this.serverLinks()
-+                        this.serverLinks(),
+                         this.serverLinks(),
+-                        this.seenPlayers,
+-                        this.seenInsecureChatWarning
 +                        this.connectionType
                      )
                  )
@@ -56,13 +139,10 @@
                      @Override
                      public boolean hasInfiniteMaterials() {
                          return true;
-@@ -171,6 +_,53 @@
-     public void onDisconnect(DisconnectionDetails p_351005_) {
-         super.onDisconnect(p_351005_);
-         this.minecraft.clearDownloadedResourcePacks();
-+    }
-+
-+    @Override
+@@ -193,11 +_,78 @@
+     }
+ 
+     @Override
 +    public void handleCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket packet) {
 +        // Handle the query payload by responding with the client's network channels. Update the connection type accordingly.
 +        if (packet.payload() instanceof net.neoforged.neoforge.network.payload.ModdedNetworkQueryPayload) {
@@ -107,6 +187,35 @@
 +    @Override
 +    public net.neoforged.neoforge.network.connection.ConnectionType getConnectionType() {
 +        return connectionType;
++    }
++
++    @Override
+     protected DialogConnectionAccess createDialogAccess() {
+-        return new ClientCommonPacketListenerImpl.CommonDialogAccess() {
++        return new DialogConnectionAccess() {
++            @Override
++            public void disconnect(Component p_427481_) {
++                ClientConfigurationPacketListenerImpl.this.connection.disconnect(p_427481_);
++            }
++
+             @Override
+             public void runCommand(String p_427300_, @Nullable Screen p_427323_) {
+                 ClientConfigurationPacketListenerImpl.LOGGER.warn("Commands are not supported in configuration phase, trying to run '{}'", p_427300_);
++            }
++
++            @Override
++            public void openDialog(Holder<Dialog> p_427361_, @Nullable Screen p_428293_) {
++                ClientConfigurationPacketListenerImpl.this.showDialog(p_427361_, this, p_428293_);
++            }
++
++            @Override
++            public void sendCustomAction(ResourceLocation p_427502_, Optional<Tag> p_427489_) {
++                ClientConfigurationPacketListenerImpl.this.send(new ServerboundCustomClickActionPacket(p_427502_, p_427489_));
++            }
++
++            @Override
++            public ServerLinks serverLinks() {
++                return ClientConfigurationPacketListenerImpl.this.serverLinks();
+             }
+         };
      }
- 
-     @Override

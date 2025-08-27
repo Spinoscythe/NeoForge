@@ -1,0 +1,57 @@
+--- a/com/mojang/realmsclient/gui/screens/configuration/RealmsBackupScreen.java
++++ b/com/mojang/realmsclient/gui/screens/configuration/RealmsBackupScreen.java
+@@ -291,33 +_,44 @@
+         }
+ 
+         @Override
+-        public void renderContent(GuiGraphics p_439042_, int p_440666_, int p_439554_, boolean p_440483_, float p_439283_) {
+-            int i = this.getContentYMiddle();
++        public void render(
++            GuiGraphics p_419911_,
++            int p_420010_,
++            int p_419871_,
++            int p_419810_,
++            int p_419678_,
++            int p_420074_,
++            int p_419965_,
++            int p_419770_,
++            boolean p_419483_,
++            float p_419717_
++        ) {
++            int i = p_419871_ + p_420074_ / 2;
+             int j = i - 9 - 2;
+             int k = i + 2;
+             int l = this.backup.isUploadedVersion() ? -8388737 : -1;
+-            p_439042_.drawString(
++            p_419911_.drawString(
+                 RealmsBackupScreen.this.font,
+                 Component.translatable("mco.backup.entry", RealmsUtil.convertToAgePresentationFromInstant(this.backup.lastModifiedDate)),
+-                this.getContentX(),
++                p_419810_,
+                 j,
+                 l
+             );
+-            p_439042_.drawString(RealmsBackupScreen.this.font, this.getMediumDatePresentation(this.backup.lastModifiedDate), this.getContentX(), k, -11776948);
++            p_419911_.drawString(RealmsBackupScreen.this.font, this.getMediumDatePresentation(this.backup.lastModifiedDate), p_419810_, k, -11776948);
+             int i1 = 0;
+-            int j1 = this.getContentYMiddle() - 10;
++            int j1 = p_419871_ + p_420074_ / 2 - 10;
+             if (this.restoreButton != null) {
+                 i1 += this.restoreButton.getWidth() + 8;
+-                this.restoreButton.setX(this.getContentRight() - i1);
++                this.restoreButton.setX(p_419810_ + p_419678_ - i1);
+                 this.restoreButton.setY(j1);
+-                this.restoreButton.render(p_439042_, p_440666_, p_439554_, p_439283_);
++                this.restoreButton.render(p_419911_, p_419965_, p_419770_, p_419717_);
+             }
+ 
+             if (this.changesButton != null) {
+                 i1 += this.changesButton.getWidth() + 8;
+-                this.changesButton.setX(this.getContentRight() - i1);
++                this.changesButton.setX(p_419810_ + p_419678_ - i1);
+                 this.changesButton.setY(j1);
+-                this.changesButton.render(p_439042_, p_440666_, p_439554_, p_439283_);
++                this.changesButton.render(p_419911_, p_419965_, p_419770_, p_419717_);
+             }
+         }
+ 

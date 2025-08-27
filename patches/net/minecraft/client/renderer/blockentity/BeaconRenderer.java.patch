@@ -1,13 +1,238 @@
 --- a/net/minecraft/client/renderer/blockentity/BeaconRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/BeaconRenderer.java
-@@ -221,4 +_,10 @@
+@@ -4,12 +_,10 @@
+ import com.mojang.blaze3d.vertex.VertexConsumer;
+ import com.mojang.math.Axis;
+ import java.util.List;
+-import javax.annotation.Nullable;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.player.LocalPlayer;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.util.ARGB;
+@@ -32,29 +_,20 @@
+     }
+ 
+     @Override
+-    public void submit(
+-        T p_439375_,
+-        float p_439826_,
+-        PoseStack p_440263_,
+-        int p_440480_,
+-        int p_440700_,
+-        Vec3 p_439359_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440167_,
+-        SubmitNodeCollector p_439020_
+-    ) {
+-        long i = p_439375_.getLevel().getGameTime();
+-        float f = (float)p_439359_.subtract(p_439375_.getBlockPos().getCenter()).horizontalDistance();
++    public void render(T p_112149_, float p_112150_, PoseStack p_112151_, MultiBufferSource p_112152_, int p_112153_, int p_112154_, Vec3 p_401093_) {
++        long i = p_112149_.getLevel().getGameTime();
++        float f = (float)p_401093_.subtract(p_112149_.getBlockPos().getCenter()).horizontalDistance();
+         LocalPlayer localplayer = Minecraft.getInstance().player;
+         float f1 = localplayer != null && localplayer.isScoping() ? 1.0F : Math.max(1.0F, f / 96.0F);
+-        List<BeaconBeamOwner.Section> list = p_439375_.getBeamSections();
++        List<BeaconBeamOwner.Section> list = p_112149_.getBeamSections();
+         int j = 0;
+ 
+         for (int k = 0; k < list.size(); k++) {
+             BeaconBeamOwner.Section beaconbeamowner$section = list.get(k);
+-            submitBeaconBeam(
+-                p_440263_,
+-                p_439020_,
+-                p_439826_,
++            renderBeaconBeam(
++                p_112151_,
++                p_112152_,
++                p_112150_,
+                 f1,
+                 i,
+                 j,
+@@ -65,71 +_,95 @@
+         }
+     }
+ 
+-    private static void submitBeaconBeam(
+-        PoseStack p_439608_, SubmitNodeCollector p_439393_, float p_439343_, float p_440072_, long p_439924_, int p_439067_, int p_440009_, int p_440282_
++    private static void renderBeaconBeam(
++        PoseStack p_112185_, MultiBufferSource p_112186_, float p_112188_, float p_401272_, long p_112190_, int p_112191_, int p_112192_, int p_350457_
+     ) {
+-        submitBeaconBeam(p_439608_, p_439393_, BEAM_LOCATION, p_439343_, 1.0F, p_439924_, p_439067_, p_440009_, p_440282_, 0.2F * p_440072_, 0.25F * p_440072_);
++        renderBeaconBeam(p_112185_, p_112186_, BEAM_LOCATION, p_112188_, 1.0F, p_112190_, p_112191_, p_112192_, p_350457_, 0.2F * p_401272_, 0.25F * p_401272_);
+     }
+ 
+-    public static void submitBeaconBeam(
+-        PoseStack p_439706_,
+-        SubmitNodeCollector p_440494_,
+-        ResourceLocation p_440476_,
+-        float p_440687_,
+-        float p_439936_,
+-        long p_440402_,
+-        int p_440035_,
+-        int p_438971_,
+-        int p_439741_,
+-        float p_438986_,
+-        float p_438909_
++    public static void renderBeaconBeam(
++        PoseStack p_112177_,
++        MultiBufferSource p_112178_,
++        ResourceLocation p_350504_,
++        float p_112179_,
++        float p_350618_,
++        long p_112180_,
++        int p_112181_,
++        int p_112182_,
++        int p_350915_,
++        float p_350604_,
++        float p_350669_
+     ) {
+-        int i = p_440035_ + p_438971_;
+-        p_439706_.pushPose();
+-        p_439706_.translate(0.5, 0.0, 0.5);
+-        float f = Math.floorMod(p_440402_, 40) + p_440687_;
+-        float f1 = p_438971_ < 0 ? f : -f;
++        int i = p_112181_ + p_112182_;
++        p_112177_.pushPose();
++        p_112177_.translate(0.5, 0.0, 0.5);
++        float f = Math.floorMod(p_112180_, 40) + p_112179_;
++        float f1 = p_112182_ < 0 ? f : -f;
+         float f2 = Mth.frac(f1 * 0.2F - Mth.floor(f1 * 0.1F));
+-        p_439706_.pushPose();
+-        p_439706_.mulPose(Axis.YP.rotationDegrees(f * 2.25F - 45.0F));
++        p_112177_.pushPose();
++        p_112177_.mulPose(Axis.YP.rotationDegrees(f * 2.25F - 45.0F));
+         float f3 = 0.0F;
+         float f5 = 0.0F;
+-        float f6 = -p_438986_;
++        float f6 = -p_350604_;
+         float f7 = 0.0F;
+         float f8 = 0.0F;
+-        float f9 = -p_438986_;
++        float f9 = -p_350604_;
+         float f10 = 0.0F;
+         float f11 = 1.0F;
+         float f12 = -1.0F + f2;
+-        float f13 = p_438971_ * p_439936_ * (0.5F / p_438986_) + f12;
+-        p_440494_.submitCustomGeometry(
+-            p_439706_,
+-            RenderType.beaconBeam(p_440476_, false),
+-            (p_440236_, p_440655_) -> renderPart(
+-                p_440236_, p_440655_, p_439741_, p_440035_, i, 0.0F, p_438986_, p_438986_, 0.0F, f6, 0.0F, 0.0F, f9, 0.0F, 1.0F, f13, f12
+-            )
++        float f13 = p_112182_ * p_350618_ * (0.5F / p_350604_) + f12;
++        renderPart(
++            p_112177_,
++            p_112178_.getBuffer(RenderType.beaconBeam(p_350504_, false)),
++            p_350915_,
++            p_112181_,
++            i,
++            0.0F,
++            p_350604_,
++            p_350604_,
++            0.0F,
++            f6,
++            0.0F,
++            0.0F,
++            f9,
++            0.0F,
++            1.0F,
++            f13,
++            f12
+         );
+-        p_439706_.popPose();
+-        float f3_f = -p_438909_;
+-        float f4 = -p_438909_;
+-        float f5_f = -p_438909_;
+-        float f6_f = -p_438909_;
++        p_112177_.popPose();
++        f3 = -p_350669_;
++        float f4 = -p_350669_;
++        f5 = -p_350669_;
++        f6 = -p_350669_;
+         f10 = 0.0F;
+         f11 = 1.0F;
+-        float f12_f = -1.0F + f2;
+-        float f13_f = p_438971_ * p_439936_ + f12;
+-        p_440494_.submitCustomGeometry(
+-            p_439706_,
+-            RenderType.beaconBeam(p_440476_, true),
+-            (p_440366_, p_440684_) -> renderPart(
+-                p_440366_, p_440684_, ARGB.color(32, p_439741_), p_440035_, i, f3_f, f4, p_438909_, f5_f, f6_f, p_438909_, p_438909_, p_438909_, 0.0F, 1.0F, f13_f, f12_f
+-            )
++        f12 = -1.0F + f2;
++        f13 = p_112182_ * p_350618_ + f12;
++        renderPart(
++            p_112177_,
++            p_112178_.getBuffer(RenderType.beaconBeam(p_350504_, true)),
++            ARGB.color(32, p_350915_),
++            p_112181_,
++            i,
++            f3,
++            f4,
++            p_350669_,
++            f5,
++            f6,
++            p_350669_,
++            p_350669_,
++            p_350669_,
++            0.0F,
++            1.0F,
++            f13,
++            f12
+         );
+-        p_439706_.popPose();
++        p_112177_.popPose();
+     }
+ 
+     private static void renderPart(
+-        PoseStack.Pose p_438950_,
++        PoseStack p_112156_,
+         VertexConsumer p_112157_,
+         int p_112162_,
+         int p_112163_,
+@@ -147,17 +_,18 @@
+         float p_112170_,
+         float p_112171_
+     ) {
+-        renderQuad(
+-            p_438950_, p_112157_, p_112162_, p_112163_, p_351014_, p_112158_, p_112159_, p_112160_, p_112161_, p_112168_, p_112169_, p_112170_, p_112171_
+-        );
+-        renderQuad(
+-            p_438950_, p_112157_, p_112162_, p_112163_, p_351014_, p_112166_, p_112167_, p_112164_, p_112165_, p_112168_, p_112169_, p_112170_, p_112171_
+-        );
+-        renderQuad(
+-            p_438950_, p_112157_, p_112162_, p_112163_, p_351014_, p_112160_, p_112161_, p_112166_, p_112167_, p_112168_, p_112169_, p_112170_, p_112171_
+-        );
+-        renderQuad(
+-            p_438950_, p_112157_, p_112162_, p_112163_, p_351014_, p_112164_, p_112165_, p_112158_, p_112159_, p_112168_, p_112169_, p_112170_, p_112171_
++        PoseStack.Pose posestack$pose = p_112156_.last();
++        renderQuad(
++            posestack$pose, p_112157_, p_112162_, p_112163_, p_351014_, p_112158_, p_112159_, p_112160_, p_112161_, p_112168_, p_112169_, p_112170_, p_112171_
++        );
++        renderQuad(
++            posestack$pose, p_112157_, p_112162_, p_112163_, p_351014_, p_112166_, p_112167_, p_112164_, p_112165_, p_112168_, p_112169_, p_112170_, p_112171_
++        );
++        renderQuad(
++            posestack$pose, p_112157_, p_112162_, p_112163_, p_351014_, p_112160_, p_112161_, p_112166_, p_112167_, p_112168_, p_112169_, p_112170_, p_112171_
++        );
++        renderQuad(
++            posestack$pose, p_112157_, p_112162_, p_112163_, p_351014_, p_112164_, p_112165_, p_112158_, p_112159_, p_112168_, p_112169_, p_112170_, p_112171_
+         );
+     }
+ 
+@@ -206,5 +_,11 @@
+     @Override
      public boolean shouldRender(T p_173534_, Vec3 p_173535_) {
          return Vec3.atCenterOf(p_173534_.getBlockPos()).multiply(1.0, 0.0, 1.0).closerThan(p_173535_.multiply(1.0, 0.0, 1.0), this.getViewDistance());
-     }
++    }
 +
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(T blockEntity) {
 +        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
 +        return new net.minecraft.world.phys.AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, MAX_RENDER_Y, pos.getZ() + 1.0);
-+    }
+     }
  }

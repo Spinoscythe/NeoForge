@@ -1,0 +1,37 @@
+--- a/com/mojang/realmsclient/gui/screens/configuration/RealmsConfigureWorldScreen.java
++++ b/com/mojang/realmsclient/gui/screens/configuration/RealmsConfigureWorldScreen.java
+@@ -66,7 +_,7 @@
+     private Button playButton;
+     @Nullable
+     private TabNavigationBar tabNavigationBar;
+-    final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
++    private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
+ 
+     public RealmsConfigureWorldScreen(RealmsMainScreen p_427298_, long p_427446_, @Nullable RealmsServer p_427282_, @Nullable PreferredRegionsDto p_427395_) {
+         super(Component.empty());
+@@ -231,11 +_,6 @@
+                 }
+             }
+ 
+-            int i = -1;
+-            if (this.tabNavigationBar != null) {
+-                i = this.tabNavigationBar.getTabs().indexOf(this.tabManager.getCurrentTab());
+-            }
+-
+             if (this.tabNavigationBar != null) {
+                 this.removeWidget(this.tabNavigationBar);
+             }
+@@ -248,12 +_,8 @@
+                     new RealmsSettingsTab(this, this.minecraft, this.serverData, this.regionServiceQuality)
+                 )
+                 .build();
+-            this.setFocused(this.tabNavigationBar);
+-            if (i != -1) {
+-                this.tabNavigationBar.selectTab(i, false);
+-            }
+-
+             this.addRenderableWidget(this.tabNavigationBar);
++            this.tabNavigationBar.selectTab(0, false);
+             this.tabNavigationBar.setTabActiveState(3, !this.serverData.expired);
+             if (this.serverData.expired) {
+                 this.tabNavigationBar.setTabTooltip(3, Tooltip.create(Component.translatable("mco.configure.world.settings.expired")));

@@ -1,0 +1,13 @@
+--- a/com/mojang/realmsclient/gui/screens/RealmsBrokenWorldScreen.java
++++ b/com/mojang/realmsclient/gui/screens/RealmsBrokenWorldScreen.java
+@@ -208,8 +_,8 @@
+         try {
+             WorldDownload worlddownload = realmsclient.requestDownloadInfo(this.serverData.id, p_88336_);
+             RealmsDownloadLatestWorldScreen realmsdownloadlatestworldscreen = new RealmsDownloadLatestWorldScreen(
+-                this, worlddownload, this.serverData.getWorldName(p_88336_), p_432158_ -> {
+-                    if (p_432158_) {
++                this, worlddownload, this.serverData.getWorldName(p_88336_), p_419402_ -> {
++                    if (p_419402_) {
+                         this.slotsThatHasBeenDownloaded.add(p_88336_);
+                         this.clearWidgets();
+                         this.addButtons();

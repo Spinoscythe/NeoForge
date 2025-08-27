@@ -1,0 +1,24 @@
+--- a/net/minecraft/client/renderer/item/properties/numeric/UseDuration.java
++++ b/net/minecraft/client/renderer/item/properties/numeric/UseDuration.java
+@@ -6,7 +_,6 @@
+ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.multiplayer.ClientLevel;
+-import net.minecraft.world.entity.ItemOwner;
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.item.ItemStack;
+ import net.neoforged.api.distmarker.Dist;
+@@ -19,10 +_,9 @@
+     );
+ 
+     @Override
+-    public float get(ItemStack p_388572_, @Nullable ClientLevel p_387106_, @Nullable ItemOwner p_435045_, int p_386612_) {
+-        LivingEntity livingentity = p_435045_ == null ? null : p_435045_.asLivingEntity();
+-        if (livingentity != null && livingentity.getUseItem() == p_388572_) {
+-            return this.remaining ? livingentity.getUseItemRemainingTicks() : useDuration(p_388572_, livingentity);
++    public float get(ItemStack p_388572_, @Nullable ClientLevel p_387106_, @Nullable LivingEntity p_387276_, int p_386612_) {
++        if (p_387276_ != null && p_387276_.getUseItem() == p_388572_) {
++            return this.remaining ? p_387276_.getUseItemRemainingTicks() : useDuration(p_388572_, p_387276_);
+         } else {
+             return 0.0F;
+         }

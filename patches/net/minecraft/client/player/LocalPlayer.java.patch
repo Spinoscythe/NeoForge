@@ -1,6 +1,28 @@
 --- a/net/minecraft/client/player/LocalPlayer.java
 +++ b/net/minecraft/client/player/LocalPlayer.java
-@@ -297,6 +_,7 @@
+@@ -10,7 +_,9 @@
+ import net.minecraft.client.ClientRecipeBook;
+ import net.minecraft.client.KeyMapping;
+ import net.minecraft.client.Minecraft;
+-import net.minecraft.client.gui.screens.LevelLoadingScreen;
++import net.minecraft.client.gui.screens.DeathScreen;
++import net.minecraft.client.gui.screens.ReceivingLevelScreen;
++import net.minecraft.client.gui.screens.WinScreen;
+ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+ import net.minecraft.client.gui.screens.inventory.BookEditScreen;
+ import net.minecraft.client.gui.screens.inventory.CommandBlockEditScreen;
+@@ -171,8 +_,8 @@
+     }
+ 
+     @Override
+-    public boolean startRiding(Entity p_108667_, boolean p_108668_, boolean p_435382_) {
+-        if (!super.startRiding(p_108667_, p_108668_, p_435382_)) {
++    public boolean startRiding(Entity p_108667_, boolean p_108668_) {
++        if (!super.startRiding(p_108667_, p_108668_)) {
+             return false;
+         } else {
+             if (p_108667_ instanceof AbstractMinecart) {
+@@ -295,6 +_,7 @@
          ServerboundPlayerActionPacket.Action serverboundplayeractionpacket$action = p_108701_
              ? ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS
              : ServerboundPlayerActionPacket.Action.DROP_ITEM;
@@ -8,7 +30,20 @@
          ItemStack itemstack = this.getInventory().removeFromSelected(p_108701_);
          this.connection.send(new ServerboundPlayerActionPacket(serverboundplayeractionpacket$action, BlockPos.ZERO, Direction.DOWN));
          return !itemstack.isEmpty();
-@@ -475,7 +_,14 @@
+@@ -350,12 +_,6 @@
+     }
+ 
+     @Override
+-    public void setReducedDebugInfo(boolean p_435576_) {
+-        super.setReducedDebugInfo(p_435576_);
+-        this.minecraft.debugEntries.rebuildCurrentList();
+-    }
+-
+-    @Override
+     public boolean isLocalPlayer() {
+         return true;
+     }
+@@ -479,7 +_,14 @@
  
      @Override
      public void playSound(SoundEvent p_108651_, float p_108652_, float p_108653_) {
@@ -24,7 +59,16 @@
      }
  
      @Override
-@@ -715,6 +_,7 @@
+@@ -704,7 +_,7 @@
+             this.sprintTriggerTime--;
+         }
+ 
+-        if (!(this.minecraft.screen instanceof LevelLoadingScreen)) {
++        if (!(this.minecraft.screen instanceof ReceivingLevelScreen)) {
+             this.handlePortalTransitionEffect(this.getActivePortalLocalTransition() == Portal.Transition.CONFUSION);
+             this.processPortalCooldown();
+         }
+@@ -719,6 +_,7 @@
              && this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.CROUCHING)
              && (this.isShiftKeyDown() || !this.isSleeping() && !this.canPlayerFitWithinBlocksAndEntitiesWhen(Pose.STANDING));
          this.input.tick();
@@ -32,7 +76,16 @@
          this.minecraft.getTutorial().onInput(this.input);
          boolean flag3 = false;
          if (this.autoJumpTime > 0) {
-@@ -759,7 +_,7 @@
+@@ -743,7 +_,7 @@
+                 if (this.sprintTriggerTime > 0) {
+                     this.setSprinting(true);
+                 } else {
+-                    this.sprintTriggerTime = this.minecraft.options.sprintWindow().get();
++                    this.sprintTriggerTime = 7;
+                 }
+             }
+ 
+@@ -763,7 +_,7 @@
          }
  
          boolean flag4 = false;
@@ -41,7 +94,7 @@
              if (this.minecraft.gameMode.isAlwaysFlying()) {
                  if (!abilities.flying) {
                      abilities.flying = true;
-@@ -855,13 +_,14 @@
+@@ -859,13 +_,14 @@
              || !this.input.hasForwardImpulse()
              || !this.hasEnoughFoodToSprint()
              || this.horizontalCollision && !this.minorHorizontalCollision
@@ -58,7 +111,19 @@
              || !this.input.hasForwardImpulse() && !this.onGround() && !this.input.keyPresses.shift()
              || !this.hasEnoughFoodToSprint();
      }
-@@ -915,6 +_,10 @@
+@@ -890,7 +_,10 @@
+         this.oPortalEffectIntensity = this.portalEffectIntensity;
+         float f = 0.0F;
+         if (p_350372_ && this.portalProcess != null && this.portalProcess.isInsidePortalThisTick()) {
+-            if (this.minecraft.screen != null && !this.minecraft.screen.isAllowedInPortal()) {
++            if (this.minecraft.screen != null
++                && !this.minecraft.screen.isPauseScreen()
++                && !(this.minecraft.screen instanceof DeathScreen)
++                && !(this.minecraft.screen instanceof WinScreen)) {
+                 if (this.minecraft.screen instanceof AbstractContainerScreen) {
+                     this.closeContainer();
+                 }
+@@ -916,6 +_,10 @@
      @Override
      public void rideTick() {
          super.rideTick();
@@ -69,7 +134,7 @@
          this.handsBusy = false;
          if (this.getControlledVehicle() instanceof AbstractBoat abstractboat) {
              abstractboat.setInput(
-@@ -1089,7 +_,7 @@
+@@ -1090,7 +_,7 @@
              && (!this.isPassenger() || this.vehicleCanSprint(this.getVehicle()))
              && (!this.isFallFlying() || this.isUnderWater())
              && (!this.isMovingSlowly() || this.isUnderWater())
@@ -78,7 +143,7 @@
      }
  
      private boolean vehicleCanSprint(Entity p_265184_) {
-@@ -1097,7 +_,7 @@
+@@ -1098,7 +_,7 @@
      }
  
      private boolean hasEnoughFoodToSprint() {

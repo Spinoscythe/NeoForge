@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/gui/components/AbstractStringWidget.java
++++ b/net/minecraft/client/gui/components/AbstractStringWidget.java
+@@ -33,10 +_,4 @@
+     protected final int getColor() {
+         return ARGB.color(this.alpha, this.color);
+     }
+-
+-    @Override
+-    public void setMessage(Component p_439219_) {
+-        super.setMessage(p_439219_);
+-        this.setWidth(this.getFont().width(p_439219_.getVisualOrderText()));
+-    }
+ }

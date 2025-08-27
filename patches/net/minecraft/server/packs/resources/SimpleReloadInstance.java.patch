@@ -1,0 +1,37 @@
+--- a/net/minecraft/server/packs/resources/SimpleReloadInstance.java
++++ b/net/minecraft/server/packs/resources/SimpleReloadInstance.java
+@@ -75,8 +_,6 @@
+         };
+         this.startedTasks.incrementAndGet();
+         p_405777_.thenRun(this.finishedTasks::incrementAndGet);
+-        PreparableReloadListener.SharedState preparablereloadlistener$sharedstate = new PreparableReloadListener.SharedState(p_404829_);
+-        p_405049_.forEach(p_432493_ -> p_432493_.prepareSharedState(preparablereloadlistener$sharedstate));
+         CompletableFuture<?> completablefuture = p_405777_;
+         List<CompletableFuture<S>> list = new ArrayList<>();
+ 
+@@ -85,7 +_,7 @@
+                 preparablereloadlistener, completablefuture, p_405682_
+             );
+             CompletableFuture<S> completablefuture1 = p_405573_.create(
+-                preparablereloadlistener$sharedstate, preparablereloadlistener$preparationbarrier, preparablereloadlistener, executor, executor1
++                preparablereloadlistener$preparationbarrier, p_404829_, preparablereloadlistener, executor, executor1
+             );
+             list.add(completablefuture1);
+             completablefuture = completablefuture1;
+@@ -143,13 +_,13 @@
+ 
+     @FunctionalInterface
+     protected interface StateFactory<S> {
+-        SimpleReloadInstance.StateFactory<Void> SIMPLE = (p_432494_, p_432495_, p_432496_, p_432497_, p_432498_) -> p_432496_.reload(
+-            p_432494_, p_432497_, p_432495_, p_432498_
++        SimpleReloadInstance.StateFactory<Void> SIMPLE = (p_405840_, p_405259_, p_405187_, p_405538_, p_405432_) -> p_405187_.reload(
++            p_405840_, p_405259_, p_405538_, p_405432_
+         );
+ 
+         CompletableFuture<S> create(
+-            PreparableReloadListener.SharedState p_433936_,
+             PreparableReloadListener.PreparationBarrier p_10864_,
++            ResourceManager p_10865_,
+             PreparableReloadListener p_10866_,
+             Executor p_10867_,
+             Executor p_10868_

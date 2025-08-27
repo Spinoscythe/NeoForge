@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/entity/StructureBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/StructureBlockEntity.java
+@@ -149,7 +_,7 @@
+         if (!p_59854_.canUseGameMasterBlocks()) {
+             return false;
+         } else {
+-            if (p_59854_.level().isClientSide()) {
++            if (p_59854_.level().isClientSide) {
+                 p_59854_.openStructureBlock(this);
+             }
+ 
+@@ -443,7 +_,7 @@
+     }
+ 
+     public boolean isStructureLoadable() {
+-        if (this.mode == StructureMode.LOAD && !this.level.isClientSide() && this.structureName != null) {
++        if (this.mode == StructureMode.LOAD && !this.level.isClientSide && this.structureName != null) {
+             ServerLevel serverlevel = (ServerLevel)this.level;
+             StructureTemplateManager structuretemplatemanager = serverlevel.getStructureManager();
+ 

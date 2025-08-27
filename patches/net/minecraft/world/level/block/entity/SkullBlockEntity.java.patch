@@ -1,0 +1,159 @@
+--- a/net/minecraft/world/level/block/entity/SkullBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/SkullBlockEntity.java
+@@ -1,6 +_,18 @@
+ package net.minecraft.world.level.block.entity;
+ 
++import com.google.common.cache.CacheBuilder;
++import com.google.common.cache.CacheLoader;
++import com.google.common.cache.LoadingCache;
++import com.mojang.authlib.GameProfile;
++import com.mojang.authlib.yggdrasil.ProfileResult;
++import java.time.Duration;
++import java.util.Optional;
++import java.util.UUID;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.Executor;
++import java.util.function.BooleanSupplier;
+ import javax.annotation.Nullable;
++import net.minecraft.Util;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.HolderLookup;
+ import net.minecraft.core.component.DataComponentGetter;
+@@ -11,6 +_,8 @@
+ import net.minecraft.network.chat.ComponentSerialization;
+ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+ import net.minecraft.resources.ResourceLocation;
++import net.minecraft.server.Services;
++import net.minecraft.util.StringUtil;
+ import net.minecraft.world.item.component.ResolvableProfile;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.SkullBlock;
+@@ -23,6 +_,18 @@
+     private static final String TAG_NOTE_BLOCK_SOUND = "note_block_sound";
+     private static final String TAG_CUSTOM_NAME = "custom_name";
+     @Nullable
++    private static Executor mainThreadExecutor;
++    @Nullable
++    private static LoadingCache<String, CompletableFuture<Optional<GameProfile>>> profileCacheByName;
++    @Nullable
++    private static LoadingCache<UUID, CompletableFuture<Optional<GameProfile>>> profileCacheById;
++    public static final Executor CHECKED_MAIN_THREAD_EXECUTOR = p_294078_ -> {
++        Executor executor = mainThreadExecutor;
++        if (executor != null) {
++            executor.execute(p_294078_);
++        }
++    };
++    @Nullable
+     private ResolvableProfile owner;
+     @Nullable
+     private ResourceLocation noteBlockSound;
+@@ -35,6 +_,57 @@
+         super(BlockEntityType.SKULL, p_155731_, p_155732_);
+     }
+ 
++    public static void setup(final Services p_222886_, Executor p_222887_) {
++        mainThreadExecutor = p_222887_;
++        final BooleanSupplier booleansupplier = () -> profileCacheById == null;
++        profileCacheByName = CacheBuilder.newBuilder()
++            .expireAfterAccess(Duration.ofMinutes(10L))
++            .maximumSize(256L)
++            .build(new CacheLoader<String, CompletableFuture<Optional<GameProfile>>>() {
++                public CompletableFuture<Optional<GameProfile>> load(String p_304652_) {
++                    return SkullBlockEntity.fetchProfileByName(p_304652_, p_222886_);
++                }
++            });
++        profileCacheById = CacheBuilder.newBuilder()
++            .expireAfterAccess(Duration.ofMinutes(10L))
++            .maximumSize(256L)
++            .build(new CacheLoader<UUID, CompletableFuture<Optional<GameProfile>>>() {
++                public CompletableFuture<Optional<GameProfile>> load(UUID p_339657_) {
++                    return SkullBlockEntity.fetchProfileById(p_339657_, p_222886_, booleansupplier);
++                }
++            });
++    }
++
++    static CompletableFuture<Optional<GameProfile>> fetchProfileByName(String p_339683_, Services p_339592_) {
++        return p_339592_.profileCache()
++            .getAsync(p_339683_)
++            .thenCompose(
++                p_339545_ -> {
++                    LoadingCache<UUID, CompletableFuture<Optional<GameProfile>>> loadingcache = profileCacheById;
++                    return loadingcache != null && !p_339545_.isEmpty()
++                        ? loadingcache.getUnchecked(p_339545_.get().getId()).thenApply(p_339543_ -> p_339543_.or(() -> p_339545_))
++                        : CompletableFuture.completedFuture(Optional.empty());
++                }
++            );
++    }
++
++    static CompletableFuture<Optional<GameProfile>> fetchProfileById(UUID p_339663_, Services p_339676_, BooleanSupplier p_339631_) {
++        return CompletableFuture.supplyAsync(() -> {
++            if (p_339631_.getAsBoolean()) {
++                return Optional.empty();
++            } else {
++                ProfileResult profileresult = p_339676_.sessionService().fetchProfile(p_339663_, true);
++                return Optional.ofNullable(profileresult).map(ProfileResult::profile);
++            }
++        }, Util.backgroundExecutor().forName("fetchProfile"));
++    }
++
++    public static void clear() {
++        mainThreadExecutor = null;
++        profileCacheByName = null;
++        profileCacheById = null;
++    }
++
+     @Override
+     protected void saveAdditional(ValueOutput p_421512_) {
+         super.saveAdditional(p_421512_);
+@@ -46,7 +_,7 @@
+     @Override
+     protected void loadAdditional(ValueInput p_422414_) {
+         super.loadAdditional(p_422414_);
+-        this.owner = p_422414_.read("profile", ResolvableProfile.CODEC).orElse(null);
++        this.setOwner(p_422414_.read("profile", ResolvableProfile.CODEC).orElse(null));
+         this.noteBlockSound = p_422414_.read("note_block_sound", ResourceLocation.CODEC).orElse(null);
+         this.customName = parseCustomNameSafe(p_422414_, "custom_name");
+     }
+@@ -83,10 +_,41 @@
+         return this.saveCustomOnly(p_323711_);
+     }
+ 
++    public void setOwner(@Nullable ResolvableProfile p_332738_) {
++        synchronized (this) {
++            this.owner = p_332738_;
++        }
++
++        this.updateOwnerProfile();
++    }
++
++    private void updateOwnerProfile() {
++        if (this.owner != null && !this.owner.isResolved()) {
++            this.owner.resolve().thenAcceptAsync(p_332638_ -> {
++                this.owner = p_332638_;
++                this.setChanged();
++            }, CHECKED_MAIN_THREAD_EXECUTOR);
++        } else {
++            this.setChanged();
++        }
++    }
++
++    public static CompletableFuture<Optional<GameProfile>> fetchGameProfile(String p_295932_) {
++        LoadingCache<String, CompletableFuture<Optional<GameProfile>>> loadingcache = profileCacheByName;
++        return loadingcache != null && StringUtil.isValidPlayerName(p_295932_)
++            ? loadingcache.getUnchecked(p_295932_)
++            : CompletableFuture.completedFuture(Optional.empty());
++    }
++
++    public static CompletableFuture<Optional<GameProfile>> fetchGameProfile(UUID p_339604_) {
++        LoadingCache<UUID, CompletableFuture<Optional<GameProfile>>> loadingcache = profileCacheById;
++        return loadingcache != null ? loadingcache.getUnchecked(p_339604_) : CompletableFuture.completedFuture(Optional.empty());
++    }
++
+     @Override
+     protected void applyImplicitComponents(DataComponentGetter p_397656_) {
+         super.applyImplicitComponents(p_397656_);
+-        this.owner = p_397656_.get(DataComponents.PROFILE);
++        this.setOwner(p_397656_.get(DataComponents.PROFILE));
+         this.noteBlockSound = p_397656_.get(DataComponents.NOTE_BLOCK_SOUND);
+         this.customName = p_397656_.get(DataComponents.CUSTOM_NAME);
+     }

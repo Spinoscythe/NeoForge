@@ -8,3 +8,23 @@
  
      public GenerationChunkHolder(ChunkPos p_347689_) {
          this.pos = p_347689_;
+@@ -308,12 +_,14 @@
+     @Nullable
+     @VisibleForDebug
+     public ChunkStatus getLatestStatus() {
+-        ChunkStatus chunkstatus = this.startedWork.get();
+-        if (chunkstatus == null) {
+-            return null;
+-        } else {
++        for (int i = CHUNK_STATUSES.size() - 1; i >= 0; i--) {
++            ChunkStatus chunkstatus = CHUNK_STATUSES.get(i);
+             ChunkAccess chunkaccess = this.getChunkIfPresentUnchecked(chunkstatus);
+-            return chunkaccess != null ? chunkstatus : chunkstatus.getParent();
++            if (chunkaccess != null) {
++                return chunkstatus;
++            }
+         }
++
++        return null;
+     }
+ }

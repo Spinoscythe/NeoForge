@@ -1,6 +1,29 @@
 --- a/net/minecraft/world/item/AxeItem.java
 +++ b/net/minecraft/world/item/AxeItem.java
-@@ -62,7 +_,7 @@
+@@ -12,19 +_,20 @@
+ import net.minecraft.sounds.SoundSource;
+ import net.minecraft.world.InteractionHand;
+ import net.minecraft.world.InteractionResult;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.context.UseOnContext;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.Blocks;
+-import net.minecraft.world.level.block.ChestBlock;
+ import net.minecraft.world.level.block.RotatedPillarBlock;
+ import net.minecraft.world.level.block.WeatheringCopper;
+ import net.minecraft.world.level.block.state.BlockState;
+-import net.minecraft.world.level.block.state.properties.ChestType;
+ import net.minecraft.world.level.gameevent.GameEvent;
+ 
+ public class AxeItem extends Item {
++    /** @deprecated Neo: use the {@link net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps#STRIPPABLES data map} instead */
++    @Deprecated
+     protected static final Map<Block, Block> STRIPPABLES = new Builder<Block, Block>()
+         .put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
+         .put(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG)
+@@ -63,7 +_,7 @@
          if (playerHasBlockingItemUseIntent(p_40529_)) {
              return InteractionResult.PASS;
          } else {
@@ -9,7 +32,16 @@
              if (optional.isEmpty()) {
                  return InteractionResult.PASS;
              } else {
-@@ -89,20 +_,19 @@
+@@ -75,7 +_,7 @@
+                 level.setBlock(blockpos, optional.get(), 11);
+                 level.gameEvent(GameEvent.BLOCK_CHANGE, blockpos, GameEvent.Context.of(player, optional.get()));
+                 if (player != null) {
+-                    itemstack.hurtAndBreak(1, player, p_40529_.getHand().asEquipmentSlot());
++                    itemstack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(p_40529_.getHand()));
+                 }
+ 
+                 return InteractionResult.SUCCESS;
+@@ -90,29 +_,22 @@
              && !player.isSecondaryUseActive();
      }
  
@@ -34,17 +66,32 @@
                  if (optional2.isPresent()) {
                      p_308922_.playSound(p_309192_, p_308899_, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
                      p_308922_.levelEvent(p_309192_, 3004, p_308899_, 0);
-@@ -114,8 +_,19 @@
+-                    if (p_308900_.getBlock() instanceof ChestBlock && p_308900_.getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
+-                        BlockPos blockpos = ChestBlock.getConnectedBlockPos(p_308899_, p_308900_);
+-                        p_308922_.gameEvent(GameEvent.BLOCK_CHANGE, blockpos, GameEvent.Context.of(p_309192_, p_308922_.getBlockState(blockpos)));
+-                        p_308922_.levelEvent(p_309192_, 3004, blockpos, 0);
+-                    }
+-
+                     return optional2;
+                 } else {
+                     return Optional.empty();
+@@ -121,8 +_,25 @@
          }
      }
  
 +    @org.jetbrains.annotations.Nullable
 +    public static BlockState getAxeStrippingState(BlockState originalState) {
++        var strippable = originalState.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
++        if (strippable != null) return strippable.strippedBlock().withPropertiesOf(originalState);
 +        Block block = STRIPPABLES.get(originalState.getBlock());
 +        return block != null ? block.defaultBlockState().setValue(RotatedPillarBlock.AXIS, originalState.getValue(RotatedPillarBlock.AXIS)) : null;
 +    }
 +
      private Optional<BlockState> getStripped(BlockState p_150691_) {
++        var strippable = p_150691_.getBlock().builtInRegistryHolder().getData(net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps.STRIPPABLES);
++        if (strippable != null) {
++            return Optional.of(strippable.strippedBlock().withPropertiesOf(p_150691_));
++        }
          return Optional.ofNullable(STRIPPABLES.get(p_150691_.getBlock()))
              .map(p_360012_ -> p_360012_.defaultBlockState().setValue(RotatedPillarBlock.AXIS, p_150691_.getValue(RotatedPillarBlock.AXIS)));
 +    }

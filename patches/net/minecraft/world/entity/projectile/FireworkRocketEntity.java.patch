@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/projectile/FireworkRocketEntity.java
 +++ b/net/minecraft/world/entity/projectile/FireworkRocketEntity.java
+@@ -169,7 +_,7 @@
+         }
+ 
+         this.life++;
+-        if (this.level().isClientSide() && this.life % 2 < 2) {
++        if (this.level().isClientSide && this.life % 2 < 2) {
+             this.level()
+                 .addParticle(
+                     ParticleTypes.FIREWORK,
 @@ -187,6 +_,13 @@
          }
      }
@@ -14,3 +23,12 @@
      private void explode(ServerLevel p_376529_) {
          p_376529_.broadcastEntityEvent(this, (byte)17);
          this.gameEvent(GameEvent.EXPLODE, this.getOwner());
+@@ -264,7 +_,7 @@
+ 
+     @Override
+     public void handleEntityEvent(byte p_37063_) {
+-        if (p_37063_ == 17 && this.level().isClientSide()) {
++        if (p_37063_ == 17 && this.level().isClientSide) {
+             Vec3 vec3 = this.getDeltaMovement();
+             this.level().createFireworks(this.getX(), this.getY(), this.getZ(), vec3.x, vec3.y, vec3.z, this.getExplosions());
+         }

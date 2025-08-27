@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/renderer/CloudRenderer.java
++++ b/net/minecraft/client/renderer/CloudRenderer.java
+@@ -227,8 +_,10 @@
+                     RenderSystem.bindDefaultUniforms(renderpass);
+                     renderpass.setUniform("DynamicTransforms", gpubufferslice);
+                     renderpass.setIndexBuffer(gpubuffer, rendersystem$autostorageindexbuffer.type());
++                    renderpass.setVertexBuffer(0, RenderSystem.getQuadVertexBuffer());
+                     renderpass.setUniform("CloudInfo", this.ubo.currentBuffer());
+                     renderpass.setUniform("CloudFaces", this.utb.currentBuffer());
++                    renderpass.setPipeline(renderpipeline);
+                     renderpass.drawIndexed(0, 0, 6 * this.quadCount, 1);
+                 }
+             }

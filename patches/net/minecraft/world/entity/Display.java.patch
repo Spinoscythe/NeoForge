@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/Display.java
++++ b/net/minecraft/world/entity/Display.java
+@@ -153,7 +_,7 @@
+             this.stopRiding();
+         }
+ 
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             if (this.updateStartTick) {
+                 this.updateStartTick = false;
+                 int i = this.getTransformationInterpolationDelay();

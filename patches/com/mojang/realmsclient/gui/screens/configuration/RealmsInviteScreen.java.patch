@@ -1,0 +1,26 @@
+--- a/com/mojang/realmsclient/gui/screens/configuration/RealmsInviteScreen.java
++++ b/com/mojang/realmsclient/gui/screens/configuration/RealmsInviteScreen.java
+@@ -1,6 +_,5 @@
+ package com.mojang.realmsclient.gui.screens.configuration;
+ 
+-import com.mojang.realmsclient.dto.PlayerInfo;
+ import com.mojang.realmsclient.dto.RealmsServer;
+ import java.util.concurrent.CompletableFuture;
+ import javax.annotation.Nullable;
+@@ -26,7 +_,6 @@
+     private static final Component NAME_LABEL = Component.translatable("mco.configure.world.invite.profile.name").withColor(-6250336);
+     private static final Component INVITING_PLAYER_TEXT = Component.translatable("mco.configure.world.players.inviting").withColor(-6250336);
+     private static final Component NO_SUCH_PLAYER_ERROR_TEXT = Component.translatable("mco.configure.world.players.error").withColor(-65536);
+-    private static final Component DUPLICATE_PLAYER_TEXT = Component.translatable("mco.configure.world.players.invite.duplicate").withColor(-65536);
+     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
+     @Nullable
+     private EditBox profileName;
+@@ -73,8 +_,6 @@
+         if (this.inviteButton != null && this.profileName != null) {
+             if (StringUtil.isBlank(this.profileName.getValue())) {
+                 this.showMessage(NO_SUCH_PLAYER_ERROR_TEXT);
+-            } else if (this.serverData.players.stream().anyMatch(p_432159_ -> p_432159_.getName().equalsIgnoreCase(this.profileName.getValue()))) {
+-                this.showMessage(DUPLICATE_PLAYER_TEXT);
+             } else {
+                 long i = this.serverData.id;
+                 String s = this.profileName.getValue().trim();

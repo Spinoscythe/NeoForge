@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/gui/components/tabs/TabNavigationBar.java
++++ b/net/minecraft/client/gui/components/tabs/TabNavigationBar.java
+@@ -75,14 +_,14 @@
+     public void setFocused(boolean p_275488_) {
+         super.setFocused(p_275488_);
+         if (this.getFocused() != null) {
+-            this.setFocused(null);
++            this.getFocused().setFocused(p_275488_);
+         }
+     }
+ 
+     @Override
+     public void setFocused(@Nullable GuiEventListener p_275675_) {
+-        super.setFocused(p_275675_);
+         if (p_275675_ instanceof TabButton tabbutton && tabbutton.isActive()) {
++            super.setFocused(p_275675_);
+             this.tabManager.setCurrentTab(tabbutton.tab(), true);
+         }
+     }

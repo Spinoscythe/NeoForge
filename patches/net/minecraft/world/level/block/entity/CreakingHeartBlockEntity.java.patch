@@ -1,0 +1,24 @@
+--- a/net/minecraft/world/level/block/entity/CreakingHeartBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/CreakingHeartBlockEntity.java
+@@ -150,7 +_,7 @@
+     }
+ 
+     private double distanceToCreaking() {
+-        return this.getCreakingProtector().map(p_432710_ -> Math.sqrt(p_432710_.distanceToSqr(Vec3.atBottomCenterOf(this.getBlockPos())))).orElse(0.0);
++        return this.getCreakingProtector().map(p_425493_ -> Math.sqrt(p_425493_.distanceToSqr(Vec3.atBottomCenterOf(this.getBlockPos())))).orElse(0.0);
+     }
+ 
+     private void clearCreakingInfo() {
+@@ -235,9 +_,9 @@
+                         int j = this.level.getRandom().nextIntBetweenInclusive(2, 3);
+ 
+                         for (int i = 0; i < j; i++) {
+-                            this.spreadResin().ifPresent(p_432709_ -> {
+-                                this.level.playSound(null, p_432709_, SoundEvents.RESIN_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
+-                                this.level.gameEvent(GameEvent.BLOCK_PLACE, p_432709_, GameEvent.Context.of(this.getBlockState()));
++                            this.spreadResin().ifPresent(p_393388_ -> {
++                                this.level.playSound(null, p_393388_, SoundEvents.RESIN_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
++                                this.level.gameEvent(GameEvent.BLOCK_PLACE, p_393388_, GameEvent.Context.of(this.getBlockState()));
+                             });
+                         }
+                     }

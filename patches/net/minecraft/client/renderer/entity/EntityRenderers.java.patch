@@ -1,0 +1,59 @@
+--- a/net/minecraft/client/renderer/entity/EntityRenderers.java
++++ b/net/minecraft/client/renderer/entity/EntityRenderers.java
+@@ -96,7 +_,6 @@
+         register(EntityType.CHICKEN, ChickenRenderer::new);
+         register(EntityType.COD, CodRenderer::new);
+         register(EntityType.COMMAND_BLOCK_MINECART, p_174088_ -> new MinecartRenderer(p_174088_, ModelLayers.COMMAND_BLOCK_MINECART));
+-        register(EntityType.COPPER_GOLEM, CopperGolemRenderer::new);
+         register(EntityType.COW, CowRenderer::new);
+         register(EntityType.CREAKING, CreakingRenderer::new);
+         register(EntityType.CREEPER, CreeperRenderer::new);
+@@ -174,12 +_,26 @@
+         register(EntityType.PIG, PigRenderer::new);
+         register(
+             EntityType.PIGLIN,
+-            p_432294_ -> new PiglinRenderer(p_432294_, ModelLayers.PIGLIN, ModelLayers.PIGLIN_BABY, ModelLayers.PIGLIN_ARMOR, ModelLayers.PIGLIN_BABY_ARMOR)
++            p_359282_ -> new PiglinRenderer(
++                p_359282_,
++                ModelLayers.PIGLIN,
++                ModelLayers.PIGLIN_BABY,
++                ModelLayers.PIGLIN_INNER_ARMOR,
++                ModelLayers.PIGLIN_OUTER_ARMOR,
++                ModelLayers.PIGLIN_BABY_INNER_ARMOR,
++                ModelLayers.PIGLIN_BABY_OUTER_ARMOR
++            )
+         );
+         register(
+             EntityType.PIGLIN_BRUTE,
+-            p_432295_ -> new PiglinRenderer(
+-                p_432295_, ModelLayers.PIGLIN_BRUTE, ModelLayers.PIGLIN_BRUTE, ModelLayers.PIGLIN_BRUTE_ARMOR, ModelLayers.PIGLIN_BRUTE_ARMOR
++            p_359278_ -> new PiglinRenderer(
++                p_359278_,
++                ModelLayers.PIGLIN_BRUTE,
++                ModelLayers.PIGLIN_BRUTE,
++                ModelLayers.PIGLIN_BRUTE_INNER_ARMOR,
++                ModelLayers.PIGLIN_BRUTE_OUTER_ARMOR,
++                ModelLayers.PIGLIN_BRUTE_INNER_ARMOR,
++                ModelLayers.PIGLIN_BRUTE_OUTER_ARMOR
+             )
+         );
+         register(EntityType.PILLAGER, PillagerRenderer::new);
+@@ -238,12 +_,14 @@
+         register(EntityType.ZOMBIE_VILLAGER, ZombieVillagerRenderer::new);
+         register(
+             EntityType.ZOMBIFIED_PIGLIN,
+-            p_432293_ -> new ZombifiedPiglinRenderer(
+-                p_432293_,
++            p_359281_ -> new ZombifiedPiglinRenderer(
++                p_359281_,
+                 ModelLayers.ZOMBIFIED_PIGLIN,
+                 ModelLayers.ZOMBIFIED_PIGLIN_BABY,
+-                ModelLayers.ZOMBIFIED_PIGLIN_ARMOR,
+-                ModelLayers.ZOMBIFIED_PIGLIN_BABY_ARMOR
++                ModelLayers.ZOMBIFIED_PIGLIN_INNER_ARMOR,
++                ModelLayers.ZOMBIFIED_PIGLIN_OUTER_ARMOR,
++                ModelLayers.ZOMBIFIED_PIGLIN_BABY_INNER_ARMOR,
++                ModelLayers.ZOMBIFIED_PIGLIN_BABY_OUTER_ARMOR
+             )
+         );
+     }

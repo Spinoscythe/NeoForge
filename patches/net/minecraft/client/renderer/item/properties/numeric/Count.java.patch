@@ -1,0 +1,20 @@
+--- a/net/minecraft/client/renderer/item/properties/numeric/Count.java
++++ b/net/minecraft/client/renderer/item/properties/numeric/Count.java
+@@ -7,7 +_,7 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.client.multiplayer.ClientLevel;
+ import net.minecraft.util.Mth;
+-import net.minecraft.world.entity.ItemOwner;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.item.ItemStack;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -19,7 +_,7 @@
+     );
+ 
+     @Override
+-    public float get(ItemStack p_388019_, @Nullable ClientLevel p_386708_, @Nullable ItemOwner p_434102_, int p_388179_) {
++    public float get(ItemStack p_388019_, @Nullable ClientLevel p_386708_, @Nullable LivingEntity p_387940_, int p_388179_) {
+         float f = p_388019_.getCount();
+         float f1 = p_388019_.getMaxStackSize();
+         return this.normalize ? Mth.clamp(f / f1, 0.0F, 1.0F) : Mth.clamp(f, 0.0F, f1);

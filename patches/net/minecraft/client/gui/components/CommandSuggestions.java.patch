@@ -1,0 +1,36 @@
+--- a/net/minecraft/client/gui/components/CommandSuggestions.java
++++ b/net/minecraft/client/gui/components/CommandSuggestions.java
+@@ -100,7 +_,7 @@
+         this.suggestionLineLimit = p_93878_;
+         this.anchorToBottom = p_93879_;
+         this.fillColor = p_93880_;
+-        p_93873_.addFormatter(this::formatChat);
++        p_93873_.setFormatter(this::formatChat);
+     }
+ 
+     public void setAllowSuggestions(boolean p_93923_) {
+@@ -272,12 +_,7 @@
+                 }
+ 
+                 if (i > 0) {
+-                    this.commandUsage
+-                        .add(
+-                            getExceptionMessage(
+-                                CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(this.currentParse.getReader())
+-                            )
+-                        );
++                    this.commandUsage.add(getExceptionMessage(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().create()));
+                 }
+             } else if (this.currentParse.getReader().canRead()) {
+                 flag = true;
+@@ -327,9 +_,8 @@
+         }
+     }
+ 
+-    @Nullable
+     private FormattedCharSequence formatChat(String p_93915_, int p_93916_) {
+-        return this.currentParse != null ? formatText(this.currentParse, p_93915_, p_93916_) : null;
++        return this.currentParse != null ? formatText(this.currentParse, p_93915_, p_93916_) : FormattedCharSequence.forward(p_93915_, Style.EMPTY);
+     }
+ 
+     @Nullable

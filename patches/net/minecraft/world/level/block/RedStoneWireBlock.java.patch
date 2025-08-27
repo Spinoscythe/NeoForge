@@ -28,3 +28,21 @@
      }
  
      @Override
+@@ -296,7 +_,7 @@
+ 
+     @Override
+     protected void onPlace(BlockState p_55630_, Level p_55631_, BlockPos p_55632_, BlockState p_55633_, boolean p_55634_) {
+-        if (!p_55633_.is(p_55630_.getBlock()) && !p_55631_.isClientSide()) {
++        if (!p_55633_.is(p_55630_.getBlock()) && !p_55631_.isClientSide) {
+             this.updatePowerStrength(p_55631_, p_55632_, p_55630_, null, true);
+ 
+             for (Direction direction : Direction.Plane.VERTICAL) {
+@@ -336,7 +_,7 @@
+ 
+     @Override
+     protected void neighborChanged(BlockState p_55561_, Level p_55562_, BlockPos p_55563_, Block p_55564_, @Nullable Orientation p_362973_, boolean p_55566_) {
+-        if (!p_55562_.isClientSide()) {
++        if (!p_55562_.isClientSide) {
+             if (p_55564_ != this || !useExperimentalEvaluator(p_55562_)) {
+                 if (p_55561_.canSurvive(p_55562_, p_55563_)) {
+                     this.updatePowerStrength(p_55562_, p_55563_, p_55561_, p_362973_, false);

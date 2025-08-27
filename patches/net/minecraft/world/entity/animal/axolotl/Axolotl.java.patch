@@ -1,0 +1,17 @@
+--- a/net/minecraft/world/entity/animal/axolotl/Axolotl.java
++++ b/net/minecraft/world/entity/animal/axolotl/Axolotl.java
+@@ -397,11 +_,11 @@
+     public void saveToBucketTag(ItemStack p_149187_) {
+         Bucketable.saveDefaultDataToBucketTag(this, p_149187_);
+         p_149187_.copyFrom(DataComponents.AXOLOTL_VARIANT, this);
+-        CustomData.update(DataComponents.BUCKET_ENTITY_DATA, p_149187_, p_432545_ -> {
+-            p_432545_.putInt("Age", this.getAge());
++        CustomData.update(DataComponents.BUCKET_ENTITY_DATA, p_149187_, p_425382_ -> {
++            p_425382_.putInt("Age", this.getAge());
+             Brain<?> brain = this.getBrain();
+             if (brain.hasMemoryValue(MemoryModuleType.HAS_HUNTING_COOLDOWN)) {
+-                p_432545_.putLong("HuntingCooldown", brain.getTimeUntilExpiry(MemoryModuleType.HAS_HUNTING_COOLDOWN));
++                p_425382_.putLong("HuntingCooldown", brain.getTimeUntilExpiry(MemoryModuleType.HAS_HUNTING_COOLDOWN));
+             }
+         });
+     }

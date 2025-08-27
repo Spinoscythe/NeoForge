@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/StainedGlassPaneBlock.java
++++ b/net/minecraft/world/level/block/StainedGlassPaneBlock.java
+@@ -8,8 +_,8 @@
+ 
+ public class StainedGlassPaneBlock extends IronBarsBlock implements BeaconBeamBlock {
+     public static final MapCodec<StainedGlassPaneBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432681_ -> p_432681_.group(DyeColor.CODEC.fieldOf("color").forGetter(StainedGlassPaneBlock::getColor), propertiesCodec())
+-            .apply(p_432681_, StainedGlassPaneBlock::new)
++        p_368438_ -> p_368438_.group(DyeColor.CODEC.fieldOf("color").forGetter(StainedGlassPaneBlock::getColor), propertiesCodec())
++            .apply(p_368438_, StainedGlassPaneBlock::new)
+     );
+     private final DyeColor color;
+ 

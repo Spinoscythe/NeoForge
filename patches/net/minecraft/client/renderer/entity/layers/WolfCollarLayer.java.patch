@@ -1,0 +1,43 @@
+--- a/net/minecraft/client/renderer/entity/layers/WolfCollarLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/WolfCollarLayer.java
+@@ -1,9 +_,10 @@
+ package net.minecraft.client.renderer.entity.layers;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.model.WolfModel;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.WolfRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+@@ -20,23 +_,12 @@
+         super(p_117707_);
+     }
+ 
+-    public void submit(PoseStack p_434880_, SubmitNodeCollector p_435581_, int p_433407_, WolfRenderState p_433463_, float p_434548_, float p_435131_) {
+-        DyeColor dyecolor = p_433463_.collarColor;
+-        if (dyecolor != null && !p_433463_.isInvisible) {
++    public void render(PoseStack p_117709_, MultiBufferSource p_117710_, int p_117711_, WolfRenderState p_364226_, float p_117713_, float p_117714_) {
++        DyeColor dyecolor = p_364226_.collarColor;
++        if (dyecolor != null && !p_364226_.isInvisible) {
+             int i = dyecolor.getTextureDiffuseColor();
+-            p_435581_.order(1)
+-                .submitModel(
+-                    this.getParentModel(),
+-                    p_433463_,
+-                    p_434880_,
+-                    RenderType.entityCutoutNoCull(WOLF_COLLAR_LOCATION),
+-                    p_433407_,
+-                    OverlayTexture.NO_OVERLAY,
+-                    i,
+-                    null,
+-                    p_433463_.outlineColor,
+-                    null
+-                );
++            VertexConsumer vertexconsumer = p_117710_.getBuffer(RenderType.entityCutoutNoCull(WOLF_COLLAR_LOCATION));
++            this.getParentModel().renderToBuffer(p_117709_, vertexconsumer, p_117711_, OverlayTexture.NO_OVERLAY, i);
+         }
+     }
+ }

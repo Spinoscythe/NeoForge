@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/renderer/entity/HuskRenderer.java
++++ b/net/minecraft/client/renderer/entity/HuskRenderer.java
+@@ -11,7 +_,15 @@
+     private static final ResourceLocation HUSK_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/zombie/husk.png");
+ 
+     public HuskRenderer(EntityRendererProvider.Context p_174180_) {
+-        super(p_174180_, ModelLayers.HUSK, ModelLayers.HUSK_BABY, ModelLayers.HUSK_ARMOR, ModelLayers.HUSK_BABY_ARMOR);
++        super(
++            p_174180_,
++            ModelLayers.HUSK,
++            ModelLayers.HUSK_BABY,
++            ModelLayers.HUSK_INNER_ARMOR,
++            ModelLayers.HUSK_OUTER_ARMOR,
++            ModelLayers.HUSK_BABY_INNER_ARMOR,
++            ModelLayers.HUSK_BABY_OUTER_ARMOR
++        );
+     }
+ 
+     @Override

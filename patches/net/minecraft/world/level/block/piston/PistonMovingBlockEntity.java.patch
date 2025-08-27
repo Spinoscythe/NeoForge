@@ -9,3 +9,21 @@
                  Iterator iterator = list.iterator();
  
                  while (true) {
+@@ -272,7 +_,7 @@
+     }
+ 
+     public void finalTick() {
+-        if (this.level != null && (this.progressO < 1.0F || this.level.isClientSide())) {
++        if (this.level != null && (this.progressO < 1.0F || this.level.isClientSide)) {
+             this.progress = 1.0F;
+             this.progressO = this.progress;
+             this.level.removeBlockEntity(this.worldPosition);
+@@ -307,7 +_,7 @@
+         p_155919_.lastTicked = p_155916_.getGameTime();
+         p_155919_.progressO = p_155919_.progress;
+         if (p_155919_.progressO >= 1.0F) {
+-            if (p_155916_.isClientSide() && p_155919_.deathTicks < 5) {
++            if (p_155916_.isClientSide && p_155919_.deathTicks < 5) {
+                 p_155919_.deathTicks++;
+             } else {
+                 p_155916_.removeBlockEntity(p_155917_);

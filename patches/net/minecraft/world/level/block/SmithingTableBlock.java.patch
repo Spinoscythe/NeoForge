@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/SmithingTableBlock.java
++++ b/net/minecraft/world/level/block/SmithingTableBlock.java
+@@ -38,7 +_,7 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_56428_, Level p_56429_, BlockPos p_56430_, Player p_56431_, BlockHitResult p_56433_) {
+-        if (!p_56429_.isClientSide()) {
++        if (!p_56429_.isClientSide) {
+             p_56431_.openMenu(p_56428_.getMenuProvider(p_56429_, p_56430_));
+             p_56431_.awardStat(Stats.INTERACT_WITH_SMITHING_TABLE);
+         }

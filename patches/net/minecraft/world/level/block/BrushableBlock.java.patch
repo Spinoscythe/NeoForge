@@ -1,0 +1,18 @@
+--- a/net/minecraft/world/level/block/BrushableBlock.java
++++ b/net/minecraft/world/level/block/BrushableBlock.java
+@@ -28,13 +_,13 @@
+ 
+ public class BrushableBlock extends BaseEntityBlock implements Fallable {
+     public static final MapCodec<BrushableBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432633_ -> p_432633_.group(
++        p_368402_ -> p_368402_.group(
+                 BuiltInRegistries.BLOCK.byNameCodec().fieldOf("turns_into").forGetter(BrushableBlock::getTurnsInto),
+                 BuiltInRegistries.SOUND_EVENT.byNameCodec().fieldOf("brush_sound").forGetter(BrushableBlock::getBrushSound),
+                 BuiltInRegistries.SOUND_EVENT.byNameCodec().fieldOf("brush_completed_sound").forGetter(BrushableBlock::getBrushCompletedSound),
+                 propertiesCodec()
+             )
+-            .apply(p_432633_, BrushableBlock::new)
++            .apply(p_368402_, BrushableBlock::new)
+     );
+     private static final IntegerProperty DUSTED = BlockStateProperties.DUSTED;
+     public static final int TICK_DELAY = 2;

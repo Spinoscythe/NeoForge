@@ -1,6 +1,64 @@
 --- a/net/minecraft/client/model/HumanoidModel.java
 +++ b/net/minecraft/client/model/HumanoidModel.java
-@@ -253,6 +_,8 @@
+@@ -11,7 +_,6 @@
+ import net.minecraft.client.model.geom.builders.MeshTransformer;
+ import net.minecraft.client.model.geom.builders.PartDefinition;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.entity.ArmorModelSet;
+ import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.util.Mth;
+@@ -21,7 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class HumanoidModel<T extends HumanoidRenderState> extends EntityModel<T> implements ArmedModel<T>, HeadedModel {
++public class HumanoidModel<T extends HumanoidRenderState> extends EntityModel<T> implements ArmedModel, HeadedModel {
+     public static final MeshTransformer BABY_TRANSFORMER = new BabyModelTransform(true, 16.0F, 0.0F, 2.0F, 2.0F, 24.0F, Set.of("head"));
+     public static final float OVERLAY_SCALE = 0.25F;
+     public static final float HAT_OVERLAY_SCALE = 0.5F;
+@@ -97,40 +_,6 @@
+         return meshdefinition;
+     }
+ 
+-    public static ArmorModelSet<MeshDefinition> createArmorMeshSet(CubeDeformation p_434735_, CubeDeformation p_434869_) {
+-        return createArmorMeshSet(HumanoidModel::createBaseArmorMesh, p_434735_, p_434869_);
+-    }
+-
+-    protected static ArmorModelSet<MeshDefinition> createArmorMeshSet(
+-        Function<CubeDeformation, MeshDefinition> p_434820_, CubeDeformation p_433581_, CubeDeformation p_436008_
+-    ) {
+-        MeshDefinition meshdefinition = p_434820_.apply(p_436008_);
+-        meshdefinition.getRoot().retainExactParts(Set.of("head"));
+-        MeshDefinition meshdefinition1 = p_434820_.apply(p_436008_);
+-        meshdefinition1.getRoot().retainExactParts(Set.of("body", "left_arm", "right_arm"));
+-        MeshDefinition meshdefinition2 = p_434820_.apply(p_433581_);
+-        meshdefinition2.getRoot().retainExactParts(Set.of("left_leg", "right_leg", "body"));
+-        MeshDefinition meshdefinition3 = p_434820_.apply(p_436008_);
+-        meshdefinition3.getRoot().retainExactParts(Set.of("left_leg", "right_leg"));
+-        return new ArmorModelSet<>(meshdefinition, meshdefinition1, meshdefinition2, meshdefinition3);
+-    }
+-
+-    private static MeshDefinition createBaseArmorMesh(CubeDeformation p_435215_) {
+-        MeshDefinition meshdefinition = createMesh(p_435215_, 0.0F);
+-        PartDefinition partdefinition = meshdefinition.getRoot();
+-        partdefinition.addOrReplaceChild(
+-            "right_leg",
+-            CubeListBuilder.create().texOffs(0, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, p_435215_.extend(-0.1F)),
+-            PartPose.offset(-1.9F, 12.0F, 0.0F)
+-        );
+-        partdefinition.addOrReplaceChild(
+-            "left_leg",
+-            CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, p_435215_.extend(-0.1F)),
+-            PartPose.offset(1.9F, 12.0F, 0.0F)
+-        );
+-        return meshdefinition;
+-    }
+-
+     public void setupAnim(T p_361833_) {
+         super.setupAnim(p_361833_);
+         HumanoidModel.ArmPose humanoidmodel$armpose = p_361833_.leftArmPose;
+@@ -288,6 +_,8 @@
              case BRUSH:
                  this.rightArm.xRot = this.rightArm.xRot * 0.5F - (float) (Math.PI / 5);
                  this.rightArm.yRot = 0.0F;
@@ -9,7 +67,7 @@
          }
      }
  
-@@ -295,6 +_,8 @@
+@@ -330,6 +_,8 @@
              case BRUSH:
                  this.leftArm.xRot = this.leftArm.xRot * 0.5F - (float) (Math.PI / 5);
                  this.leftArm.yRot = 0.0F;
@@ -18,7 +76,33 @@
          }
      }
  
-@@ -385,13 +_,31 @@
+@@ -372,6 +_,15 @@
+         return -65.0F * p_102834_ + p_102834_ * p_102834_;
+     }
+ 
++    public void copyPropertiesTo(HumanoidModel<T> p_372920_) {
++        p_372920_.head.copyFrom(this.head);
++        p_372920_.body.copyFrom(this.body);
++        p_372920_.rightArm.copyFrom(this.rightArm);
++        p_372920_.leftArm.copyFrom(this.leftArm);
++        p_372920_.rightLeg.copyFrom(this.rightLeg);
++        p_372920_.leftLeg.copyFrom(this.leftLeg);
++    }
++
+     public void setAllVisible(boolean p_102880_) {
+         this.head.visible = p_102880_;
+         this.hat.visible = p_102880_;
+@@ -382,7 +_,8 @@
+         this.leftLeg.visible = p_102880_;
+     }
+ 
+-    public void translateToHand(HumanoidRenderState p_434082_, HumanoidArm p_102854_, PoseStack p_102855_) {
++    @Override
++    public void translateToHand(HumanoidArm p_102854_, PoseStack p_102855_) {
+         this.root.translateAndRotate(p_102855_);
+         this.getArm(p_102854_).translateAndRotate(p_102855_);
+     }
+@@ -410,13 +_,31 @@
          BRUSH(false);
  
          private final boolean twoHanded;

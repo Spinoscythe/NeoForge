@@ -1,6 +1,15 @@
 --- a/net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java
 +++ b/net/minecraft/client/gui/screens/inventory/AbstractContainerScreen.java
-@@ -119,6 +_,7 @@
+@@ -67,6 +_,8 @@
+     private int quickCraftingButton;
+     private boolean skipNextRelease;
+     private int quickCraftingRemainder;
++    private long lastClickTime;
++    private int lastClickButton;
+     private boolean doubleclick;
+     private ItemStack lastQuickMoved = ItemStack.EMPTY;
+ 
+@@ -117,6 +_,7 @@
              this.onStopHovering(slot);
          }
  
@@ -8,7 +17,16 @@
          p_418314_.pose().popMatrix();
      }
  
-@@ -205,6 +_,7 @@
+@@ -165,7 +_,7 @@
+ 
+     @Override
+     public void renderBackground(GuiGraphics p_295206_, int p_295457_, int p_294596_, float p_296351_) {
+-        super.renderBackground(p_295206_, p_295457_, p_294596_, p_296351_);
++        this.renderTransparentBackground(p_295206_);
+         this.renderBg(p_295206_, p_296351_, p_295457_, p_294596_);
+     }
+ 
+@@ -203,6 +_,7 @@
                      this.font,
                      this.getTooltipFromContainerItem(itemstack),
                      itemstack.getTooltipImage(),
@@ -16,7 +34,7 @@
                      p_282171_,
                      p_281909_,
                      itemstack.get(DataComponents.TOOLTIP_STYLE)
-@@ -223,7 +_,8 @@
+@@ -221,7 +_,8 @@
  
      private void renderFloatingItem(GuiGraphics p_282567_, ItemStack p_281330_, int p_281772_, int p_281689_, @Nullable String p_282568_) {
          p_282567_.renderItem(p_281330_, p_281772_, p_281689_);
@@ -26,7 +44,7 @@
      }
  
      protected void renderLabels(GuiGraphics p_281635_, int p_282681_, int p_283686_) {
-@@ -278,6 +_,13 @@
+@@ -276,6 +_,13 @@
                  p_281607_.fill(i, j, i + 16, j + 16, -2130706433);
              }
  
@@ -40,7 +58,7 @@
              int j1 = p_282613_.x + p_282613_.y * this.imageWidth;
              if (p_282613_.isFake()) {
                  p_281607_.renderFakeItem(itemstack, i, j, j1);
-@@ -285,7 +_,8 @@
+@@ -283,7 +_,8 @@
                  p_281607_.renderItem(itemstack, i, j, j1);
              }
  
@@ -50,34 +68,85 @@
          }
      }
  
-@@ -324,7 +_,8 @@
-         if (super.mouseClicked(p_97748_, p_97749_, p_97750_)) {
+@@ -318,27 +_,30 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_97748_, double p_97749_, int p_97750_, boolean p_432883_) {
+-        if (super.mouseClicked(p_97748_, p_97749_, p_97750_, p_432883_)) {
++    public boolean mouseClicked(double p_97748_, double p_97749_, int p_97750_) {
++        if (super.mouseClicked(p_97748_, p_97749_, p_97750_)) {
              return true;
          } else {
 -            boolean flag = this.minecraft.options.keyPickItem.matchesMouse(p_97750_) && this.minecraft.player.hasInfiniteMaterials();
 +            InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(p_97750_);
 +            boolean flag = this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey);
              Slot slot = this.getHoveredSlot(p_97748_, p_97749_);
-             long i = Util.getMillis();
-             this.doubleclick = this.lastClickSlot == slot && i - this.lastClickTime < 250L && this.lastClickButton == p_97750_;
-@@ -335,6 +_,7 @@
-                 int j = this.leftPos;
-                 int k = this.topPos;
-                 boolean flag1 = this.hasClickedOutside(p_97748_, p_97749_, j, k, p_97750_);
+-            this.doubleclick = this.lastClickSlot == slot && p_432883_;
++            long i = Util.getMillis();
++            this.doubleclick = this.lastClickSlot == slot && i - this.lastClickTime < 250L && this.lastClickButton == p_97750_;
+             this.skipNextRelease = false;
+             if (p_97750_ != 0 && p_97750_ != 1 && !flag) {
+                 this.checkHotbarMouseClicked(p_97750_);
+             } else {
+-                int i = this.leftPos;
+-                int j = this.topPos;
+-                boolean flag1 = this.hasClickedOutside(p_97748_, p_97749_, i, j, p_97750_);
+-                int k = -1;
++                int j = this.leftPos;
++                int k = this.topPos;
++                boolean flag1 = this.hasClickedOutside(p_97748_, p_97749_, j, k, p_97750_);
 +                if (slot != null) flag1 = false; // Forge, prevent dropping of items through slots outside of GUI boundaries
-                 int l = -1;
++                int l = -1;
                  if (slot != null) {
-                     l = slot.index;
-@@ -360,7 +_,7 @@
+-                    k = slot.index;
++                    l = slot.index;
+                 }
+ 
+                 if (flag1) {
+-                    k = -999;
++                    l = -999;
+                 }
+ 
+                 if (this.minecraft.options.touchscreen().get() && flag1 && this.menu.getCarried().isEmpty()) {
+@@ -346,7 +_,7 @@
+                     return true;
+                 }
+ 
+-                if (k != -1) {
++                if (l != -1) {
+                     if (this.minecraft.options.touchscreen().get()) {
+                         if (slot != null && slot.hasItem()) {
+                             this.clickedSlot = slot;
+@@ -357,10 +_,10 @@
                          }
                      } else if (!this.isQuickCrafting) {
                          if (this.menu.getCarried().isEmpty()) {
 -                            if (flag) {
+-                                this.slotClicked(slot, k, p_97750_, ClickType.CLONE);
 +                            if (this.minecraft.options.keyPickItem.isActiveAndMatches(mouseKey)) {
-                                 this.slotClicked(slot, l, p_97750_, ClickType.CLONE);
++                                this.slotClicked(slot, l, p_97750_, ClickType.CLONE);
                              } else {
-                                 boolean flag2 = l != -999
-@@ -388,7 +_,7 @@
+-                                boolean flag2 = k != -999
++                                boolean flag2 = l != -999
+                                     && (
+                                         InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 340)
+                                             || InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 344)
+@@ -369,11 +_,11 @@
+                                 if (flag2) {
+                                     this.lastQuickMoved = slot != null && slot.hasItem() ? slot.getItem().copy() : ItemStack.EMPTY;
+                                     clicktype = ClickType.QUICK_MOVE;
+-                                } else if (k == -999) {
++                                } else if (l == -999) {
+                                     clicktype = ClickType.THROW;
+                                 }
+ 
+-                                this.slotClicked(slot, k, p_97750_, clicktype);
++                                this.slotClicked(slot, l, p_97750_, clicktype);
+                             }
+ 
+                             this.skipNextRelease = true;
+@@ -385,7 +_,7 @@
                                  this.quickCraftingType = 0;
                              } else if (p_97750_ == 1) {
                                  this.quickCraftingType = 1;
@@ -86,7 +155,16 @@
                                  this.quickCraftingType = 2;
                              }
                          }
-@@ -464,10 +_,13 @@
+@@ -394,6 +_,8 @@
+             }
+ 
+             this.lastClickSlot = slot;
++            this.lastClickTime = i;
++            this.lastClickButton = p_97750_;
+             return true;
+         }
+     }
+@@ -459,10 +_,13 @@
  
      @Override
      public boolean mouseReleased(double p_97812_, double p_97813_, int p_97814_) {
@@ -100,7 +178,7 @@
          int k = -1;
          if (slot != null) {
              k = slot.index;
-@@ -484,7 +_,7 @@
+@@ -479,7 +_,7 @@
                          if (slot2 != null
                              && slot2.mayPickup(this.minecraft.player)
                              && slot2.hasItem()
@@ -109,7 +187,15 @@
                              && AbstractContainerMenu.canItemQuickReplace(slot2, this.lastQuickMoved, true)) {
                              this.slotClicked(slot2, slot2.index, p_97814_, ClickType.QUICK_MOVE);
                          }
-@@ -550,7 +_,7 @@
+@@ -490,6 +_,7 @@
+             }
+ 
+             this.doubleclick = false;
++            this.lastClickTime = 0L;
+         } else {
+             if (this.isQuickCrafting && this.quickCraftingButton != p_97814_) {
+                 this.isQuickCrafting = false;
+@@ -544,7 +_,7 @@
  
                  this.slotClicked(null, -999, AbstractContainerMenu.getQuickcraftMask(2, this.quickCraftingType), ClickType.QUICK_CRAFT);
              } else if (!this.menu.getCarried().isEmpty()) {
@@ -118,7 +204,18 @@
                      this.slotClicked(slot, k, p_97814_, ClickType.CLONE);
                  } else {
                      boolean flag1 = k != -999
-@@ -627,34 +_,39 @@
+@@ -561,6 +_,10 @@
+             }
+         }
+ 
++        if (this.menu.getCarried().isEmpty()) {
++            this.lastClickTime = 0L;
++        }
++
+         this.isQuickCrafting = false;
+         return true;
+     }
+@@ -617,34 +_,39 @@
  
      @Override
      public boolean keyPressed(int p_97765_, int p_97766_, int p_97767_) {
@@ -165,7 +262,19 @@
                      this.slotClicked(this.hoveredSlot, this.hoveredSlot.index, i, ClickType.SWAP);
                      return true;
                  }
-@@ -692,6 +_,18 @@
+@@ -667,11 +_,6 @@
+     }
+ 
+     @Override
+-    public boolean isInGameUi() {
+-        return true;
+-    }
+-
+-    @Override
+     public final void tick() {
+         super.tick();
+         if (this.minecraft.player.isAlive() && !this.minecraft.player.isRemoved()) {
+@@ -687,6 +_,18 @@
      @Override
      public T getMenu() {
          return this.menu;

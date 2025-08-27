@@ -1,0 +1,71 @@
+--- a/net/minecraft/util/ExtraCodecs.java
++++ b/net/minecraft/util/ExtraCodecs.java
+@@ -48,7 +_,6 @@
+ import java.util.Objects;
+ import java.util.Optional;
+ import java.util.OptionalLong;
+-import java.util.UUID;
+ import java.util.function.BiFunction;
+ import java.util.function.Function;
+ import java.util.function.IntFunction;
+@@ -150,13 +_,13 @@
+                 ? DataResult.error(() -> "Unsigned byte was too large: " + p_324632_ + " > 255")
+                 : DataResult.success(p_324632_.byteValue())
+         );
+-    public static final Codec<Integer> NON_NEGATIVE_INT = intRangeWithMessage(0, Integer.MAX_VALUE, p_274847_ -> "Value must be non-negative: " + p_274847_);
+-    public static final Codec<Integer> POSITIVE_INT = intRangeWithMessage(1, Integer.MAX_VALUE, p_405214_ -> "Value must be positive: " + p_405214_);
++    public static final Codec<Integer> NON_NEGATIVE_INT = intRangeWithMessage(0, Integer.MAX_VALUE, p_405214_ -> "Value must be non-negative: " + p_405214_);
++    public static final Codec<Integer> POSITIVE_INT = intRangeWithMessage(1, Integer.MAX_VALUE, p_418205_ -> "Value must be positive: " + p_418205_);
+     public static final Codec<Float> NON_NEGATIVE_FLOAT = floatRangeMinInclusiveWithMessage(
+-        0.0F, Float.MAX_VALUE, p_440560_ -> "Value must be non-negative: " + p_440560_
++        0.0F, Float.MAX_VALUE, p_404968_ -> "Value must be non-negative: " + p_404968_
+     );
+     public static final Codec<Float> POSITIVE_FLOAT = floatRangeMinExclusiveWithMessage(
+-        0.0F, Float.MAX_VALUE, p_404968_ -> "Value must be positive: " + p_404968_
++        0.0F, Float.MAX_VALUE, p_418150_ -> "Value must be positive: " + p_418150_
+     );
+     public static final Codec<Pattern> PATTERN = Codec.STRING.comapFlatMap(p_274857_ -> {
+         try {
+@@ -216,8 +_,22 @@
+                 ? DataResult.success(p_329972_)
+                 : DataResult.error(() -> "Player name contained disallowed characters: '" + p_329972_ + "'")
+         );
+-    public static final Codec<GameProfile> AUTHLIB_GAME_PROFILE = gameProfileCodec(UUIDUtil.AUTHLIB_CODEC);
+-    public static final Codec<GameProfile> STORED_GAME_PROFILE = gameProfileCodec(UUIDUtil.CODEC);
++    private static final MapCodec<GameProfile> GAME_PROFILE_WITHOUT_PROPERTIES = RecordCodecBuilder.mapCodec(
++        p_329970_ -> p_329970_.group(
++                UUIDUtil.AUTHLIB_CODEC.fieldOf("id").forGetter(GameProfile::getId), PLAYER_NAME.fieldOf("name").forGetter(GameProfile::getName)
++            )
++            .apply(p_329970_, GameProfile::new)
++    );
++    public static final Codec<GameProfile> GAME_PROFILE = RecordCodecBuilder.create(
++        p_337579_ -> p_337579_.group(
++                GAME_PROFILE_WITHOUT_PROPERTIES.forGetter(Function.identity()),
++                PROPERTY_MAP.lenientOptionalFieldOf("properties", new PropertyMap()).forGetter(GameProfile::getProperties)
++            )
++            .apply(p_337579_, (p_253518_, p_253519_) -> {
++                p_253519_.forEach((p_253511_, p_253512_) -> p_253518_.getProperties().put(p_253511_, p_253512_));
++                return p_253518_;
++            })
++    );
+     public static final Codec<String> NON_EMPTY_STRING = Codec.STRING
+         .validate(p_274858_ -> p_274858_.isEmpty() ? DataResult.error(() -> "Expected non-empty string") : DataResult.success(p_274858_));
+     public static final Codec<Integer> CODEPOINT = Codec.STRING.comapFlatMap(p_284688_ -> {
+@@ -528,17 +_,6 @@
+ 
+     public static MapCodec<OptionalLong> asOptionalLong(MapCodec<Optional<Long>> p_216167_) {
+         return p_216167_.xmap(toOptionalLong, fromOptionalLong);
+-    }
+-
+-    private static Codec<GameProfile> gameProfileCodec(Codec<UUID> p_440146_) {
+-        return RecordCodecBuilder.create(
+-            p_438844_ -> p_438844_.group(
+-                    p_440146_.fieldOf("id").forGetter(GameProfile::getId),
+-                    PLAYER_NAME.fieldOf("name").forGetter(GameProfile::getName),
+-                    PROPERTY_MAP.optionalFieldOf("properties", new PropertyMap()).forGetter(GameProfile::getProperties)
+-                )
+-                .apply(p_438844_, Util::createGameProfile)
+-        );
+     }
+ 
+     public static <K, V> Codec<Map<K, V>> sizeLimitedMap(Codec<Map<K, V>> p_330976_, int p_331151_) {

@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/gui/spectator/categories/TeleportToPlayerMenuCategory.java
++++ b/net/minecraft/client/gui/spectator/categories/TeleportToPlayerMenuCategory.java
+@@ -3,7 +_,6 @@
+ import java.util.Collection;
+ import java.util.Comparator;
+ import java.util.List;
+-import java.util.stream.Collectors;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.GuiGraphics;
+ import net.minecraft.client.gui.spectator.PlayerMenuItem;
+@@ -35,8 +_,8 @@
+         this.items = p_101861_.stream()
+             .filter(p_253336_ -> p_253336_.getGameMode() != GameType.SPECTATOR)
+             .sorted(PROFILE_ORDER)
+-            .map(PlayerMenuItem::new)
+-            .collect(Collectors.toUnmodifiableList());
++            .map(p_253334_ -> (SpectatorMenuItem)new PlayerMenuItem(p_253334_.getProfile()))
++            .toList();
+     }
+ 
+     @Override

@@ -1,0 +1,74 @@
+--- a/net/minecraft/core/cauldron/CauldronInteraction.java
++++ b/net/minecraft/core/cauldron/CauldronInteraction.java
+@@ -56,7 +_,7 @@
+         map.put(Items.POTION, (p_329825_, p_329826_, p_329827_, p_329828_, p_329829_, p_329830_) -> {
+             PotionContents potioncontents = p_329830_.get(DataComponents.POTION_CONTENTS);
+             if (potioncontents != null && potioncontents.is(Potions.WATER)) {
+-                if (!p_329826_.isClientSide()) {
++                if (!p_329826_.isClientSide) {
+                     Item item = p_329830_.getItem();
+                     p_329828_.setItemInHand(p_329829_, ItemUtils.createFilledResult(p_329830_, p_329828_, new ItemStack(Items.GLASS_BOTTLE)));
+                     p_329828_.awardStat(Stats.USE_CAULDRON);
+@@ -90,7 +_,7 @@
+         map1.put(
+             Items.GLASS_BOTTLE,
+             (p_329819_, p_329820_, p_329821_, p_329822_, p_329823_, p_329824_) -> {
+-                if (!p_329820_.isClientSide()) {
++                if (!p_329820_.isClientSide) {
+                     Item item = p_329824_.getItem();
+                     p_329822_.setItemInHand(
+                         p_329823_, ItemUtils.createFilledResult(p_329824_, p_329822_, PotionContents.createItemStack(Items.POTION, Potions.WATER))
+@@ -111,7 +_,7 @@
+             } else {
+                 PotionContents potioncontents = p_175709_.get(DataComponents.POTION_CONTENTS);
+                 if (potioncontents != null && potioncontents.is(Potions.WATER)) {
+-                    if (!p_175705_.isClientSide()) {
++                    if (!p_175705_.isClientSide) {
+                         p_175707_.setItemInHand(p_175708_, ItemUtils.createFilledResult(p_175709_, p_175707_, new ItemStack(Items.GLASS_BOTTLE)));
+                         p_175707_.awardStat(Stats.USE_CAULDRON);
+                         p_175707_.awardStat(Stats.ITEM_USED.get(p_175709_.getItem()));
+@@ -218,7 +_,7 @@
+         if (!p_175643_.test(p_175636_)) {
+             return InteractionResult.TRY_WITH_EMPTY_HAND;
+         } else {
+-            if (!p_175637_.isClientSide()) {
++            if (!p_175637_.isClientSide) {
+                 Item item = p_175641_.getItem();
+                 p_175639_.setItemInHand(p_175640_, ItemUtils.createFilledResult(p_175641_, p_175639_, p_175642_));
+                 p_175639_.awardStat(Stats.USE_CAULDRON);
+@@ -235,7 +_,7 @@
+     static InteractionResult emptyBucket(
+         Level p_175619_, BlockPos p_175620_, Player p_175621_, InteractionHand p_175622_, ItemStack p_175623_, BlockState p_175624_, SoundEvent p_175625_
+     ) {
+-        if (!p_175619_.isClientSide()) {
++        if (!p_175619_.isClientSide) {
+             Item item = p_175623_.getItem();
+             p_175621_.setItemInHand(p_175622_, ItemUtils.createFilledResult(p_175623_, p_175621_, new ItemStack(Items.BUCKET)));
+             p_175621_.awardStat(Stats.FILL_CAULDRON);
+@@ -293,7 +_,7 @@
+         if (!(block instanceof ShulkerBoxBlock)) {
+             return InteractionResult.TRY_WITH_EMPTY_HAND;
+         } else {
+-            if (!p_365272_.isClientSide()) {
++            if (!p_365272_.isClientSide) {
+                 ItemStack itemstack = p_365174_.transmuteCopy(Blocks.SHULKER_BOX, 1);
+                 p_365441_.setItemInHand(p_361085_, ItemUtils.createFilledResult(p_365174_, p_365441_, itemstack, false));
+                 p_365441_.awardStat(Stats.CLEAN_SHULKER_BOX);
+@@ -311,7 +_,7 @@
+         if (bannerpatternlayers.layers().isEmpty()) {
+             return InteractionResult.TRY_WITH_EMPTY_HAND;
+         } else {
+-            if (!p_360792_.isClientSide()) {
++            if (!p_360792_.isClientSide) {
+                 ItemStack itemstack = p_365256_.copyWithCount(1);
+                 itemstack.set(DataComponents.BANNER_PATTERNS, bannerpatternlayers.removeLast());
+                 p_362948_.setItemInHand(p_363589_, ItemUtils.createFilledResult(p_365256_, p_362948_, itemstack, false));
+@@ -331,7 +_,7 @@
+         } else if (!p_360363_.has(DataComponents.DYED_COLOR)) {
+             return InteractionResult.TRY_WITH_EMPTY_HAND;
+         } else {
+-            if (!p_363832_.isClientSide()) {
++            if (!p_363832_.isClientSide) {
+                 p_360363_.remove(DataComponents.DYED_COLOR);
+                 p_362213_.awardStat(Stats.CLEAN_ARMOR);
+                 LayeredCauldronBlock.lowerFillLevel(p_364488_, p_363832_, p_363503_);

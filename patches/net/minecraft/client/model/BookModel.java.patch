@@ -1,0 +1,42 @@
+--- a/net/minecraft/client/model/BookModel.java
++++ b/net/minecraft/client/model/BookModel.java
+@@ -12,7 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class BookModel extends Model<BookModel.State> {
++public class BookModel extends Model {
+     private static final String LEFT_PAGES = "left_pages";
+     private static final String RIGHT_PAGES = "right_pages";
+     private static final String FLIP_PAGE_1 = "flip_page1";
+@@ -56,26 +_,17 @@
+         return LayerDefinition.create(meshdefinition, 64, 32);
+     }
+ 
+-    public void setupAnim(BookModel.State p_435062_) {
+-        super.setupAnim(p_435062_);
+-        float f = (Mth.sin(p_435062_.animationPos * 0.02F) * 0.1F + 1.25F) * p_435062_.open;
++    public void setupAnim(float p_102293_, float p_102294_, float p_102295_, float p_102296_) {
++        float f = (Mth.sin(p_102293_ * 0.02F) * 0.1F + 1.25F) * p_102296_;
+         this.leftLid.yRot = (float) Math.PI + f;
+         this.rightLid.yRot = -f;
+         this.leftPages.yRot = f;
+         this.rightPages.yRot = -f;
+-        this.flipPage1.yRot = f - f * 2.0F * p_435062_.pageFlip1;
+-        this.flipPage2.yRot = f - f * 2.0F * p_435062_.pageFlip2;
++        this.flipPage1.yRot = f - f * 2.0F * p_102294_;
++        this.flipPage2.yRot = f - f * 2.0F * p_102295_;
+         this.leftPages.x = Mth.sin(f);
+         this.rightPages.x = Mth.sin(f);
+         this.flipPage1.x = Mth.sin(f);
+         this.flipPage2.x = Mth.sin(f);
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    public static class State {
+-        public float animationPos;
+-        public float pageFlip1;
+-        public float pageFlip2;
+-        public float open;
+     }
+ }

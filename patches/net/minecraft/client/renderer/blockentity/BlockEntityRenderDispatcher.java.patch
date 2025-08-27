@@ -1,0 +1,115 @@
+--- a/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
++++ b/net/minecraft/client/renderer/blockentity/BlockEntityRenderDispatcher.java
+@@ -12,15 +_,12 @@
+ import net.minecraft.client.gui.Font;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.renderer.LevelRenderer;
+-import net.minecraft.client.renderer.PlayerSkinRenderCache;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+ import net.minecraft.client.renderer.entity.ItemRenderer;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+ import net.minecraft.client.renderer.item.ItemModelResolver;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+-import net.minecraft.client.resources.model.MaterialSet;
+ import net.minecraft.server.packs.resources.ResourceManager;
+ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+ import net.minecraft.world.level.Level;
+@@ -43,8 +_,6 @@
+     private final ItemModelResolver itemModelResolver;
+     private final ItemRenderer itemRenderer;
+     private final EntityRenderDispatcher entityRenderer;
+-    private final MaterialSet materials;
+-    private final PlayerSkinRenderCache playerSkinRenderCache;
+ 
+     public BlockEntityRenderDispatcher(
+         Font p_234432_,
+@@ -52,9 +_,7 @@
+         BlockRenderDispatcher p_388018_,
+         ItemModelResolver p_387266_,
+         ItemRenderer p_387651_,
+-        EntityRenderDispatcher p_387562_,
+-        MaterialSet p_434137_,
+-        PlayerSkinRenderCache p_439489_
++        EntityRenderDispatcher p_387562_
+     ) {
+         this.itemRenderer = p_387651_;
+         this.itemModelResolver = p_387266_;
+@@ -62,8 +_,6 @@
+         this.font = p_234432_;
+         this.entityModelSet = p_234434_;
+         this.blockRenderDispatcher = p_388018_;
+-        this.materials = p_434137_;
+-        this.playerSkinRenderCache = p_439489_;
+     }
+ 
+     @Nullable
+@@ -80,22 +_,17 @@
+         this.cameraHitResult = p_173567_;
+     }
+ 
+-    public <E extends BlockEntity> void submit(
+-        E p_440457_, float p_439585_, PoseStack p_440352_, @Nullable ModelFeatureRenderer.CrumblingOverlay p_440635_, SubmitNodeCollector p_440247_
+-    ) {
+-        BlockEntityRenderer<E> blockentityrenderer = this.getRenderer(p_440457_);
++    public <E extends BlockEntity> void render(E p_112268_, float p_112269_, PoseStack p_112270_, MultiBufferSource p_112271_) {
++        BlockEntityRenderer<E> blockentityrenderer = this.getRenderer(p_112268_);
+         if (blockentityrenderer != null) {
+-            if (p_440457_.hasLevel() && p_440457_.getType().isValid(p_440457_.getBlockState())) {
+-                if (blockentityrenderer.shouldRender(p_440457_, this.camera.getPosition())) {
++            if (p_112268_.hasLevel() && p_112268_.getType().isValid(p_112268_.getBlockState())) {
++                if (blockentityrenderer.shouldRender(p_112268_, this.camera.getPosition())) {
+                     try {
+-                        Vec3 vec3 = this.camera.getPosition();
+-                        Level level = p_440457_.getLevel();
+-                        int i = level != null ? LevelRenderer.getLightColor(level, p_440457_.getBlockPos()) : 15728880;
+-                        blockentityrenderer.submit(p_440457_, p_439585_, p_440352_, i, OverlayTexture.NO_OVERLAY, vec3, p_440635_, p_440247_);
++                        setupAndRender(blockentityrenderer, p_112268_, p_112269_, p_112270_, p_112271_, this.camera.getPosition());
+                     } catch (Throwable throwable) {
+                         CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering Block Entity");
+                         CrashReportCategory crashreportcategory = crashreport.addCategory("Block Entity Details");
+-                        p_440457_.fillCrashReportCategory(crashreportcategory);
++                        p_112268_.fillCrashReportCategory(crashreportcategory);
+                         throw new ReportedException(crashreport);
+                     }
+                 }
+@@ -103,6 +_,20 @@
+         }
+     }
+ 
++    private static <T extends BlockEntity> void setupAndRender(
++        BlockEntityRenderer<T> p_112285_, T p_112286_, float p_112287_, PoseStack p_112288_, MultiBufferSource p_112289_, Vec3 p_401398_
++    ) {
++        Level level = p_112286_.getLevel();
++        int i;
++        if (level != null) {
++            i = LevelRenderer.getLightColor(level, p_112286_.getBlockPos());
++        } else {
++            i = 15728880;
++        }
++
++        p_112285_.render(p_112286_, p_112287_, p_112288_, p_112289_, i, OverlayTexture.NO_OVERLAY, p_401398_);
++    }
++
+     public void setLevel(@Nullable Level p_112258_) {
+         this.level = p_112258_;
+         if (p_112258_ == null) {
+@@ -113,15 +_,7 @@
+     @Override
+     public void onResourceManagerReload(ResourceManager p_173563_) {
+         BlockEntityRendererProvider.Context blockentityrendererprovider$context = new BlockEntityRendererProvider.Context(
+-            this,
+-            this.blockRenderDispatcher,
+-            this.itemModelResolver,
+-            this.itemRenderer,
+-            this.entityRenderer,
+-            this.entityModelSet.get(),
+-            this.font,
+-            this.materials,
+-            this.playerSkinRenderCache
++            this, this.blockRenderDispatcher, this.itemModelResolver, this.itemRenderer, this.entityRenderer, this.entityModelSet.get(), this.font
+         );
+         this.renderers = BlockEntityRenderers.createEntityRenderers(blockentityrendererprovider$context);
+     }

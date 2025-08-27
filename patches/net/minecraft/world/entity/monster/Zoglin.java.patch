@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/monster/Zoglin.java
++++ b/net/minecraft/world/entity/monster/Zoglin.java
+@@ -260,7 +_,7 @@
+     @Override
+     public void setBaby(boolean p_34227_) {
+         this.getEntityData().set(DATA_BABY_ID, p_34227_);
+-        if (!this.level().isClientSide() && p_34227_) {
++        if (!this.level().isClientSide && p_34227_) {
+             this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(0.5);
+         }
+     }
+@@ -296,7 +_,7 @@
+ 
+     @Override
+     protected SoundEvent getAmbientSound() {
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             return null;
+         } else {
+             return this.brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET) ? SoundEvents.ZOGLIN_ANGRY : SoundEvents.ZOGLIN_AMBIENT;

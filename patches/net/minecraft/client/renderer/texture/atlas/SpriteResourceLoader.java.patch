@@ -1,19 +1,65 @@
 --- a/net/minecraft/client/renderer/texture/atlas/SpriteResourceLoader.java
 +++ b/net/minecraft/client/renderer/texture/atlas/SpriteResourceLoader.java
-@@ -25,7 +_,7 @@
+@@ -4,9 +_,8 @@
+ import com.mojang.logging.LogUtils;
+ import java.io.IOException;
+ import java.io.InputStream;
+-import java.util.List;
++import java.util.Collection;
+ import java.util.Optional;
+-import java.util.Set;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.renderer.texture.SpriteContents;
+ import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
+@@ -25,34 +_,32 @@
+ public interface SpriteResourceLoader {
      Logger LOGGER = LogUtils.getLogger();
  
-     static SpriteResourceLoader create(Collection<MetadataSectionType<?>> p_296204_) {
--        return (p_389362_, p_389363_) -> {
+-    static SpriteResourceLoader create(Set<MetadataSectionType<?>> p_434463_) {
+-        return (p_432311_, p_432312_) -> {
+-            Optional<AnimationMetadataSection> optional;
+-            List<MetadataSectionType.WithValue<?>> list;
++    static SpriteResourceLoader create(Collection<MetadataSectionType<?>> p_296204_) {
 +        return (p_389362_, p_389363_, constructor) -> {
-             ResourceMetadata resourcemetadata;
++            ResourceMetadata resourcemetadata;
              try {
-                 resourcemetadata = p_389363_.metadata().copySections(p_296204_);
-@@ -62,10 +_,15 @@
+-                ResourceMetadata resourcemetadata = p_432312_.metadata();
+-                optional = resourcemetadata.getSection(AnimationMetadataSection.TYPE);
+-                list = resourcemetadata.getTypedSections(p_434463_);
++                resourcemetadata = p_389363_.metadata().copySections(p_296204_);
+             } catch (Exception exception) {
+-                LOGGER.error("Unable to parse metadata from {}", p_432311_, exception);
++                LOGGER.error("Unable to parse metadata from {}", p_389362_, exception);
+                 return null;
+             }
+ 
+             NativeImage nativeimage;
+-            try (InputStream inputstream = p_432312_.open()) {
++            try (InputStream inputstream = p_389363_.open()) {
+                 nativeimage = NativeImage.read(inputstream);
+             } catch (IOException ioexception) {
+-                LOGGER.error("Using missing texture, unable to load {}", p_432311_, ioexception);
++                LOGGER.error("Using missing texture, unable to load {}", p_389362_, ioexception);
+                 return null;
+             }
+ 
++            Optional<AnimationMetadataSection> optional = resourcemetadata.getSection(AnimationMetadataSection.TYPE);
+             FrameSize framesize;
+             if (optional.isPresent()) {
+                 framesize = optional.get().calculateFrameSize(nativeimage.getWidth(), nativeimage.getHeight());
+                 if (!Mth.isMultipleOf(nativeimage.getWidth(), framesize.width()) || !Mth.isMultipleOf(nativeimage.getHeight(), framesize.height())) {
+                     LOGGER.error(
+                         "Image {} size {},{} is not multiple of frame size {},{}",
+-                        p_432311_,
++                        p_389362_,
+                         nativeimage.getWidth(),
+                         nativeimage.getHeight(),
+                         framesize.width(),
+@@ -65,10 +_,15 @@
                  framesize = new FrameSize(nativeimage.getWidth(), nativeimage.getHeight());
              }
  
--            return new SpriteContents(p_389362_, framesize, nativeimage, resourcemetadata);
+-            return new SpriteContents(p_432311_, framesize, nativeimage, optional, list);
 +            return constructor.create(p_389362_, framesize, nativeimage, resourcemetadata);
          };
      }

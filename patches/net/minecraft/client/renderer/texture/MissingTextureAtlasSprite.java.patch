@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/renderer/texture/MissingTextureAtlasSprite.java
++++ b/net/minecraft/client/renderer/texture/MissingTextureAtlasSprite.java
+@@ -3,6 +_,7 @@
+ import com.mojang.blaze3d.platform.NativeImage;
+ import net.minecraft.client.resources.metadata.animation.FrameSize;
+ import net.minecraft.resources.ResourceLocation;
++import net.minecraft.server.packs.resources.ResourceMetadata;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+@@ -36,7 +_,7 @@
+ 
+     public static SpriteContents create() {
+         NativeImage nativeimage = generateMissingImage(16, 16);
+-        return new SpriteContents(MISSING_TEXTURE_LOCATION, new FrameSize(16, 16), nativeimage);
++        return new SpriteContents(MISSING_TEXTURE_LOCATION, new FrameSize(16, 16), nativeimage, ResourceMetadata.EMPTY);
+     }
+ 
+     public static ResourceLocation getLocation() {

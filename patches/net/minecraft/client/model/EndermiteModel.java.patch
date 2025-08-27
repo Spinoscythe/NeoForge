@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/model/EndermiteModel.java
++++ b/net/minecraft/client/model/EndermiteModel.java
+@@ -51,6 +_,7 @@
+         return LayerDefinition.create(meshdefinition, 64, 32);
+     }
+ 
++    @Override
+     public void setupAnim(EntityRenderState p_363459_) {
+         super.setupAnim(p_363459_);
+ 

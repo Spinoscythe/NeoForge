@@ -1,0 +1,113 @@
+--- a/net/minecraft/client/renderer/PlayerSkinRenderCache.java
++++ /dev/null
+@@ -1,110 +_,0 @@
+-package net.minecraft.client.renderer;
+-
+-import com.google.common.cache.CacheBuilder;
+-import com.google.common.cache.CacheLoader;
+-import com.google.common.cache.LoadingCache;
+-import com.mojang.authlib.GameProfile;
+-import java.time.Duration;
+-import java.util.Optional;
+-import java.util.concurrent.CompletableFuture;
+-import javax.annotation.Nullable;
+-import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
+-import net.minecraft.client.resources.DefaultPlayerSkin;
+-import net.minecraft.client.resources.PlayerSkin;
+-import net.minecraft.client.resources.SkinManager;
+-import net.minecraft.server.players.ProfileResolver;
+-import net.minecraft.world.item.component.ResolvableProfile;
+-import net.neoforged.api.distmarker.Dist;
+-import net.neoforged.api.distmarker.OnlyIn;
+-
+-@OnlyIn(Dist.CLIENT)
+-public class PlayerSkinRenderCache {
+-    public static final RenderType DEFAULT_PLAYER_SKIN_RENDER_TYPE = playerSkinRenderType(DefaultPlayerSkin.getDefaultSkin());
+-    private final LoadingCache<ResolvableProfile, CompletableFuture<PlayerSkinRenderCache.RenderInfo>> renderInfoCache = CacheBuilder.newBuilder()
+-        .expireAfterAccess(Duration.ofMinutes(5L))
+-        .build(
+-            new CacheLoader<ResolvableProfile, CompletableFuture<PlayerSkinRenderCache.RenderInfo>>() {
+-                public CompletableFuture<PlayerSkinRenderCache.RenderInfo> load(ResolvableProfile p_440714_) {
+-                    return p_440714_.resolveProfile(PlayerSkinRenderCache.this.profileResolver)
+-                        .thenCompose(
+-                            p_439495_ -> PlayerSkinRenderCache.this.skinManager
+-                                .get(p_439495_)
+-                                .thenApply(
+-                                    p_440477_ -> p_440477_.<PlayerSkinRenderCache.RenderInfo>map(
+-                                            p_439532_ -> new PlayerSkinRenderCache.RenderInfo(p_439495_, p_439532_)
+-                                        )
+-                                        .orElse(null)
+-                                )
+-                        );
+-                }
+-            }
+-        );
+-    private final LoadingCache<ResolvableProfile, PlayerSkinRenderCache.RenderInfo> defaultSkinCache = CacheBuilder.newBuilder()
+-        .expireAfterAccess(Duration.ofMinutes(5L))
+-        .build(new CacheLoader<ResolvableProfile, PlayerSkinRenderCache.RenderInfo>() {
+-            public PlayerSkinRenderCache.RenderInfo load(ResolvableProfile p_439888_) {
+-                GameProfile gameprofile = p_439888_.partialProfile();
+-                return new PlayerSkinRenderCache.RenderInfo(gameprofile, DefaultPlayerSkin.get(gameprofile));
+-            }
+-        });
+-    final SkinManager skinManager;
+-    final ProfileResolver profileResolver;
+-
+-    public PlayerSkinRenderCache(SkinManager p_440573_, ProfileResolver p_440192_) {
+-        this.skinManager = p_440573_;
+-        this.profileResolver = p_440192_;
+-    }
+-
+-    public PlayerSkinRenderCache.RenderInfo getOrDefault(ResolvableProfile p_438888_) {
+-        PlayerSkinRenderCache.RenderInfo playerskinrendercache$renderinfo = this.renderInfoCache.getUnchecked(p_438888_).getNow(null);
+-        return playerskinrendercache$renderinfo != null ? playerskinrendercache$renderinfo : this.defaultSkinCache.getUnchecked(p_438888_);
+-    }
+-
+-    static RenderType playerSkinRenderType(PlayerSkin p_439642_) {
+-        return SkullBlockRenderer.getPlayerSkinRenderType(p_439642_.texture());
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    public static final class RenderInfo {
+-        private final GameProfile gameProfile;
+-        private final PlayerSkin playerSkin;
+-        @Nullable
+-        private RenderType itemRenderType;
+-
+-        public RenderInfo(GameProfile p_440508_, PlayerSkin p_440070_) {
+-            this.gameProfile = p_440508_;
+-            this.playerSkin = p_440070_;
+-        }
+-
+-        public GameProfile gameProfile() {
+-            return this.gameProfile;
+-        }
+-
+-        public PlayerSkin playerSkin() {
+-            return this.playerSkin;
+-        }
+-
+-        public RenderType renderType() {
+-            if (this.itemRenderType == null) {
+-                this.itemRenderType = PlayerSkinRenderCache.playerSkinRenderType(this.playerSkin);
+-            }
+-
+-            return this.itemRenderType;
+-        }
+-
+-        @Override
+-        public boolean equals(Object p_439418_) {
+-            return this == p_439418_
+-                || p_439418_ instanceof PlayerSkinRenderCache.RenderInfo playerskinrendercache$renderinfo
+-                    && this.gameProfile.equals(playerskinrendercache$renderinfo.gameProfile)
+-                    && this.playerSkin.equals(playerskinrendercache$renderinfo.playerSkin);
+-        }
+-
+-        @Override
+-        public int hashCode() {
+-            int i = 1;
+-            i = 31 * i + this.gameProfile.hashCode();
+-            return 31 * i + this.playerSkin.hashCode();
+-        }
+-    }
+-}

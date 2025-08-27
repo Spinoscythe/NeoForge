@@ -1,0 +1,59 @@
+--- a/net/minecraft/world/entity/animal/HappyGhast.java
++++ b/net/minecraft/world/entity/animal/HappyGhast.java
+@@ -99,7 +_,7 @@
+                 new TemptGoal.ForNonPathfinders(
+                     this,
+                     1.0,
+-                    p_432543_ -> !this.isWearingBodyArmor() && !this.isBaby() ? p_432543_.is(ItemTags.HAPPY_GHAST_TEMPT_ITEMS) : IS_FOOD.test(p_432543_),
++                    p_427073_ -> !this.isWearingBodyArmor() && !this.isBaby() ? p_427073_.is(ItemTags.HAPPY_GHAST_TEMPT_ITEMS) : IS_FOOD.test(p_427073_),
+                     false,
+                     7.0
+                 )
+@@ -223,11 +_,6 @@
+     }
+ 
+     @Override
+-    protected float getSoundVolume() {
+-        return this.isBaby() ? 1.0F : 4.0F;
+-    }
+-
+-    @Override
+     public int getMaxSpawnClusterSize() {
+         return 1;
+     }
+@@ -286,7 +_,7 @@
+     }
+ 
+     private void doPlayerRide(Player p_415979_) {
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             p_415979_.startRiding(this);
+         }
+     }
+@@ -298,7 +_,7 @@
+         }
+ 
+         super.addPassenger(p_416440_);
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             if (!this.scanPlayerAboveGhast()) {
+                 this.setServerStillTimeout(0);
+             } else if (this.serverStillTimeout > 10) {
+@@ -310,7 +_,7 @@
+     @Override
+     protected void removePassenger(Entity p_415575_) {
+         super.removePassenger(p_415575_);
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.setServerStillTimeout(10);
+         }
+ 
+@@ -424,7 +_,7 @@
+ 
+     @Override
+     public void aiStep() {
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.setRequiresPrecisePosition(this.isOnStillTimeout());
+         }
+ 

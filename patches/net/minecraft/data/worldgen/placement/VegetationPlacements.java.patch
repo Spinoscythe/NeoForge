@@ -1,0 +1,12 @@
+--- a/net/minecraft/data/worldgen/placement/VegetationPlacements.java
++++ b/net/minecraft/data/worldgen/placement/VegetationPlacements.java
+@@ -637,7 +_,8 @@
+             InSquarePlacement.spread(),
+             SurfaceWaterDepthFilter.forMaxDepth(5),
+             PlacementUtils.HEIGHTMAP_OCEAN_FLOOR,
+-            BiomeFilter.biome()
++            BiomeFilter.biome(),
++            BlockPredicateFilter.forPredicate(BlockPredicate.wouldSurvive(Blocks.MANGROVE_PROPAGULE.defaultBlockState(), BlockPos.ZERO))
+         );
+     }
+ }

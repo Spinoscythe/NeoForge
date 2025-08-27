@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/animation/Keyframe.java
++++ b/net/minecraft/client/animation/Keyframe.java
+@@ -5,8 +_,5 @@
+ import org.joml.Vector3f;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public record Keyframe(float timestamp, Vector3f preTarget, Vector3f postTarget, AnimationChannel.Interpolation interpolation) {
+-    public Keyframe(float p_253943_, Vector3f p_254217_, AnimationChannel.Interpolation p_253767_) {
+-        this(p_253943_, p_254217_, p_254217_, p_253767_);
+-    }
++public record Keyframe(float timestamp, Vector3f target, AnimationChannel.Interpolation interpolation) {
+ }

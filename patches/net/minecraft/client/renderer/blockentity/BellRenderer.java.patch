@@ -1,0 +1,63 @@
+--- a/net/minecraft/client/renderer/blockentity/BellRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/BellRenderer.java
+@@ -1,15 +_,14 @@
+ package net.minecraft.client.renderer.blockentity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+-import javax.annotation.Nullable;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.model.BellModel;
+ import net.minecraft.client.model.geom.ModelLayers;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.Sheets;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
++import net.minecraft.client.renderer.texture.TextureAtlas;
+ import net.minecraft.client.resources.model.Material;
+-import net.minecraft.client.resources.model.MaterialSet;
++import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.world.level.block.entity.BellBlockEntity;
+ import net.minecraft.world.phys.Vec3;
+ import net.neoforged.api.distmarker.Dist;
+@@ -17,32 +_,20 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class BellRenderer implements BlockEntityRenderer<BellBlockEntity> {
+-    public static final Material BELL_RESOURCE_LOCATION = Sheets.BLOCK_ENTITIES_MAPPER.defaultNamespaceApply("bell/bell_body");
+-    private final MaterialSet materials;
++    public static final Material BELL_RESOURCE_LOCATION = new Material(
++        TextureAtlas.LOCATION_BLOCKS, ResourceLocation.withDefaultNamespace("entity/bell/bell_body")
++    );
+     private final BellModel model;
+-    private final BellModel.State modelState = new BellModel.State();
+ 
+     public BellRenderer(BlockEntityRendererProvider.Context p_173554_) {
+-        this.materials = p_173554_.materials();
+         this.model = new BellModel(p_173554_.bakeLayer(ModelLayers.BELL));
+     }
+ 
+-    public void submit(
+-        BellBlockEntity p_440423_,
+-        float p_439921_,
+-        PoseStack p_440329_,
+-        int p_439209_,
+-        int p_439322_,
+-        Vec3 p_439054_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440642_,
+-        SubmitNodeCollector p_439813_
++    public void render(
++        BellBlockEntity p_112233_, float p_112234_, PoseStack p_112235_, MultiBufferSource p_112236_, int p_112237_, int p_112238_, Vec3 p_401104_
+     ) {
+-        this.modelState.ticks = p_440423_.ticks + p_439921_;
+-        this.modelState.shakeDirection = p_440423_.shaking ? p_440423_.clickDirection : null;
+-        this.model.setupAnim(this.modelState);
+-        RenderType rendertype = BELL_RESOURCE_LOCATION.renderType(RenderType::entitySolid);
+-        p_439813_.submitModel(
+-            this.model, this.modelState, p_440329_, rendertype, p_439209_, p_439322_, -1, this.materials.get(BELL_RESOURCE_LOCATION), 0, p_440642_
+-        );
++        VertexConsumer vertexconsumer = BELL_RESOURCE_LOCATION.buffer(p_112236_, RenderType::entitySolid);
++        this.model.setupAnim(p_112233_, p_112234_);
++        this.model.renderToBuffer(p_112235_, vertexconsumer, p_112237_, p_112238_);
+     }
+ }

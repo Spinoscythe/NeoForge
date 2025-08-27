@@ -1,0 +1,11 @@
+--- a/com/mojang/blaze3d/vertex/PoseStack.java
++++ b/com/mojang/blaze3d/vertex/PoseStack.java
+@@ -92,7 +_,7 @@
+             this.trustedNormals = false;
+         }
+ 
+-        public void set(PoseStack.Pose p_393654_) {
++        void set(PoseStack.Pose p_393654_) {
+             this.pose.set(p_393654_.pose);
+             this.normal.set(p_393654_.normal);
+             this.trustedNormals = p_393654_.trustedNormals;

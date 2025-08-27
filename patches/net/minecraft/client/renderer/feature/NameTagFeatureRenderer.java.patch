@@ -1,0 +1,49 @@
+--- a/net/minecraft/client/renderer/feature/NameTagFeatureRenderer.java
++++ /dev/null
+@@ -1,46 +_,0 @@
+-package net.minecraft.client.renderer.feature;
+-
+-import java.util.Comparator;
+-import net.minecraft.client.gui.Font;
+-import net.minecraft.client.renderer.MultiBufferSource;
+-import net.minecraft.client.renderer.SubmitNodeCollection;
+-import net.minecraft.client.renderer.SubmitNodeStorage;
+-import net.neoforged.api.distmarker.Dist;
+-import net.neoforged.api.distmarker.OnlyIn;
+-
+-@OnlyIn(Dist.CLIENT)
+-public class NameTagFeatureRenderer {
+-    public void render(SubmitNodeCollection p_439963_, MultiBufferSource.BufferSource p_435849_, Font p_433982_) {
+-        p_439963_.getNameTagSubmitsSeethrough().sort(Comparator.comparing(SubmitNodeStorage.NameTagSubmit::distanceToCameraSq).reversed());
+-
+-        for (SubmitNodeStorage.NameTagSubmit submitnodestorage$nametagsubmit : p_439963_.getNameTagSubmitsSeethrough()) {
+-            p_433982_.drawInBatch(
+-                submitnodestorage$nametagsubmit.text(),
+-                submitnodestorage$nametagsubmit.x(),
+-                submitnodestorage$nametagsubmit.y(),
+-                submitnodestorage$nametagsubmit.color(),
+-                false,
+-                submitnodestorage$nametagsubmit.pose(),
+-                p_435849_,
+-                Font.DisplayMode.SEE_THROUGH,
+-                submitnodestorage$nametagsubmit.backgroundColor(),
+-                submitnodestorage$nametagsubmit.lightCoords()
+-            );
+-        }
+-
+-        for (SubmitNodeStorage.NameTagSubmit submitnodestorage$nametagsubmit1 : p_439963_.getNameTagSubmitsNormal()) {
+-            p_433982_.drawInBatch(
+-                submitnodestorage$nametagsubmit1.text(),
+-                submitnodestorage$nametagsubmit1.x(),
+-                submitnodestorage$nametagsubmit1.y(),
+-                submitnodestorage$nametagsubmit1.color(),
+-                false,
+-                submitnodestorage$nametagsubmit1.pose(),
+-                p_435849_,
+-                Font.DisplayMode.NORMAL,
+-                submitnodestorage$nametagsubmit1.backgroundColor(),
+-                submitnodestorage$nametagsubmit1.lightCoords()
+-            );
+-        }
+-    }
+-}

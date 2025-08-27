@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/WallHangingSignBlock.java
++++ b/net/minecraft/world/level/block/WallHangingSignBlock.java
+@@ -39,8 +_,8 @@
+ 
+ public class WallHangingSignBlock extends SignBlock {
+     public static final MapCodec<WallHangingSignBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432691_ -> p_432691_.group(WoodType.CODEC.fieldOf("wood_type").forGetter(SignBlock::type), propertiesCodec())
+-            .apply(p_432691_, WallHangingSignBlock::new)
++        p_368446_ -> p_368446_.group(WoodType.CODEC.fieldOf("wood_type").forGetter(SignBlock::type), propertiesCodec())
++            .apply(p_368446_, WallHangingSignBlock::new)
+     );
+     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
+     private static final Map<Direction.Axis, VoxelShape> SHAPES_PLANK = Shapes.rotateHorizontalAxis(Block.column(16.0, 4.0, 14.0, 16.0));

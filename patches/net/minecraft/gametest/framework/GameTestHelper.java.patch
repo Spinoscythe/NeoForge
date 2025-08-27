@@ -1,0 +1,104 @@
+--- a/net/minecraft/gametest/framework/GameTestHelper.java
++++ b/net/minecraft/gametest/framework/GameTestHelper.java
+@@ -4,7 +_,6 @@
+ import com.mojang.brigadier.exceptions.CommandSyntaxException;
+ import com.mojang.datafixers.util.Either;
+ import io.netty.channel.embedded.EmbeddedChannel;
+-import java.util.ArrayList;
+ import java.util.List;
+ import java.util.Objects;
+ import java.util.UUID;
+@@ -52,14 +_,12 @@
+ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.Blocks;
+ import net.minecraft.world.level.block.ButtonBlock;
+-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+ import net.minecraft.world.level.block.LeverBlock;
+ import net.minecraft.world.level.block.Mirror;
+ import net.minecraft.world.level.block.Rotation;
+ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+ import net.minecraft.world.level.block.entity.BlockEntity;
+ import net.minecraft.world.level.block.state.BlockState;
+-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+ import net.minecraft.world.level.block.state.properties.Property;
+ import net.minecraft.world.level.levelgen.Heightmap;
+ import net.minecraft.world.level.levelgen.structure.BoundingBox;
+@@ -143,20 +_,6 @@
+         return this.spawn(p_177177_, Vec3.atBottomCenterOf(p_177178_));
+     }
+ 
+-    public <E extends Entity> List<E> spawn(EntityType<E> p_434502_, BlockPos p_435888_, int p_436022_) {
+-        return this.spawn(p_434502_, Vec3.atBottomCenterOf(p_435888_), p_436022_);
+-    }
+-
+-    public <E extends Entity> List<E> spawn(EntityType<E> p_433086_, Vec3 p_433822_, int p_434357_) {
+-        List<E> list = new ArrayList<>();
+-
+-        for (int i = 0; i < p_434357_; i++) {
+-            list.add(this.spawn(p_433086_, p_433822_));
+-        }
+-
+-        return list;
+-    }
+-
+     public <E extends Entity> E spawn(EntityType<E> p_177174_, Vec3 p_177175_) {
+         ServerLevel serverlevel = this.getLevel();
+         E e = p_177174_.create(serverlevel, EntitySpawnReason.STRUCTURE);
+@@ -168,10 +_,7 @@
+             }
+ 
+             Vec3 vec3 = this.absoluteVec(p_177175_);
+-            float f = e.rotate(this.getTestRotation());
+-            e.snapTo(vec3.x, vec3.y, vec3.z, f, e.getXRot());
+-            e.setYBodyRot(f);
+-            e.setYHeadRot(f);
++            e.snapTo(vec3.x, vec3.y, vec3.z, e.getYRot(), e.getXRot());
+             serverlevel.addFreshEntity(e);
+             return e;
+         }
+@@ -377,23 +_,6 @@
+         this.getLevel().setBlock(this.absolutePos(p_177253_), p_177254_, 3);
+     }
+ 
+-    public void setBlock(BlockPos p_435712_, Block p_434627_, Direction p_434013_) {
+-        this.setBlock(p_435712_, p_434627_.defaultBlockState(), p_434013_);
+-    }
+-
+-    public void setBlock(BlockPos p_435991_, BlockState p_435469_, Direction p_433761_) {
+-        BlockState blockstate = p_435469_;
+-        if (p_435469_.hasProperty(HorizontalDirectionalBlock.FACING)) {
+-            blockstate = p_435469_.setValue(HorizontalDirectionalBlock.FACING, p_433761_);
+-        }
+-
+-        if (p_435469_.hasProperty(BlockStateProperties.FACING)) {
+-            blockstate = p_435469_.setValue(BlockStateProperties.FACING, p_433761_);
+-        }
+-
+-        this.getLevel().setBlock(this.absolutePos(p_435991_), blockstate, 3);
+-    }
+-
+     public void setNight() {
+         this.setDayTime(13000);
+     }
+@@ -917,10 +_,6 @@
+         throw this.assertionException(p_397383_);
+     }
+ 
+-    public void fail(String p_433138_) {
+-        throw this.assertionException(Component.literal(p_433138_));
+-    }
+-
+     public void failIf(Runnable p_177393_) {
+         this.testInfo.createSequence().thenWaitUntil(p_177393_).thenFail(() -> this.assertionException("test.error.fail"));
+     }
+@@ -971,10 +_,6 @@
+ 
+     public Rotation getTestRotation() {
+         return this.testInfo.getRotation();
+-    }
+-
+-    public Direction getTestDirection() {
+-        return this.testInfo.getRotation().rotate(Direction.SOUTH);
+     }
+ 
+     public void assertTrue(boolean p_249380_, Component p_397005_) {

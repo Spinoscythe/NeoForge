@@ -1,16 +1,27 @@
 --- a/net/minecraft/world/level/block/NoteBlock.java
 +++ b/net/minecraft/world/level/block/NoteBlock.java
-@@ -115,7 +_,9 @@
+@@ -114,8 +_,10 @@
+ 
      @Override
      protected InteractionResult useWithoutItem(BlockState p_316441_, Level p_316774_, BlockPos p_316344_, Player p_316884_, BlockHitResult p_316631_) {
-         if (!p_316774_.isClientSide) {
+-        if (!p_316774_.isClientSide()) {
 -            p_316441_ = p_316441_.cycle(NOTE);
++        if (!p_316774_.isClientSide) {
 +            int _new = net.neoforged.neoforge.common.CommonHooks.onNoteChange(p_316774_, p_316344_, p_316441_, p_316441_.getValue(NOTE), p_316441_.cycle(NOTE).getValue(NOTE));
 +            if (_new == -1) return InteractionResult.FAIL;
 +            p_316441_ = p_316441_.setValue(NOTE, _new);
              p_316774_.setBlock(p_316344_, p_316441_, 3);
              this.playNote(p_316884_, p_316441_, p_316774_, p_316344_);
              p_316884_.awardStat(Stats.TUNE_NOTEBLOCK);
+@@ -126,7 +_,7 @@
+ 
+     @Override
+     protected void attack(BlockState p_55029_, Level p_55030_, BlockPos p_55031_, Player p_55032_) {
+-        if (!p_55030_.isClientSide()) {
++        if (!p_55030_.isClientSide) {
+             this.playNote(p_55032_, p_55029_, p_55030_, p_55031_);
+             p_55032_.awardStat(Stats.PLAY_NOTEBLOCK);
+         }
 @@ -138,6 +_,9 @@
  
      @Override

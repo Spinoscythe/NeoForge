@@ -1,6 +1,14 @@
 --- a/net/minecraft/world/level/block/SweetBerryBushBlock.java
 +++ b/net/minecraft/world/level/block/SweetBerryBushBlock.java
-@@ -70,9 +_,10 @@
+@@ -24,7 +_,6 @@
+ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+ import net.minecraft.world.level.block.state.properties.IntegerProperty;
+ import net.minecraft.world.level.gameevent.GameEvent;
+-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+ import net.minecraft.world.phys.BlockHitResult;
+ import net.minecraft.world.phys.Vec3;
+ import net.minecraft.world.phys.shapes.CollisionContext;
+@@ -71,9 +_,10 @@
      @Override
      protected void randomTick(BlockState p_222563_, ServerLevel p_222564_, BlockPos p_222565_, RandomSource p_222566_) {
          int i = p_222563_.getValue(AGE);
@@ -12,3 +20,40 @@
              p_222564_.gameEvent(GameEvent.BLOCK_CHANGE, p_222565_, GameEvent.Context.of(blockstate));
          }
      }
+@@ -108,25 +_,17 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_316134_, Level p_316429_, BlockPos p_316748_, Player p_316431_, BlockHitResult p_316474_) {
+-        if (p_316134_.getValue(AGE) > 1) {
+-            if (p_316429_ instanceof ServerLevel serverlevel) {
+-                Block.dropFromBlockInteractLootTable(
+-                    serverlevel,
+-                    BuiltInLootTables.HARVEST_SWEET_BERRY_BUSH,
+-                    p_316134_,
+-                    p_316429_.getBlockEntity(p_316748_),
+-                    null,
+-                    p_316431_,
+-                    (p_436765_, p_436687_) -> Block.popResource(p_436765_, p_316748_, p_436687_)
+-                );
+-                serverlevel.playSound(
+-                    null, p_316748_, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 0.8F + serverlevel.random.nextFloat() * 0.4F
+-                );
+-                BlockState blockstate = p_316134_.setValue(AGE, 1);
+-                serverlevel.setBlock(p_316748_, blockstate, 2);
+-                serverlevel.gameEvent(GameEvent.BLOCK_CHANGE, p_316748_, GameEvent.Context.of(p_316431_, blockstate));
+-            }
+-
++        int i = p_316134_.getValue(AGE);
++        boolean flag = i == 3;
++        if (i > 1) {
++            int j = 1 + p_316429_.random.nextInt(2);
++            popResource(p_316429_, p_316748_, new ItemStack(Items.SWEET_BERRIES, j + (flag ? 1 : 0)));
++            p_316429_.playSound(
++                null, p_316748_, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 0.8F + p_316429_.random.nextFloat() * 0.4F
++            );
++            BlockState blockstate = p_316134_.setValue(AGE, 1);
++            p_316429_.setBlock(p_316748_, blockstate, 2);
++            p_316429_.gameEvent(GameEvent.BLOCK_CHANGE, p_316748_, GameEvent.Context.of(p_316431_, blockstate));
+             return InteractionResult.SUCCESS;
+         } else {
+             return super.useWithoutItem(p_316134_, p_316429_, p_316748_, p_316431_, p_316474_);

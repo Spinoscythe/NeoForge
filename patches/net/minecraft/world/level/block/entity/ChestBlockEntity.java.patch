@@ -1,9 +1,94 @@
 --- a/net/minecraft/world/level/block/entity/ChestBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/ChestBlockEntity.java
-@@ -173,6 +_,17 @@
-         return ChestMenu.threeRows(p_59082_, p_59083_, this);
+@@ -1,16 +_,15 @@
+ package net.minecraft.world.level.block.entity;
+ 
+-import java.util.List;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.core.NonNullList;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.sounds.SoundEvent;
++import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.sounds.SoundSource;
+ import net.minecraft.world.CompoundContainer;
+ import net.minecraft.world.Container;
+ import net.minecraft.world.ContainerHelper;
+-import net.minecraft.world.entity.ContainerUser;
+ import net.minecraft.world.entity.player.Inventory;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.inventory.AbstractContainerMenu;
+@@ -31,16 +_,12 @@
+     private final ContainerOpenersCounter openersCounter = new ContainerOpenersCounter() {
+         @Override
+         protected void onOpen(Level p_155357_, BlockPos p_155358_, BlockState p_155359_) {
+-            if (p_155359_.getBlock() instanceof ChestBlock chestblock) {
+-                ChestBlockEntity.playSound(p_155357_, p_155358_, p_155359_, chestblock.getOpenChestSound());
+-            }
++            ChestBlockEntity.playSound(p_155357_, p_155358_, p_155359_, SoundEvents.CHEST_OPEN);
+         }
+ 
+         @Override
+         protected void onClose(Level p_155367_, BlockPos p_155368_, BlockState p_155369_) {
+-            if (p_155369_.getBlock() instanceof ChestBlock chestblock) {
+-                ChestBlockEntity.playSound(p_155367_, p_155368_, p_155369_, chestblock.getCloseChestSound());
+-            }
++            ChestBlockEntity.playSound(p_155367_, p_155368_, p_155369_, SoundEvents.CHEST_CLOSE);
+         }
+ 
+         @Override
+@@ -49,7 +_,7 @@
+         }
+ 
+         @Override
+-        public boolean isOwnContainer(Player p_155355_) {
++        protected boolean isOwnContainer(Player p_155355_) {
+             if (!(p_155355_.containerMenu instanceof ChestMenu)) {
+                 return false;
+             } else {
+@@ -127,25 +_,17 @@
      }
  
+     @Override
+-    public void startOpen(ContainerUser p_433320_) {
+-        if (!this.remove && !p_433320_.getLivingEntity().isSpectator()) {
+-            this.openersCounter
+-                .incrementOpeners(
+-                    p_433320_.getLivingEntity(), this.getLevel(), this.getBlockPos(), this.getBlockState(), p_433320_.getContainerInteractionRange()
+-                );
+-        }
+-    }
+-
+-    @Override
+-    public void stopOpen(ContainerUser p_432909_) {
+-        if (!this.remove && !p_432909_.getLivingEntity().isSpectator()) {
+-            this.openersCounter.decrementOpeners(p_432909_.getLivingEntity(), this.getLevel(), this.getBlockPos(), this.getBlockState());
+-        }
+-    }
+-
+-    @Override
+-    public List<ContainerUser> getEntitiesWithContainerOpen() {
+-        return this.openersCounter.getEntitiesWithContainerOpen(this.getLevel(), this.getBlockPos());
++    public void startOpen(Player p_59120_) {
++        if (!this.remove && !p_59120_.isSpectator()) {
++            this.openersCounter.incrementOpeners(p_59120_, this.getLevel(), this.getBlockPos(), this.getBlockState());
++        }
++    }
++
++    @Override
++    public void stopOpen(Player p_59118_) {
++        if (!this.remove && !p_59118_.isSpectator()) {
++            this.openersCounter.decrementOpeners(p_59118_, this.getLevel(), this.getBlockPos(), this.getBlockState());
++        }
+     }
+ 
+     @Override
+@@ -184,6 +_,17 @@
+     @Override
+     protected AbstractContainerMenu createMenu(int p_59082_, Inventory p_59083_) {
+         return ChestMenu.threeRows(p_59082_, p_59083_, this);
++    }
++
 +    @Override
 +    public void setBlockState(BlockState p_155251_) {
 +        var oldState = getBlockState();
@@ -13,8 +98,6 @@
 +                || (oldState.getValue(ChestBlock.TYPE) != p_155251_.getValue(ChestBlock.TYPE))) {
 +            this.invalidateCapabilities();
 +        }
-+    }
-+
+     }
+ 
      public void recheckOpen() {
-         if (!this.remove) {
-             this.openersCounter.recheckOpeners(this.getLevel(), this.getBlockPos(), this.getBlockState());

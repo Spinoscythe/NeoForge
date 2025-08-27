@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/multiplayer/chat/ChatTrustLevel.java
++++ b/net/minecraft/client/multiplayer/chat/ChatTrustLevel.java
+@@ -6,7 +_,6 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.client.GuiMessageTag;
+ import net.minecraft.network.chat.Component;
+-import net.minecraft.network.chat.FontDescription;
+ import net.minecraft.network.chat.PlayerChatMessage;
+ import net.minecraft.network.chat.Style;
+ import net.minecraft.util.StringRepresentable;
+@@ -48,7 +_,7 @@
+     }
+ 
+     private static boolean isModifiedStyle(Style p_251347_) {
+-        return !p_251347_.getFont().equals(FontDescription.DEFAULT);
++        return !p_251347_.getFont().equals(Style.DEFAULT_FONT);
+     }
+ 
+     public boolean isNotSecure() {

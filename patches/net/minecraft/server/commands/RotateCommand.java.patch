@@ -1,0 +1,13 @@
+--- a/net/minecraft/server/commands/RotateCommand.java
++++ b/net/minecraft/server/commands/RotateCommand.java
+@@ -77,9 +_,7 @@
+ 
+     private static int rotate(CommandSourceStack p_379593_, Entity p_380003_, Coordinates p_380100_) {
+         Vec2 vec2 = p_380100_.getRotation(p_379593_);
+-        float f = p_380100_.isYRelative() ? vec2.y - p_380003_.getYRot() : vec2.y;
+-        float f1 = p_380100_.isXRelative() ? vec2.x - p_380003_.getXRot() : vec2.x;
+-        p_380003_.forceSetRotation(f, p_380100_.isYRelative(), f1, p_380100_.isXRelative());
++        p_380003_.forceSetRotation(vec2.y, vec2.x);
+         p_379593_.sendSuccess(() -> Component.translatable("commands.rotate.success", p_380003_.getDisplayName()), true);
+         return 1;
+     }

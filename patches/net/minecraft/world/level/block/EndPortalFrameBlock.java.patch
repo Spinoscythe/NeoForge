@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/EndPortalFrameBlock.java
++++ b/net/minecraft/world/level/block/EndPortalFrameBlock.java
+@@ -61,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_53061_, Level p_53062_, BlockPos p_53063_, Direction p_434063_) {
++    protected int getAnalogOutputSignal(BlockState p_53061_, Level p_53062_, BlockPos p_53063_) {
+         return p_53061_.getValue(HAS_EYE) ? 15 : 0;
+     }
+ 

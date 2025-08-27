@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/gui/screens/inventory/EnchantmentNames.java
++++ b/net/minecraft/client/gui/screens/inventory/EnchantmentNames.java
+@@ -3,7 +_,6 @@
+ import net.minecraft.Util;
+ import net.minecraft.client.gui.Font;
+ import net.minecraft.network.chat.Component;
+-import net.minecraft.network.chat.FontDescription;
+ import net.minecraft.network.chat.FormattedText;
+ import net.minecraft.network.chat.Style;
+ import net.minecraft.resources.ResourceLocation;
+@@ -13,7 +_,7 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class EnchantmentNames {
+-    private static final FontDescription ALT_FONT = new FontDescription.Resource(ResourceLocation.withDefaultNamespace("alt"));
++    private static final ResourceLocation ALT_FONT = ResourceLocation.withDefaultNamespace("alt");
+     private static final Style ROOT_STYLE = Style.EMPTY.withFont(ALT_FONT);
+     private static final EnchantmentNames INSTANCE = new EnchantmentNames();
+     private final RandomSource random = RandomSource.create();

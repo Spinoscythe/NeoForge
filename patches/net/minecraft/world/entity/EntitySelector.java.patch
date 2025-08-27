@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/EntitySelector.java
++++ b/net/minecraft/world/entity/EntitySelector.java
+@@ -35,7 +_,7 @@
+                 p_392970_ -> {
+                     if (!p_392970_.isPushable()) {
+                         return false;
+-                    } else if (!p_20422_.level().isClientSide() || p_392970_ instanceof Player player && player.isLocalPlayer()) {
++                    } else if (!p_20422_.level().isClientSide || p_392970_ instanceof Player player && player.isLocalPlayer()) {
+                         Team team1 = p_392970_.getTeam();
+                         Team.CollisionRule team$collisionrule1 = team1 == null ? Team.CollisionRule.ALWAYS : team1.getCollisionRule();
+                         if (team$collisionrule1 == Team.CollisionRule.NEVER) {

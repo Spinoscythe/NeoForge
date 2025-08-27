@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/BucketItem.java
 +++ b/net/minecraft/world/item/BucketItem.java
-@@ -59,7 +_,7 @@
+@@ -59,10 +_,10 @@
                      ItemStack itemstack3 = bucketpickup.pickupBlock(p_40704_, p_40703_, blockpos, blockstate1);
                      if (!itemstack3.isEmpty()) {
                          p_40704_.awardStat(Stats.ITEM_USED.get(this));
@@ -8,7 +8,11 @@
 +                        bucketpickup.getPickupSound(blockstate1).ifPresent(p_150709_ -> p_40704_.playSound(p_150709_, 1.0F, 1.0F));
                          p_40703_.gameEvent(p_40704_, GameEvent.FLUID_PICKUP, blockpos);
                          ItemStack itemstack2 = ItemUtils.createFilledResult(itemstack, p_40704_, itemstack3);
-                         if (!p_40703_.isClientSide) {
+-                        if (!p_40703_.isClientSide()) {
++                        if (!p_40703_.isClientSide) {
+                             CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer)p_40704_, itemstack3);
+                         }
+ 
 @@ -73,8 +_,8 @@
                  return InteractionResult.FAIL;
              } else {
@@ -20,7 +24,7 @@
                      this.checkExtraContent(p_40704_, p_40703_, itemstack, blockpos2);
                      if (p_40704_ instanceof ServerPlayer) {
                          CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayer)p_40704_, blockpos2, itemstack);
-@@ -99,7 +_,12 @@
+@@ -99,20 +_,28 @@
      }
  
      @Override
@@ -33,13 +37,20 @@
          if (!(this.content instanceof FlowingFluid flowingfluid)) {
              return false;
          } else {
-@@ -110,8 +_,12 @@
-                 || $$8
+             BlockState blockstate = p_150717_.getBlockState(p_150718_);
+             Block $$7 = blockstate.getBlock();
+             boolean $$8 = blockstate.canBeReplaced(this.content);
+-            boolean flag1 = p_394627_ != null && p_394627_.isShiftKeyDown();
+-            boolean flag2 = $$8
++            boolean flag1 = blockstate.isAir()
++                || $$8
                  || $$7 instanceof LiquidBlockContainer liquidblockcontainer
                      && liquidblockcontainer.canPlaceLiquid(p_394627_, p_150717_, p_150718_, blockstate, this.content);
-+            java.util.Optional<net.neoforged.neoforge.fluids.FluidStack> containedFluidStack = java.util.Optional.ofNullable(container).flatMap(net.neoforged.neoforge.fluids.FluidUtil::getFluidContained);
-             if (!flag1) {
+-            boolean flag3 = blockstate.isAir() || flag2 && (!flag1 || p_150719_ == null);
+-            if (!flag3) {
 -                return p_150719_ != null && this.emptyContents(p_394627_, p_150717_, p_150719_.getBlockPos().relative(p_150719_.getDirection()), null);
++            java.util.Optional<net.neoforged.neoforge.fluids.FluidStack> containedFluidStack = java.util.Optional.ofNullable(container).flatMap(net.neoforged.neoforge.fluids.FluidUtil::getFluidContained);
++            if (!flag1) {
 +                return p_150719_ != null && this.emptyContents(p_394627_, p_150717_, p_150719_.getBlockPos().relative(p_150719_.getDirection()), null, container);
 +            } else if (containedFluidStack.isPresent() && this.content.getFluidType().isVaporizedOnPlacement(p_150717_, p_150718_, containedFluidStack.get())) {
 +                this.content.getFluidType().onVaporize(p_394627_, p_150717_, p_150718_, containedFluidStack.get());
@@ -47,7 +58,7 @@
              } else if (p_150717_.dimensionType().ultraWarm() && this.content.is(FluidTags.WATER)) {
                  int l = p_150718_.getX();
                  int i = p_150718_.getY();
-@@ -130,7 +_,7 @@
+@@ -131,12 +_,12 @@
                  }
  
                  return true;
@@ -56,7 +67,13 @@
                  liquidblockcontainer1.placeLiquid(p_150717_, p_150718_, blockstate, flowingfluid.getSource(false));
                  this.playEmptySound(p_394627_, p_150717_, p_150718_);
                  return true;
-@@ -150,8 +_,14 @@
+             } else {
+-                if (!p_150717_.isClientSide() && $$8 && !blockstate.liquid()) {
++                if (!p_150717_.isClientSide && $$8 && !blockstate.liquid()) {
+                     p_150717_.destroyBlock(p_150718_, true);
+                 }
+ 
+@@ -151,8 +_,14 @@
      }
  
      protected void playEmptySound(@Nullable LivingEntity p_394061_, LevelAccessor p_40697_, BlockPos p_40698_) {

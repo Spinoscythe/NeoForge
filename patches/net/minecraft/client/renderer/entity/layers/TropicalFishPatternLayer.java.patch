@@ -1,0 +1,28 @@
+--- a/net/minecraft/client/renderer/entity/layers/TropicalFishPatternLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/TropicalFishPatternLayer.java
+@@ -6,7 +_,7 @@
+ import net.minecraft.client.model.TropicalFishModelB;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.TropicalFishRenderState;
+ import net.minecraft.resources.ResourceLocation;
+@@ -37,7 +_,7 @@
+         this.modelB = new TropicalFishModelB(p_174548_.bakeLayer(ModelLayers.TROPICAL_FISH_LARGE_PATTERN));
+     }
+ 
+-    public void submit(PoseStack p_117612_, SubmitNodeCollector p_433728_, int p_117614_, TropicalFishRenderState p_362806_, float p_117616_, float p_117617_) {
++    public void render(PoseStack p_117612_, MultiBufferSource p_117613_, int p_117614_, TropicalFishRenderState p_362806_, float p_117616_, float p_117617_) {
+         TropicalFish.Pattern tropicalfish$pattern = p_362806_.pattern;
+ 
+         EntityModel<TropicalFishRenderState> entitymodel = (EntityModel<TropicalFishRenderState>)(switch (tropicalfish$pattern.base()) {
+@@ -59,6 +_,6 @@
+             case BETTY -> BETTY_TEXTURE;
+             case CLAYFISH -> CLAYFISH_TEXTURE;
+         };
+-        coloredCutoutModelCopyLayerRender(entitymodel, resourcelocation, p_117612_, p_433728_, p_117614_, p_362806_, p_362806_.patternColor, 1);
++        coloredCutoutModelCopyLayerRender(entitymodel, resourcelocation, p_117612_, p_117613_, p_117614_, p_362806_, p_362806_.patternColor);
+     }
+ }

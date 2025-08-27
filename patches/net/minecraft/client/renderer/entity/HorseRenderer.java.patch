@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/renderer/entity/HorseRenderer.java
++++ b/net/minecraft/client/renderer/entity/HorseRenderer.java
+@@ -46,8 +_,7 @@
+                 EquipmentClientInfo.LayerType.HORSE_BODY,
+                 p_397943_ -> p_397943_.bodyArmorItem,
+                 new HorseModel(p_174167_.bakeLayer(ModelLayers.HORSE_ARMOR)),
+-                new HorseModel(p_174167_.bakeLayer(ModelLayers.HORSE_BABY_ARMOR)),
+-                2
++                new HorseModel(p_174167_.bakeLayer(ModelLayers.HORSE_BABY_ARMOR))
+             )
+         );
+         this.addLayer(
+@@ -57,8 +_,7 @@
+                 EquipmentClientInfo.LayerType.HORSE_SADDLE,
+                 p_397146_ -> p_397146_.saddle,
+                 new EquineSaddleModel(p_174167_.bakeLayer(ModelLayers.HORSE_SADDLE)),
+-                new EquineSaddleModel(p_174167_.bakeLayer(ModelLayers.HORSE_BABY_SADDLE)),
+-                2
++                new EquineSaddleModel(p_174167_.bakeLayer(ModelLayers.HORSE_BABY_SADDLE))
+             )
+         );
+     }

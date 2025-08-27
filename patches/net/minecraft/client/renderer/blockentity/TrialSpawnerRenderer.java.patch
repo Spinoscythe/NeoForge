@@ -1,13 +1,57 @@
 --- a/net/minecraft/client/renderer/blockentity/TrialSpawnerRenderer.java
 +++ b/net/minecraft/client/renderer/blockentity/TrialSpawnerRenderer.java
-@@ -35,4 +_,10 @@
+@@ -1,10 +_,8 @@
+ package net.minecraft.client.renderer.blockentity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+-import javax.annotation.Nullable;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity;
+@@ -19,29 +_,28 @@
+     private final EntityRenderDispatcher entityRenderer;
+ 
+     public TrialSpawnerRenderer(BlockEntityRendererProvider.Context p_312398_) {
+-        this.entityRenderer = p_312398_.entityRenderer();
++        this.entityRenderer = p_312398_.getEntityRenderer();
+     }
+ 
+-    public void submit(
+-        TrialSpawnerBlockEntity p_439275_,
+-        float p_439190_,
+-        PoseStack p_439781_,
+-        int p_440129_,
+-        int p_439975_,
+-        Vec3 p_439001_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440370_,
+-        SubmitNodeCollector p_440624_
++    public void render(
++        TrialSpawnerBlockEntity p_312217_, float p_312274_, PoseStack p_312684_, MultiBufferSource p_312816_, int p_312320_, int p_312349_, Vec3 p_401133_
+     ) {
+-        Level level = p_439275_.getLevel();
++        Level level = p_312217_.getLevel();
+         if (level != null) {
+-            TrialSpawner trialspawner = p_439275_.getTrialSpawner();
++            TrialSpawner trialspawner = p_312217_.getTrialSpawner();
+             TrialSpawnerStateData trialspawnerstatedata = trialspawner.getStateData();
+             Entity entity = trialspawnerstatedata.getOrCreateDisplayEntity(trialspawner, level, trialspawner.getState());
+             if (entity != null) {
+-                SpawnerRenderer.submitEntityInSpawner(
+-                    p_439190_, p_439781_, p_440624_, entity, this.entityRenderer, trialspawnerstatedata.getOSpin(), trialspawnerstatedata.getSpin()
++                SpawnerRenderer.renderEntityInSpawner(
++                    p_312274_, p_312684_, p_312816_, p_312320_, entity, this.entityRenderer, trialspawnerstatedata.getOSpin(), trialspawnerstatedata.getSpin()
+                 );
              }
          }
-     }
++    }
 +
 +    @Override
 +    public net.minecraft.world.phys.AABB getRenderBoundingBox(TrialSpawnerBlockEntity blockEntity) {
 +        net.minecraft.core.BlockPos pos = blockEntity.getBlockPos();
 +        return new net.minecraft.world.phys.AABB(pos.getX() - 1.0, pos.getY() - 1.0, pos.getZ() - 1.0, pos.getX() + 2.0, pos.getY() + 2.0, pos.getZ() + 2.0);
-+    }
+     }
  }

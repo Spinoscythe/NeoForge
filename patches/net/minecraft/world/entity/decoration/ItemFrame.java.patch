@@ -1,6 +1,62 @@
 --- a/net/minecraft/world/entity/decoration/ItemFrame.java
 +++ b/net/minecraft/world/entity/decoration/ItemFrame.java
-@@ -236,7 +_,7 @@
+@@ -1,6 +_,5 @@
+ package net.minecraft.world.entity.decoration;
+ 
+-import java.util.Objects;
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+@@ -40,6 +_,7 @@
+ import net.minecraft.world.level.storage.ValueOutput;
+ import net.minecraft.world.phys.AABB;
+ import net.minecraft.world.phys.Vec3;
++import org.apache.commons.lang3.Validate;
+ 
+ public class ItemFrame extends HangingEntity {
+     private static final EntityDataAccessor<ItemStack> DATA_ITEM = SynchedEntityData.defineId(ItemFrame.class, EntityDataSerializers.ITEM_STACK);
+@@ -79,7 +_,7 @@
+ 
+     @Override
+     protected void setDirection(Direction p_31793_) {
+-        Objects.requireNonNull(p_31793_);
++        Validate.notNull(p_31793_);
+         super.setDirectionRaw(p_31793_);
+         if (p_31793_.getAxis().isHorizontal()) {
+             this.setXRot(0.0F);
+@@ -104,13 +_,10 @@
+     protected AABB calculateBoundingBox(BlockPos p_345363_, Direction p_344892_) {
+         float f = 0.46875F;
+         Vec3 vec3 = Vec3.atCenterOf(p_345363_).relative(p_344892_, -0.46875);
+-        boolean flag = this.hasFramedMap();
+-        float f1 = flag ? 1.0F : 0.75F;
+-        float f2 = flag ? 1.0F : 0.75F;
+         Direction.Axis direction$axis = p_344892_.getAxis();
+-        double d0 = direction$axis == Direction.Axis.X ? 0.0625 : f1;
+-        double d1 = direction$axis == Direction.Axis.Y ? 0.0625 : f2;
+-        double d2 = direction$axis == Direction.Axis.Z ? 0.0625 : f1;
++        double d0 = direction$axis == Direction.Axis.X ? 0.0625 : 0.75;
++        double d1 = direction$axis == Direction.Axis.Y ? 0.0625 : 0.75;
++        double d2 = direction$axis == Direction.Axis.Z ? 0.0625 : 0.75;
+         return AABB.ofSize(vec3, d0, d1, d2);
+     }
+ 
+@@ -123,13 +_,7 @@
+         } else {
+             BlockState blockstate = this.level().getBlockState(this.pos.relative(this.getDirection().getOpposite()));
+             return blockstate.isSolid() || this.getDirection().getAxis().isHorizontal() && DiodeBlock.isDiode(blockstate)
+-                ? this.level()
+-                    .getEntities(
+-                        this,
+-                        this.getBoundingBox(),
+-                        HANGING_ENTITY.and(p_438871_ -> !(p_438871_ instanceof ItemFrame itemframe && itemframe.getDirection() != this.getDirection()))
+-                    )
+-                    .isEmpty()
++                ? this.level().getEntities(this, this.getBoundingBox(), HANGING_ENTITY).isEmpty()
+                 : false;
+         }
+     }
+@@ -245,7 +_,7 @@
      private void removeFramedMap(ItemStack p_31811_) {
          MapId mapid = this.getFramedMapId(p_31811_);
          if (mapid != null) {
@@ -9,3 +65,12 @@
              if (mapitemsaveddata != null) {
                  mapitemsaveddata.removedFromFrame(this.pos, this.getId());
              }
+@@ -366,7 +_,7 @@
+         boolean flag1 = !itemstack.isEmpty();
+         if (this.fixed) {
+             return InteractionResult.PASS;
+-        } else if (!p_31787_.level().isClientSide()) {
++        } else if (!p_31787_.level().isClientSide) {
+             if (!flag) {
+                 if (flag1 && !this.isRemoved()) {
+                     MapItemSavedData mapitemsaveddata = MapItem.getSavedData(itemstack, this.level());

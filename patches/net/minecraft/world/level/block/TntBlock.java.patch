@@ -42,7 +42,7 @@
      private static boolean prime(Level p_394104_, BlockPos p_393490_, @Nullable LivingEntity p_411047_) {
          if (p_394104_ instanceof ServerLevel serverlevel && serverlevel.getGameRules().getBoolean(GameRules.RULE_TNT_EXPLODES)) {
              PrimedTnt primedtnt = new PrimedTnt(p_394104_, p_393490_.getX() + 0.5, p_393490_.getY(), p_393490_.getZ() + 0.5, p_411047_);
-@@ -102,7 +_,7 @@
+@@ -102,11 +_,11 @@
          if (!p_316149_.is(Items.FLINT_AND_STEEL) && !p_316149_.is(Items.FIRE_CHARGE)) {
              return super.useItemOn(p_316149_, p_316217_, p_316520_, p_316601_, p_316770_, p_316393_, p_316532_);
          } else {
@@ -51,6 +51,11 @@
                  p_316520_.setBlock(p_316601_, Blocks.AIR.defaultBlockState(), 11);
                  Item item = p_316149_.getItem();
                  if (p_316149_.is(Items.FLINT_AND_STEEL)) {
+-                    p_316149_.hurtAndBreak(1, p_316770_, p_316393_.asEquipmentSlot());
++                    p_316149_.hurtAndBreak(1, p_316770_, LivingEntity.getSlotForHand(p_316393_));
+                 } else {
+                     p_316149_.consume(1, p_316770_);
+                 }
 @@ -128,7 +_,7 @@
              Entity entity = p_57432_.getOwner();
              if (p_57432_.isOnFire()

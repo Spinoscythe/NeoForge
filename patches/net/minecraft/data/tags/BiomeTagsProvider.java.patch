@@ -1,6 +1,6 @@
 --- a/net/minecraft/data/tags/BiomeTagsProvider.java
 +++ b/net/minecraft/data/tags/BiomeTagsProvider.java
-@@ -12,8 +_,13 @@
+@@ -12,9 +_,14 @@
  import net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList;
  
  public class BiomeTagsProvider extends KeyTagProvider<Biome> {
@@ -8,9 +8,18 @@
 +    @Deprecated
      public BiomeTagsProvider(PackOutput p_255800_, CompletableFuture<HolderLookup.Provider> p_256205_) {
          super(p_255800_, Registries.BIOME, p_256205_);
-+    }
+     }
 +    public BiomeTagsProvider(PackOutput p_255800_, CompletableFuture<HolderLookup.Provider> p_256205_, String modId) {
 +        super(p_255800_, Registries.BIOME, p_256205_, modId);
-     }
++    }
  
      @Override
+     protected void addTags(HolderLookup.Provider p_256485_) {
+@@ -168,7 +_,6 @@
+             .add(Biomes.ERODED_BADLANDS)
+             .add(Biomes.WOODED_BADLANDS)
+             .add(Biomes.MEADOW)
+-            .add(Biomes.CHERRY_GROVE)
+             .add(Biomes.GROVE)
+             .add(Biomes.SNOWY_SLOPES)
+             .add(Biomes.FROZEN_PEAKS)

@@ -1,6 +1,27 @@
 --- a/net/minecraft/world/entity/projectile/ShulkerBullet.java
 +++ b/net/minecraft/world/entity/projectile/ShulkerBullet.java
-@@ -218,7 +_,7 @@
+@@ -54,7 +_,7 @@
+         this.setOwner(p_37331_);
+         Vec3 vec3 = p_37331_.getBoundingBox().getCenter();
+         this.snapTo(vec3.x, vec3.y, vec3.z, this.getYRot(), this.getXRot());
+-        this.finalTarget = EntityReference.of(p_37332_);
++        this.finalTarget = new EntityReference<>(p_37332_);
+         this.currentMoveDirection = Direction.UP;
+         this.selectNextMoveDirection(p_37333_, p_37332_);
+     }
+@@ -191,9 +_,9 @@
+     @Override
+     public void tick() {
+         super.tick();
+-        Entity entity = !this.level().isClientSide() ? EntityReference.getEntity(this.finalTarget, this.level()) : null;
++        Entity entity = !this.level().isClientSide() ? EntityReference.get(this.finalTarget, this.level(), Entity.class) : null;
+         HitResult hitresult = null;
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             if (entity == null) {
+                 this.finalTarget = null;
+             }
+@@ -218,12 +_,12 @@
              this.handlePortal();
          }
  
@@ -9,3 +30,20 @@
              this.hitTargetOrDeflectSelf(hitresult);
          }
  
+         ProjectileUtil.rotateTowardsMovement(this, 0.5F);
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             this.level().addParticle(ParticleTypes.END_ROD, this.getX() - vec31.x, this.getY() - vec31.y + 0.15, this.getZ() - vec31.z, 0.0, 0.0, 0.0);
+         } else if (entity != null) {
+             if (this.flightSteps > 0) {
+@@ -333,6 +_,9 @@
+     @Override
+     public void recreateFromPacket(ClientboundAddEntityPacket p_150185_) {
+         super.recreateFromPacket(p_150185_);
+-        this.setDeltaMovement(p_150185_.getMovement());
++        double d0 = p_150185_.getXa();
++        double d1 = p_150185_.getYa();
++        double d2 = p_150185_.getZa();
++        this.setDeltaMovement(d0, d1, d2);
+     }
+ }

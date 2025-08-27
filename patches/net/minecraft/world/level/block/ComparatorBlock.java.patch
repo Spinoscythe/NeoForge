@@ -1,9 +1,27 @@
 --- a/net/minecraft/world/level/block/ComparatorBlock.java
 +++ b/net/minecraft/world/level/block/ComparatorBlock.java
-@@ -198,4 +_,17 @@
+@@ -101,14 +_,14 @@
+         BlockPos blockpos = p_51897_.relative(direction);
+         BlockState blockstate = p_51896_.getBlockState(blockpos);
+         if (blockstate.hasAnalogOutputSignal()) {
+-            i = blockstate.getAnalogOutputSignal(p_51896_, blockpos, direction.getOpposite());
++            i = blockstate.getAnalogOutputSignal(p_51896_, blockpos);
+         } else if (i < 15 && blockstate.isRedstoneConductor(p_51896_, blockpos)) {
+             blockpos = blockpos.relative(direction);
+             blockstate = p_51896_.getBlockState(blockpos);
+             ItemFrame itemframe = this.getItemFrame(p_51896_, direction, blockpos);
+             int j = Math.max(
+                 itemframe == null ? Integer.MIN_VALUE : itemframe.getAnalogOutput(),
+-                blockstate.hasAnalogOutputSignal() ? blockstate.getAnalogOutputSignal(p_51896_, blockpos, direction.getOpposite()) : Integer.MIN_VALUE
++                blockstate.hasAnalogOutputSignal() ? blockstate.getAnalogOutputSignal(p_51896_, blockpos) : Integer.MIN_VALUE
+             );
+             if (j != Integer.MIN_VALUE) {
+                 i = j;
+@@ -197,5 +_,18 @@
+     @Override
      protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_51887_) {
          p_51887_.add(FACING, MODE, POWERED);
-     }
++    }
 +
 +    @Override
 +    public boolean getWeakChanges(BlockState state, net.minecraft.world.level.LevelReader world, BlockPos pos) {
@@ -16,5 +34,5 @@
 +            // TODO porting: check this still works as expected
 +            state.handleNeighborChanged(level, pos, levelReader.getBlockState(neighbor).getBlock(), null, false);
 +        }
-+    }
+     }
  }

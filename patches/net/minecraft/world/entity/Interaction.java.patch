@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/Interaction.java
++++ b/net/minecraft/world/entity/Interaction.java
+@@ -120,7 +_,7 @@
+ 
+     @Override
+     public InteractionResult interact(Player p_273507_, InteractionHand p_273048_) {
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             return this.getResponse() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
+         } else {
+             this.interaction = new Interaction.PlayerAction(p_273507_.getUUID(), this.level().getGameTime());

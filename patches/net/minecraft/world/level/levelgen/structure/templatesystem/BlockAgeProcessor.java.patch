@@ -1,0 +1,52 @@
+--- a/net/minecraft/world/level/levelgen/structure/templatesystem/BlockAgeProcessor.java
++++ b/net/minecraft/world/level/levelgen/structure/templatesystem/BlockAgeProcessor.java
+@@ -46,11 +_,11 @@
+         if (blockstate.is(Blocks.STONE_BRICKS) || blockstate.is(Blocks.STONE) || blockstate.is(Blocks.CHISELED_STONE_BRICKS)) {
+             blockstate1 = this.maybeReplaceFullStoneBlock(randomsource);
+         } else if (blockstate.is(BlockTags.STAIRS)) {
+-            blockstate1 = this.maybeReplaceStairs(blockstate, randomsource);
++            blockstate1 = this.maybeReplaceStairs(randomsource, p_74020_.state());
+         } else if (blockstate.is(BlockTags.SLABS)) {
+-            blockstate1 = this.maybeReplaceSlab(blockstate, randomsource);
++            blockstate1 = this.maybeReplaceSlab(randomsource);
+         } else if (blockstate.is(BlockTags.WALLS)) {
+-            blockstate1 = this.maybeReplaceWall(blockstate, randomsource);
++            blockstate1 = this.maybeReplaceWall(randomsource);
+         } else if (blockstate.is(Blocks.OBSIDIAN)) {
+             blockstate1 = this.maybeReplaceObsidian(randomsource);
+         }
+@@ -74,25 +_,28 @@
+     }
+ 
+     @Nullable
+-    private BlockState maybeReplaceStairs(BlockState p_230262_, RandomSource p_230261_) {
++    private BlockState maybeReplaceStairs(RandomSource p_230261_, BlockState p_230262_) {
++        Direction direction = p_230262_.getValue(StairBlock.FACING);
++        Half half = p_230262_.getValue(StairBlock.HALF);
+         if (p_230261_.nextFloat() >= 0.5F) {
+             return null;
+         } else {
+             BlockState[] ablockstate = new BlockState[]{
+-                Blocks.MOSSY_STONE_BRICK_STAIRS.withPropertiesOf(p_230262_), Blocks.MOSSY_STONE_BRICK_SLAB.defaultBlockState()
++                Blocks.MOSSY_STONE_BRICK_STAIRS.defaultBlockState().setValue(StairBlock.FACING, direction).setValue(StairBlock.HALF, half),
++                Blocks.MOSSY_STONE_BRICK_SLAB.defaultBlockState()
+             };
+             return this.getRandomBlock(p_230261_, NON_MOSSY_REPLACEMENTS, ablockstate);
+         }
+     }
+ 
+     @Nullable
+-    private BlockState maybeReplaceSlab(BlockState p_433325_, RandomSource p_230271_) {
+-        return p_230271_.nextFloat() < this.mossiness ? Blocks.MOSSY_STONE_BRICK_SLAB.withPropertiesOf(p_433325_) : null;
++    private BlockState maybeReplaceSlab(RandomSource p_230271_) {
++        return p_230271_.nextFloat() < this.mossiness ? Blocks.MOSSY_STONE_BRICK_SLAB.defaultBlockState() : null;
+     }
+ 
+     @Nullable
+-    private BlockState maybeReplaceWall(BlockState p_433207_, RandomSource p_230273_) {
+-        return p_230273_.nextFloat() < this.mossiness ? Blocks.MOSSY_STONE_BRICK_WALL.withPropertiesOf(p_433207_) : null;
++    private BlockState maybeReplaceWall(RandomSource p_230273_) {
++        return p_230273_.nextFloat() < this.mossiness ? Blocks.MOSSY_STONE_BRICK_WALL.defaultBlockState() : null;
+     }
+ 
+     @Nullable

@@ -1,0 +1,79 @@
+--- a/com/mojang/realmsclient/dto/RealmsServerPlayerLists.java
++++ b/com/mojang/realmsclient/dto/RealmsServerPlayerLists.java
+@@ -6,6 +_,8 @@
+ import com.google.gson.JsonArray;
+ import com.google.gson.JsonElement;
+ import com.google.gson.JsonObject;
++import com.mojang.authlib.minecraft.MinecraftSessionService;
++import com.mojang.authlib.yggdrasil.ProfileResult;
+ import com.mojang.logging.LogUtils;
+ import com.mojang.realmsclient.util.JsonUtils;
+ import java.util.ArrayList;
+@@ -15,7 +_,6 @@
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.util.GsonHelper;
+ import net.minecraft.util.LenientJsonParser;
+-import net.minecraft.world.item.component.ResolvableProfile;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ import org.slf4j.Logger;
+@@ -23,11 +_,11 @@
+ @OnlyIn(Dist.CLIENT)
+ public class RealmsServerPlayerLists extends ValueObject {
+     private static final Logger LOGGER = LogUtils.getLogger();
+-    public Map<Long, List<ResolvableProfile>> servers = Map.of();
++    public Map<Long, List<ProfileResult>> servers = Map.of();
+ 
+     public static RealmsServerPlayerLists parse(String p_87597_) {
+         RealmsServerPlayerLists realmsserverplayerlists = new RealmsServerPlayerLists();
+-        Builder<Long, List<ResolvableProfile>> builder = ImmutableMap.builder();
++        Builder<Long, List<ProfileResult>> builder = ImmutableMap.builder();
+ 
+         try {
+             JsonObject jsonobject = GsonHelper.parse(p_87597_);
+@@ -35,7 +_,7 @@
+                 for (JsonElement jsonelement : jsonobject.getAsJsonArray("lists")) {
+                     JsonObject jsonobject1 = jsonelement.getAsJsonObject();
+                     String s = JsonUtils.getStringOr("playerList", jsonobject1, null);
+-                    List<ResolvableProfile> list;
++                    List<ProfileResult> list;
+                     if (s != null) {
+                         JsonElement jsonelement1 = LenientJsonParser.parse(s);
+                         if (jsonelement1.isJsonArray()) {
+@@ -58,14 +_,22 @@
+         return realmsserverplayerlists;
+     }
+ 
+-    private static List<ResolvableProfile> parsePlayers(JsonArray p_350938_) {
+-        List<ResolvableProfile> list = new ArrayList<>(p_350938_.size());
++    private static List<ProfileResult> parsePlayers(JsonArray p_350938_) {
++        List<ProfileResult> list = new ArrayList<>(p_350938_.size());
++        MinecraftSessionService minecraftsessionservice = Minecraft.getInstance().getMinecraftSessionService();
+ 
+         for (JsonElement jsonelement : p_350938_) {
+             if (jsonelement.isJsonObject()) {
+                 UUID uuid = JsonUtils.getUuidOr("playerId", jsonelement.getAsJsonObject(), null);
+                 if (uuid != null && !Minecraft.getInstance().isLocalPlayer(uuid)) {
+-                    list.add(ResolvableProfile.createUnresolved(uuid));
++                    try {
++                        ProfileResult profileresult = minecraftsessionservice.fetchProfile(uuid, false);
++                        if (profileresult != null) {
++                            list.add(profileresult);
++                        }
++                    } catch (Exception exception) {
++                        LOGGER.error("Could not get name for {}", uuid, exception);
++                    }
+                 }
+             }
+         }
+@@ -73,8 +_,8 @@
+         return list;
+     }
+ 
+-    public List<ResolvableProfile> getProfileResultsFor(long p_350315_) {
+-        List<ResolvableProfile> list = this.servers.get(p_350315_);
++    public List<ProfileResult> getProfileResultsFor(long p_350315_) {
++        List<ProfileResult> list = this.servers.get(p_350315_);
+         return list != null ? list : List.of();
+     }
+ }

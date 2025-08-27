@@ -1,0 +1,20 @@
+--- a/net/minecraft/util/debugchart/DebugSampleSubscriptionTracker.java
++++ b/net/minecraft/util/debugchart/DebugSampleSubscriptionTracker.java
+@@ -33,7 +_,7 @@
+     }
+ 
+     public void subscribe(ServerPlayer p_324211_, RemoteDebugSampleType p_324355_) {
+-        if (this.playerList.isOp(p_324211_.nameAndId())) {
++        if (this.playerList.isOp(p_324211_.getGameProfile())) {
+             this.subscriptionRequestQueue.add(new DebugSampleSubscriptionTracker.SubscriptionRequest(p_324211_, p_324355_));
+         }
+     }
+@@ -59,7 +_,7 @@
+             map.entrySet()
+                 .removeIf(
+                     p_323887_ -> {
+-                        boolean flag = !this.playerList.isOp(p_323887_.getKey().nameAndId());
++                        boolean flag = !this.playerList.isOp(p_323887_.getKey().getGameProfile());
+                         DebugSampleSubscriptionTracker.SubscriptionStartedAt debugsamplesubscriptiontracker$subscriptionstartedat = p_323887_.getValue();
+                         return flag
+                             || p_324253_ > debugsamplesubscriptiontracker$subscriptionstartedat.tick() + 200

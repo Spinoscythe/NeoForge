@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/gui/screens/options/MouseSettingsScreen.java
++++ b/net/minecraft/client/gui/screens/options/MouseSettingsScreen.java
+@@ -16,12 +_,7 @@
+ 
+     private static OptionInstance<?>[] options(Options p_345546_) {
+         return new OptionInstance[]{
+-            p_345546_.sensitivity(),
+-            p_345546_.touchscreen(),
+-            p_345546_.mouseWheelSensitivity(),
+-            p_345546_.discreteMouseScroll(),
+-            p_345546_.invertMouseX(),
+-            p_345546_.invertMouseY()
++            p_345546_.sensitivity(), p_345546_.invertYMouse(), p_345546_.mouseWheelSensitivity(), p_345546_.discreteMouseScroll(), p_345546_.touchscreen()
+         };
+     }
+ 

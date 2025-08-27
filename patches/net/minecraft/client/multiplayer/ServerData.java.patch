@@ -1,10 +1,50 @@
 --- a/net/minecraft/client/multiplayer/ServerData.java
 +++ b/net/minecraft/client/multiplayer/ServerData.java
-@@ -37,6 +_,7 @@
+@@ -36,8 +_,8 @@
+     @Nullable
      private byte[] iconBytes;
      private ServerData.Type type;
+-    private int acceptedCodeOfConduct;
      private ServerData.State state = ServerData.State.INITIAL;
 +    public net.neoforged.neoforge.client.ExtendedServerListData neoForgeData = null;
  
      public ServerData(String p_105375_, String p_105376_, ServerData.Type p_295587_) {
          this.name = p_105375_;
+@@ -51,10 +_,6 @@
+         compoundtag.putString("ip", this.ip);
+         compoundtag.storeNullable("icon", ExtraCodecs.BASE64_STRING, this.iconBytes);
+         compoundtag.store(ServerData.ServerPackStatus.FIELD_CODEC, this.packStatus);
+-        if (this.acceptedCodeOfConduct != 0) {
+-            compoundtag.putInt("acceptedCodeOfConduct", this.acceptedCodeOfConduct);
+-        }
+-
+         return compoundtag;
+     }
+ 
+@@ -70,7 +_,6 @@
+         ServerData serverdata = new ServerData(p_105386_.getStringOr("name", ""), p_105386_.getStringOr("ip", ""), ServerData.Type.OTHER);
+         serverdata.setIconBytes(p_105386_.read("icon", ExtraCodecs.BASE64_STRING).orElse(null));
+         serverdata.setResourcePackStatus(p_105386_.read(ServerData.ServerPackStatus.FIELD_CODEC).orElse(ServerData.ServerPackStatus.PROMPT));
+-        serverdata.acceptedCodeOfConduct = p_105386_.getIntOr("acceptedCodeOfConduct", 0);
+         return serverdata;
+     }
+ 
+@@ -93,18 +_,6 @@
+ 
+     public ServerData.Type type() {
+         return this.type;
+-    }
+-
+-    public boolean hasAcceptedCodeOfConduct(String p_439606_) {
+-        return this.acceptedCodeOfConduct == p_439606_.hashCode();
+-    }
+-
+-    public void acceptCodeOfConduct(String p_439473_) {
+-        this.acceptedCodeOfConduct = p_439473_.hashCode();
+-    }
+-
+-    public void clearCodeOfConduct() {
+-        this.acceptedCodeOfConduct = 0;
+     }
+ 
+     public void copyNameIconFrom(ServerData p_233804_) {

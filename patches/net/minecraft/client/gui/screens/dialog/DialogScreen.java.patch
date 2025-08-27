@@ -1,0 +1,23 @@
+--- a/net/minecraft/client/gui/screens/dialog/DialogScreen.java
++++ b/net/minecraft/client/gui/screens/dialog/DialogScreen.java
+@@ -17,6 +_,7 @@
+ import net.minecraft.client.gui.layouts.LayoutElement;
+ import net.minecraft.client.gui.layouts.LinearLayout;
+ import net.minecraft.client.gui.screens.ConfirmScreen;
++import net.minecraft.client.gui.screens.PauseScreen;
+ import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.client.gui.screens.dialog.body.DialogBodyHandlers;
+ import net.minecraft.commands.Commands;
+@@ -227,9 +_,9 @@
+ 
+         private WarningScreen(Minecraft p_427476_, MutableObject<Screen> p_427235_) {
+             super(
+-                p_438741_ -> {
+-                    if (p_438741_) {
+-                        p_427476_.disconnectFromWorld(DialogScreen.DISCONNECT);
++                p_428065_ -> {
++                    if (p_428065_) {
++                        PauseScreen.disconnectFromWorld(p_427476_, DialogScreen.DISCONNECT);
+                     } else {
+                         p_427476_.setScreen(p_427235_.getValue());
+                     }

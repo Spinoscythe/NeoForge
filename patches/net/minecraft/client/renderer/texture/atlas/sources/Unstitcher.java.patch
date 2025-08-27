@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/renderer/texture/atlas/sources/Unstitcher.java
++++ b/net/minecraft/client/renderer/texture/atlas/sources/Unstitcher.java
+@@ -16,6 +_,7 @@
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.server.packs.resources.Resource;
+ import net.minecraft.server.packs.resources.ResourceManager;
++import net.minecraft.server.packs.resources.ResourceMetadata;
+ import net.minecraft.util.ExtraCodecs;
+ import net.minecraft.util.Mth;
+ import net.neoforged.api.distmarker.Dist;
+@@ -94,7 +_,7 @@
+                 int l = Mth.floor(this.region.height * d1);
+                 NativeImage nativeimage1 = new NativeImage(NativeImage.Format.RGBA, k, l, false);
+                 nativeimage.copyRect(nativeimage1, i, j, 0, 0, k, l, false, false);
+-                return new SpriteContents(this.region.sprite, new FrameSize(k, l), nativeimage1);
++                return new SpriteContents(this.region.sprite, new FrameSize(k, l), nativeimage1, ResourceMetadata.EMPTY);
+             } catch (Exception exception) {
+                 Unstitcher.LOGGER.error("Failed to unstitch region {}", this.region.sprite, exception);
+             } finally {

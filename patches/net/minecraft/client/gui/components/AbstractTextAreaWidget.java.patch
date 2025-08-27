@@ -1,0 +1,14 @@
+--- a/net/minecraft/client/gui/components/AbstractTextAreaWidget.java
++++ b/net/minecraft/client/gui/components/AbstractTextAreaWidget.java
+@@ -29,9 +_,9 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_387557_, double p_388283_, int p_387326_, boolean p_433245_) {
++    public boolean mouseClicked(double p_387557_, double p_388283_, int p_387326_) {
+         boolean flag = this.updateScrolling(p_387557_, p_388283_, p_387326_);
+-        return super.mouseClicked(p_387557_, p_388283_, p_387326_, p_433245_) || flag;
++        return super.mouseClicked(p_387557_, p_388283_, p_387326_) || flag;
+     }
+ 
+     @Override

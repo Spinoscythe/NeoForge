@@ -1,0 +1,37 @@
+--- a/net/minecraft/world/entity/monster/Strider.java
++++ b/net/minecraft/world/entity/monster/Strider.java
+@@ -106,7 +_,7 @@
+ 
+     @Override
+     public void onSyncedDataUpdated(EntityDataAccessor<?> p_33900_) {
+-        if (DATA_BOOST_TIME.equals(p_33900_) && this.level().isClientSide()) {
++        if (DATA_BOOST_TIME.equals(p_33900_) && this.level().isClientSide) {
+             this.steering.onSynced();
+         }
+ 
+@@ -327,7 +_,6 @@
+         return Animal.createAnimalAttributes().add(Attributes.MOVEMENT_SPEED, 0.175F);
+     }
+ 
+-    @Nullable
+     @Override
+     protected SoundEvent getAmbientSound() {
+         return !this.isPanicking() && !this.isBeingTempted() ? SoundEvents.STRIDER_AMBIENT : null;
+@@ -386,7 +_,7 @@
+     public InteractionResult mobInteract(Player p_33910_, InteractionHand p_33911_) {
+         boolean flag = this.isFood(p_33910_.getItemInHand(p_33911_));
+         if (!flag && this.isSaddled() && !this.isVehicle() && !p_33910_.isSecondaryUseActive()) {
+-            if (!this.level().isClientSide()) {
++            if (!this.level().isClientSide) {
+                 p_33910_.startRiding(this);
+             }
+ 
+@@ -457,7 +_,7 @@
+     private SpawnGroupData spawnJockey(ServerLevelAccessor p_33882_, DifficultyInstance p_33883_, Mob p_33884_, @Nullable SpawnGroupData p_33885_) {
+         p_33884_.snapTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
+         p_33884_.finalizeSpawn(p_33882_, p_33883_, EntitySpawnReason.JOCKEY, p_33885_);
+-        p_33884_.startRiding(this, true, false);
++        p_33884_.startRiding(this, true);
+         return new AgeableMob.AgeableMobGroupData(0.0F);
+     }
+ 

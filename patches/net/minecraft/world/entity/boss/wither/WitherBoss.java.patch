@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/net/minecraft/world/entity/boss/wither/WitherBoss.java
+@@ -153,7 +_,7 @@
+     @Override
+     public void aiStep() {
+         Vec3 vec3 = this.getDeltaMovement().multiply(1.0, 0.6, 1.0);
+-        if (!this.level().isClientSide() && this.getAlternativeTarget(0) > 0) {
++        if (!this.level().isClientSide && this.getAlternativeTarget(0) > 0) {
+             Entity entity = this.level().getEntity(this.getAlternativeTarget(0));
+             if (entity != null) {
+                 double d0 = vec3.y;
 @@ -321,7 +_,7 @@
  
              if (this.destroyBlocksTick > 0) {
@@ -29,11 +38,13 @@
      public static boolean canDestroy(BlockState p_31492_) {
          return !p_31492_.isAir() && !p_31492_.is(BlockTags.WITHER_IMMUNE);
      }
-@@ -490,6 +_,7 @@
+@@ -490,7 +_,8 @@
  
      @Override
      public void checkDespawn() {
+-        if (this.level().getDifficulty() == Difficulty.PEACEFUL && !this.getType().isAllowedInPeaceful()) {
 +        if (net.neoforged.neoforge.event.EventHooks.checkMobDespawn(this)) return;
-         if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
++        if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
              this.discard();
          } else {
+             this.noActionTime = 0;

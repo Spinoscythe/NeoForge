@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/BarrelBlock.java
++++ b/net/minecraft/world/level/block/BarrelBlock.java
+@@ -75,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_49065_, Level p_49066_, BlockPos p_49067_, Direction p_434585_) {
++    protected int getAnalogOutputSignal(BlockState p_49065_, Level p_49066_, BlockPos p_49067_) {
+         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(p_49066_.getBlockEntity(p_49067_));
+     }
+ 

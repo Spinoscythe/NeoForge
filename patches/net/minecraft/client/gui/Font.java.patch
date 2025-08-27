@@ -1,20 +1,283 @@
 --- a/net/minecraft/client/gui/Font.java
 +++ b/net/minecraft/client/gui/Font.java
-@@ -43,6 +_,8 @@
-     private final Function<ResourceLocation, FontSet> fonts;
-     final boolean filterFishyGlyphs;
+@@ -7,19 +_,20 @@
+ import com.mojang.blaze3d.vertex.VertexConsumer;
+ import java.util.ArrayList;
+ import java.util.List;
++import java.util.function.Function;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.StringSplitter;
+-import net.minecraft.client.gui.font.TextRenderable;
++import net.minecraft.client.gui.font.FontSet;
+ import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+-import net.minecraft.client.gui.font.glyphs.EffectGlyph;
++import net.minecraft.client.gui.font.glyphs.EmptyGlyph;
+ import net.minecraft.client.gui.navigation.ScreenRectangle;
+ import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.locale.Language;
+ import net.minecraft.network.chat.Component;
+-import net.minecraft.network.chat.FontDescription;
+ import net.minecraft.network.chat.FormattedText;
+ import net.minecraft.network.chat.Style;
+ import net.minecraft.network.chat.TextColor;
++import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.util.ARGB;
+ import net.minecraft.util.FormattedCharSequence;
+ import net.minecraft.util.FormattedCharSink;
+@@ -38,19 +_,23 @@
+     public static final float SHADOW_DEPTH = 0.03F;
+     public static final int NO_SHADOW = 0;
+     public final int lineHeight = 9;
+-    private final RandomSource random = RandomSource.create();
+-    final Font.Provider provider;
++    public final RandomSource random = RandomSource.create();
++    private final Function<ResourceLocation, FontSet> fonts;
++    final boolean filterFishyGlyphs;
      private final StringSplitter splitter;
 +    /** Neo: enables linear filtering on text */
 +    public boolean enableTextTextureLinearFiltering = false;
  
-     public Font(Function<ResourceLocation, FontSet> p_243253_, boolean p_243245_) {
-         this.fonts = p_243253_;
-@@ -219,6 +_,8 @@
-     public StringSplitter getSplitter() {
+-    public Font(Font.Provider p_433313_) {
+-        this.provider = p_433313_;
++    public Font(Function<ResourceLocation, FontSet> p_243253_, boolean p_243245_) {
++        this.fonts = p_243253_;
++        this.filterFishyGlyphs = p_243245_;
+         this.splitter = new StringSplitter(
+-            (p_438720_, p_438721_) -> this.getGlyphSource(p_438721_.getFont()).getGlyph(p_438720_).info().getAdvance(p_438721_.isBold())
++            (p_92722_, p_92723_) -> this.getFontSet(p_92723_.getFont()).getGlyphInfo(p_92722_, this.filterFishyGlyphs).getAdvance(p_92723_.isBold())
+         );
+     }
+ 
+-    private GlyphSource getGlyphSource(FontDescription p_436593_) {
+-        return this.provider.glyphs(p_436593_);
++    FontSet getFontSet(ResourceLocation p_92864_) {
++        return this.fonts.apply(p_92864_);
+     }
+ 
+     public String bidirectionalShaping(String p_92802_) {
+@@ -129,13 +_,14 @@
+                     float[] afloat = new float[]{p_168647_};
+                     int k = i;
+                     int l = j;
+-                    p_168646_.accept((p_438717_, p_438718_, p_438719_) -> {
+-                        boolean flag = p_438718_.isBold();
+-                        BakedGlyph bakedglyph = this.getGlyph(p_438719_, p_438718_);
+-                        font$preparedtextbuilder.x = afloat[0] + k * bakedglyph.info().getShadowOffset();
+-                        font$preparedtextbuilder.y = p_168648_ + l * bakedglyph.info().getShadowOffset();
+-                        afloat[0] += bakedglyph.info().getAdvance(flag);
+-                        return font$preparedtextbuilder.accept(p_438717_, p_438718_.withColor(p_168650_), bakedglyph);
++                    p_168646_.accept((p_168661_, p_168662_, p_168663_) -> {
++                        boolean flag = p_168662_.isBold();
++                        FontSet fontset = this.getFontSet(p_168662_.getFont());
++                        GlyphInfo glyphinfo = fontset.getGlyphInfo(p_168663_, this.filterFishyGlyphs);
++                        font$preparedtextbuilder.x = afloat[0] + k * glyphinfo.getShadowOffset();
++                        font$preparedtextbuilder.y = p_168648_ + l * glyphinfo.getShadowOffset();
++                        afloat[0] += glyphinfo.getAdvance(flag);
++                        return font$preparedtextbuilder.accept(p_168661_, p_168662_.withColor(p_168650_), p_168663_);
+                     });
+                 }
+             }
+@@ -143,8 +_,8 @@
+ 
+         Font.GlyphVisitor font$glyphvisitor = Font.GlyphVisitor.forMultiBufferSource(p_168652_, p_254170_, Font.DisplayMode.NORMAL, p_168653_);
+ 
+-        for (TextRenderable textrenderable : font$preparedtextbuilder.glyphs) {
+-            font$glyphvisitor.acceptGlyph(textrenderable);
++        for (BakedGlyph.GlyphInstance bakedglyph$glyphinstance : font$preparedtextbuilder.glyphs) {
++            font$glyphvisitor.acceptGlyph(bakedglyph$glyphinstance);
+         }
+ 
+         Font.PreparedTextBuilder font$preparedtextbuilder1 = new Font.PreparedTextBuilder(p_168647_, p_168648_, p_168649_, false);
+@@ -152,17 +_,6 @@
+         font$preparedtextbuilder1.visit(Font.GlyphVisitor.forMultiBufferSource(p_168652_, p_254170_, Font.DisplayMode.POLYGON_OFFSET, p_168653_));
+     }
+ 
+-    BakedGlyph getGlyph(int p_435358_, Style p_433792_) {
+-        GlyphSource glyphsource = this.getGlyphSource(p_433792_.getFont());
+-        BakedGlyph bakedglyph = glyphsource.getGlyph(p_435358_);
+-        if (p_433792_.isObfuscated() && p_435358_ != 32) {
+-            int i = Mth.ceil(bakedglyph.info().getAdvance(false));
+-            bakedglyph = glyphsource.getRandomGlyph(this.random, i);
+-        }
+-
+-        return bakedglyph;
+-    }
+-
+     public Font.PreparedText prepareText(String p_425644_, float p_425748_, float p_425936_, int p_425702_, boolean p_426031_, int p_425535_) {
+         if (this.isBidirectional()) {
+             p_425644_ = this.bidirectionalShaping(p_425644_);
+@@ -227,6 +_,8 @@
          return this.splitter;
      }
-+
-+    @Override public Font self() { return this; }
  
++    @Override public Font self() { return this; }
++
      @OnlyIn(Dist.CLIENT)
      public static enum DisplayMode {
+         NORMAL,
+@@ -241,25 +_,23 @@
+         ) {
+             return new Font.GlyphVisitor() {
+                 @Override
+-                public void acceptGlyph(TextRenderable p_440080_) {
+-                    this.render(p_440080_);
++                public void acceptGlyph(BakedGlyph.GlyphInstance p_425885_) {
++                    BakedGlyph bakedglyph = p_425885_.glyph();
++                    VertexConsumer vertexconsumer = p_426098_.getBuffer(bakedglyph.renderType(p_425933_));
++                    bakedglyph.renderChar(p_425885_, p_425574_, vertexconsumer, p_426219_, false);
+                 }
+ 
+                 @Override
+-                public void acceptEffect(TextRenderable p_439031_) {
+-                    this.render(p_439031_);
+-                }
+-
+-                private void render(TextRenderable p_440295_) {
+-                    VertexConsumer vertexconsumer = p_426098_.getBuffer(p_440295_.renderType(p_425933_));
+-                    p_440295_.render(p_425574_, vertexconsumer, p_426219_, false);
++                public void acceptEffect(BakedGlyph p_425860_, BakedGlyph.Effect p_425865_) {
++                    VertexConsumer vertexconsumer = p_426098_.getBuffer(p_425860_.renderType(p_425933_));
++                    p_425860_.renderEffect(p_425865_, p_425574_, vertexconsumer, p_426219_, false);
+                 }
+             };
+         }
+ 
+-        void acceptGlyph(TextRenderable p_440244_);
++        void acceptGlyph(BakedGlyph.GlyphInstance p_426191_);
+ 
+-        void acceptEffect(TextRenderable p_439829_);
++        void acceptEffect(BakedGlyph p_425681_, BakedGlyph.Effect p_426030_);
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+@@ -285,9 +_,9 @@
+         private float backgroundTop = Float.MAX_VALUE;
+         private float backgroundRight = -Float.MAX_VALUE;
+         private float backgroundBottom = -Float.MAX_VALUE;
+-        final List<TextRenderable> glyphs = new ArrayList<>();
++        final List<BakedGlyph.GlyphInstance> glyphs = new ArrayList<>();
+         @Nullable
+-        private List<TextRenderable> effects;
++        private List<BakedGlyph.Effect> effects;
+ 
+         public PreparedTextBuilder(float p_426009_, float p_426190_, int p_425840_, boolean p_425870_) {
+             this(p_426009_, p_426190_, p_425840_, 0, p_425870_);
+@@ -319,48 +_,44 @@
+             }
+         }
+ 
+-        private void addGlyph(TextRenderable p_440024_) {
+-            this.glyphs.add(p_440024_);
+-            this.markSize(p_440024_.left(), p_440024_.top(), p_440024_.right(), p_440024_.bottom());
++        private void addGlyph(BakedGlyph.GlyphInstance p_425798_) {
++            this.glyphs.add(p_425798_);
++            this.markSize(p_425798_.left(), p_425798_.top(), p_425798_.right(), p_425798_.bottom());
+         }
+ 
+-        private void addEffect(TextRenderable p_438987_) {
++        private void addEffect(BakedGlyph.Effect p_425881_) {
+             if (this.effects == null) {
+                 this.effects = new ArrayList<>();
+             }
+ 
+-            this.effects.add(p_438987_);
+-            this.markSize(p_438987_.left(), p_438987_.top(), p_438987_.right(), p_438987_.bottom());
++            this.effects.add(p_425881_);
++            this.markSize(p_425881_.left(), p_425881_.top(), p_425881_.right(), p_425881_.bottom());
+         }
+ 
+         @Override
+         public boolean accept(int p_425893_, Style p_426323_, int p_426324_) {
+-            BakedGlyph bakedglyph = Font.this.getGlyph(p_426324_, p_426323_);
+-            return this.accept(p_425893_, p_426323_, bakedglyph);
+-        }
+-
+-        public boolean accept(int p_435420_, Style p_433864_, BakedGlyph p_440301_) {
+-            GlyphInfo glyphinfo = p_440301_.info();
+-            boolean flag = p_433864_.isBold();
+-            TextColor textcolor = p_433864_.getColor();
++            FontSet fontset = Font.this.getFontSet(p_426323_.getFont());
++            GlyphInfo glyphinfo = fontset.getGlyphInfo(p_426324_, Font.this.filterFishyGlyphs);
++            BakedGlyph bakedglyph = p_426323_.isObfuscated() && p_426324_ != 32 ? fontset.getRandomGlyph(glyphinfo) : fontset.getGlyph(p_426324_);
++            boolean flag = p_426323_.isBold();
++            TextColor textcolor = p_426323_.getColor();
+             int i = this.getTextColor(textcolor);
+-            int j = this.getShadowColor(p_433864_, i);
++            int j = this.getShadowColor(p_426323_, i);
+             float f = glyphinfo.getAdvance(flag);
+-            float f1 = p_435420_ == 0 ? this.x - 1.0F : this.x;
++            float f1 = p_425893_ == 0 ? this.x - 1.0F : this.x;
+             float f2 = glyphinfo.getShadowOffset();
+-            float f3 = flag ? glyphinfo.getBoldOffset() : 0.0F;
+-            TextRenderable textrenderable = p_440301_.createGlyph(this.x, this.y, i, j, p_433864_, f3, f2);
+-            if (textrenderable != null) {
+-                this.addGlyph(textrenderable);
++            if (!(bakedglyph instanceof EmptyGlyph)) {
++                float f3 = flag ? glyphinfo.getBoldOffset() : 0.0F;
++                this.addGlyph(new BakedGlyph.GlyphInstance(this.x, this.y, i, j, bakedglyph, p_426323_, f3, f2));
+             }
+ 
+             this.markBackground(this.x, this.y, f);
+-            if (p_433864_.isStrikethrough()) {
+-                this.addEffect(Font.this.provider.effect().createEffect(f1, this.y + 4.5F - 1.0F, this.x + f, this.y + 4.5F, 0.01F, i, j, f2));
++            if (p_426323_.isStrikethrough()) {
++                this.addEffect(new BakedGlyph.Effect(f1, this.y + 4.5F - 1.0F, this.x + f, this.y + 4.5F, 0.01F, i, j, f2));
+             }
+ 
+-            if (p_433864_.isUnderlined()) {
+-                this.addEffect(Font.this.provider.effect().createEffect(f1, this.y + 9.0F - 1.0F, this.x + f, this.y + 9.0F, 0.01F, i, j, f2));
++            if (p_426323_.isUnderlined()) {
++                this.addEffect(new BakedGlyph.Effect(f1, this.y + 9.0F - 1.0F, this.x + f, this.y + 9.0F, 0.01F, i, j, f2));
+             }
+ 
+             this.x += f;
+@@ -369,23 +_,26 @@
+ 
+         @Override
+         public void visit(Font.GlyphVisitor p_425967_) {
++            BakedGlyph bakedglyph = null;
+             if (ARGB.alpha(this.backgroundColor) != 0) {
+-                p_425967_.acceptEffect(
+-                    Font.this.provider
+-                        .effect()
+-                        .createEffect(
+-                            this.backgroundLeft, this.backgroundTop, this.backgroundRight, this.backgroundBottom, -0.01F, this.backgroundColor, 0, 0.0F
+-                        )
++                BakedGlyph.Effect bakedglyph$effect = new BakedGlyph.Effect(
++                    this.backgroundLeft, this.backgroundTop, this.backgroundRight, this.backgroundBottom, -0.01F, this.backgroundColor
+                 );
++                bakedglyph = Font.this.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
++                p_425967_.acceptEffect(bakedglyph, bakedglyph$effect);
+             }
+ 
+-            for (TextRenderable textrenderable : this.glyphs) {
+-                p_425967_.acceptGlyph(textrenderable);
++            for (BakedGlyph.GlyphInstance bakedglyph$glyphinstance : this.glyphs) {
++                p_425967_.acceptGlyph(bakedglyph$glyphinstance);
+             }
+ 
+             if (this.effects != null) {
+-                for (TextRenderable textrenderable1 : this.effects) {
+-                    p_425967_.acceptEffect(textrenderable1);
++                if (bakedglyph == null) {
++                    bakedglyph = Font.this.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
++                }
++
++                for (BakedGlyph.Effect bakedglyph$effect1 : this.effects) {
++                    p_425967_.acceptEffect(bakedglyph, bakedglyph$effect1);
+                 }
+             }
+         }
+@@ -424,12 +_,5 @@
+                 return null;
+             }
+         }
+-    }
+-
+-    @OnlyIn(Dist.CLIENT)
+-    public interface Provider {
+-        GlyphSource glyphs(FontDescription p_436671_);
+-
+-        EffectGlyph effect();
+     }
+ }

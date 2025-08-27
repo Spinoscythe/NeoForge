@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/model/ShieldModel.java
++++ b/net/minecraft/client/model/ShieldModel.java
+@@ -7,12 +_,11 @@
+ import net.minecraft.client.model.geom.builders.MeshDefinition;
+ import net.minecraft.client.model.geom.builders.PartDefinition;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.util.Unit;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class ShieldModel extends Model<Unit> {
++public class ShieldModel extends Model {
+     private static final String PLATE = "plate";
+     private static final String HANDLE = "handle";
+     private static final int SHIELD_WIDTH = 10;

@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/DaylightDetectorBlock.java
++++ b/net/minecraft/world/level/block/DaylightDetectorBlock.java
+@@ -79,7 +_,7 @@
+         if (!p_52394_.mayBuild()) {
+             return super.useWithoutItem(p_52391_, p_52392_, p_52393_, p_52394_, p_52396_);
+         } else {
+-            if (!p_52392_.isClientSide()) {
++            if (!p_52392_.isClientSide) {
+                 BlockState blockstate = p_52391_.cycle(INVERTED);
+                 p_52392_.setBlock(p_52393_, blockstate, 2);
+                 p_52392_.gameEvent(GameEvent.BLOCK_CHANGE, p_52393_, GameEvent.Context.of(p_52394_, blockstate));
+@@ -103,7 +_,7 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153109_, BlockState p_153110_, BlockEntityType<T> p_153111_) {
+-        return !p_153109_.isClientSide() && p_153109_.dimensionType().hasSkyLight()
++        return !p_153109_.isClientSide && p_153109_.dimensionType().hasSkyLight()
+             ? createTickerHelper(p_153111_, BlockEntityType.DAYLIGHT_DETECTOR, DaylightDetectorBlock::tickEntity)
+             : null;
+     }

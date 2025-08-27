@@ -1,6 +1,14 @@
 --- a/net/minecraft/world/level/block/BaseFireBlock.java
 +++ b/net/minecraft/world/level/block/BaseFireBlock.java
-@@ -155,6 +_,7 @@
+@@ -131,7 +_,6 @@
+ 
+     @Override
+     protected void entityInside(BlockState p_49260_, Level p_49261_, BlockPos p_49262_, Entity p_49263_, InsideBlockEffectApplier p_404795_) {
+-        p_404795_.apply(InsideBlockEffectType.CLEAR_FREEZE);
+         p_404795_.apply(InsideBlockEffectType.FIRE_IGNITE);
+         p_404795_.runAfter(InsideBlockEffectType.FIRE_IGNITE, p_405041_ -> p_405041_.hurt(p_405041_.level().damageSources().inFire(), this.fireDamage));
+     }
+@@ -156,6 +_,7 @@
          if (!p_49282_.is(p_49279_.getBlock())) {
              if (inPortalDimension(p_49280_)) {
                  Optional<PortalShape> optional = PortalShape.findEmptyPortalShape(p_49280_, p_49281_, Direction.Axis.X);
@@ -8,7 +16,7 @@
                  if (optional.isPresent()) {
                      optional.get().createPortalBlocks(p_49280_);
                      return;
-@@ -197,7 +_,7 @@
+@@ -198,7 +_,7 @@
              boolean flag = false;
  
              for (Direction direction : Direction.values()) {

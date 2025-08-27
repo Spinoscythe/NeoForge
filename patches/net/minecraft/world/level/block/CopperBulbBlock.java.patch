@@ -1,0 +1,19 @@
+--- a/net/minecraft/world/level/block/CopperBulbBlock.java
++++ b/net/minecraft/world/level/block/CopperBulbBlock.java
+@@ -3,7 +_,6 @@
+ import com.mojang.serialization.MapCodec;
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+-import net.minecraft.core.Direction;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.sounds.SoundSource;
+@@ -72,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_308938_, Level p_309149_, BlockPos p_309114_, Direction p_434085_) {
++    protected int getAnalogOutputSignal(BlockState p_308938_, Level p_309149_, BlockPos p_309114_) {
+         return p_309149_.getBlockState(p_309114_).getValue(LIT) ? 15 : 0;
+     }
+ }

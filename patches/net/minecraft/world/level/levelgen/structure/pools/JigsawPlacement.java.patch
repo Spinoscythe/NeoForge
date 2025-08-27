@@ -1,0 +1,39 @@
+--- a/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java
++++ b/net/minecraft/world/level/levelgen/structure/pools/JigsawPlacement.java
+@@ -55,7 +_,7 @@
+         BlockPos p_227243_,
+         boolean p_227244_,
+         Optional<Heightmap.Types> p_227245_,
+-        JigsawStructure.MaxDistance p_434474_,
++        int p_227246_,
+         PoolAliasLookup p_307522_,
+         DimensionPadding p_348489_,
+         LiquidSettings p_352161_
+@@ -131,12 +_,12 @@
+                             list.add(poolelementstructurepiece);
+                             if (p_227242_ > 0) {
+                                 AABB aabb = new AABB(
+-                                    i - p_434474_.horizontal(),
+-                                    Math.max(i1 - p_434474_.vertical(), levelheightaccessor.getMinY() + p_348489_.bottom()),
+-                                    j - p_434474_.horizontal(),
+-                                    i + p_434474_.horizontal() + 1,
+-                                    Math.min(i1 + p_434474_.vertical() + 1, levelheightaccessor.getMaxY() + 1 - p_348489_.top()),
+-                                    j + p_434474_.horizontal() + 1
++                                    i - p_227246_,
++                                    Math.max(i1 - p_227246_, levelheightaccessor.getMinY() + p_348489_.bottom()),
++                                    j - p_227246_,
++                                    i + p_227246_ + 1,
++                                    Math.min(i1 + p_227246_ + 1, levelheightaccessor.getMaxY() + 1 - p_348489_.top()),
++                                    j + p_227246_ + 1
+                                 );
+                                 VoxelShape voxelshape = Shapes.join(Shapes.create(aabb), Shapes.create(AABB.of(boundingbox)), BooleanOp.ONLY_FIRST);
+                                 addPieces(
+@@ -249,7 +_,7 @@
+             p_227208_,
+             false,
+             Optional.empty(),
+-            new JigsawStructure.MaxDistance(128),
++            128,
+             PoolAliasLookup.EMPTY,
+             JigsawStructure.DEFAULT_DIMENSION_PADDING,
+             JigsawStructure.DEFAULT_LIQUID_SETTINGS

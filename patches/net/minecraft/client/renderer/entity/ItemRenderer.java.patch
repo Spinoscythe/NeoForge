@@ -1,6 +1,55 @@
 --- a/net/minecraft/client/renderer/entity/ItemRenderer.java
 +++ b/net/minecraft/client/renderer/entity/ItemRenderer.java
-@@ -120,7 +_,7 @@
+@@ -11,17 +_,15 @@
+ import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+ import net.minecraft.client.renderer.Sheets;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.block.model.BakedQuad;
+ import net.minecraft.client.renderer.item.ItemModelResolver;
+ import net.minecraft.client.renderer.item.ItemStackRenderState;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.util.ARGB;
+-import net.minecraft.world.entity.ItemOwner;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.Level;
+-import net.minecraft.world.phys.AABB;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+@@ -68,6 +_,12 @@
+         renderQuadList(p_360423_, vertexconsumer, p_404702_, p_386517_, p_361265_, p_364771_);
+     }
+ 
++    public static VertexConsumer getArmorFoilBuffer(MultiBufferSource p_115185_, RenderType p_115186_, boolean p_115187_) {
++        return p_115187_
++            ? VertexMultiConsumer.create(p_115185_.getBuffer(RenderType.armorEntityGlint()), p_115185_.getBuffer(p_115186_))
++            : p_115185_.getBuffer(p_115186_);
++    }
++
+     private static VertexConsumer getSpecialFoilBuffer(MultiBufferSource p_418260_, RenderType p_418287_, PoseStack.Pose p_418129_) {
+         return VertexMultiConsumer.create(
+             new SheetedDecalTextureGenerator(
+@@ -87,16 +_,6 @@
+         }
+     }
+ 
+-    public static List<RenderType> getFoilRenderTypes(RenderType p_433183_, boolean p_435513_, boolean p_434766_) {
+-        if (p_434766_) {
+-            return useTransparentGlint(p_433183_)
+-                ? List.of(p_433183_, RenderType.glintTranslucent())
+-                : List.of(p_433183_, p_435513_ ? RenderType.glint() : RenderType.entityGlint());
+-        } else {
+-            return List.of(p_433183_);
+-        }
+-    }
+-
+     private static boolean useTransparentGlint(RenderType p_418495_) {
+         return Minecraft.useShaderTransparency() && p_418495_ == Sheets.translucentItemSheet();
+     }
+@@ -126,31 +_,35 @@
                  f3 = 1.0F;
              }
  
@@ -9,3 +58,50 @@
          }
      }
  
+-    public AABB getBoundingBox(ItemStack p_437316_, ItemDisplayContext p_437206_, @Nullable Level p_437292_, @Nullable ItemOwner p_437351_, int p_437230_) {
+-        this.resolver.updateForTopItem(this.scratchItemStackRenderState, p_437316_, p_437206_, p_437292_, p_437351_, p_437230_);
+-        return this.scratchItemStackRenderState.getModelBoundingBox();
++    public void renderStatic(
++        ItemStack p_270761_,
++        ItemDisplayContext p_270648_,
++        int p_270410_,
++        int p_270894_,
++        PoseStack p_270430_,
++        MultiBufferSource p_270457_,
++        @Nullable Level p_270149_,
++        int p_270509_
++    ) {
++        this.renderStatic(null, p_270761_, p_270648_, p_270430_, p_270457_, p_270149_, p_270410_, p_270894_, p_270509_);
+     }
+ 
+-    public void renderUpwardsFrom(
+-        @Nullable ItemOwner p_439443_,
+-        ItemStack p_439783_,
+-        ItemDisplayContext p_439306_,
+-        PoseStack p_439233_,
+-        SubmitNodeCollector p_440566_,
+-        @Nullable Level p_439696_,
+-        int p_439933_,
+-        int p_439790_,
+-        int p_440482_
++    public void renderStatic(
++        @Nullable LivingEntity p_270101_,
++        ItemStack p_270637_,
++        ItemDisplayContext p_270437_,
++        PoseStack p_270230_,
++        MultiBufferSource p_270411_,
++        @Nullable Level p_270641_,
++        int p_270595_,
++        int p_270927_,
++        int p_270845_
+     ) {
+-        ItemStackRenderState itemstackrenderstate = new ItemStackRenderState();
+-        this.resolver.updateForTopItem(itemstackrenderstate, p_439783_, p_439306_, p_439696_, p_439443_, p_440482_);
+-        AABB aabb = itemstackrenderstate.getModelBoundingBox();
+-        double d0 = -aabb.minY;
+-        p_439233_.translate(0.0, d0, 0.0);
+-        itemstackrenderstate.submit(p_439233_, p_440566_, p_439933_, p_439790_, 0);
++        this.resolver.updateForTopItem(this.scratchItemStackRenderState, p_270637_, p_270437_, p_270641_, p_270101_, p_270845_);
++        this.scratchItemStackRenderState.render(p_270230_, p_270411_, p_270595_, p_270927_);
+     }
+ }

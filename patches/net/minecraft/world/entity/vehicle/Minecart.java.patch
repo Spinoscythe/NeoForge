@@ -1,11 +1,34 @@
 --- a/net/minecraft/world/entity/vehicle/Minecart.java
 +++ b/net/minecraft/world/entity/vehicle/Minecart.java
-@@ -22,6 +_,8 @@
+@@ -22,9 +_,11 @@
  
      @Override
      public InteractionResult interact(Player p_38483_, InteractionHand p_38484_) {
+-        if (!p_38483_.isSecondaryUseActive() && !this.isVehicle() && (this.level().isClientSide() || p_38483_.startRiding(this))) {
 +        InteractionResult ret = super.interact(p_38483_, p_38484_);
 +        if (ret.consumesAction()) return ret;
-         if (!p_38483_.isSecondaryUseActive() && !this.isVehicle() && (this.level().isClientSide || p_38483_.startRiding(this))) {
++        if (!p_38483_.isSecondaryUseActive() && !this.isVehicle() && (this.level().isClientSide || p_38483_.startRiding(this))) {
              this.playerRotationOffset = this.rotationOffset;
-             if (!this.level().isClientSide) {
+-            if (!this.level().isClientSide()) {
++            if (!this.level().isClientSide) {
+                 return (InteractionResult)(p_38483_.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS);
+             } else {
+                 return InteractionResult.SUCCESS;
+@@ -71,7 +_,7 @@
+         Vec3 vec3 = this.position();
+         super.tick();
+         double d1 = (this.getYRot() - d0) % 360.0;
+-        if (this.level().isClientSide() && vec3.distanceTo(this.position()) > 0.01) {
++        if (this.level().isClientSide && vec3.distanceTo(this.position()) > 0.01) {
+             this.rotationOffset += (float)d1;
+             this.rotationOffset %= 360.0F;
+         }
+@@ -80,7 +_,7 @@
+     @Override
+     protected void positionRider(Entity p_361111_, Entity.MoveFunction p_365490_) {
+         super.positionRider(p_361111_, p_365490_);
+-        if (this.level().isClientSide() && p_361111_ instanceof Player player && player.shouldRotateWithMinecart() && useExperimentalMovement(this.level())) {
++        if (this.level().isClientSide && p_361111_ instanceof Player player && player.shouldRotateWithMinecart() && useExperimentalMovement(this.level())) {
+             float f = (float)Mth.rotLerp(0.5, (double)this.playerRotationOffset, (double)this.rotationOffset);
+             player.setYRot(player.getYRot() - (f - this.playerRotationOffset));
+             this.playerRotationOffset = f;

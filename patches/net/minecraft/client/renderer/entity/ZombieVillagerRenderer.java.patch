@@ -1,0 +1,28 @@
+--- a/net/minecraft/client/renderer/entity/ZombieVillagerRenderer.java
++++ b/net/minecraft/client/renderer/entity/ZombieVillagerRenderer.java
+@@ -27,20 +_,14 @@
+         this.addLayer(
+             new HumanoidArmorLayer<>(
+                 this,
+-                ArmorModelSet.bake(ModelLayers.ZOMBIE_VILLAGER_ARMOR, p_174463_.getModelSet(), ZombieVillagerModel::new),
+-                ArmorModelSet.bake(ModelLayers.ZOMBIE_VILLAGER_BABY_ARMOR, p_174463_.getModelSet(), ZombieVillagerModel::new),
++                new ZombieVillagerModel(p_174463_.bakeLayer(ModelLayers.ZOMBIE_VILLAGER_INNER_ARMOR)),
++                new ZombieVillagerModel(p_174463_.bakeLayer(ModelLayers.ZOMBIE_VILLAGER_OUTER_ARMOR)),
++                new ZombieVillagerModel(p_174463_.bakeLayer(ModelLayers.ZOMBIE_VILLAGER_BABY_INNER_ARMOR)),
++                new ZombieVillagerModel(p_174463_.bakeLayer(ModelLayers.ZOMBIE_VILLAGER_BABY_OUTER_ARMOR)),
+                 p_174463_.getEquipmentRenderer()
+             )
+         );
+-        this.addLayer(
+-            new VillagerProfessionLayer<>(
+-                this,
+-                p_174463_.getResourceManager(),
+-                "zombie_villager",
+-                new ZombieVillagerModel<>(p_174463_.bakeLayer(ModelLayers.ZOMBIE_VILLAGER_NO_HAT)),
+-                new ZombieVillagerModel<>(p_174463_.bakeLayer(ModelLayers.ZOMBIE_VILLAGER_BABY_NO_HAT))
+-            )
+-        );
++        this.addLayer(new VillagerProfessionLayer<>(this, p_174463_.getResourceManager(), "zombie_villager"));
+     }
+ 
+     public ResourceLocation getTextureLocation(ZombieVillagerRenderState p_363256_) {

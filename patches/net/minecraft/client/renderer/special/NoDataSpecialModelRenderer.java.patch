@@ -1,0 +1,39 @@
+--- a/net/minecraft/client/renderer/special/NoDataSpecialModelRenderer.java
++++ b/net/minecraft/client/renderer/special/NoDataSpecialModelRenderer.java
+@@ -2,7 +_,7 @@
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import javax.annotation.Nullable;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.minecraft.world.item.ItemStack;
+ import net.neoforged.api.distmarker.Dist;
+@@ -15,17 +_,17 @@
+         return null;
+     }
+ 
+-    default void submit(
+-        @Nullable Void p_439267_,
+-        ItemDisplayContext p_440665_,
+-        PoseStack p_440367_,
+-        SubmitNodeCollector p_439017_,
+-        int p_440170_,
+-        int p_439794_,
+-        boolean p_439778_
++    default void render(
++        @Nullable Void p_388741_,
++        ItemDisplayContext p_388330_,
++        PoseStack p_386566_,
++        MultiBufferSource p_387064_,
++        int p_386544_,
++        int p_388169_,
++        boolean p_387813_
+     ) {
+-        this.submit(p_440665_, p_440367_, p_439017_, p_440170_, p_439794_, p_439778_);
++        this.render(p_388330_, p_386566_, p_387064_, p_386544_, p_388169_, p_387813_);
+     }
+ 
+-    void submit(ItemDisplayContext p_388455_, PoseStack p_387697_, SubmitNodeCollector p_439580_, int p_388874_, int p_388252_, boolean p_387131_);
++    void render(ItemDisplayContext p_388455_, PoseStack p_387697_, MultiBufferSource p_386694_, int p_388874_, int p_388252_, boolean p_387131_);
+ }

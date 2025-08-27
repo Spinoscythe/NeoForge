@@ -1,0 +1,92 @@
+--- a/net/minecraft/util/NullOps.java
++++ b/net/minecraft/util/NullOps.java
+@@ -15,26 +_,9 @@
+ import java.util.stream.IntStream;
+ import java.util.stream.LongStream;
+ import java.util.stream.Stream;
+-import javax.annotation.Nullable;
+ 
+ public class NullOps implements DynamicOps<Unit> {
+     public static final NullOps INSTANCE = new NullOps();
+-    private static final MapLike<Unit> EMPTY_MAP = new MapLike<Unit>() {
+-        @Nullable
+-        public Unit get(Unit p_434201_) {
+-            return null;
+-        }
+-
+-        @Nullable
+-        public Unit get(String p_435270_) {
+-            return null;
+-        }
+-
+-        @Override
+-        public Stream<Pair<Unit, Unit>> entries() {
+-            return Stream.empty();
+-        }
+-    };
+ 
+     private NullOps() {
+     }
+@@ -92,15 +_,15 @@
+     }
+ 
+     public DataResult<Number> getNumberValue(Unit p_340886_) {
+-        return DataResult.success(0);
++        return DataResult.error(() -> "Not a number");
+     }
+ 
+     public DataResult<Boolean> getBooleanValue(Unit p_341106_) {
+-        return DataResult.success(false);
++        return DataResult.error(() -> "Not a boolean");
+     }
+ 
+     public DataResult<String> getStringValue(Unit p_341344_) {
+-        return DataResult.success("");
++        return DataResult.error(() -> "Not a string");
+     }
+ 
+     public DataResult<Unit> mergeToList(Unit p_340991_, Unit p_341154_) {
+@@ -124,35 +_,35 @@
+     }
+ 
+     public DataResult<Stream<Pair<Unit, Unit>>> getMapValues(Unit p_341031_) {
+-        return DataResult.success(Stream.empty());
++        return DataResult.error(() -> "Not a map");
+     }
+ 
+     public DataResult<Consumer<BiConsumer<Unit, Unit>>> getMapEntries(Unit p_340815_) {
+-        return DataResult.success(p_432499_ -> {});
++        return DataResult.error(() -> "Not a map");
+     }
+ 
+     public DataResult<MapLike<Unit>> getMap(Unit p_341149_) {
+-        return DataResult.success(EMPTY_MAP);
++        return DataResult.error(() -> "Not a map");
+     }
+ 
+     public DataResult<Stream<Unit>> getStream(Unit p_340835_) {
+-        return DataResult.success(Stream.empty());
++        return DataResult.error(() -> "Not a list");
+     }
+ 
+     public DataResult<Consumer<Consumer<Unit>>> getList(Unit p_340931_) {
+-        return DataResult.success(p_432500_ -> {});
++        return DataResult.error(() -> "Not a list");
+     }
+ 
+     public DataResult<ByteBuffer> getByteBuffer(Unit p_341064_) {
+-        return DataResult.success(ByteBuffer.wrap(new byte[0]));
++        return DataResult.error(() -> "Not a byte list");
+     }
+ 
+     public DataResult<IntStream> getIntStream(Unit p_341012_) {
+-        return DataResult.success(IntStream.empty());
++        return DataResult.error(() -> "Not an int list");
+     }
+ 
+     public DataResult<LongStream> getLongStream(Unit p_341130_) {
+-        return DataResult.success(LongStream.empty());
++        return DataResult.error(() -> "Not a long list");
+     }
+ 
+     public Unit createMap(Stream<Pair<Unit, Unit>> p_341095_) {

@@ -1,0 +1,28 @@
+--- a/net/minecraft/client/gui/components/events/AbstractContainerEventHandler.java
++++ b/net/minecraft/client/gui/components/events/AbstractContainerEventHandler.java
+@@ -28,16 +_,14 @@
+ 
+     @Override
+     public void setFocused(@Nullable GuiEventListener p_94677_) {
+-        if (this.focused != p_94677_) {
+-            if (this.focused != null) {
+-                this.focused.setFocused(false);
+-            }
+-
+-            if (p_94677_ != null) {
+-                p_94677_.setFocused(true);
+-            }
+-
+-            this.focused = p_94677_;
+-        }
++        if (this.focused != null) {
++            this.focused.setFocused(false);
++        }
++
++        if (p_94677_ != null) {
++            p_94677_.setFocused(true);
++        }
++
++        this.focused = p_94677_;
+     }
+ }

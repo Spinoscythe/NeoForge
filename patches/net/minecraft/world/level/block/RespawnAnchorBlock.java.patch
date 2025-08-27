@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/RespawnAnchorBlock.java
++++ b/net/minecraft/world/level/block/RespawnAnchorBlock.java
+@@ -93,7 +_,7 @@
+         if (p_316377_.getValue(CHARGE) == 0) {
+             return InteractionResult.PASS;
+         } else if (!canSetSpawn(p_316150_)) {
+-            if (!p_316150_.isClientSide()) {
++            if (!p_316150_.isClientSide) {
+                 this.explode(p_316377_, p_316150_, p_316161_);
+             }
+ 
+@@ -210,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_55870_, Level p_55871_, BlockPos p_55872_, Direction p_433202_) {
++    protected int getAnalogOutputSignal(BlockState p_55870_, Level p_55871_, BlockPos p_55872_) {
+         return getScaledChargeLevel(p_55870_, 15);
+     }
+ 

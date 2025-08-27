@@ -1,6 +1,14 @@
 --- a/com/mojang/blaze3d/systems/CommandEncoder.java
 +++ b/com/mojang/blaze3d/systems/CommandEncoder.java
-@@ -35,6 +_,8 @@
+@@ -8,6 +_,7 @@
+ import com.mojang.blaze3d.textures.GpuTexture;
+ import com.mojang.blaze3d.textures.GpuTextureView;
+ import java.nio.ByteBuffer;
++import java.nio.IntBuffer;
+ import java.util.OptionalDouble;
+ import java.util.OptionalInt;
+ import java.util.function.Supplier;
+@@ -34,6 +_,8 @@
  
      void clearDepthTexture(GpuTexture p_410276_, double p_410184_);
  
@@ -9,3 +17,12 @@
      void writeToBuffer(GpuBufferSlice p_418507_, ByteBuffer p_410481_);
  
      GpuBuffer.MappedView mapBuffer(GpuBuffer p_418099_, boolean p_418103_, boolean p_418179_);
+@@ -59,7 +_,7 @@
+ 
+     void writeToTexture(
+         GpuTexture p_410708_,
+-        ByteBuffer p_436585_,
++        IntBuffer p_410813_,
+         NativeImage.Format p_410346_,
+         int p_410145_,
+         int p_409806_,

@@ -1,10 +1,24 @@
 --- a/net/minecraft/network/chat/ComponentSerialization.java
 +++ b/net/minecraft/network/chat/ComponentSerialization.java
-@@ -96,7 +_,7 @@
+@@ -23,7 +_,6 @@
+ import net.minecraft.network.RegistryFriendlyByteBuf;
+ import net.minecraft.network.chat.contents.KeybindContents;
+ import net.minecraft.network.chat.contents.NbtContents;
+-import net.minecraft.network.chat.contents.ObjectContents;
+ import net.minecraft.network.chat.contents.PlainTextContents;
+ import net.minecraft.network.chat.contents.ScoreContents;
+ import net.minecraft.network.chat.contents.SelectorContents;
+@@ -97,13 +_,7 @@
  
      private static Codec<Component> createCodec(Codec<Component> p_304554_) {
          ComponentContents.Type<?>[] type = new ComponentContents.Type[]{
--            PlainTextContents.TYPE, TranslatableContents.TYPE, KeybindContents.TYPE, ScoreContents.TYPE, SelectorContents.TYPE, NbtContents.TYPE
+-            PlainTextContents.TYPE,
+-            TranslatableContents.TYPE,
+-            KeybindContents.TYPE,
+-            ScoreContents.TYPE,
+-            SelectorContents.TYPE,
+-            NbtContents.TYPE,
+-            ObjectContents.TYPE
 +            PlainTextContents.TYPE, TranslatableContents.TYPE, KeybindContents.TYPE, ScoreContents.TYPE, SelectorContents.TYPE, NbtContents.TYPE, net.neoforged.neoforge.common.util.InsertingContents.TYPE
          };
          MapCodec<ComponentContents> mapcodec = createLegacyComponentMatcher(type, ComponentContents.Type::codec, ComponentContents::type, "type");

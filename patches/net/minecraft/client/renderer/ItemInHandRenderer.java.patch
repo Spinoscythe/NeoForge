@@ -1,73 +1,239 @@
 --- a/net/minecraft/client/renderer/ItemInHandRenderer.java
 +++ b/net/minecraft/client/renderer/ItemInHandRenderer.java
-@@ -165,11 +_,11 @@
+@@ -12,7 +_,6 @@
+ import net.minecraft.client.renderer.entity.ItemRenderer;
+ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+ import net.minecraft.client.renderer.item.ItemModelResolver;
+-import net.minecraft.client.renderer.item.ItemStackRenderState;
+ import net.minecraft.client.renderer.state.MapRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.core.component.DataComponents;
+@@ -33,6 +_,7 @@
+ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
++import org.joml.Matrix4f;
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class ItemInHandRenderer {
+@@ -130,13 +_,21 @@
+     }
+ 
+     public void renderItem(
+-        LivingEntity p_270072_, ItemStack p_270793_, ItemDisplayContext p_270837_, PoseStack p_270974_, SubmitNodeCollector p_439656_, int p_270103_
++        LivingEntity p_270072_, ItemStack p_270793_, ItemDisplayContext p_270837_, PoseStack p_270974_, MultiBufferSource p_270686_, int p_270103_
+     ) {
+         if (!p_270793_.isEmpty()) {
+-            ItemStackRenderState itemstackrenderstate = new ItemStackRenderState();
+-            this.itemModelResolver
+-                .updateForTopItem(itemstackrenderstate, p_270793_, p_270837_, p_270072_.level(), p_270072_, p_270072_.getId() + p_270837_.ordinal());
+-            itemstackrenderstate.submit(p_270974_, p_439656_, p_270103_, OverlayTexture.NO_OVERLAY, 0);
++            this.itemRenderer
++                .renderStatic(
++                    p_270072_,
++                    p_270793_,
++                    p_270837_,
++                    p_270974_,
++                    p_270686_,
++                    p_270072_.level(),
++                    p_270103_,
++                    OverlayTexture.NO_OVERLAY,
++                    p_270072_.getId() + p_270837_.ordinal()
++                );
+         }
+     }
+ 
+@@ -146,7 +_,7 @@
+         return -Mth.cos(f * (float) Math.PI) * 0.5F + 0.5F;
+     }
+ 
+-    private void renderMapHand(PoseStack p_109362_, SubmitNodeCollector p_439677_, int p_109364_, HumanoidArm p_109365_) {
++    private void renderMapHand(PoseStack p_109362_, MultiBufferSource p_109363_, int p_109364_, HumanoidArm p_109365_) {
+         PlayerRenderer playerrenderer = (PlayerRenderer)this.entityRenderDispatcher.<AbstractClientPlayer>getRenderer(this.minecraft.player);
+         p_109362_.pushPose();
+         float f = p_109365_ == HumanoidArm.RIGHT ? 1.0F : -1.0F;
+@@ -157,11 +_,11 @@
          ResourceLocation resourcelocation = this.minecraft.player.getSkin().texture();
          if (p_109365_ == HumanoidArm.RIGHT) {
              playerrenderer.renderRightHand(
--                p_109362_, p_109363_, p_109364_, resourcelocation, this.minecraft.player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE)
+-                p_109362_, p_439677_, p_109364_, resourcelocation, this.minecraft.player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE)
 +                p_109362_, p_109363_, p_109364_, resourcelocation, this.minecraft.player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE), this.minecraft.player
              );
          } else {
              playerrenderer.renderLeftHand(
--                p_109362_, p_109363_, p_109364_, resourcelocation, this.minecraft.player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE)
+-                p_109362_, p_439677_, p_109364_, resourcelocation, this.minecraft.player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE)
 +                p_109362_, p_109363_, p_109364_, resourcelocation, this.minecraft.player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE), this.minecraft.player
              );
          }
  
-@@ -231,7 +_,7 @@
+@@ -169,14 +_,14 @@
+     }
+ 
+     private void renderOneHandedMap(
+-        PoseStack p_109354_, SubmitNodeCollector p_440514_, int p_109356_, float p_109357_, HumanoidArm p_109358_, float p_109359_, ItemStack p_109360_
++        PoseStack p_109354_, MultiBufferSource p_109355_, int p_109356_, float p_109357_, HumanoidArm p_109358_, float p_109359_, ItemStack p_109360_
+     ) {
+         float f = p_109358_ == HumanoidArm.RIGHT ? 1.0F : -1.0F;
+         p_109354_.translate(f * 0.125F, -0.125F, 0.0F);
+         if (!this.minecraft.player.isInvisible()) {
+             p_109354_.pushPose();
+             p_109354_.mulPose(Axis.ZP.rotationDegrees(f * 10.0F));
+-            this.renderPlayerArm(p_109354_, p_440514_, p_109356_, p_109357_, p_109359_, p_109358_);
++            this.renderPlayerArm(p_109354_, p_109355_, p_109356_, p_109357_, p_109359_, p_109358_);
+             p_109354_.popPose();
+         }
+ 
+@@ -190,11 +_,11 @@
+         p_109354_.translate(f * f3, f4 - 0.3F * f2, f5);
+         p_109354_.mulPose(Axis.XP.rotationDegrees(f2 * -45.0F));
+         p_109354_.mulPose(Axis.YP.rotationDegrees(f * f2 * -30.0F));
+-        this.renderMap(p_109354_, p_440514_, p_109356_, p_109360_);
++        this.renderMap(p_109354_, p_109355_, p_109356_, p_109360_);
+         p_109354_.popPose();
+     }
+ 
+-    private void renderTwoHandedMap(PoseStack p_109340_, SubmitNodeCollector p_439021_, int p_109342_, float p_109343_, float p_109344_, float p_109345_) {
++    private void renderTwoHandedMap(PoseStack p_109340_, MultiBufferSource p_109341_, int p_109342_, float p_109343_, float p_109344_, float p_109345_) {
+         float f = Mth.sqrt(p_109345_);
+         float f1 = -0.2F * Mth.sin(p_109345_ * (float) Math.PI);
+         float f2 = -0.4F * Mth.sin(f * (float) Math.PI);
+@@ -205,40 +_,39 @@
+         if (!this.minecraft.player.isInvisible()) {
+             p_109340_.pushPose();
+             p_109340_.mulPose(Axis.YP.rotationDegrees(90.0F));
+-            this.renderMapHand(p_109340_, p_439021_, p_109342_, HumanoidArm.RIGHT);
+-            this.renderMapHand(p_109340_, p_439021_, p_109342_, HumanoidArm.LEFT);
++            this.renderMapHand(p_109340_, p_109341_, p_109342_, HumanoidArm.RIGHT);
++            this.renderMapHand(p_109340_, p_109341_, p_109342_, HumanoidArm.LEFT);
+             p_109340_.popPose();
+         }
+ 
+         float f4 = Mth.sin(f * (float) Math.PI);
+         p_109340_.mulPose(Axis.XP.rotationDegrees(f4 * 20.0F));
+         p_109340_.scale(2.0F, 2.0F, 2.0F);
+-        this.renderMap(p_109340_, p_439021_, p_109342_, this.mainHandItem);
++        this.renderMap(p_109340_, p_109341_, p_109342_, this.mainHandItem);
+     }
+ 
+-    private void renderMap(PoseStack p_109367_, SubmitNodeCollector p_438977_, int p_109369_, ItemStack p_109370_) {
++    private void renderMap(PoseStack p_109367_, MultiBufferSource p_109368_, int p_109369_, ItemStack p_109370_) {
+         p_109367_.mulPose(Axis.YP.rotationDegrees(180.0F));
+         p_109367_.mulPose(Axis.ZP.rotationDegrees(180.0F));
+         p_109367_.scale(0.38F, 0.38F, 0.38F);
          p_109367_.translate(-0.5F, -0.5F, 0.0F);
          p_109367_.scale(0.0078125F, 0.0078125F, 0.0078125F);
          MapId mapid = p_109370_.get(DataComponents.MAP_ID);
 -        MapItemSavedData mapitemsaveddata = MapItem.getSavedData(mapid, this.minecraft.level);
+-        RenderType rendertype = mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD;
+-        p_438977_.submitCustomGeometry(p_109367_, rendertype, (p_439463_, p_439903_) -> {
+-            p_439903_.addVertex(p_439463_, -7.0F, 135.0F, 0.0F).setColor(-1).setUv(0.0F, 1.0F).setLight(p_109369_);
+-            p_439903_.addVertex(p_439463_, 135.0F, 135.0F, 0.0F).setColor(-1).setUv(1.0F, 1.0F).setLight(p_109369_);
+-            p_439903_.addVertex(p_439463_, 135.0F, -7.0F, 0.0F).setColor(-1).setUv(1.0F, 0.0F).setLight(p_109369_);
+-            p_439903_.addVertex(p_439463_, -7.0F, -7.0F, 0.0F).setColor(-1).setUv(0.0F, 0.0F).setLight(p_109369_);
+-        });
 +        MapItemSavedData mapitemsaveddata = MapItem.getSavedData(p_109370_, this.minecraft.level);
-         VertexConsumer vertexconsumer = p_109368_.getBuffer(mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
-         Matrix4f matrix4f = p_109367_.last().pose();
-         vertexconsumer.addVertex(matrix4f, -7.0F, 135.0F, 0.0F).setColor(-1).setUv(0.0F, 1.0F).setLight(p_109369_);
-@@ -268,10 +_,10 @@
++        VertexConsumer vertexconsumer = p_109368_.getBuffer(mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
++        Matrix4f matrix4f = p_109367_.last().pose();
++        vertexconsumer.addVertex(matrix4f, -7.0F, 135.0F, 0.0F).setColor(-1).setUv(0.0F, 1.0F).setLight(p_109369_);
++        vertexconsumer.addVertex(matrix4f, 135.0F, 135.0F, 0.0F).setColor(-1).setUv(1.0F, 1.0F).setLight(p_109369_);
++        vertexconsumer.addVertex(matrix4f, 135.0F, -7.0F, 0.0F).setColor(-1).setUv(1.0F, 0.0F).setLight(p_109369_);
++        vertexconsumer.addVertex(matrix4f, -7.0F, -7.0F, 0.0F).setColor(-1).setUv(0.0F, 0.0F).setLight(p_109369_);
+         if (mapitemsaveddata != null) {
+             MapRenderer maprenderer = this.minecraft.getMapRenderer();
+             maprenderer.extractRenderState(mapid, mapitemsaveddata, this.mapRenderState);
+-            maprenderer.render(this.mapRenderState, p_109367_, p_438977_, false, p_109369_);
++            maprenderer.render(this.mapRenderState, p_109367_, p_109368_, false, p_109369_);
+         }
+     }
+ 
+-    private void renderPlayerArm(PoseStack p_109347_, SubmitNodeCollector p_440503_, int p_109349_, float p_109350_, float p_109351_, HumanoidArm p_109352_) {
++    private void renderPlayerArm(PoseStack p_109347_, MultiBufferSource p_109348_, int p_109349_, float p_109350_, float p_109351_, HumanoidArm p_109352_) {
+         boolean flag = p_109352_ != HumanoidArm.LEFT;
+         float f = flag ? 1.0F : -1.0F;
+         float f1 = Mth.sqrt(p_109351_);
+@@ -261,10 +_,10 @@
          ResourceLocation resourcelocation = abstractclientplayer.getSkin().texture();
          if (flag) {
              playerrenderer.renderRightHand(
--                p_109347_, p_109348_, p_109349_, resourcelocation, abstractclientplayer.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE)
+-                p_109347_, p_440503_, p_109349_, resourcelocation, abstractclientplayer.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE)
 +                p_109347_, p_109348_, p_109349_, resourcelocation, abstractclientplayer.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE), abstractclientplayer
              );
          } else {
--            playerrenderer.renderLeftHand(p_109347_, p_109348_, p_109349_, resourcelocation, abstractclientplayer.isModelPartShown(PlayerModelPart.LEFT_SLEEVE));
+-            playerrenderer.renderLeftHand(p_109347_, p_440503_, p_109349_, resourcelocation, abstractclientplayer.isModelPartShown(PlayerModelPart.LEFT_SLEEVE));
 +            playerrenderer.renderLeftHand(p_109347_, p_109348_, p_109349_, resourcelocation, abstractclientplayer.isModelPartShown(PlayerModelPart.LEFT_SLEEVE), abstractclientplayer);
          }
      }
  
-@@ -344,12 +_,14 @@
+@@ -325,7 +_,7 @@
+         p_109383_.translate(i * 0.56F, -0.52F + p_109385_ * -0.6F, -0.72F);
+     }
+ 
+-    public void renderHandsWithItems(float p_109315_, PoseStack p_109316_, SubmitNodeCollector p_439610_, LocalPlayer p_109318_, int p_109319_) {
++    public void renderHandsWithItems(float p_109315_, PoseStack p_109316_, MultiBufferSource.BufferSource p_109317_, LocalPlayer p_109318_, int p_109319_) {
+         float f = p_109318_.getAttackAnim(p_109315_);
+         InteractionHand interactionhand = MoreObjects.firstNonNull(p_109318_.swingingArm, InteractionHand.MAIN_HAND);
+         float f1 = p_109318_.getXRot(p_109315_);
+@@ -337,17 +_,18 @@
          if (iteminhandrenderer$handrenderselection.renderMainHand) {
              float f4 = interactionhand == InteractionHand.MAIN_HAND ? f : 0.0F;
              float f5 = 1.0F - Mth.lerp(p_109315_, this.oMainHandHeight, this.mainHandHeight);
+-            this.renderArmWithItem(p_109318_, p_109315_, f1, InteractionHand.MAIN_HAND, f4, this.mainHandItem, f5, p_109316_, p_439610_, p_109319_);
 +            if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonHand(InteractionHand.MAIN_HAND, p_109316_, p_109317_, p_109319_, p_109315_, f1, f4, f5, this.mainHandItem))
-             this.renderArmWithItem(p_109318_, p_109315_, f1, InteractionHand.MAIN_HAND, f4, this.mainHandItem, f5, p_109316_, p_109317_, p_109319_);
++            this.renderArmWithItem(p_109318_, p_109315_, f1, InteractionHand.MAIN_HAND, f4, this.mainHandItem, f5, p_109316_, p_109317_, p_109319_);
          }
  
          if (iteminhandrenderer$handrenderselection.renderOffHand) {
              float f6 = interactionhand == InteractionHand.OFF_HAND ? f : 0.0F;
              float f7 = 1.0F - Mth.lerp(p_109315_, this.oOffHandHeight, this.offHandHeight);
+-            this.renderArmWithItem(p_109318_, p_109315_, f1, InteractionHand.OFF_HAND, f6, this.offHandItem, f7, p_109316_, p_439610_, p_109319_);
 +            if(!net.neoforged.neoforge.client.ClientHooks.renderSpecificFirstPersonHand(InteractionHand.OFF_HAND, p_109316_, p_109317_, p_109319_, p_109315_, f1, f6, f7, this.offHandItem))
-             this.renderArmWithItem(p_109318_, p_109315_, f1, InteractionHand.OFF_HAND, f6, this.offHandItem, f7, p_109316_, p_109317_, p_109319_);
++            this.renderArmWithItem(p_109318_, p_109315_, f1, InteractionHand.OFF_HAND, f6, this.offHandItem, f7, p_109316_, p_109317_, p_109319_);
          }
  
-@@ -409,13 +_,13 @@
+-        this.minecraft.gameRenderer.getFeatureRenderDispatcher().renderAllFeatures();
+-        this.minecraft.renderBuffers().bufferSource().endBatch();
++        p_109317_.endBatch();
+     }
+ 
+     @VisibleForTesting
+@@ -392,7 +_,7 @@
+         ItemStack p_109377_,
+         float p_109378_,
+         PoseStack p_109379_,
+-        SubmitNodeCollector p_439736_,
++        MultiBufferSource p_109380_,
+         int p_109381_
+     ) {
+         if (!p_109372_.isScoping()) {
+@@ -401,15 +_,15 @@
+             p_109379_.pushPose();
+             if (p_109377_.isEmpty()) {
                  if (flag && !p_109372_.isInvisible()) {
-                     this.renderPlayerArm(p_109379_, p_109380_, p_109381_, p_109378_, p_109376_, humanoidarm);
+-                    this.renderPlayerArm(p_109379_, p_439736_, p_109381_, p_109378_, p_109376_, humanoidarm);
++                    this.renderPlayerArm(p_109379_, p_109380_, p_109381_, p_109378_, p_109376_, humanoidarm);
                  }
 -            } else if (p_109377_.has(DataComponents.MAP_ID)) {
 +            } else if (p_109377_.getItem() instanceof MapItem) {
                  if (flag && this.offHandItem.isEmpty()) {
-                     this.renderTwoHandedMap(p_109379_, p_109380_, p_109381_, p_109374_, p_109378_, p_109376_);
+-                    this.renderTwoHandedMap(p_109379_, p_439736_, p_109381_, p_109374_, p_109378_, p_109376_);
++                    this.renderTwoHandedMap(p_109379_, p_109380_, p_109381_, p_109374_, p_109378_, p_109376_);
                  } else {
-                     this.renderOneHandedMap(p_109379_, p_109380_, p_109381_, p_109378_, humanoidarm, p_109376_, p_109377_);
+-                    this.renderOneHandedMap(p_109379_, p_439736_, p_109381_, p_109378_, humanoidarm, p_109376_, p_109377_);
++                    this.renderOneHandedMap(p_109379_, p_109380_, p_109381_, p_109378_, humanoidarm, p_109376_, p_109377_);
                  }
 -            } else if (p_109377_.is(Items.CROSSBOW)) {
 +            } else if (p_109377_.getItem() instanceof CrossbowItem) {
                  boolean flag1 = CrossbowItem.isCharged(p_109377_);
                  boolean flag2 = humanoidarm == HumanoidArm.RIGHT;
                  int i = flag2 ? 1 : -1;
-@@ -460,6 +_,8 @@
+@@ -448,12 +_,14 @@
+                     p_109377_,
+                     flag2 ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND,
+                     p_109379_,
+-                    p_439736_,
++                    p_109380_,
+                     p_109381_
+                 );
              } else {
                  boolean flag3 = humanoidarm == HumanoidArm.RIGHT;
                  int j = flag3 ? 1 : -1;
@@ -76,7 +242,16 @@
                  if (p_109372_.isUsingItem() && p_109372_.getUseItemRemainingTicks() > 0 && p_109372_.getUsedItemHand() == p_109375_) {
                      switch (p_109377_.getUseAnimation()) {
                          case NONE:
-@@ -586,9 +_,18 @@
+@@ -540,7 +_,7 @@
+                     p_109377_,
+                     flag3 ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND,
+                     p_109379_,
+-                    p_439736_,
++                    p_109380_,
+                     p_109381_
+                 );
+             }
+@@ -580,9 +_,18 @@
              this.mainHandHeight = Mth.clamp(this.mainHandHeight - 0.4F, 0.0F, 1.0F);
              this.offHandHeight = Mth.clamp(this.offHandHeight - 0.4F, 0.0F, 1.0F);
          } else {

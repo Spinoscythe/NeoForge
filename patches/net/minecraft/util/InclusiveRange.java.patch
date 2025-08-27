@@ -1,0 +1,21 @@
+--- a/net/minecraft/util/InclusiveRange.java
++++ b/net/minecraft/util/InclusiveRange.java
+@@ -2,7 +_,6 @@
+ 
+ import com.mojang.serialization.Codec;
+ import com.mojang.serialization.DataResult;
+-import java.util.function.Function;
+ 
+ public record InclusiveRange<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
+     public static final Codec<InclusiveRange<Integer>> INT = codec(Codec.INT);
+@@ -61,10 +_,6 @@
+         return p_184581_.compareTo(p_184582_) <= 0
+             ? DataResult.success(new InclusiveRange<>(p_184581_, p_184582_))
+             : DataResult.error(() -> "min_inclusive must be less than or equal to max_inclusive");
+-    }
+-
+-    public <S extends Comparable<S>> InclusiveRange<S> map(Function<? super T, ? extends S> p_434142_) {
+-        return new InclusiveRange<>((S)p_434142_.apply(this.minInclusive), (S)p_434142_.apply(this.maxInclusive));
+     }
+ 
+     public boolean isValueInRange(T p_184579_) {

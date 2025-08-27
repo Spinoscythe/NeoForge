@@ -1,0 +1,40 @@
+--- a/net/minecraft/client/renderer/entity/layers/BreezeWindLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/BreezeWindLayer.java
+@@ -1,11 +_,13 @@
+ package net.minecraft.client.renderer.entity.layers;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.model.BreezeModel;
+-import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.entity.BreezeRenderer;
++import net.minecraft.client.renderer.entity.EntityRendererProvider;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.BreezeRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+@@ -18,15 +_,15 @@
+     private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/breeze/breeze_wind.png");
+     private final BreezeModel model;
+ 
+-    public BreezeWindLayer(RenderLayerParent<BreezeRenderState, BreezeModel> p_312625_, EntityModelSet p_434227_) {
++    public BreezeWindLayer(EntityRendererProvider.Context p_350777_, RenderLayerParent<BreezeRenderState, BreezeModel> p_312625_) {
+         super(p_312625_);
+-        this.model = new BreezeModel(p_434227_.bakeLayer(ModelLayers.BREEZE_WIND));
++        this.model = new BreezeModel(p_350777_.bakeLayer(ModelLayers.BREEZE_WIND));
+     }
+ 
+-    public void submit(PoseStack p_434287_, SubmitNodeCollector p_432948_, int p_435599_, BreezeRenderState p_434059_, float p_434631_, float p_435421_) {
+-        RenderType rendertype = RenderType.breezeWind(TEXTURE_LOCATION, this.xOffset(p_434059_.ageInTicks) % 1.0F, 0.0F);
+-        p_432948_.order(1)
+-            .submitModel(this.model, p_434059_, p_434287_, rendertype, p_435599_, OverlayTexture.NO_OVERLAY, -1, null, p_434059_.outlineColor, null);
++    public void render(PoseStack p_312704_, MultiBufferSource p_312359_, int p_312773_, BreezeRenderState p_362521_, float p_312146_, float p_312128_) {
++        VertexConsumer vertexconsumer = p_312359_.getBuffer(RenderType.breezeWind(TEXTURE_LOCATION, this.xOffset(p_362521_.ageInTicks) % 1.0F, 0.0F));
++        this.model.setupAnim(p_362521_);
++        BreezeRenderer.enable(this.model, this.model.wind()).renderToBuffer(p_312704_, vertexconsumer, p_312773_, OverlayTexture.NO_OVERLAY);
+     }
+ 
+     private float xOffset(float p_312086_) {

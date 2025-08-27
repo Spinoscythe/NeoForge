@@ -1,0 +1,18 @@
+--- a/com/mojang/realmsclient/gui/screens/RealmsTermsScreen.java
++++ b/com/mojang/realmsclient/gui/screens/RealmsTermsScreen.java
+@@ -70,13 +_,13 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_90037_, double p_90038_, int p_90039_, boolean p_434740_) {
++    public boolean mouseClicked(double p_90037_, double p_90038_, int p_90039_) {
+         if (this.onLink) {
+             this.minecraft.keyboardHandler.setClipboard(CommonLinks.REALMS_TERMS.toString());
+             Util.getPlatform().openUri(CommonLinks.REALMS_TERMS);
+             return true;
+         } else {
+-            return super.mouseClicked(p_90037_, p_90038_, p_90039_, p_434740_);
++            return super.mouseClicked(p_90037_, p_90038_, p_90039_);
+         }
+     }
+ 

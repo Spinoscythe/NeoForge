@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/BasePressurePlateBlock.java
++++ b/net/minecraft/world/level/block/BasePressurePlateBlock.java
+@@ -82,7 +_,7 @@
+ 
+     @Override
+     protected void entityInside(BlockState p_49314_, Level p_49315_, BlockPos p_49316_, Entity p_49317_, InsideBlockEffectApplier p_405011_) {
+-        if (!p_49315_.isClientSide()) {
++        if (!p_49315_.isClientSide) {
+             int i = this.getSignalForState(p_49314_);
+             if (i == 0) {
+                 this.checkPressed(p_49317_, p_49315_, p_49316_, p_49314_, i);

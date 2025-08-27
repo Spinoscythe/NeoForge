@@ -1,6 +1,17 @@
 --- a/net/minecraft/CrashReportCategory.java
 +++ b/net/minecraft/CrashReportCategory.java
-@@ -117,8 +_,10 @@
+@@ -18,10 +_,6 @@
+         this.title = p_178936_;
+     }
+ 
+-    public static String formatLocation(double p_434690_, double p_436004_, double p_434687_) {
+-        return String.format(Locale.ROOT, "%.2f,%.2f,%.2f", p_434690_, p_436004_, p_434687_);
+-    }
+-
+     public static String formatLocation(LevelHeightAccessor p_178938_, double p_178939_, double p_178940_, double p_178941_) {
+         return String.format(
+             Locale.ROOT,
+@@ -121,8 +_,10 @@
          if (astacktraceelement.length <= 0) {
              return 0;
          } else {
@@ -13,7 +24,7 @@
              return this.stackTrace.length;
          }
      }
-@@ -165,16 +_,16 @@
+@@ -169,16 +_,16 @@
  
          if (this.stackTrace != null && this.stackTrace.length > 0) {
              p_128169_.append("\nStacktrace:");

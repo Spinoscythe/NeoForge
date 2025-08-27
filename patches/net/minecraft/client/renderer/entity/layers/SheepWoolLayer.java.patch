@@ -1,0 +1,54 @@
+--- a/net/minecraft/client/renderer/entity/layers/SheepWoolLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/SheepWoolLayer.java
+@@ -1,13 +_,14 @@
+ package net.minecraft.client.renderer.entity.layers;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.model.EntityModel;
+ import net.minecraft.client.model.SheepFurModel;
+ import net.minecraft.client.model.SheepModel;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.SheepRenderState;
+@@ -27,26 +_,17 @@
+         this.babyModel = new SheepFurModel(p_362840_.bakeLayer(ModelLayers.SHEEP_BABY_WOOL));
+     }
+ 
+-    public void submit(PoseStack p_434319_, SubmitNodeCollector p_434903_, int p_434733_, SheepRenderState p_432970_, float p_432913_, float p_435103_) {
+-        if (!p_432970_.isSheared) {
+-            EntityModel<SheepRenderState> entitymodel = p_432970_.isBaby ? this.babyModel : this.adultModel;
+-            if (p_432970_.isInvisible) {
+-                if (p_432970_.appearsGlowing()) {
+-                    p_434903_.submitModel(
+-                        entitymodel,
+-                        p_432970_,
+-                        p_434319_,
+-                        RenderType.outline(SHEEP_WOOL_LOCATION),
+-                        p_434733_,
+-                        LivingEntityRenderer.getOverlayCoords(p_432970_, 0.0F),
+-                        -16777216,
+-                        null,
+-                        p_432970_.outlineColor,
+-                        null
+-                    );
++    public void render(PoseStack p_360648_, MultiBufferSource p_361412_, int p_361724_, SheepRenderState p_362704_, float p_363845_, float p_360883_) {
++        if (!p_362704_.isSheared) {
++            EntityModel<SheepRenderState> entitymodel = p_362704_.isBaby ? this.babyModel : this.adultModel;
++            if (p_362704_.isInvisible) {
++                if (p_362704_.appearsGlowing) {
++                    entitymodel.setupAnim(p_362704_);
++                    VertexConsumer vertexconsumer = p_361412_.getBuffer(RenderType.outline(SHEEP_WOOL_LOCATION));
++                    entitymodel.renderToBuffer(p_360648_, vertexconsumer, p_361724_, LivingEntityRenderer.getOverlayCoords(p_362704_, 0.0F), -16777216);
+                 }
+             } else {
+-                coloredCutoutModelCopyLayerRender(entitymodel, SHEEP_WOOL_LOCATION, p_434319_, p_434903_, p_434733_, p_432970_, p_432970_.getWoolColor(), 0);
++                coloredCutoutModelCopyLayerRender(entitymodel, SHEEP_WOOL_LOCATION, p_360648_, p_361412_, p_361724_, p_362704_, p_362704_.getWoolColor());
+             }
+         }
+     }

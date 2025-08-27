@@ -1,0 +1,18 @@
+--- a/net/minecraft/client/multiplayer/chat/LoggedChatMessage.java
++++ b/net/minecraft/client/multiplayer/chat/LoggedChatMessage.java
+@@ -39,12 +_,12 @@
+     @OnlyIn(Dist.CLIENT)
+     public record Player(GameProfile profile, PlayerChatMessage message, ChatTrustLevel trustLevel) implements LoggedChatMessage {
+         public static final MapCodec<LoggedChatMessage.Player> CODEC = RecordCodecBuilder.mapCodec(
+-            p_438770_ -> p_438770_.group(
+-                    ExtraCodecs.AUTHLIB_GAME_PROFILE.fieldOf("profile").forGetter(LoggedChatMessage.Player::profile),
++            p_261382_ -> p_261382_.group(
++                    ExtraCodecs.GAME_PROFILE.fieldOf("profile").forGetter(LoggedChatMessage.Player::profile),
+                     PlayerChatMessage.MAP_CODEC.forGetter(LoggedChatMessage.Player::message),
+                     ChatTrustLevel.CODEC.optionalFieldOf("trust_level", ChatTrustLevel.SECURE).forGetter(LoggedChatMessage.Player::trustLevel)
+                 )
+-                .apply(p_438770_, LoggedChatMessage.Player::new)
++                .apply(p_261382_, LoggedChatMessage.Player::new)
+         );
+         private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+ 

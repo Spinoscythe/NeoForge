@@ -1,9 +1,45 @@
 --- a/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
 +++ b/net/minecraft/client/renderer/texture/TextureAtlasSprite.java
-@@ -135,4 +_,14 @@
+@@ -4,6 +_,7 @@
+ import com.mojang.blaze3d.vertex.VertexConsumer;
+ import javax.annotation.Nullable;
+ import net.minecraft.client.renderer.SpriteCoordinateExpander;
++import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
+ import net.minecraft.resources.ResourceLocation;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -12,6 +_,7 @@
+ public class TextureAtlasSprite {
+     private final ResourceLocation atlasLocation;
+     private final SpriteContents contents;
++    private final boolean animated;
+     final int x;
+     final int y;
+     private final float u0;
+@@ -22,6 +_,7 @@
+     protected TextureAtlasSprite(ResourceLocation p_250211_, SpriteContents p_248526_, int p_248950_, int p_249741_, int p_248672_, int p_248637_) {
+         this.atlasLocation = p_250211_;
+         this.contents = p_248526_;
++        this.animated = p_248526_.metadata().getSection(AnimationMetadataSection.TYPE).isPresent();
+         this.x = p_248672_;
+         this.y = p_248637_;
+         this.u0 = (float)p_248672_ / p_248950_;
+@@ -50,6 +_,10 @@
+         return this.contents;
+     }
+ 
++    public boolean isAnimated() {
++        return this.animated;
++    }
++
+     @Nullable
+     public TextureAtlasSprite.Ticker createTicker() {
+         final SpriteTicker spriteticker = this.contents.createTicker();
+@@ -127,5 +_,15 @@
+ 
          @Override
          void close();
-     }
++    }
 +
 +    // Neo: Exposed a pixel RGBA getter
 +    public int getPixelRGBA(int frameIndex, int x, int y) {
@@ -13,5 +49,5 @@
 +         }
 +
 +         return this.contents.getOriginalImage().getPixel(x, y);
-+    }
+     }
  }

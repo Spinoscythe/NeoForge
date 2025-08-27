@@ -1,6 +1,13 @@
 --- a/net/minecraft/world/level/block/SculkCatalystBlock.java
 +++ b/net/minecraft/world/level/block/SculkCatalystBlock.java
-@@ -61,8 +_,14 @@
+@@ -55,14 +_,20 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_222100_, BlockState p_222101_, BlockEntityType<T> p_222102_) {
+-        return p_222100_.isClientSide() ? null : createTickerHelper(p_222102_, BlockEntityType.SCULK_CATALYST, SculkCatalystBlockEntity::serverTick);
++        return p_222100_.isClientSide ? null : createTickerHelper(p_222102_, BlockEntityType.SCULK_CATALYST, SculkCatalystBlockEntity::serverTick);
+     }
+ 
      @Override
      protected void spawnAfterBreak(BlockState p_222109_, ServerLevel p_222110_, BlockPos p_222111_, ItemStack p_222112_, boolean p_222113_) {
          super.spawnAfterBreak(p_222109_, p_222110_, p_222111_, p_222112_, p_222113_);

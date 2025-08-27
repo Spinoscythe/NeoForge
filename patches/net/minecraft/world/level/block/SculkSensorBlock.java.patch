@@ -1,5 +1,23 @@
 --- a/net/minecraft/world/level/block/SculkSensorBlock.java
 +++ b/net/minecraft/world/level/block/SculkSensorBlock.java
+@@ -157,7 +_,7 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_154401_, BlockState p_154402_, BlockEntityType<T> p_154403_) {
+-        return !p_154401_.isClientSide()
++        return !p_154401_.isClientSide
+             ? createTickerHelper(
+                 p_154403_,
+                 BlockEntityType.SCULK_SENSOR,
+@@ -264,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_154442_, Level p_154443_, BlockPos p_154444_, Direction p_435933_) {
++    protected int getAnalogOutputSignal(BlockState p_154442_, Level p_154443_, BlockPos p_154444_) {
+         if (p_154443_.getBlockEntity(p_154444_) instanceof SculkSensorBlockEntity sculksensorblockentity) {
+             return getPhase(p_154442_) == SculkSensorPhase.ACTIVE ? sculksensorblockentity.getLastVibrationFrequency() : 0;
+         } else {
 @@ -285,8 +_,13 @@
      @Override
      protected void spawnAfterBreak(BlockState p_222142_, ServerLevel p_222143_, BlockPos p_222144_, ItemStack p_222145_, boolean p_222146_) {

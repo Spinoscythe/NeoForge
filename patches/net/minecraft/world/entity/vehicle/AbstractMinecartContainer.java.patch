@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
+@@ -73,7 +_,7 @@
+ 
+     @Override
+     public void remove(Entity.RemovalReason p_150255_) {
+-        if (!this.level().isClientSide() && p_150255_.shouldDestroy()) {
++        if (!this.level().isClientSide && p_150255_.shouldDestroy()) {
+             Containers.dropContents(this.level(), this, this);
+         }
+ 
 @@ -94,6 +_,8 @@
  
      @Override

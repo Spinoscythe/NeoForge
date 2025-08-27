@@ -1,5 +1,23 @@
 --- a/net/minecraft/world/entity/monster/Zombie.java
 +++ b/net/minecraft/world/entity/monster/Zombie.java
+@@ -181,7 +_,7 @@
+     @Override
+     public void setBaby(boolean p_34309_) {
+         this.getEntityData().set(DATA_BABY_ID, p_34309_);
+-        if (this.level() != null && !this.level().isClientSide()) {
++        if (this.level() != null && !this.level().isClientSide) {
+             AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
+             attributeinstance.removeModifier(SPEED_MODIFIER_BABY_ID);
+             if (p_34309_) {
+@@ -205,7 +_,7 @@
+ 
+     @Override
+     public void tick() {
+-        if (!this.level().isClientSide() && this.isAlive() && !this.isNoAi()) {
++        if (!this.level().isClientSide && this.isAlive() && !this.isNoAi()) {
+             if (this.isUnderWaterConverting()) {
+                 this.conversionTime--;
+                 if (this.conversionTime < 0) {
 @@ -260,6 +_,7 @@
      }
  
@@ -28,27 +46,57 @@
                  if (!this.isSilent()) {
                      p_371466_.levelEvent(null, 1026, this.blockPosition(), 0);
                  }
-@@ -443,7 +_,7 @@
+@@ -441,9 +_,9 @@
+     }
+ 
      @Override
-     public boolean killedEntity(ServerLevel p_219160_, LivingEntity p_219161_) {
-         boolean flag = super.killedEntity(p_219160_, p_219161_);
+-    public boolean killedEntity(ServerLevel p_219160_, LivingEntity p_219161_, DamageSource p_432761_) {
+-        boolean flag = super.killedEntity(p_219160_, p_219161_, p_432761_);
 -        if ((p_219160_.getDifficulty() == Difficulty.NORMAL || p_219160_.getDifficulty() == Difficulty.HARD) && p_219161_ instanceof Villager villager) {
++    public boolean killedEntity(ServerLevel p_219160_, LivingEntity p_219161_) {
++        boolean flag = super.killedEntity(p_219160_, p_219161_);
 +        if ((p_219160_.getDifficulty() == Difficulty.NORMAL || p_219160_.getDifficulty() == Difficulty.HARD) && p_219161_ instanceof Villager villager && net.neoforged.neoforge.event.EventHooks.canLivingConvert(p_219161_, EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
              if (p_219160_.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
                  return flag;
              }
-@@ -565,10 +_,14 @@
-                 .addOrReplacePermanentModifier(
-                     new AttributeModifier(LEADER_ZOMBIE_BONUS_ID, this.random.nextDouble() * 0.25 + 0.5, AttributeModifier.Operation.ADD_VALUE)
-                 );
-+            var damageTaken = getMaxHealth() - getHealth();
-             this.getAttribute(Attributes.MAX_HEALTH)
-                 .addOrReplacePermanentModifier(
-                     new AttributeModifier(LEADER_ZOMBIE_BONUS_ID, this.random.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
-                 );
-+            // Neo: fix MC-219981 by resetting the leader zombie's health based on the new max health
-+            // without disregarding damage already taken (if any)
-+            setHealth(getMaxHealth() - damageTaken);
-             this.setCanBreakDoors(true);
-         }
+@@ -498,7 +_,7 @@
+                         if (!list.isEmpty()) {
+                             Chicken chicken = list.get(0);
+                             chicken.setChickenJockey(true);
+-                            this.startRiding(chicken, false, false);
++                            this.startRiding(chicken);
+                         }
+                     } else if (randomsource.nextFloat() < 0.05) {
+                         Chicken chicken1 = EntityType.CHICKEN.create(this.level(), EntitySpawnReason.JOCKEY);
+@@ -506,7 +_,7 @@
+                             chicken1.snapTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
+                             chicken1.finalizeSpawn(p_34297_, p_34298_, EntitySpawnReason.JOCKEY, null);
+                             chicken1.setChickenJockey(true);
+-                            this.startRiding(chicken1, false, false);
++                            this.startRiding(chicken1);
+                             p_34297_.addFreshEntity(chicken1);
+                         }
+                     }
+@@ -575,6 +_,22 @@
+ 
+     protected void randomizeReinforcementsChance() {
+         this.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE).setBaseValue(this.random.nextDouble() * 0.1F);
++    }
++
++    @Override
++    protected void dropCustomDeathLoot(ServerLevel p_348597_, DamageSource p_34291_, boolean p_34293_) {
++        super.dropCustomDeathLoot(p_348597_, p_34291_, p_34293_);
++        if (p_34291_.getEntity() instanceof Creeper creeper && creeper.canDropMobsSkull()) {
++            ItemStack itemstack = this.getSkull();
++            if (!itemstack.isEmpty()) {
++                creeper.increaseDroppedSkulls();
++                this.spawnAtLocation(p_348597_, itemstack);
++            }
++        }
++    }
++
++    protected ItemStack getSkull() {
++        return new ItemStack(Items.ZOMBIE_HEAD);
      }
+ 
+     class ZombieAttackTurtleEggGoal extends RemoveBlockGoal {

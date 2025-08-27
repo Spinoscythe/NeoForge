@@ -1,0 +1,32 @@
+--- a/net/minecraft/world/entity/animal/Panda.java
++++ b/net/minecraft/world/entity/animal/Panda.java
+@@ -398,9 +_,9 @@
+ 
+         if (this.isEating()) {
+             this.addEatingParticles();
+-            if (!this.level().isClientSide() && this.getEatCounter() > 80 && this.random.nextInt(20) == 1) {
++            if (!this.level().isClientSide && this.getEatCounter() > 80 && this.random.nextInt(20) == 1) {
+                 if (this.getEatCounter() > 100 && this.getItemBySlot(EquipmentSlot.MAINHAND).is(ItemTags.PANDA_EATS_FROM_GROUND)) {
+-                    if (!this.level().isClientSide()) {
++                    if (!this.level().isClientSide) {
+                         this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+                         this.gameEvent(GameEvent.EAT);
+                     }
+@@ -486,7 +_,7 @@
+         if (this.rollCounter > 32) {
+             this.roll(false);
+         } else {
+-            if (!this.level().isClientSide()) {
++            if (!this.level().isClientSide) {
+                 Vec3 vec3 = this.getDeltaMovement();
+                 if (this.rollCounter == 1) {
+                     float f = this.getYRot() * (float) (Math.PI / 180.0);
+@@ -625,7 +_,7 @@
+             if (this.isBaby()) {
+                 this.usePlayerItem(p_29123_, p_29124_, itemstack);
+                 this.ageUp((int)(-this.getAge() / 20 * 0.1F), true);
+-            } else if (!this.level().isClientSide() && this.getAge() == 0 && this.canFallInLove()) {
++            } else if (!this.level().isClientSide && this.getAge() == 0 && this.canFallInLove()) {
+                 this.usePlayerItem(p_29123_, p_29124_, itemstack);
+                 this.setInLove(p_29123_);
+             } else {

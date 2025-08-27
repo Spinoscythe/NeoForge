@@ -1,0 +1,90 @@
+--- a/net/minecraft/client/gui/components/ContainerObjectSelectionList.java
++++ b/net/minecraft/client/gui/components/ContainerObjectSelectionList.java
+@@ -24,6 +_,10 @@
+         super(p_94010_, p_94011_, p_94012_, p_94013_, p_94014_);
+     }
+ 
++    public ContainerObjectSelectionList(Minecraft p_388407_, int p_387977_, int p_388914_, int p_388893_, int p_387037_, int p_386908_) {
++        super(p_388407_, p_387977_, p_388914_, p_388893_, p_387037_, p_386908_);
++    }
++
+     @Nullable
+     @Override
+     public ComponentPath nextFocusPath(FocusNavigationEvent p_265385_) {
+@@ -61,7 +_,7 @@
+ 
+                 ComponentPath componentpath;
+                 do {
+-                    e1 = this.nextEntry(screendirection, p_432216_ -> !p_432216_.children().isEmpty(), e1);
++                    e1 = this.nextEntry(screendirection, p_425132_ -> !p_425132_.children().isEmpty(), e1);
+                     if (e1 == null) {
+                         return null;
+                     }
+@@ -90,19 +_,25 @@
+     }
+ 
+     @Override
+-    protected boolean entriesCanBeSelected() {
++    protected boolean isSelectedItem(int p_94019_) {
+         return false;
+     }
+ 
+     @Override
+     public void updateWidgetNarration(NarrationElementOutput p_313707_) {
+-        if (this.getHovered() instanceof E e) {
++        E e = this.getHovered();
++        if (e != null) {
+             e.updateNarration(p_313707_.nest());
+             this.narrateListElementPosition(p_313707_, e);
+-        } else if (this.getFocused() instanceof E e1) {
+-            e1.updateNarration(p_313707_.nest());
+-            this.narrateListElementPosition(p_313707_, e1);
++        } else {
++            E e1 = this.getFocused();
++            if (e1 != null) {
++                e1.updateNarration(p_313707_.nest());
++                this.narrateListElementPosition(p_313707_, e1);
++            }
+         }
++
++        p_313707_.add(NarratedElementType.USAGE, Component.translatable("narration.component_list.usage"));
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+@@ -124,8 +_,8 @@
+         }
+ 
+         @Override
+-        public boolean mouseClicked(double p_265453_, double p_265297_, int p_265697_, boolean p_433971_) {
+-            return ContainerEventHandler.super.mouseClicked(p_265453_, p_265297_, p_265697_, p_433971_);
++        public boolean mouseClicked(double p_265453_, double p_265297_, int p_265697_) {
++            return ContainerEventHandler.super.mouseClicked(p_265453_, p_265297_, p_265697_);
+         }
+ 
+         @Override
+@@ -190,18 +_,21 @@
+             List<? extends NarratableEntry> list = this.narratables();
+             Screen.NarratableSearchResult screen$narratablesearchresult = Screen.findNarratableWidget(list, this.lastNarratable);
+             if (screen$narratablesearchresult != null) {
+-                if (screen$narratablesearchresult.priority().isTerminal()) {
+-                    this.lastNarratable = screen$narratablesearchresult.entry();
++                if (screen$narratablesearchresult.priority.isTerminal()) {
++                    this.lastNarratable = screen$narratablesearchresult.entry;
+                 }
+ 
+                 if (list.size() > 1) {
+                     p_168855_.add(
+                         NarratedElementType.POSITION,
+-                        Component.translatable("narrator.position.object_list", screen$narratablesearchresult.index() + 1, list.size())
++                        Component.translatable("narrator.position.object_list", screen$narratablesearchresult.index + 1, list.size())
+                     );
++                    if (screen$narratablesearchresult.priority == NarratableEntry.NarrationPriority.FOCUSED) {
++                        p_168855_.add(NarratedElementType.USAGE, Component.translatable("narration.component_list.usage"));
++                    }
+                 }
+ 
+-                screen$narratablesearchresult.entry().updateNarration(p_168855_.nest());
++                screen$narratablesearchresult.entry.updateNarration(p_168855_.nest());
+             }
+         }
+     }

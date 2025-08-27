@@ -1,0 +1,14 @@
+--- a/com/mojang/realmsclient/gui/screens/RealmsLongRunningMcoTaskScreen.java
++++ b/com/mojang/realmsclient/gui/screens/RealmsLongRunningMcoTaskScreen.java
+@@ -62,11 +_,6 @@
+     }
+ 
+     @Override
+-    public boolean canInterruptWithAnotherScreen() {
+-        return false;
+-    }
+-
+-    @Override
+     public void tick() {
+         super.tick();
+         if (this.loadingDotsWidget != null) {

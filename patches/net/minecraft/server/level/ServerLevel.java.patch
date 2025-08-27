@@ -1,6 +1,51 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -202,7 +_,7 @@
+@@ -25,7 +_,6 @@
+ import java.util.Objects;
+ import java.util.Optional;
+ import java.util.Set;
+-import java.util.UUID;
+ import java.util.concurrent.Executor;
+ import java.util.function.BooleanSupplier;
+ import java.util.function.Function;
+@@ -43,7 +_,6 @@
+ import net.minecraft.core.Holder;
+ import net.minecraft.core.HolderSet;
+ import net.minecraft.core.SectionPos;
+-import net.minecraft.core.particles.ExplosionParticleInfo;
+ import net.minecraft.core.particles.ParticleOptions;
+ import net.minecraft.core.registries.BuiltInRegistries;
+ import net.minecraft.core.registries.Registries;
+@@ -65,11 +_,11 @@
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.server.MinecraftServer;
+ import net.minecraft.server.ServerScoreboard;
++import net.minecraft.server.level.progress.ChunkProgressListener;
+ import net.minecraft.server.players.SleepStatus;
+ import net.minecraft.server.waypoints.ServerWaypointManager;
+ import net.minecraft.sounds.SoundEvent;
+ import net.minecraft.sounds.SoundSource;
+-import net.minecraft.tags.BlockTags;
+ import net.minecraft.tags.TagKey;
+ import net.minecraft.util.AbortableIterationConsumer;
+ import net.minecraft.util.CsvOutput;
+@@ -79,7 +_,6 @@
+ import net.minecraft.util.datafix.DataFixTypes;
+ import net.minecraft.util.profiling.Profiler;
+ import net.minecraft.util.profiling.ProfilerFiller;
+-import net.minecraft.util.random.WeightedList;
+ import net.minecraft.util.valueproviders.IntProvider;
+ import net.minecraft.util.valueproviders.UniformInt;
+ import net.minecraft.world.DifficultyInstance;
+@@ -184,6 +_,7 @@
+     private final ServerChunkCache chunkSource;
+     private final MinecraftServer server;
+     private final ServerLevelData serverLevelData;
++    private int lastSpawnChunkRadius;
+     final EntityTickList entityTickList = new EntityTickList();
+     private final ServerWaypointManager waypointManager;
+     private final PersistentEntitySectionManager<Entity> entityManager;
+@@ -204,7 +_,7 @@
      private final List<CustomSpawner> customSpawners;
      @Nullable
      private EndDragonFight dragonFight;
@@ -9,7 +54,15 @@
      private final StructureManager structureManager;
      private final StructureCheck structureCheck;
      private final boolean tickTime;
-@@ -225,7 +_,6 @@
+@@ -217,6 +_,7 @@
+         ServerLevelData p_215002_,
+         ResourceKey<Level> p_215003_,
+         LevelStem p_215004_,
++        ChunkProgressListener p_215005_,
+         boolean p_215006_,
+         long p_215007_,
+         List<CustomSpawner> p_215008_,
+@@ -226,7 +_,6 @@
          super(p_215002_, p_215003_, p_214999_.registryAccess(), p_215004_.type(), false, p_215006_, p_215007_, p_214999_.getMaxChainedNeighborUpdates());
          this.tickTime = p_215009_;
          this.server = p_214999_;
@@ -17,6 +70,14 @@
          this.serverLevelData = p_215002_;
          ChunkGenerator chunkgenerator = p_215004_.generator();
          boolean flag = p_214999_.forceSynchronousWrites();
+@@ -253,6 +_,7 @@
+             p_214999_.getPlayerList().getViewDistance(),
+             p_214999_.getPlayerList().getSimulationDistance(),
+             flag,
++            p_215005_,
+             this.entityManager::updateChunkStatus,
+             () -> p_214999_.overworld().getDataStorage()
+         );
 @@ -290,6 +_,11 @@
          this.gameEventDispatcher = new GameEventDispatcher(this);
          this.randomSequences = Objects.requireNonNullElseGet(p_288977_, () -> this.getDataStorage().computeIfAbsent(RandomSequences.TYPE));
@@ -38,16 +99,26 @@
              }
  
              this.wakeUpAllPlayers();
-@@ -373,7 +_,7 @@
+@@ -373,16 +_,12 @@
  
          this.handlingTick = false;
          profilerfiller.pop();
--        boolean flag1 = !this.players.isEmpty() || !this.getForceLoadedChunks().isEmpty();
+-        boolean flag1 = this.chunkSource.hasActiveTickets();
 +        boolean flag1 = !this.players.isEmpty() || net.neoforged.neoforge.common.world.chunk.ForcedChunkManager.hasForcedChunks(this); // Neo: Replace vanilla's has forced chunk check with neo's that checks both the vanilla and neo added ones
          if (flag1) {
              this.resetEmptyTime();
          }
-@@ -406,7 +_,9 @@
+ 
+-        if (flag) {
+-            this.emptyTime++;
+-        }
+-
+-        if (this.emptyTime < 300) {
++        if (flag1 || this.emptyTime++ < 300) {
+             profilerfiller.push("entities");
+             if (this.dragonFight != null && flag) {
+                 profilerfiller.push("dragonFight");
+@@ -410,7 +_,9 @@
                                      }
  
                                      profilerfiller.push("tick");
@@ -58,7 +129,7 @@
                                      profilerfiller.pop();
                                  }
                              }
-@@ -435,7 +_,7 @@
+@@ -439,7 +_,7 @@
              this.serverLevelData.getScheduledEvents().tick(this.server, i);
              Profiler.get().pop();
              if (this.serverLevelData.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
@@ -67,16 +138,16 @@
              }
          }
      }
-@@ -513,7 +_,7 @@
+@@ -517,7 +_,7 @@
                  DifficultyInstance difficultyinstance = this.getCurrentDifficultyAt(blockpos);
                  boolean flag1 = this.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)
                      && this.random.nextDouble() < difficultyinstance.getEffectiveDifficulty() * 0.01
--                    && !this.getBlockState(blockpos.below()).is(Blocks.LIGHTNING_ROD);
+-                    && !this.getBlockState(blockpos.below()).is(BlockTags.LIGHTNING_RODS);
 +                    && !(this.getBlockState(blockpos.below()).getBlock() instanceof net.minecraft.world.level.block.LightningRodBlock); // Neo: support custom LightningRodBlocks
                  if (flag1) {
                      SkeletonHorse skeletonhorse = EntityType.SKELETON_HORSE.create(this, EntitySpawnReason.EVENT);
                      if (skeletonhorse != null) {
-@@ -541,6 +_,7 @@
+@@ -545,6 +_,7 @@
          BlockPos blockpos = this.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, p_295060_);
          BlockPos blockpos1 = blockpos.below();
          Biome biome = this.getBiome(blockpos).value();
@@ -84,7 +155,7 @@
          if (biome.shouldFreeze(this, blockpos1)) {
              this.setBlockAndUpdate(blockpos1, Blocks.ICE.defaultBlockState());
          }
-@@ -717,15 +_,19 @@
+@@ -721,15 +_,19 @@
                  .broadcastAll(new ClientboundGameEventPacket(ClientboundGameEventPacket.THUNDER_LEVEL_CHANGE, this.thunderLevel), this.dimension());
          }
  
@@ -108,7 +179,7 @@
          }
      }
  
-@@ -762,7 +_,11 @@
+@@ -766,7 +_,11 @@
          p_8648_.tickCount++;
          profilerfiller.push(() -> BuiltInRegistries.ENTITY_TYPE.getKey(p_8648_.getType()).toString());
          profilerfiller.incrementCounter("tickNonPassenger");
@@ -121,7 +192,7 @@
          profilerfiller.pop();
  
          for (Entity entity : p_8648_.getPassengers()) {
-@@ -827,6 +_,7 @@
+@@ -831,6 +_,7 @@
              } else {
                  this.entityManager.autoSave();
              }
@@ -129,7 +200,7 @@
          }
      }
  
-@@ -921,6 +_,7 @@
+@@ -925,6 +_,7 @@
      }
  
      private void addPlayer(ServerPlayer p_8854_) {
@@ -137,7 +208,7 @@
          Entity entity = this.getEntity(p_8854_.getUUID());
          if (entity != null) {
              LOGGER.warn("Force-added player with duplicate UUID {}", p_8854_.getUUID());
-@@ -928,7 +_,8 @@
+@@ -932,7 +_,8 @@
              this.removePlayerImmediately((ServerPlayer)entity, Entity.RemovalReason.DISCARDED);
          }
  
@@ -147,7 +218,7 @@
      }
  
      private boolean addEntity(Entity p_8873_) {
-@@ -936,7 +_,12 @@
+@@ -940,7 +_,12 @@
              LOGGER.warn("Tried to add entity {} but it was marked as removed already", EntityType.getKey(p_8873_.getType()));
              return false;
          } else {
@@ -161,7 +232,7 @@
          }
      }
  
-@@ -984,6 +_,12 @@
+@@ -988,6 +_,12 @@
          float p_263390_,
          long p_263403_
      ) {
@@ -174,7 +245,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1001,6 +_,12 @@
+@@ -1005,6 +_,12 @@
      public void playSeededSound(
          @Nullable Entity p_263544_, Entity p_394316_, Holder<SoundEvent> p_263491_, SoundSource p_263542_, float p_263530_, float p_263520_, long p_263490_
      ) {
@@ -187,7 +258,7 @@
          this.server
              .getPlayerList()
              .broadcast(
-@@ -1059,6 +_,7 @@
+@@ -1063,6 +_,7 @@
  
      @Override
      public void gameEvent(Holder<GameEvent> p_316597_, Vec3 p_215042_, GameEvent.Context p_215043_) {
@@ -195,7 +266,7 @@
          this.gameEventDispatcher.post(p_316597_, p_215042_, p_215043_);
      }
  
-@@ -1097,6 +_,7 @@
+@@ -1101,6 +_,7 @@
  
      @Override
      public void updateNeighborsAt(BlockPos p_215045_, Block p_215046_) {
@@ -203,7 +274,7 @@
          this.updateNeighborsAt(p_215045_, p_215046_, ExperimentalRedstoneUtils.initialOrientation(this, null, null));
      }
  
-@@ -1107,6 +_,10 @@
+@@ -1111,6 +_,10 @@
  
      @Override
      public void updateNeighborsAtExceptFromFacing(BlockPos p_215052_, Block p_215053_, Direction p_215054_, @Nullable Orientation p_365231_) {
@@ -214,7 +285,13 @@
          this.neighborUpdater.updateNeighborsAtExceptFromFacing(p_215052_, p_215053_, p_215054_, p_365231_);
      }
  
-@@ -1152,7 +_,7 @@
+@@ -1151,13 +_,12 @@
+         Level.ExplosionInteraction p_255827_,
+         ParticleOptions p_312436_,
+         ParticleOptions p_312391_,
+-        WeightedList<ExplosionParticleInfo> p_437303_,
+         Holder<SoundEvent> p_320497_
+     ) {
          Explosion.BlockInteraction explosion$blockinteraction = switch (p_255827_) {
              case NONE -> Explosion.BlockInteraction.KEEP;
              case BLOCK -> this.getDestroyType(GameRules.RULE_BLOCK_EXPLOSION_DROP_DECAY);
@@ -223,15 +300,57 @@
                  ? this.getDestroyType(GameRules.RULE_MOB_EXPLOSION_DROP_DECAY)
                  : Explosion.BlockInteraction.KEEP;
              case TNT -> this.getDestroyType(GameRules.RULE_TNT_EXPLOSION_DROP_DECAY);
-@@ -1160,6 +_,7 @@
+@@ -1165,13 +_,14 @@
          };
          Vec3 vec3 = new Vec3(p_256067_, p_256370_, p_256153_);
          ServerExplosion serverexplosion = new ServerExplosion(this, p_256039_, p_255778_, p_256002_, vec3, p_256045_, p_255686_, explosion$blockinteraction);
+-        int i = serverexplosion.explode();
 +        if (net.neoforged.neoforge.event.EventHooks.onExplosionStart(this, serverexplosion)) return;
-         serverexplosion.explode();
++        serverexplosion.explode();
          ParticleOptions particleoptions = serverexplosion.isSmall() ? p_312436_ : p_312391_;
  
-@@ -1316,7 +_,7 @@
+         for (ServerPlayer serverplayer : this.players) {
+             if (serverplayer.distanceToSqr(vec3) < 4096.0) {
+                 Optional<Vec3> optional = Optional.ofNullable(serverexplosion.getHitPlayers().get(serverplayer));
+-                serverplayer.connection.send(new ClientboundExplodePacket(vec3, p_256045_, i, optional, particleoptions, p_320497_, p_437303_));
++                serverplayer.connection.send(new ClientboundExplodePacket(vec3, optional, particleoptions, p_320497_));
+             }
+         }
+     }
+@@ -1313,32 +_,6 @@
+         return this.getEntities().get(p_8597_);
+     }
+ 
+-    @Nullable
+-    @Override
+-    public Entity getEntityInAnyDimension(UUID p_439064_) {
+-        Entity entity = this.getEntity(p_439064_);
+-        if (entity != null) {
+-            return entity;
+-        } else {
+-            for (ServerLevel serverlevel : this.getServer().getAllLevels()) {
+-                if (serverlevel != this) {
+-                    Entity entity1 = serverlevel.getEntity(p_439064_);
+-                    if (entity1 != null) {
+-                        return entity1;
+-                    }
+-                }
+-            }
+-
+-            return null;
+-        }
+-    }
+-
+-    @Nullable
+-    @Override
+-    public Player getPlayerInAnyDimension(UUID p_439193_) {
+-        return this.getServer().getPlayerList().getPlayer(p_439193_);
+-    }
+-
+     @Deprecated
+     @Nullable
+     public Entity getEntityOrPart(int p_143318_) {
+@@ -1347,7 +_,7 @@
      }
  
      @Override
@@ -240,7 +359,38 @@
          return this.dragonParts.values();
      }
  
-@@ -1801,8 +_,8 @@
+@@ -1415,6 +_,17 @@
+             this.levelData.setSpawn(p_8734_, p_8735_);
+             this.getServer().getPlayerList().broadcastAll(new ClientboundSetDefaultSpawnPositionPacket(p_8734_, p_8735_));
+         }
++
++        if (this.lastSpawnChunkRadius > 1) {
++            this.getChunkSource().removeTicketWithRadius(TicketType.START, new ChunkPos(blockpos), this.lastSpawnChunkRadius);
++        }
++
++        int i = this.getGameRules().getInt(GameRules.RULE_SPAWN_CHUNK_RADIUS) + 1;
++        if (i > 1) {
++            this.getChunkSource().addTicketWithRadius(TicketType.START, new ChunkPos(p_8734_), i);
++        }
++
++        this.lastSpawnChunkRadius = i;
+     }
+ 
+     public LongSet getForceLoadedChunks() {
+@@ -1677,8 +_,10 @@
+         return this.pathTypesByPosCache;
+     }
+ 
+-    public void waitForEntities(ChunkPos p_433169_, int p_435264_) {
+-        List<ChunkPos> list = ChunkPos.rangeClosed(p_433169_, p_435264_).toList();
++    public void waitForChunkAndEntities(ChunkPos p_428539_, int p_428284_) {
++        List<ChunkPos> list = ChunkPos.rangeClosed(p_428539_, p_428284_).toList();
++        this.chunkSource.addTicketWithRadius(TicketType.UNKNOWN, p_428539_, p_428284_);
++        list.forEach(p_428139_ -> this.getChunk(p_428139_.x, p_428139_.z));
+         this.server.managedBlock(() -> {
+             this.entityManager.processPendingLoads();
+ 
+@@ -1819,8 +_,8 @@
                  ServerLevel.this.navigatingMobs.add(mob);
              }
  
@@ -251,7 +401,7 @@
                      ServerLevel.this.dragonParts.put(enderdragonpart.getId(), enderdragonpart);
                  }
              }
-@@ -1822,24 +_,106 @@
+@@ -1840,24 +_,106 @@
                  if (ServerLevel.this.isUpdatingNavigations) {
                      String s = "onTrackingStart called during navigation iteration";
                      Util.logAndPauseIfInIde(

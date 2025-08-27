@@ -1,0 +1,26 @@
+--- a/net/minecraft/client/renderer/entity/PigRenderer.java
++++ b/net/minecraft/client/renderer/entity/PigRenderer.java
+@@ -7,7 +_,7 @@
+ import net.minecraft.client.model.ColdPigModel;
+ import net.minecraft.client.model.PigModel;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.layers.SimpleEquipmentLayer;
+ import net.minecraft.client.renderer.entity.state.PigRenderState;
+ import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+@@ -51,10 +_,10 @@
+         );
+     }
+ 
+-    public void submit(PigRenderState p_433133_, PoseStack p_433016_, SubmitNodeCollector p_433279_) {
+-        if (p_433133_.variant != null) {
+-            this.model = this.models.get(p_433133_.variant.modelAndTexture().model()).getModel(p_433133_.isBaby);
+-            super.submit(p_433133_, p_433016_, p_433279_);
++    public void render(PigRenderState p_393990_, PoseStack p_393537_, MultiBufferSource p_394350_, int p_394258_) {
++        if (p_393990_.variant != null) {
++            this.model = this.models.get(p_393990_.variant.modelAndTexture().model()).getModel(p_393990_.isBaby);
++            super.render(p_393990_, p_393537_, p_394350_, p_394258_);
+         }
+     }
+ 

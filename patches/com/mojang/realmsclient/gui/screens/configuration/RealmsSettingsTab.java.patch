@@ -1,0 +1,11 @@
+--- a/com/mojang/realmsclient/gui/screens/configuration/RealmsSettingsTab.java
++++ b/com/mojang/realmsclient/gui/screens/configuration/RealmsSettingsTab.java
+@@ -66,7 +_,7 @@
+         gridlayout$rowhelper.addChild(SpacerElement.height(2));
+         gridlayout$rowhelper.addChild(new StringWidget(REGION_PREFERENCE_LABEL, p_420066_.getFont()));
+         EqualSpacingLayout equalspacinglayout = new EqualSpacingLayout(0, 0, 212, 9, EqualSpacingLayout.Orientation.HORIZONTAL);
+-        this.selectedRegionStringWidget = equalspacinglayout.addChild(new StringWidget(192, 9, Component.empty(), p_420066_.getFont()));
++        this.selectedRegionStringWidget = equalspacinglayout.addChild(new StringWidget(192, 9, Component.empty(), p_420066_.getFont()).alignLeft());
+         this.selectedRegionImageWidget = equalspacinglayout.addChild(ImageWidget.sprite(10, 8, ServiceQuality.UNKNOWN.getIcon()));
+         gridlayout$rowhelper.addChild(equalspacinglayout);
+         gridlayout$rowhelper.addChild(

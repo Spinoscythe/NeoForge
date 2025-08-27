@@ -1,6 +1,14 @@
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -129,6 +_,11 @@
+@@ -59,7 +_,6 @@
+ import net.minecraft.world.item.ProjectileWeaponItem;
+ import net.minecraft.world.item.SpawnEggItem;
+ import net.minecraft.world.item.component.ItemAttributeModifiers;
+-import net.minecraft.world.item.component.UseRemainder;
+ import net.minecraft.world.item.enchantment.Enchantment;
+ import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+ import net.minecraft.world.item.enchantment.EnchantmentHelper;
+@@ -130,6 +_,11 @@
      private Leashable.LeashData leashData;
      private BlockPos homePosition = BlockPos.ZERO;
      private int homeRadius = -1;
@@ -12,7 +20,7 @@
  
      protected Mob(EntityType<? extends Mob> p_21368_, Level p_21369_) {
          super(p_21368_, p_21369_);
-@@ -225,7 +_,10 @@
+@@ -226,7 +_,10 @@
      }
  
      public void setTarget(@Nullable LivingEntity p_21544_) {
@@ -24,8 +32,21 @@
      }
  
      @Override
-@@ -321,6 +_,12 @@
-         if (!this.level().isClientSide && this.tickCount % 5 == 0) {
+@@ -300,7 +_,7 @@
+     }
+ 
+     public void spawnAnim() {
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             this.makePoofParticles();
+         } else {
+             this.level().broadcastEntityEvent(this, (byte)20);
+@@ -319,9 +_,15 @@
+     @Override
+     public void tick() {
+         super.tick();
+-        if (!this.level().isClientSide() && this.tickCount % 5 == 0) {
++        if (!this.level().isClientSide && this.tickCount % 5 == 0) {
              this.updateControlFlags();
          }
 +
@@ -37,7 +58,7 @@
      }
  
      protected void updateControlFlags() {
-@@ -365,6 +_,9 @@
+@@ -366,6 +_,9 @@
          if (this.isNoAi()) {
              p_421640_.putBoolean("NoAI", this.isNoAi());
          }
@@ -47,7 +68,7 @@
      }
  
      @Override
-@@ -383,6 +_,14 @@
+@@ -384,6 +_,14 @@
          this.lootTable = p_422339_.read("DeathLootTable", LootTable.KEY_CODEC);
          this.lootTableSeed = p_422339_.getLongOr("DeathLootTableSeed", 0L);
          this.setNoAi(p_422339_.getBooleanOr("NoAI", false));
@@ -62,7 +83,7 @@
      }
  
      @Override
-@@ -437,7 +_,7 @@
+@@ -438,7 +_,7 @@
              && this.canPickUpLoot()
              && this.isAlive()
              && !this.dead
@@ -71,7 +92,7 @@
              Vec3i vec3i = this.getPickupReach();
  
              for (ItemEntity itementity : this.level()
-@@ -559,6 +_,8 @@
+@@ -560,6 +_,8 @@
      private double getApproximateAttributeWith(ItemStack p_371461_, Holder<Attribute> p_371421_, EquipmentSlot p_371891_) {
          double d0 = this.getAttributes().hasAttribute(p_371421_) ? this.getAttributeBaseValue(p_371421_) : 0.0;
          ItemAttributeModifiers itemattributemodifiers = p_371461_.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
@@ -80,15 +101,103 @@
          return itemattributemodifiers.compute(d0, p_371891_);
      }
  
-@@ -601,6 +_,7 @@
+@@ -596,9 +_,14 @@
+         return this.isPassenger();
+     }
  
++    protected boolean shouldDespawnInPeaceful() {
++        return false;
++    }
++
      @Override
      public void checkDespawn() {
+-        if (this.level().getDifficulty() == Difficulty.PEACEFUL && !this.getType().isAllowedInPeaceful()) {
 +        if (net.neoforged.neoforge.event.EventHooks.checkMobDespawn(this)) return;
-         if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
++        if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
              this.discard();
          } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
-@@ -1005,6 +_,11 @@
+             Entity entity = this.level().getNearestPlayer(this, -1.0);
+@@ -897,10 +_,6 @@
+                 i++;
+             }
+ 
+-            if (p_217055_.nextFloat() < 0.095F) {
+-                i++;
+-            }
+-
+             boolean flag = true;
+ 
+             for (EquipmentSlot equipmentslot : EQUIPMENT_POPULATION_ORDER) {
+@@ -927,56 +_,48 @@
+                 if (p_21414_ == 0) {
+                     return Items.LEATHER_HELMET;
+                 } else if (p_21414_ == 1) {
+-                    return Items.COPPER_HELMET;
+-                } else if (p_21414_ == 2) {
+                     return Items.GOLDEN_HELMET;
+-                } else if (p_21414_ == 3) {
++                } else if (p_21414_ == 2) {
+                     return Items.CHAINMAIL_HELMET;
+-                } else if (p_21414_ == 4) {
++                } else if (p_21414_ == 3) {
+                     return Items.IRON_HELMET;
+-                } else if (p_21414_ == 5) {
++                } else if (p_21414_ == 4) {
+                     return Items.DIAMOND_HELMET;
+                 }
+             case CHEST:
+                 if (p_21414_ == 0) {
+                     return Items.LEATHER_CHESTPLATE;
+                 } else if (p_21414_ == 1) {
+-                    return Items.COPPER_CHESTPLATE;
+-                } else if (p_21414_ == 2) {
+                     return Items.GOLDEN_CHESTPLATE;
+-                } else if (p_21414_ == 3) {
++                } else if (p_21414_ == 2) {
+                     return Items.CHAINMAIL_CHESTPLATE;
+-                } else if (p_21414_ == 4) {
++                } else if (p_21414_ == 3) {
+                     return Items.IRON_CHESTPLATE;
+-                } else if (p_21414_ == 5) {
++                } else if (p_21414_ == 4) {
+                     return Items.DIAMOND_CHESTPLATE;
+                 }
+             case LEGS:
+                 if (p_21414_ == 0) {
+                     return Items.LEATHER_LEGGINGS;
+                 } else if (p_21414_ == 1) {
+-                    return Items.COPPER_LEGGINGS;
+-                } else if (p_21414_ == 2) {
+                     return Items.GOLDEN_LEGGINGS;
+-                } else if (p_21414_ == 3) {
++                } else if (p_21414_ == 2) {
+                     return Items.CHAINMAIL_LEGGINGS;
+-                } else if (p_21414_ == 4) {
++                } else if (p_21414_ == 3) {
+                     return Items.IRON_LEGGINGS;
+-                } else if (p_21414_ == 5) {
++                } else if (p_21414_ == 4) {
+                     return Items.DIAMOND_LEGGINGS;
+                 }
+             case FEET:
+                 if (p_21414_ == 0) {
+                     return Items.LEATHER_BOOTS;
+                 } else if (p_21414_ == 1) {
+-                    return Items.COPPER_BOOTS;
+-                } else if (p_21414_ == 2) {
+                     return Items.GOLDEN_BOOTS;
+-                } else if (p_21414_ == 3) {
++                } else if (p_21414_ == 2) {
+                     return Items.CHAINMAIL_BOOTS;
+-                } else if (p_21414_ == 4) {
++                } else if (p_21414_ == 3) {
+                     return Items.IRON_BOOTS;
+-                } else if (p_21414_ == 5) {
++                } else if (p_21414_ == 4) {
+                     return Items.DIAMOND_BOOTS;
+                 }
+             default:
+@@ -1014,6 +_,11 @@
          }
      }
  
@@ -100,7 +209,7 @@
      @Nullable
      public SpawnGroupData finalizeSpawn(
          ServerLevelAccessor p_21434_, DifficultyInstance p_21435_, EntitySpawnReason p_363352_, @Nullable SpawnGroupData p_21437_
-@@ -1018,6 +_,7 @@
+@@ -1027,6 +_,7 @@
          }
  
          this.setLeftHanded(randomsource.nextFloat() < 0.05F);
@@ -108,7 +217,24 @@
          return p_21437_;
      }
  
-@@ -1154,6 +_,7 @@
+@@ -1117,16 +_,6 @@
+         return InteractionResult.PASS;
+     }
+ 
+-    protected void usePlayerItem(Player p_435033_, InteractionHand p_435236_, ItemStack p_434028_) {
+-        int i = p_434028_.getCount();
+-        UseRemainder useremainder = p_434028_.get(DataComponents.USE_REMAINDER);
+-        p_434028_.consume(1, p_435033_);
+-        if (useremainder != null) {
+-            ItemStack itemstack = useremainder.convertIntoRemainder(p_434028_, i, p_435033_.hasInfiniteMaterials(), p_435033_::handleExtraItemsCreatedOnUse);
+-            p_435033_.setItemInHand(p_435236_, itemstack);
+-        }
+-    }
+-
+     public boolean isWithinHome() {
+         return this.isWithinHome(this.blockPosition());
+     }
+@@ -1173,6 +_,7 @@
              } else {
                  p_371709_.type().convert(this, t, p_371709_);
                  p_371266_.finalizeConversion(t);
@@ -116,7 +242,27 @@
                  if (this.level() instanceof ServerLevel serverlevel) {
                      serverlevel.addFreshEntity(t);
                  }
-@@ -1326,14 +_,24 @@
+@@ -1227,8 +_,8 @@
+     }
+ 
+     @Override
+-    public boolean startRiding(Entity p_21396_, boolean p_21397_, boolean p_433558_) {
+-        boolean flag = super.startRiding(p_21396_, p_21397_, p_433558_);
++    public boolean startRiding(Entity p_21396_, boolean p_21397_) {
++        boolean flag = super.startRiding(p_21396_, p_21397_);
+         if (flag && this.isLeashed()) {
+             this.dropLeash();
+         }
+@@ -1332,7 +_,7 @@
+     }
+ 
+     protected boolean isSunBurnTick() {
+-        if (this.level().isBrightOutside() && !this.level().isClientSide()) {
++        if (this.level().isBrightOutside() && !this.level().isClientSide) {
+             float f = this.getLightLevelDependentMagicValue();
+             BlockPos blockpos = BlockPos.containing(this.getX(), this.getEyeY(), this.getZ());
+             boolean flag = this.isInWaterOrRain() || this.isInPowderSnow || this.wasInPowderSnow;
+@@ -1345,14 +_,24 @@
      }
  
      @Override
@@ -142,7 +288,7 @@
      @VisibleForTesting
      public void removeFreeWill() {
          this.removeAllGoals(p_351790_ -> true);
-@@ -1369,5 +_,40 @@
+@@ -1388,5 +_,40 @@
          if (p_363635_.is(Attributes.FOLLOW_RANGE) || p_363635_.is(Attributes.TEMPT_RANGE)) {
              this.getNavigation().updatePathfinderMaxVisitedNodes();
          }

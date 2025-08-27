@@ -1,0 +1,27 @@
+--- a/net/minecraft/client/gui/components/events/GuiEventListener.java
++++ b/net/minecraft/client/gui/components/events/GuiEventListener.java
+@@ -11,10 +_,12 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public interface GuiEventListener extends TabOrderedElement {
++    long DOUBLE_CLICK_THRESHOLD_MS = 250L;
++
+     default void mouseMoved(double p_94758_, double p_94759_) {
+     }
+ 
+-    default boolean mouseClicked(double p_434871_, double p_435858_, int p_432983_, boolean p_434274_) {
++    default boolean mouseClicked(double p_94737_, double p_94738_, int p_94739_) {
+         return false;
+     }
+ 
+@@ -54,10 +_,6 @@
+     void setFocused(boolean p_265728_);
+ 
+     boolean isFocused();
+-
+-    default boolean shouldTakeFocusAfterInteraction() {
+-        return true;
+-    }
+ 
+     @Nullable
+     default ComponentPath getCurrentFocusPath() {

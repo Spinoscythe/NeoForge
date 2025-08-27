@@ -1,0 +1,34 @@
+--- a/net/minecraft/world/level/storage/loot/BuiltInLootTables.java
++++ b/net/minecraft/world/level/storage/loot/BuiltInLootTables.java
+@@ -101,18 +_,12 @@
+     public static final ResourceKey<LootTable> PANDA_SNEEZE = register("gameplay/panda_sneeze");
+     public static final ResourceKey<LootTable> CHICKEN_LAY = register("gameplay/chicken_lay");
+     public static final ResourceKey<LootTable> ARMADILLO_SHED = register("gameplay/armadillo_shed");
+-    public static final ResourceKey<LootTable> TURTLE_GROW = register("gameplay/turtle_grow");
+-    public static final ResourceKey<LootTable> HARVEST_CAVE_VINE = register("harvest/cave_vine");
+-    public static final ResourceKey<LootTable> HARVEST_SWEET_BERRY_BUSH = register("harvest/sweet_berry_bush");
+-    public static final ResourceKey<LootTable> HARVEST_BEEHIVE = register("harvest/beehive");
+-    public static final ResourceKey<LootTable> CARVE_PUMPKIN = register("carve/pumpkin");
+     public static final ResourceKey<LootTable> PIGLIN_BARTERING = register("gameplay/piglin_bartering");
+     public static final ResourceKey<LootTable> SPAWNER_TRIAL_CHAMBER_KEY = register("spawners/trial_chamber/key");
+     public static final ResourceKey<LootTable> SPAWNER_TRIAL_CHAMBER_CONSUMABLES = register("spawners/trial_chamber/consumables");
+     public static final ResourceKey<LootTable> SPAWNER_OMINOUS_TRIAL_CHAMBER_KEY = register("spawners/ominous/trial_chamber/key");
+     public static final ResourceKey<LootTable> SPAWNER_OMINOUS_TRIAL_CHAMBER_CONSUMABLES = register("spawners/ominous/trial_chamber/consumables");
+     public static final ResourceKey<LootTable> SPAWNER_TRIAL_ITEMS_TO_DROP_WHEN_OMINOUS = register("spawners/trial_chamber/items_to_drop_when_ominous");
+-    public static final ResourceKey<LootTable> ARMADILLO_BRUSH = register("brush/armadillo");
+     public static final ResourceKey<LootTable> BOGGED_SHEAR = register("shearing/bogged");
+     public static final ResourceKey<LootTable> SHEAR_MOOSHROOM = register("shearing/mooshroom");
+     public static final ResourceKey<LootTable> SHEAR_RED_MOOSHROOM = register("shearing/mooshroom/red");
+@@ -120,12 +_,6 @@
+     public static final ResourceKey<LootTable> SHEAR_SNOW_GOLEM = register("shearing/snow_golem");
+     public static final ResourceKey<LootTable> SHEAR_SHEEP = register("shearing/sheep");
+     public static final Map<DyeColor, ResourceKey<LootTable>> SHEAR_SHEEP_BY_DYE = makeDyeKeyMap("shearing/sheep");
+-    public static final ResourceKey<LootTable> CHARGED_CREEPER = register("charged_creeper/root");
+-    public static final ResourceKey<LootTable> CHARGED_CREEPER_PIGLIN = register("charged_creeper/piglin");
+-    public static final ResourceKey<LootTable> CHARGED_CREEPER_CREEPER = register("charged_creeper/creeper");
+-    public static final ResourceKey<LootTable> CHARGED_CREEPER_SKELETON = register("charged_creeper/skeleton");
+-    public static final ResourceKey<LootTable> CHARGED_CREEPER_WITHER_SKELETON = register("charged_creeper/wither_skeleton");
+-    public static final ResourceKey<LootTable> CHARGED_CREEPER_ZOMBIE = register("charged_creeper/zombie");
+     public static final ResourceKey<LootTable> DESERT_WELL_ARCHAEOLOGY = register("archaeology/desert_well");
+     public static final ResourceKey<LootTable> DESERT_PYRAMID_ARCHAEOLOGY = register("archaeology/desert_pyramid");
+     public static final ResourceKey<LootTable> TRAIL_RUINS_ARCHAEOLOGY_COMMON = register("archaeology/trail_ruins_common");

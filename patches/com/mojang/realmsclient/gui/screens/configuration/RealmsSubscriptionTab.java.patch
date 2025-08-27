@@ -1,0 +1,27 @@
+--- a/com/mojang/realmsclient/gui/screens/configuration/RealmsSubscriptionTab.java
++++ b/com/mojang/realmsclient/gui/screens/configuration/RealmsSubscriptionTab.java
+@@ -68,11 +_,11 @@
+         this.serverData = p_419700_;
+         GridLayout.RowHelper gridlayout$rowhelper = this.layout.rowSpacing(6).createRowHelper(1);
+         Font font = p_419628_.getFont();
+-        gridlayout$rowhelper.addChild(new StringWidget(200, 9, SUBSCRIPTION_START_LABEL, font));
+-        this.startDateWidget = gridlayout$rowhelper.addChild(new StringWidget(200, 9, this.startDate, font));
++        gridlayout$rowhelper.addChild(new StringWidget(200, 9, SUBSCRIPTION_START_LABEL, font).alignLeft());
++        this.startDateWidget = gridlayout$rowhelper.addChild(new StringWidget(200, 9, this.startDate, font).alignLeft());
+         gridlayout$rowhelper.addChild(SpacerElement.height(2));
+-        this.daysLeftLabelWidget = gridlayout$rowhelper.addChild(new StringWidget(200, 9, TIME_LEFT_LABEL, font));
+-        this.daysLeftWidget = gridlayout$rowhelper.addChild(new StringWidget(200, 9, this.daysLeft, font));
++        this.daysLeftLabelWidget = gridlayout$rowhelper.addChild(new StringWidget(200, 9, TIME_LEFT_LABEL, font).alignLeft());
++        this.daysLeftWidget = gridlayout$rowhelper.addChild(new StringWidget(200, 9, this.daysLeft, font).alignLeft());
+         gridlayout$rowhelper.addChild(SpacerElement.height(2));
+         gridlayout$rowhelper.addChild(
+             Button.builder(
+@@ -99,7 +_,7 @@
+         );
+         gridlayout$rowhelper.addChild(SpacerElement.height(2));
+         this.subscriptionInfo = gridlayout$rowhelper.addChild(
+-            new FocusableTextWidget(200, Component.empty(), font), LayoutSettings.defaults().alignHorizontallyCenter()
++            new FocusableTextWidget(200, Component.empty(), font, true, true, 4), LayoutSettings.defaults().alignHorizontallyCenter()
+         );
+         this.subscriptionInfo.setMaxWidth(200);
+         this.subscriptionInfo.setCentered(false);

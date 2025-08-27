@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/sounds/SoundEngineExecutor.java
++++ b/net/minecraft/client/sounds/SoundEngineExecutor.java
+@@ -1,8 +_,6 @@
+ package net.minecraft.client.sounds;
+ 
+ import java.util.concurrent.locks.LockSupport;
+-import net.minecraft.CrashReport;
+-import net.minecraft.client.Minecraft;
+ import net.minecraft.util.thread.BlockableEventLoop;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -20,10 +_,6 @@
+         Thread thread = new Thread(this::run);
+         thread.setDaemon(true);
+         thread.setName("Sound engine");
+-        thread.setUncaughtExceptionHandler(
+-            (p_437177_, p_437178_) -> Minecraft.getInstance()
+-                .delayCrash(CrashReport.forThrowable(p_437178_, "Uncaught exception on thread: " + p_437177_.getName()))
+-        );
+         thread.start();
+         return thread;
+     }

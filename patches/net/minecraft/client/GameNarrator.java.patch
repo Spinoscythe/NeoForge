@@ -1,6 +1,20 @@
 --- a/net/minecraft/client/GameNarrator.java
 +++ b/net/minecraft/client/GameNarrator.java
-@@ -79,7 +_,7 @@
+@@ -66,7 +_,12 @@
+     }
+ 
+     private void narrateMessage(String p_394162_, boolean p_394666_) {
+-        this.narrator.say(p_394162_, p_394666_, this.minecraft.options.getFinalSoundSourceVolume(SoundSource.VOICE));
++        this.narrator
++            .say(
++                p_394162_,
++                p_394666_,
++                this.minecraft.options.getSoundSourceVolume(SoundSource.VOICE) * this.minecraft.options.getSoundSourceVolume(SoundSource.MASTER)
++            );
+     }
+ 
+     private NarratorStatus getStatus() {
+@@ -74,7 +_,7 @@
      }
  
      private void logNarratedMessage(String p_168788_) {

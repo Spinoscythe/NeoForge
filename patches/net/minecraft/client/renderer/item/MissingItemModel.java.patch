@@ -1,0 +1,20 @@
+--- a/net/minecraft/client/renderer/item/MissingItemModel.java
++++ b/net/minecraft/client/renderer/item/MissingItemModel.java
+@@ -7,7 +_,7 @@
+ import net.minecraft.client.multiplayer.ClientLevel;
+ import net.minecraft.client.renderer.Sheets;
+ import net.minecraft.client.renderer.block.model.BakedQuad;
+-import net.minecraft.world.entity.ItemOwner;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.minecraft.world.item.ItemStack;
+ import net.neoforged.api.distmarker.Dist;
+@@ -33,7 +_,7 @@
+         ItemModelResolver p_388302_,
+         ItemDisplayContext p_388518_,
+         @Nullable ClientLevel p_387367_,
+-        @Nullable ItemOwner p_435350_,
++        @Nullable LivingEntity p_388182_,
+         int p_388913_
+     ) {
+         p_386627_.appendModelIdentityElement(this);

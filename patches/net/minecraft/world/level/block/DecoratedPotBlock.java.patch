@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/DecoratedPotBlock.java
++++ b/net/minecraft/world/level/block/DecoratedPotBlock.java
+@@ -98,7 +_,7 @@
+         ItemStack p_316569_, BlockState p_316562_, Level p_316177_, BlockPos p_316898_, Player p_316632_, InteractionHand p_316424_, BlockHitResult p_316345_
+     ) {
+         if (p_316177_.getBlockEntity(p_316898_) instanceof DecoratedPotBlockEntity decoratedpotblockentity) {
+-            if (p_316177_.isClientSide()) {
++            if (p_316177_.isClientSide) {
+                 return InteractionResult.SUCCESS;
+             } else {
+                 ItemStack itemstack1 = decoratedpotblockentity.getTheItem();
+@@ -237,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_306206_, Level p_306113_, BlockPos p_306305_, Direction p_434577_) {
++    protected int getAnalogOutputSignal(BlockState p_306206_, Level p_306113_, BlockPos p_306305_) {
+         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(p_306113_.getBlockEntity(p_306305_));
+     }
+ 

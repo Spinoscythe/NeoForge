@@ -1,0 +1,26 @@
+--- a/net/minecraft/server/commands/WaypointCommand.java
++++ b/net/minecraft/server/commands/WaypointCommand.java
+@@ -145,8 +_,8 @@
+             Component component = ComponentUtils.formatList(
+                 set.stream()
+                     .map(
+-                        p_437180_ -> {
+-                            if (p_437180_ instanceof LivingEntity livingentity) {
++                        p_426958_ -> {
++                            if (p_426958_ instanceof LivingEntity livingentity) {
+                                 BlockPos blockpos = livingentity.blockPosition();
+                                 return livingentity.getFeedbackDisplayName()
+                                     .copy()
+@@ -157,10 +_,10 @@
+                                                 )
+                                             )
+                                             .withHoverEvent(new HoverEvent.ShowText(Component.translatable("chat.coordinates.tooltip")))
+-                                            .withColor(p_437180_.waypointIcon().color.orElse(-1))
++                                            .withColor(p_426958_.waypointIcon().color.orElse(-1))
+                                     );
+                             } else {
+-                                return Component.literal(p_437180_.toString());
++                                return Component.literal(p_426958_.toString());
+                             }
+                         }
+                     )

@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/entity/SpawnPlacementTypes.java
++++ b/net/minecraft/world/entity/SpawnPlacementTypes.java
+@@ -10,16 +_,16 @@
+ 
+ public interface SpawnPlacementTypes {
+     SpawnPlacementType NO_RESTRICTIONS = (p_321554_, p_321832_, p_321540_) -> true;
+-    SpawnPlacementType IN_WATER = (p_432528_, p_432529_, p_432530_) -> {
+-        if (p_432530_ != null && p_432528_.getWorldBorder().isWithinBounds(p_432529_)) {
+-            BlockPos blockpos = p_432529_.above();
+-            return p_432528_.getFluidState(p_432529_).is(FluidTags.WATER) && !p_432528_.getBlockState(blockpos).isRedstoneConductor(p_432528_, blockpos);
++    SpawnPlacementType IN_WATER = (p_425271_, p_425272_, p_425273_) -> {
++        if (p_425273_ != null && p_425271_.getWorldBorder().isWithinBounds(p_425272_)) {
++            BlockPos blockpos = p_425272_.above();
++            return p_425271_.getFluidState(p_425272_).is(FluidTags.WATER) && !p_425271_.getBlockState(blockpos).isRedstoneConductor(p_425271_, blockpos);
+         } else {
+             return false;
+         }
+     };
+-    SpawnPlacementType IN_LAVA = (p_432531_, p_432532_, p_432533_) -> p_432533_ != null && p_432531_.getWorldBorder().isWithinBounds(p_432532_)
+-        ? p_432531_.getFluidState(p_432532_).is(FluidTags.LAVA)
++    SpawnPlacementType IN_LAVA = (p_425274_, p_425275_, p_425276_) -> p_425276_ != null && p_425274_.getWorldBorder().isWithinBounds(p_425275_)
++        ? p_425274_.getFluidState(p_425275_).is(FluidTags.LAVA)
+         : false;
+     SpawnPlacementType ON_GROUND = new SpawnPlacementType() {
+         @Override

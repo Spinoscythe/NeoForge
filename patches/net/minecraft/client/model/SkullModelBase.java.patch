@@ -1,0 +1,20 @@
+--- a/net/minecraft/client/model/SkullModelBase.java
++++ b/net/minecraft/client/model/SkullModelBase.java
+@@ -6,15 +_,10 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public abstract class SkullModelBase extends Model<SkullModelBase.State> {
++public abstract class SkullModelBase extends Model {
+     public SkullModelBase(ModelPart p_368524_) {
+         super(p_368524_, RenderType::entityTranslucent);
+     }
+ 
+-    @OnlyIn(Dist.CLIENT)
+-    public static class State {
+-        public float animationPos;
+-        public float yRot;
+-        public float xRot;
+-    }
++    public abstract void setupAnim(float p_170950_, float p_170951_, float p_170952_);
+ }

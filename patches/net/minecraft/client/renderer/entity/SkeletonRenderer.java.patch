@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/entity/SkeletonRenderer.java
++++ b/net/minecraft/client/renderer/entity/SkeletonRenderer.java
+@@ -12,7 +_,7 @@
+     private static final ResourceLocation SKELETON_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/skeleton/skeleton.png");
+ 
+     public SkeletonRenderer(EntityRendererProvider.Context p_174380_) {
+-        super(p_174380_, ModelLayers.SKELETON, ModelLayers.SKELETON_ARMOR);
++        super(p_174380_, ModelLayers.SKELETON, ModelLayers.SKELETON_INNER_ARMOR, ModelLayers.SKELETON_OUTER_ARMOR);
+     }
+ 
+     public ResourceLocation getTextureLocation(SkeletonRenderState p_365297_) {

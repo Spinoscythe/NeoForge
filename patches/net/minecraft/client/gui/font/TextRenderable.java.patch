@@ -1,0 +1,34 @@
+--- a/net/minecraft/client/gui/font/TextRenderable.java
++++ /dev/null
+@@ -1,31 +_,0 @@
+-package net.minecraft.client.gui.font;
+-
+-import com.mojang.blaze3d.pipeline.RenderPipeline;
+-import com.mojang.blaze3d.textures.GpuTextureView;
+-import com.mojang.blaze3d.vertex.VertexConsumer;
+-import javax.annotation.Nullable;
+-import net.minecraft.client.gui.Font;
+-import net.minecraft.client.renderer.RenderType;
+-import net.neoforged.api.distmarker.Dist;
+-import net.neoforged.api.distmarker.OnlyIn;
+-import org.joml.Matrix4f;
+-
+-@OnlyIn(Dist.CLIENT)
+-public interface TextRenderable {
+-    void render(Matrix4f p_438890_, VertexConsumer p_439958_, int p_439123_, boolean p_439351_);
+-
+-    RenderType renderType(Font.DisplayMode p_439293_);
+-
+-    @Nullable
+-    GpuTextureView textureView();
+-
+-    RenderPipeline guiPipeline();
+-
+-    float left();
+-
+-    float top();
+-
+-    float right();
+-
+-    float bottom();
+-}

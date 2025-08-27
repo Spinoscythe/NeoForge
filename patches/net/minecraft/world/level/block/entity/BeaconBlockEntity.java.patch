@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/entity/BeaconBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BeaconBlockEntity.java
+@@ -95,7 +_,7 @@
+                     BeaconBlockEntity.this.levels = p_58714_;
+                     break;
+                 case 1:
+-                    if (!BeaconBlockEntity.this.level.isClientSide() && !BeaconBlockEntity.this.beamSections.isEmpty()) {
++                    if (!BeaconBlockEntity.this.level.isClientSide && !BeaconBlockEntity.this.beamSections.isEmpty()) {
+                         BeaconBlockEntity.playSound(BeaconBlockEntity.this.level, BeaconBlockEntity.this.worldPosition, SoundEvents.BEACON_POWER_SELECT);
+                     }
+ 
 @@ -141,8 +_,8 @@
  
          for (int i1 = 0; i1 < 10 && blockpos.getY() <= l; i1++) {
@@ -11,3 +20,21 @@
                  if (p_155111_.checkingBeamSections.size() <= 1) {
                      beaconbeamowner$section = new BeaconBeamOwner.Section(j1);
                      p_155111_.checkingBeamSections.add(beaconbeamowner$section);
+@@ -184,7 +_,7 @@
+             p_155111_.lastCheckY = p_155108_.getMinY() - 1;
+             boolean flag = k1 > 0;
+             p_155111_.beamSections = p_155111_.checkingBeamSections;
+-            if (!p_155108_.isClientSide()) {
++            if (!p_155108_.isClientSide) {
+                 boolean flag1 = p_155111_.levels > 0;
+                 if (!flag && flag1) {
+                     playSound(p_155108_, p_155109_, SoundEvents.BEACON_ACTIVATE);
+@@ -236,7 +_,7 @@
+     private static void applyEffects(
+         Level p_155098_, BlockPos p_155099_, int p_155100_, @Nullable Holder<MobEffect> p_316599_, @Nullable Holder<MobEffect> p_316343_
+     ) {
+-        if (!p_155098_.isClientSide() && p_316599_ != null) {
++        if (!p_155098_.isClientSide && p_316599_ != null) {
+             double d0 = p_155100_ * 10 + 10;
+             int i = 0;
+             if (p_155100_ >= 4 && Objects.equals(p_316599_, p_316343_)) {

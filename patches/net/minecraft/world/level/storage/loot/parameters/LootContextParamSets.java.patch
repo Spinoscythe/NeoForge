@@ -18,3 +18,21 @@
      );
      public static final ContextKeySet ENTITY = register(
          "entity",
+@@ -91,17 +_,6 @@
+     );
+     public static final ContextKeySet SHEARING = register(
+         "shearing", p_380929_ -> p_380929_.required(LootContextParams.ORIGIN).required(LootContextParams.THIS_ENTITY).required(LootContextParams.TOOL)
+-    );
+-    public static final ContextKeySet ENTITY_INTERACT = register(
+-        "entity_interact",
+-        p_432738_ -> p_432738_.required(LootContextParams.TARGET_ENTITY).optional(LootContextParams.INTERACTING_ENTITY).required(LootContextParams.TOOL)
+-    );
+-    public static final ContextKeySet BLOCK_INTERACT = register(
+-        "block_interact",
+-        p_432739_ -> p_432739_.required(LootContextParams.BLOCK_STATE)
+-            .optional(LootContextParams.BLOCK_ENTITY)
+-            .optional(LootContextParams.INTERACTING_ENTITY)
+-            .optional(LootContextParams.TOOL)
+     );
+     public static final ContextKeySet ENCHANTED_DAMAGE = register(
+         "enchanted_damage",

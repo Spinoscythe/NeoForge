@@ -1,0 +1,146 @@
+--- a/net/minecraft/world/level/levelgen/NoiseChunk.java
++++ b/net/minecraft/world/level/levelgen/NoiseChunk.java
+@@ -4,7 +_,6 @@
+ import it.unimi.dsi.fastutil.longs.Long2IntMap;
+ import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+ import java.util.ArrayList;
+-import java.util.Arrays;
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.Map;
+@@ -33,9 +_,9 @@
+     final List<NoiseChunk.NoiseInterpolator> interpolators;
+     final List<NoiseChunk.CacheAllInCell> cellCaches;
+     private final Map<DensityFunction, DensityFunction> wrapped = new HashMap<>();
+-    private final Long2IntMap preliminarySurfaceLevelCache = new Long2IntOpenHashMap();
++    private final Long2IntMap preliminarySurfaceLevel = new Long2IntOpenHashMap();
+     private final Aquifer aquifer;
+-    private final DensityFunction preliminarySurfaceLevel;
++    private final DensityFunction initialDensityNoJaggedness;
+     private final NoiseChunk.BlockStateFiller blockStateRule;
+     private final Blender blender;
+     private final NoiseChunk.FlatCache blendAlpha;
+@@ -121,27 +_,22 @@
+         this.beardifier = p_224348_;
+         this.blendAlpha = new NoiseChunk.FlatCache(new NoiseChunk.BlendAlpha(), false);
+         this.blendOffset = new NoiseChunk.FlatCache(new NoiseChunk.BlendOffset(), false);
+-        if (!p_224351_.isEmpty()) {
+-            for (int i = 0; i <= this.noiseSizeXZ; i++) {
+-                int j = this.firstNoiseX + i;
+-                int k = QuartPos.toBlock(j);
+-
+-                for (int l = 0; l <= this.noiseSizeXZ; l++) {
+-                    int i1 = this.firstNoiseZ + l;
+-                    int j1 = QuartPos.toBlock(i1);
+-                    Blender.BlendingOutput blender$blendingoutput = p_224351_.blendOffsetAndFactor(k, j1);
+-                    this.blendAlpha.values[i + l * this.blendAlpha.sizeXZ] = blender$blendingoutput.alpha();
+-                    this.blendOffset.values[i + l * this.blendOffset.sizeXZ] = blender$blendingoutput.blendingOffset();
+-                }
++
++        for (int i = 0; i <= this.noiseSizeXZ; i++) {
++            int j = this.firstNoiseX + i;
++            int k = QuartPos.toBlock(j);
++
++            for (int l = 0; l <= this.noiseSizeXZ; l++) {
++                int i1 = this.firstNoiseZ + l;
++                int j1 = QuartPos.toBlock(i1);
++                Blender.BlendingOutput blender$blendingoutput = p_224351_.blendOffsetAndFactor(k, j1);
++                this.blendAlpha.values[i][l] = blender$blendingoutput.alpha();
++                this.blendOffset.values[i][l] = blender$blendingoutput.blendingOffset();
+             }
+-        } else {
+-            Arrays.fill(this.blendAlpha.values, 1.0);
+-            Arrays.fill(this.blendOffset.values, 0.0);
+         }
+ 
+         NoiseRouter noiserouter = p_224344_.router();
+         NoiseRouter noiserouter1 = noiserouter.mapAll(this::wrap);
+-        this.preliminarySurfaceLevel = noiserouter1.preliminarySurfaceLevel();
+         if (!p_224349_.isAquifersEnabled()) {
+             this.aquifer = Aquifer.createDisabled(p_224350_);
+         } else {
+@@ -161,6 +_,7 @@
+         }
+ 
+         this.blockStateRule = new MaterialRuleList(list.toArray(new NoiseChunk.BlockStateFiller[0]));
++        this.initialDensityNoJaggedness = noiserouter1.initialDensityWithoutJaggedness();
+     }
+ 
+     protected Climate.Sampler cachedClimateSampler(NoiseRouter p_224360_, List<Climate.ParameterPoint> p_224361_) {
+@@ -195,31 +_,24 @@
+         return this.cellStartBlockZ + this.inCellZ;
+     }
+ 
+-    public int maxPreliminarySurfaceLevel(int p_435303_, int p_434742_, int p_432937_, int p_434663_) {
+-        int i = Integer.MIN_VALUE;
+-
+-        for (int j = p_434742_; j <= p_434663_; j += 4) {
+-            for (int k = p_435303_; k <= p_432937_; k += 4) {
+-                int l = this.preliminarySurfaceLevel(k, j);
+-                if (l > i) {
+-                    i = l;
+-                }
+-            }
+-        }
+-
+-        return i;
+-    }
+-
+     public int preliminarySurfaceLevel(int p_198257_, int p_198258_) {
+         int i = QuartPos.toBlock(QuartPos.fromBlock(p_198257_));
+         int j = QuartPos.toBlock(QuartPos.fromBlock(p_198258_));
+-        return this.preliminarySurfaceLevelCache.computeIfAbsent(ColumnPos.asLong(i, j), this::computePreliminarySurfaceLevel);
++        return this.preliminarySurfaceLevel.computeIfAbsent(ColumnPos.asLong(i, j), this::computePreliminarySurfaceLevel);
+     }
+ 
+     private int computePreliminarySurfaceLevel(long p_198250_) {
+         int i = ColumnPos.getX(p_198250_);
+         int j = ColumnPos.getZ(p_198250_);
+-        return Mth.floor(this.preliminarySurfaceLevel.compute(new DensityFunction.SinglePointContext(i, 0, j)));
++        int k = this.noiseSettings.minY();
++
++        for (int l = k + this.noiseSettings.height(); l >= k; l -= this.cellHeight) {
++            if (this.initialDensityNoJaggedness.compute(new DensityFunction.SinglePointContext(i, l, j)) > 0.390625) {
++                return l;
++            }
++        }
++
++        return Integer.MAX_VALUE;
+     }
+ 
+     @Override
+@@ -623,13 +_,11 @@
+ 
+     class FlatCache implements DensityFunctions.MarkerOrMarked, NoiseChunk.NoiseChunkDensityFunction {
+         private final DensityFunction noiseFiller;
+-        final double[] values;
+-        final int sizeXZ;
++        final double[][] values;
+ 
+         FlatCache(DensityFunction p_209330_, boolean p_209331_) {
+             this.noiseFiller = p_209330_;
+-            this.sizeXZ = NoiseChunk.this.noiseSizeXZ + 1;
+-            this.values = new double[this.sizeXZ * this.sizeXZ];
++            this.values = new double[NoiseChunk.this.noiseSizeXZ + 1][NoiseChunk.this.noiseSizeXZ + 1];
+             if (p_209331_) {
+                 for (int i = 0; i <= NoiseChunk.this.noiseSizeXZ; i++) {
+                     int j = NoiseChunk.this.firstNoiseX + i;
+@@ -638,7 +_,7 @@
+                     for (int l = 0; l <= NoiseChunk.this.noiseSizeXZ; l++) {
+                         int i1 = NoiseChunk.this.firstNoiseZ + l;
+                         int j1 = QuartPos.toBlock(i1);
+-                        this.values[i + l * this.sizeXZ] = p_209330_.compute(new DensityFunction.SinglePointContext(k, 0, j1));
++                        this.values[i][l] = p_209330_.compute(new DensityFunction.SinglePointContext(k, 0, j1));
+                     }
+                 }
+             }
+@@ -650,7 +_,8 @@
+             int j = QuartPos.fromBlock(p_209333_.blockZ());
+             int k = i - NoiseChunk.this.firstNoiseX;
+             int l = j - NoiseChunk.this.firstNoiseZ;
+-            return k >= 0 && l >= 0 && k < this.sizeXZ && l < this.sizeXZ ? this.values[k + l * this.sizeXZ] : this.noiseFiller.compute(p_209333_);
++            int i1 = this.values.length;
++            return k >= 0 && l >= 0 && k < i1 && l < i1 ? this.values[k][l] : this.noiseFiller.compute(p_209333_);
+         }
+ 
+         @Override

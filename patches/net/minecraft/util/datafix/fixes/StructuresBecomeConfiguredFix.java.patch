@@ -1,5 +1,48 @@
 --- a/net/minecraft/util/datafix/fixes/StructuresBecomeConfiguredFix.java
 +++ b/net/minecraft/util/datafix/fixes/StructuresBecomeConfiguredFix.java
+@@ -139,13 +_,13 @@
+     private Dynamic<?> updateStarts(Dynamic<?> p_207700_, Dynamic<?> p_207701_) {
+         Map<? extends Dynamic<?>, ? extends Dynamic<?>> map = p_207700_.getMapValues().result().orElse(Map.of());
+         HashMap<Dynamic<?>, Dynamic<?>> hashmap = Maps.newHashMap();
+-        map.forEach((p_432503_, p_432504_) -> {
+-            if (!p_432504_.get("id").asString("INVALID").equals("INVALID")) {
+-                Dynamic<?> dynamic = this.findUpdatedStructureType((Dynamic<?>)p_432503_, p_207701_);
++        map.forEach((p_339494_, p_339495_) -> {
++            if (!p_339495_.get("id").asString("INVALID").equals("INVALID")) {
++                Dynamic<?> dynamic = this.findUpdatedStructureType((Dynamic<?>)p_339494_, p_207701_);
+                 if (dynamic == null) {
+-                    LOGGER.warn("Encountered unknown structure in datafixer: {}", p_432503_.asString("<missing key>"));
++                    LOGGER.warn("Encountered unknown structure in datafixer: " + p_339494_.asString("<missing key>"));
+                 } else {
+-                    hashmap.computeIfAbsent(dynamic, p_339502_ -> p_432504_.set("id", dynamic));
++                    hashmap.computeIfAbsent(dynamic, p_339502_ -> p_339495_.set("id", dynamic));
+                 }
+             }
+         });
+@@ -156,17 +_,17 @@
+         Map<? extends Dynamic<?>, ? extends Dynamic<?>> map = p_207717_.getMapValues().result().orElse(Map.of());
+         HashMap<Dynamic<?>, Dynamic<?>> hashmap = Maps.newHashMap();
+         map.forEach(
+-            (p_432507_, p_432508_) -> {
+-                if (p_432508_.asLongStream().count() != 0L) {
+-                    Dynamic<?> dynamic = this.findUpdatedStructureType((Dynamic<?>)p_432507_, p_207718_);
++            (p_339498_, p_339499_) -> {
++                if (p_339499_.asLongStream().count() != 0L) {
++                    Dynamic<?> dynamic = this.findUpdatedStructureType((Dynamic<?>)p_339498_, p_207718_);
+                     if (dynamic == null) {
+-                        LOGGER.warn("Encountered unknown structure in datafixer: {}", p_432507_.asString("<missing key>"));
++                        LOGGER.warn("Encountered unknown structure in datafixer: " + p_339498_.asString("<missing key>"));
+                     } else {
+                         hashmap.compute(
+                             dynamic,
+                             (p_339504_, p_339505_) -> p_339505_ == null
+-                                ? p_432508_
+-                                : p_432508_.createLongList(LongStream.concat(p_339505_.asLongStream(), p_432508_.asLongStream()))
++                                ? p_339499_
++                                : p_339499_.createLongList(LongStream.concat(p_339505_.asLongStream(), p_339499_.asLongStream()))
+                         );
+                     }
+                 }
 @@ -179,7 +_,11 @@
      private Dynamic<?> findUpdatedStructureType(Dynamic<?> p_207725_, Dynamic<?> p_339616_) {
          String s = p_207725_.asString("UNKNOWN").toLowerCase(Locale.ROOT);

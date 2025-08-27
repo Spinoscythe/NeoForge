@@ -1,0 +1,168 @@
+--- a/net/minecraft/client/renderer/blockentity/BedRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/BedRenderer.java
+@@ -1,9 +_,9 @@
+ package net.minecraft.client.renderer.blockentity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import com.mojang.math.Axis;
+ import java.util.Set;
+-import javax.annotation.Nullable;
+ import net.minecraft.client.model.Model;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
+@@ -12,16 +_,12 @@
+ import net.minecraft.client.model.geom.builders.LayerDefinition;
+ import net.minecraft.client.model.geom.builders.MeshDefinition;
+ import net.minecraft.client.model.geom.builders.PartDefinition;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+ import net.minecraft.client.renderer.Sheets;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+-import net.minecraft.client.renderer.special.SpecialModelRenderer;
+ import net.minecraft.client.resources.model.Material;
+-import net.minecraft.client.resources.model.MaterialSet;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+-import net.minecraft.util.Unit;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.LevelAccessor;
+ import net.minecraft.world.level.block.BedBlock;
+@@ -38,22 +_,16 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class BedRenderer implements BlockEntityRenderer<BedBlockEntity> {
+-    private final MaterialSet materials;
+-    private final Model.Simple headModel;
+-    private final Model.Simple footModel;
++    private final Model headModel;
++    private final Model footModel;
+ 
+     public BedRenderer(BlockEntityRendererProvider.Context p_173540_) {
+-        this(p_173540_.materials(), p_173540_.entityModelSet());
+-    }
+-
+-    public BedRenderer(SpecialModelRenderer.BakingContext p_433173_) {
+-        this(p_433173_.materials(), p_433173_.entityModelSet());
+-    }
+-
+-    public BedRenderer(MaterialSet p_434060_, EntityModelSet p_433002_) {
+-        this.materials = p_434060_;
+-        this.headModel = new Model.Simple(p_433002_.bakeLayer(ModelLayers.BED_HEAD), RenderType::entitySolid);
+-        this.footModel = new Model.Simple(p_433002_.bakeLayer(ModelLayers.BED_FOOT), RenderType::entitySolid);
++        this(p_173540_.getModelSet());
++    }
++
++    public BedRenderer(EntityModelSet p_387957_) {
++        this.headModel = new Model.Simple(p_387957_.bakeLayer(ModelLayers.BED_HEAD), RenderType::entitySolid);
++        this.footModel = new Model.Simple(p_387957_.bakeLayer(ModelLayers.BED_FOOT), RenderType::entitySolid);
+     }
+ 
+     public static LayerDefinition createHeadLayer() {
+@@ -90,20 +_,13 @@
+         return LayerDefinition.create(meshdefinition, 64, 64);
+     }
+ 
+-    public void submit(
+-        BedBlockEntity p_439488_,
+-        float p_440344_,
+-        PoseStack p_439782_,
+-        int p_439056_,
+-        int p_440216_,
+-        Vec3 p_439228_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_440060_,
+-        SubmitNodeCollector p_439369_
++    public void render(
++        BedBlockEntity p_112205_, float p_112206_, PoseStack p_112207_, MultiBufferSource p_112208_, int p_112209_, int p_112210_, Vec3 p_401344_
+     ) {
+-        Level level = p_439488_.getLevel();
++        Level level = p_112205_.getLevel();
+         if (level != null) {
+-            Material material = Sheets.getBedMaterial(p_439488_.getColor());
+-            BlockState blockstate = p_439488_.getBlockState();
++            Material material = Sheets.getBedMaterial(p_112205_.getColor());
++            BlockState blockstate = p_112205_.getBlockState();
+             DoubleBlockCombiner.NeighborCombineResult<? extends BedBlockEntity> neighborcombineresult = DoubleBlockCombiner.combineWithNeigbour(
+                 BlockEntityType.BED,
+                 BedBlock::getBlockType,
+@@ -111,55 +_,43 @@
+                 ChestBlock.FACING,
+                 blockstate,
+                 level,
+-                p_439488_.getBlockPos(),
++                p_112205_.getBlockPos(),
+                 (p_112202_, p_112203_) -> false
+             );
+-            int i = neighborcombineresult.apply(new BrightnessCombiner<>()).get(p_439056_);
+-            this.submitPiece(
+-                p_439782_,
+-                p_439369_,
++            int i = neighborcombineresult.apply(new BrightnessCombiner<>()).get(p_112209_);
++            this.renderPiece(
++                p_112207_,
++                p_112208_,
+                 blockstate.getValue(BedBlock.PART) == BedPart.HEAD ? this.headModel : this.footModel,
+                 blockstate.getValue(BedBlock.FACING),
+                 material,
+                 i,
+-                p_440216_,
+-                false,
+-                p_440060_
++                p_112210_,
++                false
+             );
+         }
+     }
+ 
+-    public void submitSpecial(PoseStack p_439640_, SubmitNodeCollector p_439587_, int p_439564_, int p_440267_, Material p_440126_) {
+-        this.submitPiece(p_439640_, p_439587_, this.headModel, Direction.SOUTH, p_440126_, p_439564_, p_440267_, false, null);
+-        this.submitPiece(p_439640_, p_439587_, this.footModel, Direction.SOUTH, p_440126_, p_439564_, p_440267_, true, null);
++    public void renderInHand(PoseStack p_388130_, MultiBufferSource p_388011_, int p_386978_, int p_388446_, Material p_388516_) {
++        this.renderPiece(p_388130_, p_388011_, this.headModel, Direction.SOUTH, p_388516_, p_386978_, p_388446_, false);
++        this.renderPiece(p_388130_, p_388011_, this.footModel, Direction.SOUTH, p_388516_, p_386978_, p_388446_, true);
+     }
+ 
+-    private void submitPiece(
+-        PoseStack p_440523_,
+-        SubmitNodeCollector p_440584_,
+-        Model.Simple p_440701_,
+-        Direction p_439931_,
+-        Material p_439303_,
+-        int p_438920_,
+-        int p_439582_,
+-        boolean p_440123_,
+-        @Nullable ModelFeatureRenderer.CrumblingOverlay p_439398_
++    private void renderPiece(
++        PoseStack p_173542_,
++        MultiBufferSource p_173543_,
++        Model p_363684_,
++        Direction p_173545_,
++        Material p_173546_,
++        int p_173547_,
++        int p_173548_,
++        boolean p_173549_
+     ) {
+-        p_440523_.pushPose();
+-        preparePose(p_440523_, p_440123_, p_439931_);
+-        p_440584_.submitModel(
+-            p_440701_,
+-            Unit.INSTANCE,
+-            p_440523_,
+-            p_439303_.renderType(RenderType::entitySolid),
+-            p_438920_,
+-            p_439582_,
+-            -1,
+-            this.materials.get(p_439303_),
+-            0,
+-            p_439398_
+-        );
+-        p_440523_.popPose();
++        p_173542_.pushPose();
++        preparePose(p_173542_, p_173549_, p_173545_);
++        VertexConsumer vertexconsumer = p_173546_.buffer(p_173543_, RenderType::entitySolid);
++        p_363684_.renderToBuffer(p_173542_, vertexconsumer, p_173547_, p_173548_);
++        p_173542_.popPose();
+     }
+ 
+     private static void preparePose(PoseStack p_428361_, boolean p_428252_, Direction p_428231_) {

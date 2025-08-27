@@ -1,0 +1,15 @@
+--- a/net/minecraft/client/gui/components/FittingMultiLineTextWidget.java
++++ b/net/minecraft/client/gui/components/FittingMultiLineTextWidget.java
+@@ -35,12 +_,6 @@
+         return this.multilineWidget.getHeight();
+     }
+ 
+-    public void minimizeHeight() {
+-        if (!this.showingScrollBar()) {
+-            this.setHeight(this.getInnerHeight() + this.totalInnerPadding());
+-        }
+-    }
+-
+     @Override
+     protected double scrollRate() {
+         return 9.0;

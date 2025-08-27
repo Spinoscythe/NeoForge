@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/multiplayer/chat/report/ReportEnvironment.java
++++ b/net/minecraft/client/multiplayer/chat/report/ReportEnvironment.java
+@@ -6,7 +_,6 @@
+ import com.mojang.realmsclient.dto.RealmsServer;
+ import java.util.Locale;
+ import javax.annotation.Nullable;
+-import net.minecraft.SharedConstants;
+ import net.minecraft.client.Minecraft;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -49,7 +_,7 @@
+ 
+     private static String getClientVersion() {
+         StringBuilder stringbuilder = new StringBuilder();
+-        stringbuilder.append(SharedConstants.getCurrentVersion().id());
++        stringbuilder.append("1.21.8");
+         if (Minecraft.checkModStatus().shouldReportAsModified()) {
+             stringbuilder.append(" (modded)");
+         }

@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/levelgen/blending/Blender.java
++++ b/net/minecraft/world/level/levelgen/blending/Blender.java
+@@ -106,10 +_,6 @@
+         this.densityBlendingData = p_202198_;
+     }
+ 
+-    public boolean isEmpty() {
+-        return this.heightAndBiomeBlendingData.isEmpty() && this.densityBlendingData.isEmpty();
+-    }
+-
+     public Blender.BlendingOutput blendOffsetAndFactor(int p_209719_, int p_209720_) {
+         int i = QuartPos.fromBlock(p_209719_);
+         int j = QuartPos.fromBlock(p_209720_);

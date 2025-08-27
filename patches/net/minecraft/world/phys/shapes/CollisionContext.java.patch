@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/phys/shapes/CollisionContext.java
++++ b/net/minecraft/world/phys/shapes/CollisionContext.java
+@@ -36,7 +_,7 @@
+             true,
+             p_422168_ != null ? p_422168_.getY() : -Double.MAX_VALUE,
+             p_422168_ instanceof LivingEntity ? p_422168_.getMainHandItem() : ItemStack.EMPTY,
+-            false,
++            p_422168_ instanceof LivingEntity ? p_404827_ -> p_422168_.canStandOnFluid(p_404827_) : p_405865_ -> false,
+             p_422168_
+         );
+     }
+@@ -47,7 +_,7 @@
+             true,
+             p_405836_ != null ? p_422096_ : -Double.MAX_VALUE,
+             p_405836_ instanceof LivingEntity livingentity ? livingentity.getMainHandItem() : ItemStack.EMPTY,
+-            false,
++            p_405836_ instanceof LivingEntity livingentity1 ? p_421474_ -> livingentity1.canStandOnFluid(p_421474_) : p_421475_ -> false,
+             p_405836_
+         );
+     }
+@@ -57,8 +_,6 @@
+     boolean isAbove(VoxelShape p_82755_, BlockPos p_82756_, boolean p_82757_);
+ 
+     boolean isHoldingItem(Item p_82752_);
+-
+-    boolean alwaysCollideWithFluid();
+ 
+     boolean canStandOnFluid(FluidState p_205110_, FluidState p_205111_);
+ 

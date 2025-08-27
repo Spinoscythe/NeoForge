@@ -1,0 +1,19 @@
+--- a/net/minecraft/client/gui/screens/dialog/DialogConnectionAccess.java
++++ b/net/minecraft/client/gui/screens/dialog/DialogConnectionAccess.java
+@@ -5,6 +_,7 @@
+ import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.core.Holder;
+ import net.minecraft.nbt.Tag;
++import net.minecraft.network.chat.Component;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.server.ServerLinks;
+ import net.minecraft.server.dialog.Dialog;
+@@ -13,6 +_,8 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public interface DialogConnectionAccess {
++    void disconnect(Component p_427257_);
++
+     void runCommand(String p_427462_, @Nullable Screen p_427380_);
+ 
+     void openDialog(Holder<Dialog> p_427479_, @Nullable Screen p_428375_);

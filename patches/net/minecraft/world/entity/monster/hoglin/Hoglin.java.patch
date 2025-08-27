@@ -21,3 +21,12 @@
          );
      }
  
+@@ -346,7 +_,7 @@
+ 
+     @Override
+     protected SoundEvent getAmbientSound() {
+-        return this.level().isClientSide() ? null : HoglinAi.getSoundForCurrentActivity(this).orElse(null);
++        return this.level().isClientSide ? null : HoglinAi.getSoundForCurrentActivity(this).orElse(null);
+     }
+ 
+     @Override

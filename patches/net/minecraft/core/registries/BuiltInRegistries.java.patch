@@ -1,13 +1,50 @@
 --- a/net/minecraft/core/registries/BuiltInRegistries.java
 +++ b/net/minecraft/core/registries/BuiltInRegistries.java
-@@ -402,6 +_,10 @@
-         ((MappedRegistry)p_365443_).bindAllTagsToEmpty();
+@@ -5,7 +_,6 @@
+ import com.mojang.serialization.Lifecycle;
+ import com.mojang.serialization.MapCodec;
+ import java.util.Map;
+-import java.util.Objects;
+ import java.util.function.Consumer;
+ import java.util.function.Supplier;
+ import net.minecraft.Util;
+@@ -143,6 +_,7 @@
+ import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
+ import net.minecraft.world.level.storage.loot.providers.score.LootScoreProviderType;
+ import net.minecraft.world.level.storage.loot.providers.score.ScoreboardNameProviders;
++import org.apache.commons.lang3.Validate;
+ import org.slf4j.Logger;
+ 
+ public class BuiltInRegistries {
+@@ -382,14 +_,14 @@
      }
  
-+    public static java.util.Set<ResourceLocation> getVanillaRegistrationOrder() {
-+        return java.util.Collections.unmodifiableSet(LOADERS.keySet());
+     private static <T extends Registry<?>> void validate(Registry<T> p_260209_) {
+-        p_260209_.forEach(p_432341_ -> {
+-            if (p_432341_.keySet().isEmpty()) {
+-                Util.logAndPauseIfInIde("Registry '" + p_260209_.getKey((T)p_432341_) + "' was empty after loading");
++        p_260209_.forEach(p_367814_ -> {
++            if (p_367814_.keySet().isEmpty()) {
++                Util.logAndPauseIfInIde("Registry '" + p_260209_.getKey((T)p_367814_) + "' was empty after loading");
+             }
+ 
+-            if (p_432341_ instanceof DefaultedRegistry) {
+-                ResourceLocation resourcelocation = ((DefaultedRegistry)p_432341_).getDefaultKey();
+-                Objects.requireNonNull(p_432341_.getValue(resourcelocation), "Missing default of DefaultedMappedRegistry: " + resourcelocation);
++            if (p_367814_ instanceof DefaultedRegistry) {
++                ResourceLocation resourcelocation = ((DefaultedRegistry)p_367814_).getDefaultKey();
++                Validate.notNull(p_367814_.getValue(resourcelocation), "Missing default of DefaultedMappedRegistry: " + resourcelocation);
+             }
+         });
+     }
+@@ -400,6 +_,10 @@
+ 
+     private static void bindBootstrappedTagsToEmpty(Registry<?> p_365443_) {
+         ((MappedRegistry)p_365443_).bindAllTagsToEmpty();
 +    }
 +
++    public static java.util.Set<ResourceLocation> getVanillaRegistrationOrder() {
++        return java.util.Collections.unmodifiableSet(LOADERS.keySet());
+     }
+ 
      @FunctionalInterface
-     interface RegistryBootstrap<T> {
-         Object run(Registry<T> p_260128_);

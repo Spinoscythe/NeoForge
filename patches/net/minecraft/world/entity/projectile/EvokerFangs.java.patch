@@ -1,0 +1,26 @@
+--- a/net/minecraft/world/entity/projectile/EvokerFangs.java
++++ b/net/minecraft/world/entity/projectile/EvokerFangs.java
+@@ -45,12 +_,12 @@
+     }
+ 
+     public void setOwner(@Nullable LivingEntity p_36939_) {
+-        this.owner = EntityReference.of(p_36939_);
++        this.owner = p_36939_ != null ? new EntityReference<>(p_36939_) : null;
+     }
+ 
+     @Nullable
+     public LivingEntity getOwner() {
+-        return EntityReference.getLivingEntity(this.owner, this.level());
++        return EntityReference.get(this.owner, this.level(), LivingEntity.class);
+     }
+ 
+     @Override
+@@ -68,7 +_,7 @@
+     @Override
+     public void tick() {
+         super.tick();
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             if (this.clientSideAttackStarted) {
+                 this.lifeTicks--;
+                 if (this.lifeTicks == 14) {

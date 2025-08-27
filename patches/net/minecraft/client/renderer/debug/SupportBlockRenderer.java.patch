@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/debug/SupportBlockRenderer.java
++++ b/net/minecraft/client/renderer/debug/SupportBlockRenderer.java
+@@ -93,7 +_,7 @@
+         double d3 = d0 + 1.0 + 4.0 * p_286880_;
+         double d4 = d1 + 1.0 + 4.0 * p_286880_;
+         double d5 = d2 + 1.0 + 4.0 * p_286880_;
+-        ShapeRenderer.renderLineBox(p_286592_.last(), p_286314_.getBuffer(RenderType.lines()), d0, d1, d2, d3, d4, d5, p_286918_, p_286304_, p_286672_, 0.4F);
++        ShapeRenderer.renderLineBox(p_286592_, p_286314_.getBuffer(RenderType.lines()), d0, d1, d2, d3, d4, d5, p_286918_, p_286304_, p_286672_, 0.4F);
+         DebugRenderer.renderVoxelShape(
+             p_286592_,
+             p_286314_.getBuffer(RenderType.lines()),

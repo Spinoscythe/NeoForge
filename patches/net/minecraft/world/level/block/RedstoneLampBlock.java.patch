@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/RedstoneLampBlock.java
++++ b/net/minecraft/world/level/block/RedstoneLampBlock.java
+@@ -35,7 +_,7 @@
+ 
+     @Override
+     protected void neighborChanged(BlockState p_55666_, Level p_55667_, BlockPos p_55668_, Block p_55669_, @Nullable Orientation p_364297_, boolean p_55671_) {
+-        if (!p_55667_.isClientSide()) {
++        if (!p_55667_.isClientSide) {
+             boolean flag = p_55666_.getValue(LIT);
+             if (flag != p_55667_.hasNeighborSignal(p_55668_)) {
+                 if (flag) {

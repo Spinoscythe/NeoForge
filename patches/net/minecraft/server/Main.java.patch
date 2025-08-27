@@ -1,6 +1,22 @@
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -95,6 +_,13 @@
+@@ -30,6 +_,7 @@
+ import net.minecraft.core.Registry;
+ import net.minecraft.core.RegistryAccess;
+ import net.minecraft.core.registries.Registries;
++import net.minecraft.gametest.framework.GameTestTicker;
+ import net.minecraft.nbt.NbtException;
+ import net.minecraft.nbt.ReportedNbtException;
+ import net.minecraft.network.chat.Component;
+@@ -37,6 +_,7 @@
+ import net.minecraft.server.dedicated.DedicatedServer;
+ import net.minecraft.server.dedicated.DedicatedServerProperties;
+ import net.minecraft.server.dedicated.DedicatedServerSettings;
++import net.minecraft.server.level.progress.LoggerChunkProgressListener;
+ import net.minecraft.server.packs.repository.PackRepository;
+ import net.minecraft.server.packs.repository.ServerPacksSource;
+ import net.minecraft.util.Mth;
+@@ -93,6 +_,13 @@
                  optionparser.printHelpOn(System.err);
                  return;
              }
@@ -14,7 +30,7 @@
  
              Path path = optionset.valueOf(optionspec14);
              if (path != null) {
-@@ -110,24 +_,22 @@
+@@ -108,24 +_,22 @@
              Bootstrap.validate();
              Util.startTimerHackThread();
              Path path1 = Paths.get("server.properties");
@@ -44,7 +60,7 @@
              LevelStorageSource levelstoragesource = LevelStorageSource.createDefault(file1.toPath());
              LevelStorageSource.LevelStorageAccess levelstoragesource$levelstorageaccess = levelstoragesource.validateAndCreateAccess(s);
              Dynamic<?> dynamic;
-@@ -136,6 +_,7 @@
+@@ -134,6 +_,7 @@
                  try {
                      dynamic = levelstoragesource$levelstorageaccess.getDataTag();
                      levelsummary = levelstoragesource$levelstorageaccess.getSummary(dynamic);
@@ -52,7 +68,7 @@
                  } catch (NbtException | ReportedNbtException | IOException ioexception1) {
                      LevelStorageSource.LevelDirectory levelstoragesource$leveldirectory = levelstoragesource$levelstorageaccess.getLevelDirectory();
                      LOGGER.warn("Failed to load world data from {}", levelstoragesource$leveldirectory.dataFile(), ioexception1);
-@@ -144,6 +_,7 @@
+@@ -142,6 +_,7 @@
                      try {
                          dynamic = levelstoragesource$levelstorageaccess.getDataTagFallback();
                          levelsummary = levelstoragesource$levelstorageaccess.getSummary(dynamic);
@@ -60,7 +76,7 @@
                      } catch (NbtException | ReportedNbtException | IOException ioexception) {
                          LOGGER.error("Failed to load world data from {}", levelstoragesource$leveldirectory.oldDataFile(), ioexception);
                          LOGGER.error(
-@@ -219,6 +_,9 @@
+@@ -217,6 +_,9 @@
                                          worlddimensions = dedicatedserverproperties.createDimensions(p_359487_.datapackWorldgen());
                                      }
  
@@ -70,7 +86,35 @@
                                      WorldDimensions.Complete worlddimensions$complete = worlddimensions.bake(registry);
                                      Lifecycle lifecycle = worlddimensions$complete.lifecycle().add(p_359487_.datapackWorldgen().allRegistriesLifecycle());
                                      return new WorldLoader.DataLoadOutput<>(
-@@ -285,6 +_,7 @@
+@@ -256,15 +_,16 @@
+ 
+             levelstoragesource$levelstorageaccess.saveDataTag(registryaccess$frozen, worlddata);
+             final DedicatedServer dedicatedserver = MinecraftServer.spin(
+-                p_432374_ -> {
++                p_423201_ -> {
+                     DedicatedServer dedicatedserver1 = new DedicatedServer(
+-                        p_432374_,
++                        p_423201_,
+                         levelstoragesource$levelstorageaccess,
+                         packrepository,
+                         worldstem,
+                         dedicatedserversettings,
+                         DataFixers.getDataFixer(),
+-                        services
++                        services,
++                        LoggerChunkProgressListener::createFromGameruleRadius
+                     );
+                     dedicatedserver1.setPort(optionset.valueOf(optionspec11));
+                     dedicatedserver1.setDemo(optionset.has(optionspec2));
+@@ -274,6 +_,7 @@
+                         dedicatedserver1.showGui();
+                     }
+ 
++                    GameTestTicker.SINGLETON.startTicking();
+                     return dedicatedserver1;
+                 }
+             );
+@@ -281,6 +_,7 @@
                  @Override
                  public void run() {
                      dedicatedserver.halt(true);

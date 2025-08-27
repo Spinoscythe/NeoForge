@@ -1,0 +1,18 @@
+--- a/net/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen.java
+@@ -89,12 +_,12 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_376773_, double p_376144_, int p_376496_, boolean p_436042_) {
+-        if (this.recipeBookComponent.mouseClicked(p_376773_, p_376144_, p_376496_, p_436042_)) {
++    public boolean mouseClicked(double p_376773_, double p_376144_, int p_376496_) {
++        if (this.recipeBookComponent.mouseClicked(p_376773_, p_376144_, p_376496_)) {
+             this.setFocused(this.recipeBookComponent);
+             return true;
+         } else {
+-            return this.widthTooNarrow && this.recipeBookComponent.isVisible() ? true : super.mouseClicked(p_376773_, p_376144_, p_376496_, p_436042_);
++            return this.widthTooNarrow && this.recipeBookComponent.isVisible() ? true : super.mouseClicked(p_376773_, p_376144_, p_376496_);
+         }
+     }
+ 

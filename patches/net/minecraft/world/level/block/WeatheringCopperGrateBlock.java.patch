@@ -1,0 +1,15 @@
+--- a/net/minecraft/world/level/block/WeatheringCopperGrateBlock.java
++++ b/net/minecraft/world/level/block/WeatheringCopperGrateBlock.java
+@@ -11,10 +_,10 @@
+ 
+ public class WeatheringCopperGrateBlock extends WaterloggedTransparentBlock implements WeatheringCopper {
+     public static final MapCodec<WeatheringCopperGrateBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432698_ -> p_432698_.group(
++        p_368453_ -> p_368453_.group(
+                 WeatheringCopper.WeatherState.CODEC.fieldOf("weathering_state").forGetter(WeatheringCopperGrateBlock::getAge), propertiesCodec()
+             )
+-            .apply(p_432698_, WeatheringCopperGrateBlock::new)
++            .apply(p_368453_, WeatheringCopperGrateBlock::new)
+     );
+     private final WeatheringCopper.WeatherState weatherState;
+ 

@@ -1,0 +1,51 @@
+--- a/net/minecraft/client/model/CreakingModel.java
++++ b/net/minecraft/client/model/CreakingModel.java
+@@ -1,6 +_,6 @@
+ package net.minecraft.client.model;
+ 
+-import java.util.Set;
++import java.util.List;
+ import net.minecraft.client.animation.KeyframeAnimation;
+ import net.minecraft.client.animation.definitions.CreakingAnimation;
+ import net.minecraft.client.model.geom.ModelPart;
+@@ -15,7 +_,9 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class CreakingModel extends EntityModel<CreakingRenderState> {
++    public static final List<ModelPart> NO_PARTS = List.of();
+     private final ModelPart head;
++    private final List<ModelPart> headParts;
+     private final KeyframeAnimation walkAnimation;
+     private final KeyframeAnimation attackAnimation;
+     private final KeyframeAnimation invulnerableAnimation;
+@@ -26,6 +_,7 @@
+         ModelPart modelpart = p_380297_.getChild("root");
+         ModelPart modelpart1 = modelpart.getChild("upper_body");
+         this.head = modelpart1.getChild("head");
++        this.headParts = List.of(this.head);
+         this.walkAnimation = CreakingAnimation.CREAKING_WALK.bake(modelpart);
+         this.attackAnimation = CreakingAnimation.CREAKING_ATTACK.bake(modelpart);
+         this.invulnerableAnimation = CreakingAnimation.CREAKING_INVULNERABLE.bake(modelpart);
+@@ -103,12 +_,6 @@
+         return LayerDefinition.create(meshdefinition, 64, 64);
+     }
+ 
+-    public static LayerDefinition createEyesLayer() {
+-        MeshDefinition meshdefinition = createMesh();
+-        meshdefinition.getRoot().retainExactParts(Set.of("head"));
+-        return LayerDefinition.create(meshdefinition, 64, 64);
+-    }
+-
+     public void setupAnim(CreakingRenderState p_380306_) {
+         super.setupAnim(p_380306_);
+         this.head.xRot = p_380306_.xRot * (float) (Math.PI / 180.0);
+@@ -120,5 +_,9 @@
+         this.attackAnimation.apply(p_380306_.attackAnimationState, p_380306_.ageInTicks);
+         this.invulnerableAnimation.apply(p_380306_.invulnerabilityAnimationState, p_380306_.ageInTicks);
+         this.deathAnimation.apply(p_380306_.deathAnimationState, p_380306_.ageInTicks);
++    }
++
++    public List<ModelPart> getHeadModelParts(CreakingRenderState p_379307_) {
++        return !p_379307_.eyesGlowing ? NO_PARTS : this.headParts;
+     }
+ }

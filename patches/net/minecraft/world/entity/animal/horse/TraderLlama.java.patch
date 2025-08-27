@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/animal/horse/TraderLlama.java
++++ b/net/minecraft/world/entity/animal/horse/TraderLlama.java
+@@ -82,7 +_,7 @@
+     @Override
+     public void aiStep() {
+         super.aiStep();
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.maybeDespawn();
+         }
+     }

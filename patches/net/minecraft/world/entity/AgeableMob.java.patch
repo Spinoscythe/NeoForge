@@ -1,0 +1,28 @@
+--- a/net/minecraft/world/entity/AgeableMob.java
++++ b/net/minecraft/world/entity/AgeableMob.java
+@@ -28,7 +_,6 @@
+         super(p_146738_, p_146739_);
+     }
+ 
+-    @Nullable
+     @Override
+     public SpawnGroupData finalizeSpawn(
+         ServerLevelAccessor p_146746_, DifficultyInstance p_146747_, EntitySpawnReason p_363316_, @Nullable SpawnGroupData p_146749_
+@@ -62,7 +_,7 @@
+     }
+ 
+     public int getAge() {
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             return this.entityData.get(DATA_BABY_ID) ? -1 : 1;
+         } else {
+             return this.age;
+@@ -130,7 +_,7 @@
+     @Override
+     public void aiStep() {
+         super.aiStep();
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             if (this.forcedAgeTimer > 0) {
+                 if (this.forcedAgeTimer % 4 == 0) {
+                     this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0), this.getRandomY() + 0.5, this.getRandomZ(1.0), 0.0, 0.0, 0.0);

@@ -1,6 +1,26 @@
 --- a/net/minecraft/client/particle/ParticleEngine.java
 +++ b/net/minecraft/client/particle/ParticleEngine.java
-@@ -74,10 +_,10 @@
+@@ -35,8 +_,10 @@
+ import net.minecraft.client.multiplayer.ClientLevel;
+ import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.texture.SpriteLoader;
++import net.minecraft.client.renderer.texture.TextureAtlas;
+ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+-import net.minecraft.client.resources.model.AtlasManager;
++import net.minecraft.client.renderer.texture.TextureManager;
++import net.minecraft.client.resources.model.AtlasIds;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.core.particles.ParticleGroup;
+@@ -44,7 +_,6 @@
+ import net.minecraft.core.particles.ParticleType;
+ import net.minecraft.core.particles.ParticleTypes;
+ import net.minecraft.core.registries.BuiltInRegistries;
+-import net.minecraft.data.AtlasIds;
+ import net.minecraft.resources.FileToIdConverter;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.server.packs.resources.PreparableReloadListener;
+@@ -73,15 +_,18 @@
          ParticleRenderType.TERRAIN_SHEET, ParticleRenderType.PARTICLE_SHEET_OPAQUE, ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT
      );
      protected ClientLevel level;
@@ -12,8 +32,25 @@
 +    private final Map<ResourceLocation, ParticleProvider<?>> providers = new java.util.HashMap<>();
      private final Queue<Particle> particlesToAdd = Queues.newArrayDeque();
      private final Map<ResourceLocation, ParticleEngine.MutableSpriteSet> spriteSets = Maps.newHashMap();
-     private final TextureAtlas textureAtlas;
-@@ -207,10 +_,14 @@
++    private final TextureAtlas textureAtlas;
+     private final Object2IntOpenHashMap<ParticleGroup> trackedParticleCounts = new Object2IntOpenHashMap<>();
+ 
+-    public ParticleEngine(ClientLevel p_107299_) {
++    public ParticleEngine(ClientLevel p_107299_, TextureManager p_107300_) {
++        this.textureAtlas = new TextureAtlas(TextureAtlas.LOCATION_PARTICLES);
++        p_107300_.register(this.textureAtlas.location(), this.textureAtlas);
+         this.level = p_107299_;
+         this.registerProviders();
+     }
+@@ -97,7 +_,6 @@
+         this.register(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, CampfireSmokeParticle.SignalProvider::new);
+         this.register(ParticleTypes.CLOUD, PlayerCloudParticle.Provider::new);
+         this.register(ParticleTypes.COMPOSTER, SuspendedTownParticle.ComposterFillProvider::new);
+-        this.register(ParticleTypes.COPPER_FIRE_FLAME, FlameParticle.Provider::new);
+         this.register(ParticleTypes.CRIT, CritParticle.Provider::new);
+         this.register(ParticleTypes.CURRENT_DOWN, WaterCurrentDownParticle.Provider::new);
+         this.register(ParticleTypes.DAMAGE_INDICATOR, CritParticle.DamageIndicatorProvider::new);
+@@ -204,10 +_,14 @@
          this.register(ParticleTypes.FIREFLY, FireflyParticle.FireflyProvider::new);
      }
  
@@ -29,7 +66,7 @@
      public <T extends ParticleOptions> void register(ParticleType<T> p_273423_, ParticleProvider.Sprite<T> p_273134_) {
          this.register(
              p_273423_,
-@@ -227,10 +_,12 @@
+@@ -224,24 +_,24 @@
          );
      }
  
@@ -43,7 +80,74 @@
      }
  
      @Override
-@@ -350,7 +_,7 @@
+     public CompletableFuture<Void> reload(
+-        PreparableReloadListener.SharedState p_434819_, Executor p_107309_, PreparableReloadListener.PreparationBarrier p_107305_, Executor p_107310_
++        PreparableReloadListener.PreparationBarrier p_107305_, ResourceManager p_107306_, Executor p_107309_, Executor p_107310_
+     ) {
+-        ResourceManager resourcemanager = p_434819_.resourceManager();
+-
+         @OnlyIn(Dist.CLIENT)
+         record ParticleDefinition(ResourceLocation id, Optional<List<ResourceLocation>> sprites) {
+         }
+ 
+         CompletableFuture<List<ParticleDefinition>> completablefuture = CompletableFuture.<Map<ResourceLocation, Resource>>supplyAsync(
+-                () -> PARTICLE_LISTER.listMatchingResources(resourcemanager), p_107309_
++                () -> PARTICLE_LISTER.listMatchingResources(p_107306_), p_107309_
+             )
+             .thenCompose(
+                 p_247914_ -> {
+@@ -259,22 +_,25 @@
+                     return Util.sequence(list);
+                 }
+             );
+-        CompletableFuture<SpriteLoader.Preparations> completablefuture1 = p_434819_.get(AtlasManager.PENDING_STITCH).get(AtlasIds.PARTICLES);
+-        return CompletableFuture.allOf(completablefuture, completablefuture1).thenCompose(p_107305_::wait).thenAcceptAsync(p_432251_ -> {
++        CompletableFuture<SpriteLoader.Preparations> completablefuture1 = SpriteLoader.create(this.textureAtlas)
++            .loadAndStitch(p_107306_, AtlasIds.PARTICLES, 0, p_107309_)
++            .thenCompose(SpriteLoader.Preparations::waitForUpload);
++        return CompletableFuture.allOf(completablefuture1, completablefuture).thenCompose(p_107305_::wait).thenAcceptAsync(p_372548_ -> {
+             this.clearParticles();
+             ProfilerFiller profilerfiller = Profiler.get();
+             profilerfiller.push("upload");
+             SpriteLoader.Preparations spriteloader$preparations = completablefuture1.join();
++            this.textureAtlas.upload(spriteloader$preparations);
+             profilerfiller.popPush("bindSpriteSets");
+             Set<ResourceLocation> set = new HashSet<>();
+             TextureAtlasSprite textureatlassprite = spriteloader$preparations.missing();
+-            completablefuture.join().forEach(p_432255_ -> {
+-                Optional<List<ResourceLocation>> optional = p_432255_.sprites();
++            completablefuture.join().forEach(p_247911_ -> {
++                Optional<List<ResourceLocation>> optional = p_247911_.sprites();
+                 if (!optional.isEmpty()) {
+                     List<TextureAtlasSprite> list = new ArrayList<>();
+ 
+                     for (ResourceLocation resourcelocation : optional.get()) {
+-                        TextureAtlasSprite textureatlassprite1 = spriteloader$preparations.getSprite(resourcelocation);
++                        TextureAtlasSprite textureatlassprite1 = spriteloader$preparations.regions().get(resourcelocation);
+                         if (textureatlassprite1 == null) {
+                             set.add(resourcelocation);
+                             list.add(textureatlassprite);
+@@ -287,7 +_,7 @@
+                         list.add(textureatlassprite);
+                     }
+ 
+-                    this.spriteSets.get(p_432255_.id()).rebind(list);
++                    this.spriteSets.get(p_247911_.id()).rebind(list);
+                 }
+             });
+             if (!set.isEmpty()) {
+@@ -298,6 +_,10 @@
+         }, p_107310_);
+     }
+ 
++    public void close() {
++        this.textureAtlas.clearTextureData();
++    }
++
+     private Optional<List<ResourceLocation>> loadParticleDescription(ResourceLocation p_250648_, Resource p_248793_) {
+         if (!this.spriteSets.containsKey(p_250648_)) {
+             LOGGER.debug("Redundant texture list for particle: {}", p_250648_);
+@@ -342,7 +_,7 @@
      private <T extends ParticleOptions> Particle makeParticle(
          T p_107396_, double p_107397_, double p_107398_, double p_107399_, double p_107400_, double p_107401_, double p_107402_
      ) {
@@ -52,7 +156,20 @@
          return particleprovider == null
              ? null
              : particleprovider.createParticle(p_107396_, this.level, p_107397_, p_107398_, p_107399_, p_107400_, p_107401_, p_107402_);
-@@ -426,28 +_,45 @@
+@@ -361,9 +_,9 @@
+     }
+ 
+     public void tick() {
+-        this.particles.forEach((p_436490_, p_436491_) -> {
+-            Profiler.get().push(p_436490_.name());
+-            this.tickParticleList(p_436491_);
++        this.particles.forEach((p_382525_, p_382526_) -> {
++            Profiler.get().push(p_382525_.toString());
++            this.tickParticleList(p_382526_);
+             Profiler.get().pop();
+         });
+         if (!this.trackingEmitters.isEmpty()) {
+@@ -418,28 +_,45 @@
          }
      }
  
@@ -103,7 +220,7 @@
              try {
                  particle.render(vertexconsumer, p_382847_, p_383032_);
              } catch (Throwable throwable) {
-@@ -460,10 +_,19 @@
+@@ -452,10 +_,19 @@
          }
      }
  
@@ -123,7 +240,7 @@
              try {
                  particle.renderCustom(posestack, p_382990_, p_383089_, p_383167_);
              } catch (Throwable throwable) {
-@@ -483,7 +_,7 @@
+@@ -475,7 +_,7 @@
      }
  
      public void destroy(BlockPos p_107356_, BlockState p_107357_) {
@@ -132,7 +249,7 @@
              VoxelShape voxelshape = p_107357_.getShape(this.level, p_107356_);
              double d0 = 0.25;
              voxelshape.forAllBoxes(
-@@ -515,7 +_,7 @@
+@@ -507,7 +_,7 @@
                                          d6 - 0.5,
                                          p_107357_,
                                          p_107356_
@@ -141,7 +258,7 @@
                                  );
                              }
                          }
-@@ -560,12 +_,28 @@
+@@ -552,12 +_,28 @@
                  d0 = i + aabb.maxX + 0.1F;
              }
  

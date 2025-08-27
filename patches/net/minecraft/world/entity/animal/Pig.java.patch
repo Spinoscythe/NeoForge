@@ -1,17 +1,38 @@
 --- a/net/minecraft/world/entity/animal/Pig.java
 +++ b/net/minecraft/world/entity/animal/Pig.java
+@@ -93,7 +_,7 @@
+ 
+     @Override
+     public void onSyncedDataUpdated(EntityDataAccessor<?> p_29480_) {
+-        if (DATA_BOOST_TIME.equals(p_29480_) && this.level().isClientSide()) {
++        if (DATA_BOOST_TIME.equals(p_29480_) && this.level().isClientSide) {
+             this.steering.onSynced();
+         }
+ 
+@@ -143,7 +_,7 @@
+     public InteractionResult mobInteract(Player p_29489_, InteractionHand p_29490_) {
+         boolean flag = this.isFood(p_29489_.getItemInHand(p_29490_));
+         if (!flag && this.isSaddled() && !this.isVehicle() && !p_29489_.isSecondaryUseActive()) {
+-            if (!this.level().isClientSide()) {
++            if (!this.level().isClientSide) {
+                 p_29489_.startRiding(this);
+             }
+ 
 @@ -208,13 +_,14 @@
  
      @Override
      public void thunderHit(ServerLevel p_29473_, LightningBolt p_29474_) {
 -        if (p_29473_.getDifficulty() != Difficulty.PEACEFUL) {
+-            ZombifiedPiglin zombifiedpiglin = this.convertTo(EntityType.ZOMBIFIED_PIGLIN, ConversionParams.single(this, false, true), p_432544_ -> {
 +        if (p_29473_.getDifficulty() != Difficulty.PEACEFUL && net.neoforged.neoforge.event.EventHooks.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> {})) {
-             ZombifiedPiglin zombifiedpiglin = this.convertTo(EntityType.ZOMBIFIED_PIGLIN, ConversionParams.single(this, false, true), p_427079_ -> {
++            ZombifiedPiglin zombifiedpiglin = this.convertTo(EntityType.ZOMBIFIED_PIGLIN, ConversionParams.single(this, false, true), p_427079_ -> {
                  if (this.getMainHandItem().isEmpty()) {
-                     p_427079_.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+-                    p_432544_.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
++                    p_427079_.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
                  }
  
-                 p_427079_.setPersistenceRequired();
+-                p_432544_.setPersistenceRequired();
++                p_427079_.setPersistenceRequired();
 +                net.neoforged.neoforge.event.EventHooks.onLivingConvert(this, p_427079_);
              });
              if (zombifiedpiglin == null) {

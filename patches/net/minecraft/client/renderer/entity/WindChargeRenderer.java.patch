@@ -1,0 +1,39 @@
+--- a/net/minecraft/client/renderer/entity/WindChargeRenderer.java
++++ b/net/minecraft/client/renderer/entity/WindChargeRenderer.java
+@@ -1,10 +_,11 @@
+ package net.minecraft.client.renderer.entity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.model.WindChargeModel;
+ import net.minecraft.client.model.geom.ModelLayers;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.state.EntityRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.resources.ResourceLocation;
+@@ -23,18 +_,11 @@
+     }
+ 
+     @Override
+-    public void submit(EntityRenderState p_434443_, PoseStack p_435406_, SubmitNodeCollector p_433935_) {
+-        p_433935_.submitModel(
+-            this.model,
+-            p_434443_,
+-            p_435406_,
+-            RenderType.breezeWind(TEXTURE_LOCATION, this.xOffset(p_434443_.ageInTicks) % 1.0F, 0.0F),
+-            p_434443_.lightCoords,
+-            OverlayTexture.NO_OVERLAY,
+-            p_434443_.outlineColor,
+-            null
+-        );
+-        super.submit(p_434443_, p_435406_, p_433935_);
++    public void render(EntityRenderState p_364131_, PoseStack p_311882_, MultiBufferSource p_312849_, int p_312740_) {
++        VertexConsumer vertexconsumer = p_312849_.getBuffer(RenderType.breezeWind(TEXTURE_LOCATION, this.xOffset(p_364131_.ageInTicks) % 1.0F, 0.0F));
++        this.model.setupAnim(p_364131_);
++        this.model.renderToBuffer(p_311882_, vertexconsumer, p_312740_, OverlayTexture.NO_OVERLAY);
++        super.render(p_364131_, p_311882_, p_312849_, p_312740_);
+     }
+ 
+     protected float xOffset(float p_312655_) {

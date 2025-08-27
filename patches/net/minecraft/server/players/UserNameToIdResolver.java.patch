@@ -1,0 +1,24 @@
+--- a/net/minecraft/server/players/UserNameToIdResolver.java
++++ /dev/null
+@@ -1,21 +_,0 @@
+-package net.minecraft.server.players;
+-
+-import com.mojang.authlib.GameProfile;
+-import java.util.Optional;
+-import java.util.UUID;
+-
+-public interface UserNameToIdResolver {
+-    default void add(GameProfile p_435630_) {
+-        this.add(new NameAndId(p_435630_));
+-    }
+-
+-    void add(NameAndId p_434896_);
+-
+-    Optional<NameAndId> get(String p_435365_);
+-
+-    Optional<NameAndId> get(UUID p_432917_);
+-
+-    void resolveOfflineUsers(boolean p_435952_);
+-
+-    void save();
+-}

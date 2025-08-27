@@ -13,7 +13,16 @@
          this.createFrameBuffer(p_166137_, p_166138_);
      }
  
-@@ -94,7 +_,8 @@
+@@ -31,6 +_,8 @@
+             this.colorTexture.setAddressMode(AddressMode.CLAMP_TO_EDGE);
+             this.colorTexture.setTextureFilter(FilterMode.NEAREST, false);
+             this.colorTexture.setAddressMode(AddressMode.CLAMP_TO_EDGE);
++            this.viewWidth = maintarget$dimension.width;
++            this.viewHeight = maintarget$dimension.height;
+             this.width = maintarget$dimension.width;
+             this.height = maintarget$dimension.height;
+         } else {
+@@ -92,7 +_,8 @@
      @Nullable
      private GpuTexture allocateDepthAttachment(MainTarget.Dimension p_166145_) {
          try {

@@ -1,6 +1,168 @@
 --- a/net/minecraft/client/KeyboardHandler.java
 +++ b/net/minecraft/client/KeyboardHandler.java
-@@ -444,12 +_,20 @@
+@@ -16,10 +_,8 @@
+ import net.minecraft.ReportedException;
+ import net.minecraft.Util;
+ import net.minecraft.client.gui.components.EditBox;
+-import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+ import net.minecraft.client.gui.screens.PauseScreen;
+ import net.minecraft.client.gui.screens.Screen;
+-import net.minecraft.client.gui.screens.debug.DebugOptionsScreen;
+ import net.minecraft.client.gui.screens.debug.GameModeSwitcherScreen;
+ import net.minecraft.client.gui.screens.options.VideoSettingsScreen;
+ import net.minecraft.client.gui.screens.options.controls.KeyBindsScreen;
+@@ -73,16 +_,12 @@
+     private boolean handleChunkDebugKeys(int p_167814_) {
+         switch (p_167814_) {
+             case 69:
+-                if (this.minecraft.player == null) {
+-                    return false;
+-                }
+-
+-                boolean flag = this.minecraft.debugEntries.toggleStatus(DebugScreenEntries.CHUNK_SECTION_PATHS);
+-                this.debugFeedbackFormatted("SectionPath: {0}", flag ? "shown" : "hidden");
++                this.minecraft.sectionPath = !this.minecraft.sectionPath;
++                this.debugFeedbackFormatted("SectionPath: {0}", this.minecraft.sectionPath ? "shown" : "hidden");
+                 return true;
+             case 70:
+-                boolean flag2 = FogRenderer.toggleFog();
+-                this.debugFeedbackFormatted("Fog: {0}", flag2 ? "enabled" : "disabled");
++                boolean flag1 = FogRenderer.toggleFog();
++                this.debugFeedbackFormatted("Fog: {0}", flag1 ? "enabled" : "disabled");
+                 return true;
+             case 71:
+             case 72:
+@@ -103,12 +_,8 @@
+                 this.debugFeedbackFormatted("SmartCull: {0}", this.minecraft.smartCull ? "enabled" : "disabled");
+                 return true;
+             case 79:
+-                if (this.minecraft.player == null) {
+-                    return false;
+-                }
+-
+-                boolean flag1 = this.minecraft.debugEntries.toggleStatus(DebugScreenEntries.CHUNK_SECTION_OCTREE);
+-                this.debugFeedbackFormatted("Frustum culling Octree: {0}", flag1 ? "enabled" : "disabled");
++                boolean flag = this.minecraft.debugRenderer.toggleRenderOctree();
++                this.debugFeedbackFormatted("Frustum culling Octree: {0}", flag ? "enabled" : "disabled");
+                 return true;
+             case 85:
+                 if (Screen.hasShiftDown()) {
+@@ -121,12 +_,8 @@
+ 
+                 return true;
+             case 86:
+-                if (this.minecraft.player == null) {
+-                    return false;
+-                }
+-
+-                boolean flag3 = this.minecraft.debugEntries.toggleStatus(DebugScreenEntries.CHUNK_SECTION_VISIBILITY);
+-                this.debugFeedbackFormatted("SectionVisibility: {0}", flag3 ? "enabled" : "disabled");
++                this.minecraft.sectionVisibility = !this.minecraft.sectionVisibility;
++                this.debugFeedbackFormatted("SectionVisibility: {0}", this.minecraft.sectionVisibility ? "enabled" : "disabled");
+                 return true;
+             case 87:
+                 this.minecraft.wireframe = !this.minecraft.wireframe;
+@@ -182,15 +_,14 @@
+                     this.debugFeedbackTranslated("debug.reload_chunks.message");
+                     return true;
+                 case 66:
+-                    if (this.minecraft.player != null && !this.minecraft.player.isReducedDebugInfo()) {
+-                        boolean flag = this.minecraft.debugEntries.toggleStatus(DebugScreenEntries.ENTITY_HITBOXES);
+-                        this.debugFeedbackTranslated(flag ? "debug.show_hitboxes.on" : "debug.show_hitboxes.off");
+-                        return true;
+-                    }
+-
+-                    return false;
++                    boolean flag = !this.minecraft.getEntityRenderDispatcher().shouldRenderHitBoxes();
++                    this.minecraft.getEntityRenderDispatcher().setRenderHitBoxes(flag);
++                    this.debugFeedbackTranslated(flag ? "debug.show_hitboxes.on" : "debug.show_hitboxes.off");
++                    return true;
+                 case 67:
+-                    if (this.minecraft.player != null && !this.minecraft.player.isReducedDebugInfo()) {
++                    if (this.minecraft.player.isReducedDebugInfo()) {
++                        return false;
++                    } else {
+                         ClientPacketListener clientpacketlistener = this.minecraft.player.connection;
+                         if (clientpacketlistener == null) {
+                             return false;
+@@ -211,8 +_,6 @@
+                         );
+                         return true;
+                     }
+-
+-                    return false;
+                 case 68:
+                     if (this.minecraft.gui != null) {
+                         this.minecraft.gui.getChat().clearMessages(false);
+@@ -220,20 +_,16 @@
+ 
+                     return true;
+                 case 71:
+-                    if (this.minecraft.player != null && !this.minecraft.player.isReducedDebugInfo()) {
+-                        boolean flag1 = this.minecraft.debugEntries.toggleStatus(DebugScreenEntries.CHUNK_BORDERS);
+-                        this.debugFeedbackTranslated(flag1 ? "debug.chunk_boundaries.on" : "debug.chunk_boundaries.off");
+-                        return true;
+-                    }
+-
+-                    return false;
++                    boolean flag1 = this.minecraft.debugRenderer.switchRenderChunkborder();
++                    this.debugFeedbackTranslated(flag1 ? "debug.chunk_boundaries.on" : "debug.chunk_boundaries.off");
++                    return true;
+                 case 72:
+                     this.minecraft.options.advancedItemTooltips = !this.minecraft.options.advancedItemTooltips;
+                     this.debugFeedbackTranslated(this.minecraft.options.advancedItemTooltips ? "debug.advanced_tooltips.on" : "debug.advanced_tooltips.off");
+                     this.minecraft.options.save();
+                     return true;
+                 case 73:
+-                    if (this.minecraft.player != null && !this.minecraft.player.isReducedDebugInfo()) {
++                    if (!this.minecraft.player.isReducedDebugInfo()) {
+                         this.copyRecreateCommand(this.minecraft.player.hasPermissions(2), !Screen.hasShiftDown());
+                     }
+ 
+@@ -245,7 +_,7 @@
+ 
+                     return true;
+                 case 78:
+-                    if (this.minecraft.player == null || !this.minecraft.player.hasPermissions(2)) {
++                    if (!this.minecraft.player.hasPermissions(2)) {
+                         this.debugFeedbackTranslated("debug.creative_spectator.error");
+                     } else if (!this.minecraft.player.isSpectator()) {
+                         this.minecraft.player.connection.send(new ServerboundChangeGameModePacket(GameType.SPECTATOR));
+@@ -278,7 +_,6 @@
+                     this.showDebugChat(Component.translatable("debug.version.help"));
+                     this.showDebugChat(Component.translatable("debug.pause.help"));
+                     this.showDebugChat(Component.translatable("debug.gamemodes.help"));
+-                    this.showDebugChat(Component.translatable("debug.options.help"));
+                     return true;
+                 case 83:
+                     Path path = this.minecraft.gameDirectory.toPath().toAbsolutePath();
+@@ -298,22 +_,10 @@
+                     VersionCommand.dumpVersion(this::showDebugChat);
+                     return true;
+                 case 293:
+-                    if (this.minecraft.canSwitchGameMode() && this.minecraft.player.hasPermissions(2)) {
+-                        this.minecraft.setScreen(new GameModeSwitcherScreen());
+-                    } else {
++                    if (!this.minecraft.player.hasPermissions(2)) {
+                         this.debugFeedbackTranslated("debug.gamemodes.error");
+-                    }
+-
+-                    return true;
+-                case 294:
+-                    if (this.minecraft.screen instanceof DebugOptionsScreen) {
+-                        this.minecraft.screen.onClose();
+-                    } else if (this.minecraft.canInterruptScreen()) {
+-                        if (this.minecraft.screen != null) {
+-                            this.minecraft.screen.onClose();
+-                        }
+-
+-                        this.minecraft.setScreen(new DebugOptionsScreen());
++                    } else {
++                        this.minecraft.setScreen(new GameModeSwitcherScreen());
+                     }
+ 
+                     return true;
+@@ -478,17 +_,20 @@
              if (screen != null) {
                  try {
                      if (p_90897_ != 1 && p_90897_ != 2) {
@@ -15,6 +177,11 @@
                      } else {
                          screen.afterKeyboardAction();
 -                        if (screen.keyPressed(p_90895_, p_90896_, p_90898_)) {
+-                            if (this.minecraft.screen == null) {
+-                                InputConstants.Key inputconstants$key = InputConstants.getKey(p_90895_, p_90896_);
+-                                KeyMapping.set(inputconstants$key, false);
+-                            }
+-
 +                        if (
 +                            net.neoforged.neoforge.client.ClientHooks.onScreenKeyPressedPre(screen, p_90895_, p_90896_, p_90898_) ||
 +                            screen.keyPressed(p_90895_, p_90896_, p_90898_) ||
@@ -23,7 +190,75 @@
                              return;
                          }
                      }
-@@ -508,6 +_,7 @@
+@@ -503,47 +_,51 @@
+                 }
+             }
+ 
+-            InputConstants.Key inputconstants$key1 = InputConstants.getKey(p_90895_, p_90896_);
++            InputConstants.Key inputconstants$key = InputConstants.getKey(p_90895_, p_90896_);
+             boolean flag4 = this.minecraft.screen == null;
+-            boolean flag5 = flag4
+-                || this.minecraft.screen instanceof PauseScreen pausescreen && !pausescreen.showsPauseMenu()
+-                || this.minecraft.screen instanceof GameModeSwitcherScreen;
++            boolean flag5 = flag4 || this.minecraft.screen instanceof PauseScreen pausescreen && !pausescreen.showsPauseMenu();
+             if (p_90897_ == 0) {
+-                KeyMapping.set(inputconstants$key1, false);
+-                if (p_90895_ == 292) {
++                KeyMapping.set(inputconstants$key, false);
++                if (flag5 && p_90895_ == 292) {
+                     if (this.handledDebugKey) {
+                         this.handledDebugKey = false;
+                     } else {
+-                        this.minecraft.debugEntries.toggleF3Visible();
++                        this.minecraft.getDebugOverlay().toggleOverlay();
+                     }
+                 }
+             } else {
+                 boolean flag6 = false;
+-                if (flag5 && p_90895_ == 256) {
+-                    this.minecraft.pauseGame(flag);
+-                    flag6 = flag;
+-                } else if (flag) {
+-                    flag6 = this.handleDebugKeys(p_90895_);
+-                } else if (flag5 && p_90895_ == 290) {
+-                    this.minecraft.options.hideGui = !this.minecraft.options.hideGui;
+-                } else if (flag5 && p_90895_ == 293) {
+-                    this.minecraft.gameRenderer.togglePostEffect();
+-                }
+-
+-                this.handledDebugKey |= flag6;
+-                if (this.minecraft.getDebugOverlay().showProfilerChart() && !flag && p_90895_ >= 48 && p_90895_ <= 57) {
+-                    this.minecraft.getDebugOverlay().getProfilerPieChart().profilerPieChartKeyPress(p_90895_ - 48);
++                if (flag5) {
++                    if (p_90895_ == 293 && this.minecraft.gameRenderer != null) {
++                        this.minecraft.gameRenderer.togglePostEffect();
++                    }
++
++                    if (p_90895_ == 256) {
++                        this.minecraft.pauseGame(flag);
++                        flag6 |= flag;
++                    }
++
++                    flag6 |= flag && this.handleDebugKeys(p_90895_);
++                    this.handledDebugKey |= flag6;
++                    if (p_90895_ == 290) {
++                        this.minecraft.options.hideGui = !this.minecraft.options.hideGui;
++                    }
++
++                    if (this.minecraft.getDebugOverlay().showProfilerChart() && !flag && p_90895_ >= 48 && p_90895_ <= 57) {
++                        this.minecraft.getDebugOverlay().getProfilerPieChart().profilerPieChartKeyPress(p_90895_ - 48);
++                    }
+                 }
+ 
+                 if (flag4) {
+                     if (flag6) {
+-                        KeyMapping.set(inputconstants$key1, false);
++                        KeyMapping.set(inputconstants$key, false);
+                     } else {
+-                        KeyMapping.set(inputconstants$key1, true);
+-                        KeyMapping.click(inputconstants$key1);
++                        KeyMapping.set(inputconstants$key, true);
++                        KeyMapping.click(inputconstants$key);
                      }
                  }
              }
@@ -31,7 +266,7 @@
          }
      }
  
-@@ -517,10 +_,20 @@
+@@ -553,10 +_,20 @@
              if (screen != null && this.minecraft.getOverlay() == null) {
                  try {
                      if (Character.isBmpCodePoint(p_90891_)) {

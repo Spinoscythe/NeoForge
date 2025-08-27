@@ -1,0 +1,79 @@
+--- a/net/minecraft/network/chat/contents/ObjectContents.java
++++ /dev/null
+@@ -1,76 +_,0 @@
+-package net.minecraft.network.chat.contents;
+-
+-import com.mojang.serialization.DataResult;
+-import com.mojang.serialization.MapCodec;
+-import com.mojang.serialization.codecs.RecordCodecBuilder;
+-import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+-import java.util.Optional;
+-import net.minecraft.data.AtlasIds;
+-import net.minecraft.network.chat.ComponentContents;
+-import net.minecraft.network.chat.FontDescription;
+-import net.minecraft.network.chat.FormattedText;
+-import net.minecraft.network.chat.Style;
+-import net.minecraft.resources.ResourceLocation;
+-
+-public record ObjectContents(ObjectContents.ObjectInfo contents) implements ComponentContents {
+-    private static final String PLACEHOLDER = Character.toString('\ufffc');
+-    public static final MapCodec<ObjectContents> CODEC = RecordCodecBuilder.mapCodec(
+-        p_436682_ -> p_436682_.group(ObjectContents.ObjectInfo.MAP_CODEC.forGetter(ObjectContents::contents)).apply(p_436682_, ObjectContents::new)
+-    );
+-    public static final ComponentContents.Type<ObjectContents> TYPE = new ComponentContents.Type<>(CODEC, "object");
+-
+-    @Override
+-    public ComponentContents.Type<?> type() {
+-        return TYPE;
+-    }
+-
+-    @Override
+-    public <T> Optional<T> visit(FormattedText.ContentConsumer<T> p_436701_) {
+-        return p_436701_.accept(this.contents.description());
+-    }
+-
+-    @Override
+-    public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> p_436739_, Style p_436641_) {
+-        return p_436739_.accept(p_436641_.withFont(this.contents.updatedFont()), PLACEHOLDER);
+-    }
+-
+-    public record AtlasSprite(ResourceLocation atlas, ResourceLocation sprite) implements ObjectContents.ObjectInfo {
+-        public static final ResourceLocation DEFAULT_ATLAS = AtlasIds.BLOCKS;
+-        public static final MapCodec<ObjectContents.AtlasSprite> MAP_CODEC = RecordCodecBuilder.mapCodec(
+-            p_436657_ -> p_436657_.group(
+-                    ResourceLocation.CODEC.optionalFieldOf("atlas", DEFAULT_ATLAS).forGetter(ObjectContents.AtlasSprite::atlas),
+-                    ResourceLocation.CODEC.fieldOf("sprite").forGetter(ObjectContents.AtlasSprite::sprite)
+-                )
+-                .apply(p_436657_, ObjectContents.AtlasSprite::new)
+-        );
+-
+-        @Override
+-        public FontDescription updatedFont() {
+-            return new FontDescription.AtlasSprite(this.atlas, this.sprite);
+-        }
+-
+-        private static String toShortName(ResourceLocation p_436718_) {
+-            return p_436718_.getNamespace().equals("minecraft") ? p_436718_.getPath() : p_436718_.toString();
+-        }
+-
+-        @Override
+-        public String description() {
+-            String s = toShortName(this.sprite);
+-            return this.atlas.equals(DEFAULT_ATLAS) ? "[" + s + "]" : "[" + s + "@" + toShortName(this.atlas) + "]";
+-        }
+-    }
+-
+-    public interface ObjectInfo {
+-        MapCodec<ObjectContents.ObjectInfo> MAP_CODEC = ObjectContents.AtlasSprite.MAP_CODEC
+-            .flatXmap(
+-                DataResult::success,
+-                p_436700_ -> p_436700_ instanceof ObjectContents.AtlasSprite objectcontents$atlassprite
+-                    ? DataResult.success(objectcontents$atlassprite)
+-                    : DataResult.error(() -> "Unknown object contents: " + p_436700_)
+-            );
+-
+-        FontDescription updatedFont();
+-
+-        String description();
+-    }
+-}

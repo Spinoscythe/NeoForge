@@ -1,0 +1,82 @@
+--- a/net/minecraft/client/renderer/blockentity/SignRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/SignRenderer.java
+@@ -2,6 +_,7 @@
+ 
+ import com.google.common.collect.ImmutableMap;
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import com.mojang.math.Axis;
+ import java.util.Map;
+ import net.minecraft.client.model.Model;
+@@ -13,12 +_,10 @@
+ import net.minecraft.client.model.geom.builders.LayerDefinition;
+ import net.minecraft.client.model.geom.builders.MeshDefinition;
+ import net.minecraft.client.model.geom.builders.PartDefinition;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+ import net.minecraft.client.renderer.Sheets;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.resources.model.Material;
+-import net.minecraft.client.resources.model.MaterialSet;
+-import net.minecraft.util.Unit;
+ import net.minecraft.world.level.block.StandingSignBlock;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.block.state.properties.WoodType;
+@@ -38,15 +_,15 @@
+             .collect(
+                 ImmutableMap.toImmutableMap(
+                     p_173645_ -> (WoodType)p_173645_,
+-                    p_432289_ -> new SignRenderer.Models(
+-                        createSignModel(p_173636_.entityModelSet(), p_432289_, true), createSignModel(p_173636_.entityModelSet(), p_432289_, false)
++                    p_359254_ -> new SignRenderer.Models(
++                        createSignModel(p_173636_.getModelSet(), p_359254_, true), createSignModel(p_173636_.getModelSet(), p_359254_, false)
+                     )
+                 )
+             );
+     }
+ 
+     @Override
+-    protected Model.Simple getSignModel(BlockState p_389425_, WoodType p_389581_) {
++    protected Model getSignModel(BlockState p_389425_, WoodType p_389581_) {
+         SignRenderer.Models signrenderer$models = this.signModels.get(p_389581_);
+         return p_389425_.getBlock() instanceof StandingSignBlock ? signrenderer$models.standing() : signrenderer$models.wall();
+     }
+@@ -84,15 +_,12 @@
+         return TEXT_OFFSET;
+     }
+ 
+-    public static void submitSpecial(
+-        MaterialSet p_439989_, PoseStack p_440179_, SubmitNodeCollector p_440546_, int p_439649_, int p_440581_, Model.Simple p_440051_, Material p_438922_
+-    ) {
+-        p_440179_.pushPose();
+-        applyInHandTransforms(p_440179_);
+-        p_440546_.submitModel(
+-            p_440051_, Unit.INSTANCE, p_440179_, p_438922_.renderType(p_440051_::renderType), p_439649_, p_440581_, -1, p_439989_.get(p_438922_), 0, null
+-        );
+-        p_440179_.popPose();
++    public static void renderInHand(PoseStack p_389553_, MultiBufferSource p_389643_, int p_389568_, int p_389710_, Model p_389561_, Material p_389713_) {
++        p_389553_.pushPose();
++        applyInHandTransforms(p_389553_);
++        VertexConsumer vertexconsumer = p_389713_.buffer(p_389643_, p_389561_::renderType);
++        p_389561_.renderToBuffer(p_389553_, vertexconsumer, p_389568_, p_389710_);
++        p_389553_.popPose();
+     }
+ 
+     public static void applyInHandTransforms(PoseStack p_428280_) {
+@@ -100,7 +_,7 @@
+         p_428280_.scale(0.6666667F, -0.6666667F, -0.6666667F);
+     }
+ 
+-    public static Model.Simple createSignModel(EntityModelSet p_173647_, WoodType p_173648_, boolean p_363591_) {
++    public static Model createSignModel(EntityModelSet p_173647_, WoodType p_173648_, boolean p_363591_) {
+         ModelLayerLocation modellayerlocation = p_363591_ ? ModelLayers.createStandingSignModelName(p_173648_) : ModelLayers.createWallSignModelName(p_173648_);
+         return new Model.Simple(p_173647_.bakeLayer(modellayerlocation), RenderType::entityCutoutNoCull);
+     }
+@@ -117,6 +_,6 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    record Models(Model.Simple standing, Model.Simple wall) {
++    record Models(Model standing, Model wall) {
+     }
+ }

@@ -1,0 +1,137 @@
+--- a/com/mojang/realmsclient/gui/screens/RealmsSelectWorldTemplateScreen.java
++++ b/com/mojang/realmsclient/gui/screens/RealmsSelectWorldTemplateScreen.java
+@@ -16,6 +_,7 @@
+ import java.util.function.Consumer;
+ import java.util.stream.Collectors;
+ import javax.annotation.Nullable;
++import net.minecraft.Util;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.GuiGraphics;
+ import net.minecraft.client.gui.components.AbstractWidget;
+@@ -106,7 +_,7 @@
+ 
+     @Override
+     protected void repositionElements() {
+-        this.worldTemplateList.updateSize(this.width, this.layout);
++        this.worldTemplateList.setSize(this.width, this.height - this.layout.getFooterHeight() - this.getHeaderHeight());
+         this.layout.arrangeElements();
+     }
+ 
+@@ -266,6 +_,7 @@
+         private static final Component PUBLISHER_LINK_TOOLTIP = Component.translatable("mco.template.info.tooltip");
+         private static final Component TRAILER_LINK_TOOLTIP = Component.translatable("mco.template.trailer.tooltip");
+         public final WorldTemplate template;
++        private long lastClickTime;
+         @Nullable
+         private ImageButton websiteButton;
+         @Nullable
+@@ -289,31 +_,43 @@
+         }
+ 
+         @Override
+-        public boolean mouseClicked(double p_299887_, double p_299848_, int p_299963_, boolean p_434444_) {
++        public boolean mouseClicked(double p_299887_, double p_299848_, int p_299963_) {
+             RealmsSelectWorldTemplateScreen.this.selectedTemplate = this.template;
+             RealmsSelectWorldTemplateScreen.this.updateButtonStates();
+-            if (p_434444_ && this.isFocused()) {
++            if (Util.getMillis() - this.lastClickTime < 250L && this.isFocused()) {
+                 RealmsSelectWorldTemplateScreen.this.callback.accept(this.template);
+             }
+ 
++            this.lastClickTime = Util.getMillis();
+             if (this.websiteButton != null) {
+-                this.websiteButton.mouseClicked(p_299887_, p_299848_, p_299963_, p_434444_);
++                this.websiteButton.mouseClicked(p_299887_, p_299848_, p_299963_);
+             }
+ 
+             if (this.trailerButton != null) {
+-                this.trailerButton.mouseClicked(p_299887_, p_299848_, p_299963_, p_434444_);
++                this.trailerButton.mouseClicked(p_299887_, p_299848_, p_299963_);
+             }
+ 
+-            return super.mouseClicked(p_299887_, p_299848_, p_299963_, p_434444_);
++            return super.mouseClicked(p_299887_, p_299848_, p_299963_);
+         }
+ 
+         @Override
+-        public void renderContent(GuiGraphics p_439634_, int p_438992_, int p_440319_, boolean p_439731_, float p_439078_) {
+-            p_439634_.blit(
++        public void render(
++            GuiGraphics p_281796_,
++            int p_282160_,
++            int p_281759_,
++            int p_282961_,
++            int p_281497_,
++            int p_282427_,
++            int p_283550_,
++            int p_282955_,
++            boolean p_282866_,
++            float p_281452_
++        ) {
++            p_281796_.blit(
+                 RenderPipelines.GUI_TEXTURED,
+                 RealmsTextureManager.worldTemplate(this.template.id, this.template.image),
+-                this.getContentX() + 1,
+-                this.getContentY() + 1 + 1,
++                p_282961_ + 1,
++                p_281759_ + 1 + 1,
+                 0.0F,
+                 0.0F,
+                 38,
+@@ -321,29 +_,27 @@
+                 38,
+                 38
+             );
+-            p_439634_.blitSprite(
+-                RenderPipelines.GUI_TEXTURED, RealmsSelectWorldTemplateScreen.SLOT_FRAME_SPRITE, this.getContentX(), this.getContentY() + 1, 40, 40
+-            );
++            p_281796_.blitSprite(RenderPipelines.GUI_TEXTURED, RealmsSelectWorldTemplateScreen.SLOT_FRAME_SPRITE, p_282961_, p_281759_ + 1, 40, 40);
+             int i = 5;
+             int j = RealmsSelectWorldTemplateScreen.this.font.width(this.template.version);
+             if (this.websiteButton != null) {
+-                this.websiteButton.setPosition(this.getContentRight() - j - this.websiteButton.getWidth() - 10, this.getContentY());
+-                this.websiteButton.render(p_439634_, p_438992_, p_440319_, p_439078_);
++                this.websiteButton.setPosition(p_282961_ + p_281497_ - j - this.websiteButton.getWidth() - 10, p_281759_);
++                this.websiteButton.render(p_281796_, p_283550_, p_282955_, p_281452_);
+             }
+ 
+             if (this.trailerButton != null) {
+-                this.trailerButton.setPosition(this.getContentRight() - j - this.trailerButton.getWidth() * 2 - 15, this.getContentY());
+-                this.trailerButton.render(p_439634_, p_438992_, p_440319_, p_439078_);
++                this.trailerButton.setPosition(p_282961_ + p_281497_ - j - this.trailerButton.getWidth() * 2 - 15, p_281759_);
++                this.trailerButton.render(p_281796_, p_283550_, p_282955_, p_281452_);
+             }
+ 
+-            int k = this.getContentX() + 45 + 20;
+-            int l = this.getContentY() + 5;
+-            p_439634_.drawString(RealmsSelectWorldTemplateScreen.this.font, this.template.name, k, l, -1);
+-            p_439634_.drawString(RealmsSelectWorldTemplateScreen.this.font, this.template.version, this.getContentRight() - j - 5, l, -9671572);
+-            p_439634_.drawString(RealmsSelectWorldTemplateScreen.this.font, this.template.author, k, l + 9 + 5, -6250336);
++            int k = p_282961_ + 45 + 20;
++            int l = p_281759_ + 5;
++            p_281796_.drawString(RealmsSelectWorldTemplateScreen.this.font, this.template.name, k, l, -1);
++            p_281796_.drawString(RealmsSelectWorldTemplateScreen.this.font, this.template.version, p_282961_ + p_281497_ - j - 5, l, -9671572);
++            p_281796_.drawString(RealmsSelectWorldTemplateScreen.this.font, this.template.author, k, l + 9 + 5, -6250336);
+             if (!this.template.recommendedPlayers.isBlank()) {
+-                p_439634_.drawString(
+-                    RealmsSelectWorldTemplateScreen.this.font, this.template.recommendedPlayers, k, this.getContentBottom() - 9 / 2 - 5, -11776948
++                p_281796_.drawString(
++                    RealmsSelectWorldTemplateScreen.this.font, this.template.recommendedPlayers, k, p_281759_ + p_282427_ - 9 / 2 - 5, -11776948
+                 );
+             }
+         }
+@@ -382,12 +_,12 @@
+         }
+ 
+         @Override
+-        public boolean mouseClicked(double p_313816_, double p_313908_, int p_313922_, boolean p_433489_) {
++        public boolean mouseClicked(double p_313816_, double p_313908_, int p_313922_) {
+             if (RealmsSelectWorldTemplateScreen.this.currentLink != null) {
+                 ConfirmLinkScreen.confirmLinkNow(RealmsSelectWorldTemplateScreen.this, RealmsSelectWorldTemplateScreen.this.currentLink);
+                 return true;
+             } else {
+-                return super.mouseClicked(p_313816_, p_313908_, p_313922_, p_433489_);
++                return super.mouseClicked(p_313816_, p_313908_, p_313922_);
+             }
+         }
+ 

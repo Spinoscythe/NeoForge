@@ -1,5 +1,31 @@
 --- a/net/minecraft/world/entity/animal/wolf/Wolf.java
 +++ b/net/minecraft/world/entity/animal/wolf/Wolf.java
+@@ -302,14 +_,14 @@
+     @Override
+     public void aiStep() {
+         super.aiStep();
+-        if (!this.level().isClientSide() && this.isWet && !this.isShaking && !this.isPathFinding() && this.onGround()) {
++        if (!this.level().isClientSide && this.isWet && !this.isShaking && !this.isPathFinding() && this.onGround()) {
+             this.isShaking = true;
+             this.shakeAnim = 0.0F;
+             this.shakeAnimO = 0.0F;
+             this.level().broadcastEntityEvent(this, (byte)8);
+         }
+ 
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.updatePersistentAnger((ServerLevel)this.level(), true);
+         }
+     }
+@@ -327,7 +_,7 @@
+ 
+             if (this.isInWaterOrRain()) {
+                 this.isWet = true;
+-                if (this.isShaking && !this.level().isClientSide()) {
++                if (this.isShaking && !this.level().isClientSide) {
+                     this.level().broadcastEntityEvent(this, (byte)56);
+                     this.cancelShake();
+                 }
 @@ -459,10 +_,11 @@
          Item item = itemstack.getItem();
          if (this.isTame()) {
@@ -13,6 +39,15 @@
                  return InteractionResult.SUCCESS;
              }
  
+@@ -504,7 +_,7 @@
+                 itemstack.consume(1, p_406380_);
+                 return InteractionResult.SUCCESS;
+             }
+-        } else if (!this.level().isClientSide() && itemstack.is(Items.BONE) && !this.isAngry()) {
++        } else if (!this.level().isClientSide && itemstack.is(Items.BONE) && !this.isAngry()) {
+             itemstack.consume(1, p_406380_);
+             this.tryToTame(p_406380_);
+             return InteractionResult.SUCCESS_SERVER;
 @@ -514,7 +_,7 @@
      }
  

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/CraftingTableBlock.java
++++ b/net/minecraft/world/level/block/CraftingTableBlock.java
+@@ -31,7 +_,7 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_52233_, Level p_52234_, BlockPos p_52235_, Player p_52236_, BlockHitResult p_52238_) {
+-        if (!p_52234_.isClientSide()) {
++        if (!p_52234_.isClientSide) {
+             p_52236_.openMenu(p_52233_.getMenuProvider(p_52234_, p_52235_));
+             p_52236_.awardStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
+         }

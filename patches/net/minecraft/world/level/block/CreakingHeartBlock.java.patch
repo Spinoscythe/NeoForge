@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/CreakingHeartBlock.java
++++ b/net/minecraft/world/level/block/CreakingHeartBlock.java
+@@ -58,7 +_,7 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_379447_, BlockState p_379641_, BlockEntityType<T> p_380325_) {
+-        if (p_379447_.isClientSide()) {
++        if (p_379447_.isClientSide) {
+             return null;
+         } else {
+             return p_379641_.getValue(STATE) != CreakingHeartState.UPROOTED
+@@ -197,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_381152_, Level p_381142_, BlockPos p_381148_, Direction p_432849_) {
++    protected int getAnalogOutputSignal(BlockState p_381152_, Level p_381142_, BlockPos p_381148_) {
+         if (p_381152_.getValue(STATE) == CreakingHeartState.UPROOTED) {
+             return 0;
+         } else {

@@ -1,11 +1,47 @@
 --- a/net/minecraft/world/entity/animal/armadillo/Armadillo.java
 +++ b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-@@ -305,7 +_,7 @@
+@@ -30,7 +_,6 @@
+ import net.minecraft.world.damagesource.DamageSource;
+ import net.minecraft.world.entity.AgeableMob;
+ import net.minecraft.world.entity.AnimationState;
+-import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntitySpawnReason;
+ import net.minecraft.world.entity.EntityType;
+ import net.minecraft.world.entity.LivingEntity;
+@@ -214,7 +_,7 @@
+ 
+     @Override
+     public void handleEntityEvent(byte p_326098_) {
+-        if (p_326098_ == 64 && this.level().isClientSide()) {
++        if (p_326098_ == 64 && this.level().isClientSide) {
+             this.peekReceivedClient = true;
+             this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ARMADILLO_PEEK, this.getSoundSource(), 1.0F, 1.0F, false);
+         } else {
+@@ -306,22 +_,22 @@
      @Override
      public InteractionResult mobInteract(Player p_316559_, InteractionHand p_316119_) {
          ItemStack itemstack = p_316559_.getItemInHand(p_316119_);
--        if (itemstack.is(Items.BRUSH) && this.brushOffScute()) {
+-        if (itemstack.is(Items.BRUSH) && this.brushOffScute(p_316559_, itemstack)) {
+-            itemstack.hurtAndBreak(16, p_316559_, p_316119_.asEquipmentSlot());
 +        if (itemstack.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.BRUSH_BRUSH) && this.brushOffScute()) {
-             itemstack.hurtAndBreak(16, p_316559_, getSlotForHand(p_316119_));
++            itemstack.hurtAndBreak(16, p_316559_, getSlotForHand(p_316119_));
              return InteractionResult.SUCCESS;
          } else {
+             return (InteractionResult)(this.isScared() ? InteractionResult.FAIL : super.mobInteract(p_316559_, p_316119_));
+         }
+     }
+ 
+-    public boolean brushOffScute(@Nullable Entity p_433369_, ItemStack p_435960_) {
++    public boolean brushOffScute() {
+         if (this.isBaby()) {
+             return false;
+         } else {
+             if (this.level() instanceof ServerLevel serverlevel) {
+-                this.dropFromEntityInteractLootTable(serverlevel, BuiltInLootTables.ARMADILLO_BRUSH, p_433369_, p_435960_, this::spawnAtLocation);
+-                this.playSound(SoundEvents.ARMADILLO_BRUSH);
++                this.spawnAtLocation(serverlevel, new ItemStack(Items.ARMADILLO_SCUTE));
+                 this.gameEvent(GameEvent.ENTITY_INTERACT);
++                this.playSound(SoundEvents.ARMADILLO_BRUSH);
+             }
+ 
+             return true;

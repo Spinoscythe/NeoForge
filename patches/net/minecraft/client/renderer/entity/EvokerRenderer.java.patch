@@ -1,0 +1,34 @@
+--- a/net/minecraft/client/renderer/entity/EvokerRenderer.java
++++ b/net/minecraft/client/renderer/entity/EvokerRenderer.java
+@@ -3,7 +_,7 @@
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import net.minecraft.client.model.IllagerModel;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+ import net.minecraft.client.renderer.entity.state.EvokerRenderState;
+ import net.minecraft.resources.ResourceLocation;
+@@ -17,17 +_,13 @@
+ 
+     public EvokerRenderer(EntityRendererProvider.Context p_174108_) {
+         super(p_174108_, new IllagerModel<>(p_174108_.bakeLayer(ModelLayers.EVOKER)), 0.5F);
+-        this.addLayer(
+-            new ItemInHandLayer<EvokerRenderState, IllagerModel<EvokerRenderState>>(this) {
+-                public void submit(
+-                    PoseStack p_435418_, SubmitNodeCollector p_433499_, int p_433671_, EvokerRenderState p_434781_, float p_434418_, float p_433862_
+-                ) {
+-                    if (p_434781_.isCastingSpell) {
+-                        super.submit(p_435418_, p_433499_, p_433671_, p_434781_, p_434418_, p_433862_);
+-                    }
++        this.addLayer(new ItemInHandLayer<EvokerRenderState, IllagerModel<EvokerRenderState>>(this) {
++            public void render(PoseStack p_114547_, MultiBufferSource p_114548_, int p_114549_, EvokerRenderState p_363943_, float p_114551_, float p_114552_) {
++                if (p_363943_.isCastingSpell) {
++                    super.render(p_114547_, p_114548_, p_114549_, p_363943_, p_114551_, p_114552_);
+                 }
+             }
+-        );
++        });
+     }
+ 
+     public ResourceLocation getTextureLocation(EvokerRenderState p_361448_) {

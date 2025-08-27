@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
++++ b/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
+@@ -146,8 +_,8 @@
+                 + decimalformat.format(d0)
+                 + " PV: "
+                 + decimalformat.format(NoiseRouterData.peaksAndValleys((float)d0))
+-                + " PS: "
+-                + decimalformat.format(noiserouter.preliminarySurfaceLevel().compute(densityfunction$singlepointcontext))
++                + " AS: "
++                + decimalformat.format(noiserouter.initialDensityWithoutJaggedness().compute(densityfunction$singlepointcontext))
+                 + " N: "
+                 + decimalformat.format(noiserouter.finalDensity().compute(densityfunction$singlepointcontext))
+         );

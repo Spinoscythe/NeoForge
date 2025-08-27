@@ -1,0 +1,34 @@
+--- a/net/minecraft/client/gui/screens/PresetFlatWorldScreen.java
++++ b/net/minecraft/client/gui/screens/PresetFlatWorldScreen.java
+@@ -305,15 +_,26 @@
+             }
+ 
+             @Override
+-            public void renderContent(GuiGraphics p_439027_, int p_439504_, int p_440223_, boolean p_438973_, float p_439944_) {
+-                this.blitSlot(p_439027_, this.getContentX(), this.getContentY(), this.preset.displayItem().value());
+-                p_439027_.drawString(PresetFlatWorldScreen.this.font, this.name, this.getContentX() + 18 + 5, this.getContentY() + 6, -1);
++            public void render(
++                GuiGraphics p_283649_,
++                int p_281641_,
++                int p_281959_,
++                int p_281428_,
++                int p_282594_,
++                int p_283493_,
++                int p_283234_,
++                int p_283185_,
++                boolean p_282302_,
++                float p_282855_
++            ) {
++                this.blitSlot(p_283649_, p_281428_, p_281959_, this.preset.displayItem().value());
++                p_283649_.drawString(PresetFlatWorldScreen.this.font, this.name, p_281428_ + 18 + 5, p_281959_ + 6, -1);
+             }
+ 
+             @Override
+-            public boolean mouseClicked(double p_96481_, double p_96482_, int p_96483_, boolean p_435038_) {
++            public boolean mouseClicked(double p_96481_, double p_96482_, int p_96483_) {
+                 this.select();
+-                return super.mouseClicked(p_96481_, p_96482_, p_96483_, p_435038_);
++                return super.mouseClicked(p_96481_, p_96482_, p_96483_);
+             }
+ 
+             void select() {

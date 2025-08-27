@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/ColoredFallingBlock.java
++++ b/net/minecraft/world/level/block/ColoredFallingBlock.java
+@@ -11,8 +_,8 @@
+ 
+ public class ColoredFallingBlock extends FallingBlock {
+     public static final MapCodec<ColoredFallingBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432654_ -> p_432654_.group(ColorRGBA.CODEC.fieldOf("falling_dust_color").forGetter(p_304722_ -> p_304722_.dustColor), propertiesCodec())
+-            .apply(p_432654_, ColoredFallingBlock::new)
++        p_368413_ -> p_368413_.group(ColorRGBA.CODEC.fieldOf("falling_dust_color").forGetter(p_304722_ -> p_304722_.dustColor), propertiesCodec())
++            .apply(p_368413_, ColoredFallingBlock::new)
+     );
+     protected final ColorRGBA dustColor;
+ 

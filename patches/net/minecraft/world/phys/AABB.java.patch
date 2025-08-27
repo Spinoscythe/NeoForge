@@ -8,6 +8,15 @@
      public final double minX;
      public final double minY;
      public final double minZ;
+@@ -516,7 +_,7 @@
+         Vec3 vec31 = vec3.add(p_371478_);
+ 
+         for (AABB aabb : p_371359_) {
+-            AABB aabb1 = aabb.inflate(this.getXsize() * 0.5 - 1.0E-7, this.getYsize() * 0.5 - 1.0E-7, this.getZsize() * 0.5 - 1.0E-7);
++            AABB aabb1 = aabb.inflate(this.getXsize() * 0.5, this.getYsize() * 0.5, this.getZsize() * 0.5);
+             if (aabb1.contains(vec31) || aabb1.contains(vec3)) {
+                 return true;
+             }
 @@ -582,6 +_,14 @@
              p_165883_.y + p_165885_ / 2.0,
              p_165883_.z + p_165886_ / 2.0

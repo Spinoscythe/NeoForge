@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/entity/decoration/ArmorStand.java
++++ b/net/minecraft/world/entity/decoration/ArmorStand.java
+@@ -189,7 +_,7 @@
+             return InteractionResult.PASS;
+         } else if (p_31594_.isSpectator()) {
+             return InteractionResult.SUCCESS;
+-        } else if (p_31594_.level().isClientSide()) {
++        } else if (p_31594_.level().isClientSide) {
+             return InteractionResult.SUCCESS_SERVER;
+         } else {
+             EquipmentSlot equipmentslot = this.getEquipmentSlotForItem(itemstack);
+@@ -320,7 +_,7 @@
+     @Override
+     public void handleEntityEvent(byte p_31568_) {
+         if (p_31568_ == 32) {
+-            if (this.level().isClientSide()) {
++            if (this.level().isClientSide) {
+                 this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ARMOR_STAND_HIT, this.getSoundSource(), 0.3F, 1.0F, false);
+                 this.lastHit = this.level().getGameTime();
+             }

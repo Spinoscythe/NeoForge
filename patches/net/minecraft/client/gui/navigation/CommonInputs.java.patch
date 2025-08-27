@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/navigation/CommonInputs.java
++++ b/net/minecraft/client/gui/navigation/CommonInputs.java
+@@ -8,8 +_,4 @@
+     public static boolean selected(int p_279282_) {
+         return p_279282_ == 257 || p_279282_ == 32 || p_279282_ == 335;
+     }
+-
+-    public static boolean confirm(int p_440204_) {
+-        return p_440204_ == 257 || p_440204_ == 335;
+-    }
+ }

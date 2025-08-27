@@ -1,0 +1,21 @@
+--- a/net/minecraft/server/commands/ExperienceCommand.java
++++ b/net/minecraft/server/commands/ExperienceCommand.java
+@@ -192,14 +_,14 @@
+     }
+ 
+     static enum Type {
+-        POINTS("points", Player::giveExperiencePoints, (p_432405_, p_432406_) -> {
+-            if (p_432406_ >= p_432405_.getXpNeededForNextLevel()) {
++        POINTS("points", Player::giveExperiencePoints, (p_426948_, p_426949_) -> {
++            if (p_426949_ >= p_426948_.getXpNeededForNextLevel()) {
+                 return false;
+             } else {
+-                p_432405_.setExperiencePoints(p_432406_);
++                p_426948_.setExperiencePoints(p_426949_);
+                 return true;
+             }
+-        }, p_432404_ -> Mth.floor(p_432404_.experienceProgress * p_432404_.getXpNeededForNextLevel())),
++        }, p_426947_ -> Mth.floor(p_426947_.experienceProgress * p_426947_.getXpNeededForNextLevel())),
+         LEVELS("levels", ServerPlayer::giveExperienceLevels, (p_137360_, p_137361_) -> {
+             p_137360_.setExperienceLevels(p_137361_);
+             return true;

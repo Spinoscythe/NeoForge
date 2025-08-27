@@ -1,0 +1,10 @@
+--- a/net/minecraft/client/data/models/model/TextureSlot.java
++++ b/net/minecraft/client/data/models/model/TextureSlot.java
+@@ -50,7 +_,6 @@
+     public static final TextureSlot INNER_TOP = create("inner_top");
+     public static final TextureSlot FLOWERBED = create("flowerbed");
+     public static final TextureSlot TENTACLES = create("tentacles");
+-    public static final TextureSlot BARS = create("bars");
+     private final String id;
+     @Nullable
+     private final TextureSlot parent;

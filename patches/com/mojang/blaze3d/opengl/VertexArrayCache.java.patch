@@ -1,0 +1,141 @@
+--- a/com/mojang/blaze3d/opengl/VertexArrayCache.java
++++ b/com/mojang/blaze3d/opengl/VertexArrayCache.java
+@@ -23,7 +_,7 @@
+         }
+     }
+ 
+-    public abstract void bindVertexArray(VertexFormat p_410748_, @Nullable GlBuffer p_410565_);
++    public abstract void bindVertexArray(VertexFormat p_410748_, GlBuffer p_410565_);
+ 
+     @OnlyIn(Dist.CLIENT)
+     static class Emulated extends VertexArrayCache {
+@@ -35,22 +_,19 @@
+         }
+ 
+         @Override
+-        public void bindVertexArray(VertexFormat p_410490_, @Nullable GlBuffer p_410612_) {
++        public void bindVertexArray(VertexFormat p_410490_, GlBuffer p_410612_) {
+             VertexArrayCache.VertexArray vertexarraycache$vertexarray = this.cache.get(p_410490_);
+             if (vertexarraycache$vertexarray == null) {
+                 int i = GlStateManager._glGenVertexArrays();
+                 GlStateManager._glBindVertexArray(i);
+-                if (p_410612_ != null) {
+-                    GlStateManager._glBindBuffer(34962, p_410612_.handle);
+-                    setupCombinedAttributes(p_410490_, true);
+-                }
+-
++                GlStateManager._glBindBuffer(34962, p_410612_.handle);
++                setupCombinedAttributes(p_410490_, true);
+                 VertexArrayCache.VertexArray vertexarraycache$vertexarray1 = new VertexArrayCache.VertexArray(i, p_410490_, p_410612_);
+                 this.debugLabels.applyLabel(vertexarraycache$vertexarray1);
+                 this.cache.put(p_410490_, vertexarraycache$vertexarray1);
+             } else {
+                 GlStateManager._glBindVertexArray(vertexarraycache$vertexarray.id);
+-                if (p_410612_ != null && vertexarraycache$vertexarray.lastVertexBuffer != p_410612_) {
++                if (vertexarraycache$vertexarray.lastVertexBuffer != p_410612_) {
+                     GlStateManager._glBindBuffer(34962, p_410612_.handle);
+                     vertexarraycache$vertexarray.lastVertexBuffer = p_410612_;
+                     setupCombinedAttributes(p_410490_, false);
+@@ -109,11 +_,47 @@
+         }
+ 
+         @Override
+-        public void bindVertexArray(VertexFormat p_410638_, @Nullable GlBuffer p_410508_) {
++        public void bindVertexArray(VertexFormat p_410638_, GlBuffer p_410508_) {
+             VertexArrayCache.VertexArray vertexarraycache$vertexarray = this.cache.get(p_410638_);
+-            if (vertexarraycache$vertexarray != null) {
++            if (vertexarraycache$vertexarray == null) {
++                int i = GlStateManager._glGenVertexArrays();
++                GlStateManager._glBindVertexArray(i);
++                List<VertexFormatElement> list = p_410638_.getElements();
++
++                for (int j = 0; j < list.size(); j++) {
++                    VertexFormatElement vertexformatelement = list.get(j);
++                    GlStateManager._enableVertexAttribArray(j);
++                    switch (vertexformatelement.usage()) {
++                        case POSITION:
++                        case GENERIC:
++                        case UV:
++                            if (vertexformatelement.type() == VertexFormatElement.Type.FLOAT) {
++                                ARBVertexAttribBinding.glVertexAttribFormat(
++                                    j, vertexformatelement.count(), GlConst.toGl(vertexformatelement.type()), false, p_410638_.getOffset(vertexformatelement)
++                                );
++                            } else {
++                                ARBVertexAttribBinding.glVertexAttribIFormat(
++                                    j, vertexformatelement.count(), GlConst.toGl(vertexformatelement.type()), p_410638_.getOffset(vertexformatelement)
++                                );
++                            }
++                            break;
++                        case NORMAL:
++                        case COLOR:
++                            ARBVertexAttribBinding.glVertexAttribFormat(
++                                j, vertexformatelement.count(), GlConst.toGl(vertexformatelement.type()), true, p_410638_.getOffset(vertexformatelement)
++                            );
++                    }
++
++                    ARBVertexAttribBinding.glVertexAttribBinding(j, 0);
++                }
++
++                ARBVertexAttribBinding.glBindVertexBuffer(0, p_410508_.handle, 0L, p_410638_.getVertexSize());
++                VertexArrayCache.VertexArray vertexarraycache$vertexarray1 = new VertexArrayCache.VertexArray(i, p_410638_, p_410508_);
++                this.debugLabels.applyLabel(vertexarraycache$vertexarray1);
++                this.cache.put(p_410638_, vertexarraycache$vertexarray1);
++            } else {
+                 GlStateManager._glBindVertexArray(vertexarraycache$vertexarray.id);
+-                if (p_410508_ != null && vertexarraycache$vertexarray.lastVertexBuffer != p_410508_) {
++                if (vertexarraycache$vertexarray.lastVertexBuffer != p_410508_) {
+                     if (this.needsMesaWorkaround
+                         && vertexarraycache$vertexarray.lastVertexBuffer != null
+                         && vertexarraycache$vertexarray.lastVertexBuffer.handle == p_410508_.handle) {
+@@ -123,51 +_,6 @@
+                     ARBVertexAttribBinding.glBindVertexBuffer(0, p_410508_.handle, 0L, p_410638_.getVertexSize());
+                     vertexarraycache$vertexarray.lastVertexBuffer = p_410508_;
+                 }
+-            } else {
+-                int i = GlStateManager._glGenVertexArrays();
+-                GlStateManager._glBindVertexArray(i);
+-                if (p_410508_ != null) {
+-                    List<VertexFormatElement> list = p_410638_.getElements();
+-
+-                    for (int j = 0; j < list.size(); j++) {
+-                        VertexFormatElement vertexformatelement = list.get(j);
+-                        GlStateManager._enableVertexAttribArray(j);
+-                        switch (vertexformatelement.usage()) {
+-                            case POSITION:
+-                            case GENERIC:
+-                            case UV:
+-                                if (vertexformatelement.type() == VertexFormatElement.Type.FLOAT) {
+-                                    ARBVertexAttribBinding.glVertexAttribFormat(
+-                                        j,
+-                                        vertexformatelement.count(),
+-                                        GlConst.toGl(vertexformatelement.type()),
+-                                        false,
+-                                        p_410638_.getOffset(vertexformatelement)
+-                                    );
+-                                } else {
+-                                    ARBVertexAttribBinding.glVertexAttribIFormat(
+-                                        j, vertexformatelement.count(), GlConst.toGl(vertexformatelement.type()), p_410638_.getOffset(vertexformatelement)
+-                                    );
+-                                }
+-                                break;
+-                            case NORMAL:
+-                            case COLOR:
+-                                ARBVertexAttribBinding.glVertexAttribFormat(
+-                                    j, vertexformatelement.count(), GlConst.toGl(vertexformatelement.type()), true, p_410638_.getOffset(vertexformatelement)
+-                                );
+-                        }
+-
+-                        ARBVertexAttribBinding.glVertexAttribBinding(j, 0);
+-                    }
+-                }
+-
+-                if (p_410508_ != null) {
+-                    ARBVertexAttribBinding.glBindVertexBuffer(0, p_410508_.handle, 0L, p_410638_.getVertexSize());
+-                }
+-
+-                VertexArrayCache.VertexArray vertexarraycache$vertexarray1 = new VertexArrayCache.VertexArray(i, p_410638_, p_410508_);
+-                this.debugLabels.applyLabel(vertexarraycache$vertexarray1);
+-                this.cache.put(p_410638_, vertexarraycache$vertexarray1);
+             }
+         }
+     }

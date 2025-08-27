@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
+@@ -95,7 +_,7 @@
+                     livingentity.skipDropExperience();
+                     this.positionSource
+                         .getPosition(p_283470_)
+-                        .ifPresent(p_432712_ -> this.bloom(p_283470_, BlockPos.containing(p_432712_), this.blockState, p_283470_.getRandom()));
++                        .ifPresent(p_425495_ -> this.bloom(p_283470_, BlockPos.containing(p_425495_), this.blockState, p_283470_.getRandom()));
+                 }
+ 
+                 return true;

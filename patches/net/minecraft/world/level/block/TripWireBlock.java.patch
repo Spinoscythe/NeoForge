@@ -1,11 +1,31 @@
 --- a/net/minecraft/world/level/block/TripWireBlock.java
 +++ b/net/minecraft/world/level/block/TripWireBlock.java
+@@ -30,8 +_,8 @@
+ 
+ public class TripWireBlock extends Block {
+     public static final MapCodec<TripWireBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432688_ -> p_432688_.group(BuiltInRegistries.BLOCK.byNameCodec().fieldOf("hook").forGetter(p_304664_ -> p_304664_.hook), propertiesCodec())
+-            .apply(p_432688_, TripWireBlock::new)
++        p_368444_ -> p_368444_.group(BuiltInRegistries.BLOCK.byNameCodec().fieldOf("hook").forGetter(p_304664_ -> p_304664_.hook), propertiesCodec())
++            .apply(p_368444_, TripWireBlock::new)
+     );
+     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+     public static final BooleanProperty ATTACHED = BlockStateProperties.ATTACHED;
 @@ -115,7 +_,7 @@
  
      @Override
      public BlockState playerWillDestroy(Level p_57615_, BlockPos p_57616_, BlockState p_57617_, Player p_57618_) {
--        if (!p_57615_.isClientSide && !p_57618_.getMainHandItem().isEmpty() && p_57618_.getMainHandItem().is(Items.SHEARS)) {
+-        if (!p_57615_.isClientSide() && !p_57618_.getMainHandItem().isEmpty() && p_57618_.getMainHandItem().is(Items.SHEARS)) {
 +        if (!p_57615_.isClientSide && !p_57618_.getMainHandItem().isEmpty() && p_57618_.getMainHandItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHEARS_DISARM)) {
              p_57615_.setBlock(p_57616_, p_57617_.setValue(DISARMED, true), 260);
              p_57615_.gameEvent(p_57618_, GameEvent.SHEAR, p_57616_);
          }
+@@ -149,7 +_,7 @@
+ 
+     @Override
+     protected void entityInside(BlockState p_57625_, Level p_57626_, BlockPos p_57627_, Entity p_57628_, InsideBlockEffectApplier p_405466_) {
+-        if (!p_57626_.isClientSide()) {
++        if (!p_57626_.isClientSide) {
+             if (!p_57625_.getValue(POWERED)) {
+                 this.checkPressed(p_57626_, p_57627_, List.of(p_57628_));
+             }

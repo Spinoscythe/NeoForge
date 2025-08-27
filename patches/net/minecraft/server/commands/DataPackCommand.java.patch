@@ -1,5 +1,24 @@
 --- a/net/minecraft/server/commands/DataPackCommand.java
 +++ b/net/minecraft/server/commands/DataPackCommand.java
+@@ -203,15 +_,15 @@
+                 throw ERROR_PACK_ALREADY_EXISTS.create(p_416116_);
+             } else {
+                 PackMetadataSection packmetadatasection = new PackMetadataSection(
+-                    p_416178_, SharedConstants.getCurrentVersion().packVersion(PackType.SERVER_DATA).minorRange()
++                    p_416178_, SharedConstants.getCurrentVersion().packVersion(PackType.SERVER_DATA), Optional.empty()
+                 );
+-                DataResult<JsonElement> dataresult = PackMetadataSection.SERVER_TYPE.codec().encodeStart(JsonOps.INSTANCE, packmetadatasection);
++                DataResult<JsonElement> dataresult = PackMetadataSection.CODEC.encodeStart(JsonOps.INSTANCE, packmetadatasection);
+                 Optional<Error<JsonElement>> optional = dataresult.error();
+                 if (optional.isPresent()) {
+                     throw ERROR_PACK_METADATA_ENCODE_FAILURE.create(p_416116_, optional.get().message());
+                 } else {
+                     JsonObject jsonobject = new JsonObject();
+-                    jsonobject.add(PackMetadataSection.SERVER_TYPE.name(), dataresult.getOrThrow());
++                    jsonobject.add(PackMetadataSection.TYPE.name(), dataresult.getOrThrow());
+ 
+                     try {
+                         Files.createDirectory(path1);
 @@ -285,7 +_,7 @@
      private static int listEnabledPacks(CommandSourceStack p_136866_) {
          PackRepository packrepository = p_136866_.getServer().getPackRepository();

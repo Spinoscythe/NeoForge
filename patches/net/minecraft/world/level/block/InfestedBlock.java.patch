@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/InfestedBlock.java
++++ b/net/minecraft/world/level/block/InfestedBlock.java
+@@ -22,8 +_,8 @@
+ 
+ public class InfestedBlock extends Block {
+     public static final MapCodec<InfestedBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432668_ -> p_432668_.group(BuiltInRegistries.BLOCK.byNameCodec().fieldOf("host").forGetter(InfestedBlock::getHostBlock), propertiesCodec())
+-            .apply(p_432668_, InfestedBlock::new)
++        p_368426_ -> p_368426_.group(BuiltInRegistries.BLOCK.byNameCodec().fieldOf("host").forGetter(InfestedBlock::getHostBlock), propertiesCodec())
++            .apply(p_368426_, InfestedBlock::new)
+     );
+     private final Block hostBlock;
+     private static final Map<Block, Block> BLOCK_BY_HOST_BLOCK = Maps.newIdentityHashMap();

@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/debug/NeighborsUpdateRenderer.java
++++ b/net/minecraft/client/renderer/debug/NeighborsUpdateRenderer.java
+@@ -61,7 +_,7 @@
+                             .move(blockpos.getX(), blockpos.getY(), blockpos.getZ())
+                             .move(-p_113602_, -p_113603_, -p_113604_);
+                         ShapeRenderer.renderLineBox(
+-                            p_113600_.last(), vertexconsumer, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, 1.0F, 1.0F, 1.0F, 1.0F
++                            p_113600_, vertexconsumer, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, 1.0F, 1.0F, 1.0F, 1.0F
+                         );
+                         map.put(blockpos, integer);
+                     }

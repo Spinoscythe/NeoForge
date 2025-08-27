@@ -1,0 +1,91 @@
+--- a/net/minecraft/client/multiplayer/ClientHandshakePacketListenerImpl.java
++++ b/net/minecraft/client/multiplayer/ClientHandshakePacketListenerImpl.java
+@@ -7,6 +_,7 @@
+ import com.mojang.authlib.exceptions.InsufficientPrivilegesException;
+ import com.mojang.authlib.exceptions.InvalidCredentialsException;
+ import com.mojang.authlib.exceptions.UserBannedException;
++import com.mojang.authlib.minecraft.MinecraftSessionService;
+ import com.mojang.logging.LogUtils;
+ import java.math.BigInteger;
+ import java.security.PublicKey;
+@@ -14,7 +_,6 @@
+ import java.util.HashMap;
+ import java.util.Map;
+ import java.util.Set;
+-import java.util.UUID;
+ import java.util.concurrent.atomic.AtomicReference;
+ import java.util.function.Consumer;
+ import javax.annotation.Nullable;
+@@ -70,11 +_,8 @@
+     private final Duration worldLoadDuration;
+     @Nullable
+     private String minigameName;
+-    private final LevelLoadTracker levelLoadTracker;
+     private final Map<ResourceLocation, byte[]> cookies;
+     private final boolean wasTransferredTo;
+-    private final Map<UUID, PlayerInfo> seenPlayers;
+-    private final boolean seenInsecureChatWarning;
+     private final AtomicReference<ClientHandshakePacketListenerImpl.State> state = new AtomicReference<>(ClientHandshakePacketListenerImpl.State.CONNECTING);
+ 
+     public ClientHandshakePacketListenerImpl(
+@@ -85,7 +_,6 @@
+         boolean p_261562_,
+         @Nullable Duration p_261673_,
+         Consumer<Component> p_261945_,
+-        LevelLoadTracker p_433518_,
+         @Nullable TransferState p_320762_
+     ) {
+         this.connection = p_261697_;
+@@ -95,10 +_,7 @@
+         this.updateStatus = p_261945_;
+         this.newWorld = p_261562_;
+         this.worldLoadDuration = p_261673_;
+-        this.levelLoadTracker = p_433518_;
+         this.cookies = p_320762_ != null ? new HashMap<>(p_320762_.cookies()) : new HashMap<>();
+-        this.seenPlayers = p_320762_ != null ? p_320762_.seenPlayers() : Map.of();
+-        this.seenInsecureChatWarning = p_320762_ != null ? p_320762_.seenInsecureChatWarning() : false;
+         this.wasTransferredTo = p_320762_ != null;
+     }
+ 
+@@ -160,10 +_,7 @@
+     @Nullable
+     private Component authenticateServer(String p_104532_) {
+         try {
+-            this.minecraft
+-                .services()
+-                .sessionService()
+-                .joinServer(this.minecraft.getUser().getProfileId(), this.minecraft.getUser().getAccessToken(), p_104532_);
++            this.getMinecraftSessionService().joinServer(this.minecraft.getUser().getProfileId(), this.minecraft.getUser().getAccessToken(), p_104532_);
+             return null;
+         } catch (AuthenticationUnavailableException authenticationunavailableexception) {
+             return Component.translatable("disconnect.loginFailedInfo", Component.translatable("disconnect.loginFailedInfo.serversUnavailable"));
+@@ -178,6 +_,10 @@
+         }
+     }
+ 
++    private MinecraftSessionService getMinecraftSessionService() {
++        return this.minecraft.getMinecraftSessionService();
++    }
++
+     @Override
+     public void handleLoginFinished(ClientboundLoginFinishedPacket p_374132_) {
+         this.switchState(ClientHandshakePacketListenerImpl.State.JOINING);
+@@ -189,7 +_,6 @@
+                     this.minecraft,
+                     this.connection,
+                     new CommonListenerCookie(
+-                        this.levelLoadTracker,
+                         gameprofile,
+                         this.minecraft.getTelemetryManager().createWorldSessionManager(this.newWorld, this.worldLoadDuration, this.minigameName),
+                         ClientRegistryLayer.createRegistryAccess().compositeAccess(),
+@@ -200,9 +_,7 @@
+                         this.cookies,
+                         null,
+                         Map.of(),
+-                        ServerLinks.EMPTY,
+-                        this.seenPlayers,
+-                        false
++                        ServerLinks.EMPTY
+                     )
+                 )
+             );

@@ -1,0 +1,259 @@
+--- a/net/minecraft/world/item/component/ResolvableProfile.java
++++ b/net/minecraft/world/item/component/ResolvableProfile.java
+@@ -2,7 +_,6 @@
+ 
+ import com.mojang.authlib.GameProfile;
+ import com.mojang.authlib.properties.PropertyMap;
+-import com.mojang.datafixers.util.Either;
+ import com.mojang.serialization.Codec;
+ import com.mojang.serialization.codecs.RecordCodecBuilder;
+ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+@@ -10,173 +_,85 @@
+ import java.util.Optional;
+ import java.util.UUID;
+ import java.util.concurrent.CompletableFuture;
+-import java.util.function.Consumer;
+-import net.minecraft.ChatFormatting;
++import javax.annotation.Nullable;
+ import net.minecraft.Util;
+ import net.minecraft.core.UUIDUtil;
+-import net.minecraft.core.component.DataComponentGetter;
+-import net.minecraft.network.chat.Component;
+ import net.minecraft.network.codec.ByteBufCodecs;
+ import net.minecraft.network.codec.StreamCodec;
+-import net.minecraft.server.players.ProfileResolver;
+ import net.minecraft.util.ExtraCodecs;
+-import net.minecraft.world.item.Item;
+-import net.minecraft.world.item.TooltipFlag;
+-
+-public abstract sealed class ResolvableProfile implements TooltipProvider permits ResolvableProfile.Static, ResolvableProfile.Dynamic {
+-    public static final Codec<ResolvableProfile> CODEC = Codec.either(ExtraCodecs.STORED_GAME_PROFILE, ResolvableProfile.Partial.CODEC)
+-        .xmap(ResolvableProfile::create, ResolvableProfile::unpack);
+-    public static final StreamCodec<ByteBuf, ResolvableProfile> STREAM_CODEC = ByteBufCodecs.either(
+-            ByteBufCodecs.GAME_PROFILE, ResolvableProfile.Partial.STREAM_CODEC
+-        )
+-        .map(ResolvableProfile::create, ResolvableProfile::unpack);
+-    protected final GameProfile partialProfile;
+-
+-    private static ResolvableProfile create(Either<GameProfile, ResolvableProfile.Partial> p_440634_) {
+-        return p_440634_.map(
+-            p_438860_ -> new ResolvableProfile.Static(Either.left(p_438860_)),
+-            p_438863_ -> (ResolvableProfile)(p_438863_.properties.isEmpty() && p_438863_.id.isPresent() != p_438863_.name.isPresent()
+-                ? p_438863_.name
+-                    .<ResolvableProfile>map(p_438862_ -> new ResolvableProfile.Dynamic(Either.left(p_438862_)))
+-                    .orElseGet(() -> new ResolvableProfile.Dynamic(Either.right(p_438863_.id.get())))
+-                : new ResolvableProfile.Static(Either.right(p_438863_)))
+-        );
+-    }
+-
+-    public static ResolvableProfile createResolved(GameProfile p_439395_) {
+-        return new ResolvableProfile.Static(Either.left(p_439395_));
+-    }
+-
+-    public static ResolvableProfile createUnresolved(UUID p_440492_) {
+-        return new ResolvableProfile.Dynamic(Either.right(p_440492_));
+-    }
+-
+-    protected abstract Either<GameProfile, ResolvableProfile.Partial> unpack();
+-
+-    protected ResolvableProfile(GameProfile p_332009_) {
+-        this.partialProfile = p_332009_;
+-    }
+-
+-    public abstract CompletableFuture<GameProfile> resolveProfile(ProfileResolver p_439990_);
+-
+-    public GameProfile partialProfile() {
+-        return this.partialProfile;
+-    }
+-
+-    static GameProfile createPartialProfile(Optional<String> p_439028_, Optional<UUID> p_439712_) {
+-        String s = p_439028_.orElse("");
+-        UUID uuid = p_439712_.orElseGet(() -> UUIDUtil.createOfflinePlayerUUID(s));
+-        return new GameProfile(uuid, s);
+-    }
+-
+-    public abstract Optional<String> name();
+-
+-    public static final class Dynamic extends ResolvableProfile {
+-        private static final Component DYNAMIC_TOOLTIP = Component.translatable("component.profile.dynamic").withStyle(ChatFormatting.GRAY);
+-        private final Either<String, UUID> nameOrId;
+-
+-        Dynamic(Either<String, UUID> p_440116_) {
+-            super(ResolvableProfile.createPartialProfile(p_440116_.left(), p_440116_.right()));
+-            this.nameOrId = p_440116_;
+-        }
+-
+-        @Override
+-        public Optional<String> name() {
+-            return this.nameOrId.left();
+-        }
+-
+-        @Override
+-        public boolean equals(Object p_440012_) {
+-            return this == p_440012_
+-                || p_440012_ instanceof ResolvableProfile.Dynamic resolvableprofile$dynamic && this.nameOrId.equals(resolvableprofile$dynamic.nameOrId);
+-        }
+-
+-        @Override
+-        public int hashCode() {
+-            return this.nameOrId.hashCode();
+-        }
+-
+-        @Override
+-        protected Either<GameProfile, ResolvableProfile.Partial> unpack() {
+-            return Either.right(new ResolvableProfile.Partial(this.nameOrId.left(), this.nameOrId.right(), new PropertyMap()));
+-        }
+-
+-        @Override
+-        public CompletableFuture<GameProfile> resolveProfile(ProfileResolver p_440138_) {
+-            return CompletableFuture.supplyAsync(() -> p_440138_.fetchByNameOrId(this.nameOrId).orElse(this.partialProfile), Util.nonCriticalIoPool());
+-        }
+-
+-        @Override
+-        public void addToTooltip(Item.TooltipContext p_440633_, Consumer<Component> p_439744_, TooltipFlag p_440154_, DataComponentGetter p_440593_) {
+-            p_439744_.accept(DYNAMIC_TOOLTIP);
+-        }
+-    }
+-
+-    protected record Partial(Optional<String> name, Optional<UUID> id, PropertyMap properties) {
+-        private static final Codec<ResolvableProfile.Partial> FULL_CODEC = RecordCodecBuilder.create(
+-            p_439742_ -> p_439742_.group(
+-                    ExtraCodecs.PLAYER_NAME.optionalFieldOf("name").forGetter(ResolvableProfile.Partial::name),
+-                    UUIDUtil.CODEC.optionalFieldOf("id").forGetter(ResolvableProfile.Partial::id),
+-                    ExtraCodecs.PROPERTY_MAP.optionalFieldOf("properties", new PropertyMap()).forGetter(ResolvableProfile.Partial::properties)
+-                )
+-                .apply(p_439742_, ResolvableProfile.Partial::new)
+-        );
+-        public static final Codec<ResolvableProfile.Partial> CODEC = Codec.withAlternative(
+-            FULL_CODEC, ExtraCodecs.PLAYER_NAME, p_439611_ -> new ResolvableProfile.Partial(Optional.of(p_439611_), Optional.empty(), new PropertyMap())
+-        );
+-        public static final StreamCodec<ByteBuf, ResolvableProfile.Partial> STREAM_CODEC = StreamCodec.composite(
+-            ByteBufCodecs.PLAYER_NAME.apply(ByteBufCodecs::optional),
+-            ResolvableProfile.Partial::name,
+-            UUIDUtil.STREAM_CODEC.apply(ByteBufCodecs::optional),
+-            ResolvableProfile.Partial::id,
+-            ByteBufCodecs.GAME_PROFILE_PROPERTIES,
+-            ResolvableProfile.Partial::properties,
+-            ResolvableProfile.Partial::new
+-        );
+-
+-        private GameProfile createProfile() {
+-            GameProfile gameprofile = ResolvableProfile.createPartialProfile(this.name, this.id);
+-            gameprofile.getProperties().putAll(this.properties);
+-            return gameprofile;
+-        }
+-    }
+-
+-    public static final class Static extends ResolvableProfile {
+-        private final Either<GameProfile, ResolvableProfile.Partial> contents;
+-
+-        Static(Either<GameProfile, ResolvableProfile.Partial> p_440066_) {
+-            super(p_440066_.map(p_439472_ -> (GameProfile)p_439472_, ResolvableProfile.Partial::createProfile));
+-            this.contents = p_440066_;
+-        }
+-
+-        @Override
+-        public CompletableFuture<GameProfile> resolveProfile(ProfileResolver p_440395_) {
+-            return CompletableFuture.completedFuture(this.partialProfile);
+-        }
+-
+-        @Override
+-        protected Either<GameProfile, ResolvableProfile.Partial> unpack() {
+-            return this.contents;
+-        }
+-
+-        @Override
+-        public Optional<String> name() {
+-            return this.contents.map(p_438961_ -> Optional.of(p_438961_.getName()), p_439586_ -> p_439586_.name);
+-        }
+-
+-        @Override
+-        public boolean equals(Object p_439861_) {
+-            return this == p_439861_
+-                || p_439861_ instanceof ResolvableProfile.Static resolvableprofile$static && this.contents.equals(resolvableprofile$static.contents);
+-        }
+-
+-        @Override
+-        public int hashCode() {
+-            return this.contents.hashCode();
+-        }
+-
+-        @Override
+-        public void addToTooltip(Item.TooltipContext p_440498_, Consumer<Component> p_440705_, TooltipFlag p_439909_, DataComponentGetter p_439256_) {
+-        }
++import net.minecraft.world.level.block.entity.SkullBlockEntity;
++
++public record ResolvableProfile(Optional<String> name, Optional<UUID> id, PropertyMap properties, GameProfile gameProfile) {
++    private static final Codec<ResolvableProfile> FULL_CODEC = RecordCodecBuilder.create(
++        p_337950_ -> p_337950_.group(
++                ExtraCodecs.PLAYER_NAME.optionalFieldOf("name").forGetter(ResolvableProfile::name),
++                UUIDUtil.CODEC.optionalFieldOf("id").forGetter(ResolvableProfile::id),
++                ExtraCodecs.PROPERTY_MAP.optionalFieldOf("properties", new PropertyMap()).forGetter(ResolvableProfile::properties)
++            )
++            .apply(p_337950_, ResolvableProfile::new)
++    );
++    public static final Codec<ResolvableProfile> CODEC = Codec.withAlternative(
++        FULL_CODEC, ExtraCodecs.PLAYER_NAME, p_332623_ -> new ResolvableProfile(Optional.of(p_332623_), Optional.empty(), new PropertyMap())
++    );
++    public static final StreamCodec<ByteBuf, ResolvableProfile> STREAM_CODEC = StreamCodec.composite(
++        ByteBufCodecs.stringUtf8(16).apply(ByteBufCodecs::optional),
++        ResolvableProfile::name,
++        UUIDUtil.STREAM_CODEC.apply(ByteBufCodecs::optional),
++        ResolvableProfile::id,
++        ByteBufCodecs.GAME_PROFILE_PROPERTIES,
++        ResolvableProfile::properties,
++        ResolvableProfile::new
++    );
++
++    public ResolvableProfile(Optional<String> p_330853_, Optional<UUID> p_332668_, PropertyMap p_331206_) {
++        this(p_330853_, p_332668_, p_331206_, createGameProfile(p_332668_, p_330853_, p_331206_));
++    }
++
++    public ResolvableProfile(GameProfile p_332009_) {
++        this(Optional.of(p_332009_.getName()), Optional.of(p_332009_.getId()), p_332009_.getProperties(), p_332009_);
++    }
++
++    @Nullable
++    public ResolvableProfile pollResolve() {
++        if (this.isResolved()) {
++            return this;
++        } else {
++            Optional<GameProfile> optional;
++            if (this.id.isPresent()) {
++                optional = SkullBlockEntity.fetchGameProfile(this.id.get()).getNow(null);
++            } else {
++                optional = SkullBlockEntity.fetchGameProfile(this.name.orElseThrow()).getNow(null);
++            }
++
++            return optional != null ? this.createProfile(optional) : null;
++        }
++    }
++
++    public CompletableFuture<ResolvableProfile> resolve() {
++        if (this.isResolved()) {
++            return CompletableFuture.completedFuture(this);
++        } else {
++            return this.id.isPresent()
++                ? SkullBlockEntity.fetchGameProfile(this.id.get()).thenApply(this::createProfile)
++                : SkullBlockEntity.fetchGameProfile(this.name.orElseThrow()).thenApply(this::createProfile);
++        }
++    }
++
++    private ResolvableProfile createProfile(Optional<GameProfile> p_331092_) {
++        return new ResolvableProfile(p_331092_.orElseGet(() -> createGameProfile(this.id, this.name)));
++    }
++
++    private static GameProfile createGameProfile(Optional<UUID> p_428217_, Optional<String> p_428238_) {
++        return new GameProfile(p_428217_.orElse(Util.NIL_UUID), p_428238_.orElse(""));
++    }
++
++    private static GameProfile createGameProfile(Optional<UUID> p_428331_, Optional<String> p_428348_, PropertyMap p_428508_) {
++        GameProfile gameprofile = createGameProfile(p_428331_, p_428348_);
++        gameprofile.getProperties().putAll(p_428508_);
++        return gameprofile;
++    }
++
++    public boolean isResolved() {
++        return !this.properties.isEmpty() ? true : this.id.isPresent() == this.name.isPresent();
+     }
+ }

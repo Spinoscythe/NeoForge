@@ -1,6 +1,14 @@
 --- a/net/minecraft/client/renderer/texture/TextureAtlas.java
 +++ b/net/minecraft/client/renderer/texture/TextureAtlas.java
-@@ -91,6 +_,8 @@
+@@ -13,7 +_,6 @@
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
+-import java.util.Objects;
+ import java.util.Map.Entry;
+ import javax.annotation.Nullable;
+ import net.minecraft.CrashReport;
+@@ -92,6 +_,8 @@
              this.sprites = List.copyOf(list);
              this.animatedTextures = List.copyOf(list1);
          }
@@ -9,7 +17,18 @@
      }
  
      @Override
-@@ -168,5 +_,9 @@
+@@ -146,10 +_,6 @@
+         }
+     }
+ 
+-    public TextureAtlasSprite missingSprite() {
+-        return Objects.requireNonNull(this.missingSprite, "Atlas not initialized");
+-    }
+-
+     public void clearTextureData() {
+         this.sprites.forEach(SpriteContents::close);
+         this.animatedTextures.forEach(TextureAtlasSprite.Ticker::close);
+@@ -173,5 +_,9 @@
  
      int getHeight() {
          return this.height;

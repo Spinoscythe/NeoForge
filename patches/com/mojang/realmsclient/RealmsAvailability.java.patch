@@ -1,0 +1,20 @@
+--- a/com/mojang/realmsclient/RealmsAvailability.java
++++ b/com/mojang/realmsclient/RealmsAvailability.java
+@@ -11,6 +_,7 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.Util;
+ import net.minecraft.client.Minecraft;
++import net.minecraft.client.User;
+ import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.network.chat.Component;
+ import net.neoforged.api.distmarker.Dist;
+@@ -37,7 +_,8 @@
+     }
+ 
+     private static CompletableFuture<RealmsAvailability.Result> check() {
+-        return Minecraft.getInstance().isOfflineDeveloperMode()
++        User user = Minecraft.getInstance().getUser();
++        return user.getType() != User.Type.MSA
+             ? CompletableFuture.completedFuture(new RealmsAvailability.Result(RealmsAvailability.Type.AUTHENTICATION_ERROR))
+             : CompletableFuture.supplyAsync(
+                 () -> {

@@ -1,0 +1,55 @@
+--- a/net/minecraft/client/resources/WaypointStyle.java
++++ b/net/minecraft/client/resources/WaypointStyle.java
+@@ -1,6 +_,5 @@
+ package net.minecraft.client.resources;
+ 
+-import com.google.common.annotations.VisibleForTesting;
+ import com.mojang.serialization.Codec;
+ import com.mojang.serialization.DataResult;
+ import com.mojang.serialization.codecs.RecordCodecBuilder;
+@@ -14,8 +_,6 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public record WaypointStyle(int nearDistance, int farDistance, List<ResourceLocation> sprites, List<ResourceLocation> spriteLocations) {
+-    @VisibleForTesting
+-    public static final String ICON_LOCATION_PREFIX = "hud/locator_bar_dot/";
+     public static final int DEFAULT_NEAR_DISTANCE = 128;
+     public static final int DEFAULT_FAR_DISTANCE = 332;
+     private static final Codec<Integer> DISTANCE_CODEC = Codec.intRange(0, 60000000);
+@@ -33,30 +_,19 @@
+         this(p_419759_, p_419537_, p_420059_, p_420059_.stream().map(p_420007_ -> p_420007_.withPrefix("hud/locator_bar_dot/")).toList());
+     }
+ 
+-    @VisibleForTesting
+-    public DataResult<WaypointStyle> validate() {
+-        if (this.sprites.isEmpty()) {
+-            return DataResult.error(() -> "Must have at least one sprite icon");
+-        } else if (this.nearDistance <= 0) {
+-            return DataResult.error(() -> "Near distance (" + this.nearDistance + ") must be greater than zero");
+-        } else {
+-            return this.nearDistance >= this.farDistance
+-                ? DataResult.error(() -> "Far distance (" + this.farDistance + ") cannot be closer or equal to near distance (" + this.nearDistance + ")")
+-                : DataResult.success(this);
+-        }
++    private DataResult<WaypointStyle> validate() {
++        return this.nearDistance >= this.farDistance
++            ? DataResult.error(() -> "Far distance (" + this.farDistance + ") cannot be closer or equal to near distance (" + this.nearDistance + ")")
++            : DataResult.success(this);
+     }
+ 
+     public ResourceLocation sprite(float p_419860_) {
+-        if (p_419860_ < this.nearDistance) {
++        if (p_419860_ <= this.nearDistance) {
+             return this.spriteLocations.getFirst();
+         } else if (p_419860_ >= this.farDistance) {
+             return this.spriteLocations.getLast();
+-        } else if (this.spriteLocations.size() == 1) {
+-            return this.spriteLocations.getFirst();
+-        } else if (this.spriteLocations.size() == 3) {
+-            return this.spriteLocations.get(1);
+         } else {
+-            int i = Mth.lerpInt((p_419860_ - this.nearDistance) / (this.farDistance - this.nearDistance), 1, this.spriteLocations.size() - 1);
++            int i = Mth.lerpInt((p_419860_ - this.nearDistance) / (this.farDistance - this.nearDistance), 0, this.spriteLocations.size());
+             return this.spriteLocations.get(i);
+         }
+     }

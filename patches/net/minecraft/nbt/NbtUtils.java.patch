@@ -1,0 +1,18 @@
+--- a/net/minecraft/nbt/NbtUtils.java
++++ b/net/minecraft/nbt/NbtUtils.java
+@@ -541,15 +_,6 @@
+         return p_265534_;
+     }
+ 
+-    public static Dynamic<Tag> addCurrentDataVersion(Dynamic<Tag> p_434557_) {
+-        int i = SharedConstants.getCurrentVersion().dataVersion().version();
+-        return addDataVersion(p_434557_, i);
+-    }
+-
+-    public static Dynamic<Tag> addDataVersion(Dynamic<Tag> p_433370_, int p_434549_) {
+-        return p_433370_.set("DataVersion", p_433370_.createInt(p_434549_));
+-    }
+-
+     public static void addCurrentDataVersion(ValueOutput p_422165_) {
+         int i = SharedConstants.getCurrentVersion().dataVersion().version();
+         addDataVersion(p_422165_, i);

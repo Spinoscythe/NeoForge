@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/OwnableEntity.java
++++ b/net/minecraft/world/entity/OwnableEntity.java
+@@ -13,7 +_,7 @@
+ 
+     @Nullable
+     default LivingEntity getOwner() {
+-        return EntityReference.getLivingEntity(this.getOwnerReference(), this.level());
++        return EntityReference.get(this.getOwnerReference(), this.level(), LivingEntity.class);
+     }
+ 
+     @Nullable

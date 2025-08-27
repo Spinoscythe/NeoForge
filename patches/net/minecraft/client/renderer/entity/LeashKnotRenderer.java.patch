@@ -1,0 +1,44 @@
+--- a/net/minecraft/client/renderer/entity/LeashKnotRenderer.java
++++ b/net/minecraft/client/renderer/entity/LeashKnotRenderer.java
+@@ -1,9 +_,10 @@
+ package net.minecraft.client.renderer.entity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.model.LeashKnotModel;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.state.EntityRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.resources.ResourceLocation;
+@@ -22,21 +_,14 @@
+     }
+ 
+     @Override
+-    public void submit(EntityRenderState p_432885_, PoseStack p_435997_, SubmitNodeCollector p_434621_) {
+-        p_435997_.pushPose();
+-        p_435997_.scale(-1.0F, -1.0F, 1.0F);
+-        p_434621_.submitModel(
+-            this.model,
+-            p_432885_,
+-            p_435997_,
+-            this.model.renderType(KNOT_LOCATION),
+-            p_432885_.lightCoords,
+-            OverlayTexture.NO_OVERLAY,
+-            p_432885_.outlineColor,
+-            null
+-        );
+-        p_435997_.popPose();
+-        super.submit(p_432885_, p_435997_, p_434621_);
++    public void render(EntityRenderState p_364077_, PoseStack p_115249_, MultiBufferSource p_115250_, int p_115251_) {
++        p_115249_.pushPose();
++        p_115249_.scale(-1.0F, -1.0F, 1.0F);
++        this.model.setupAnim(p_364077_);
++        VertexConsumer vertexconsumer = p_115250_.getBuffer(this.model.renderType(KNOT_LOCATION));
++        this.model.renderToBuffer(p_115249_, vertexconsumer, p_115251_, OverlayTexture.NO_OVERLAY);
++        p_115249_.popPose();
++        super.render(p_364077_, p_115249_, p_115250_, p_115251_);
+     }
+ 
+     @Override

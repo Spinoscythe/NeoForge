@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/sounds/SoundManager.java
++++ b/net/minecraft/client/sounds/SoundManager.java
+@@ -187,8 +_,8 @@
+         this.soundEngine.resume();
+     }
+ 
+-    public void updateSourceVolume(SoundSource p_120359_) {
+-        this.soundEngine.updateCategoryVolume(p_120359_);
++    public void updateSourceVolume(SoundSource p_120359_, float p_428783_) {
++        this.soundEngine.updateCategoryVolume(p_120359_, p_428783_);
+     }
+ 
+     public void stop(SoundInstance p_120400_) {

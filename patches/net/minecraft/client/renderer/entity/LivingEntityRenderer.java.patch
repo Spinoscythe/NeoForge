@@ -1,22 +1,93 @@
 --- a/net/minecraft/client/renderer/entity/LivingEntityRenderer.java
 +++ b/net/minecraft/client/renderer/entity/LivingEntityRenderer.java
-@@ -75,6 +_,7 @@
+@@ -3,6 +_,7 @@
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.ImmutableList.Builder;
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import com.mojang.math.Axis;
+ import java.util.List;
+ import javax.annotation.Nullable;
+@@ -10,8 +_,8 @@
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.model.EntityModel;
+ import net.minecraft.client.player.LocalPlayer;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+ import net.minecraft.client.renderer.entity.layers.RenderLayer;
+ import net.minecraft.client.renderer.entity.state.HitboxRenderState;
+@@ -73,42 +_,44 @@
+         }
      }
  
-     public void render(S p_361886_, PoseStack p_115311_, MultiBufferSource p_115312_, int p_115313_) {
+-    public void submit(S p_433493_, PoseStack p_434615_, SubmitNodeCollector p_433768_) {
+-        p_434615_.pushPose();
+-        if (p_433493_.hasPose(Pose.SLEEPING)) {
+-            Direction direction = p_433493_.bedOrientation;
++    public void render(S p_361886_, PoseStack p_115311_, MultiBufferSource p_115312_, int p_115313_) {
 +        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLivingEvent.Pre<T, S, M>(p_361886_, this, p_361886_.partialTick, p_115311_, p_115312_, p_115313_)).isCanceled()) return;
-         p_115311_.pushPose();
-         if (p_361886_.hasPose(Pose.SLEEPING)) {
-             Direction direction = p_361886_.bedOrientation;
-@@ -110,6 +_,7 @@
++        p_115311_.pushPose();
++        if (p_361886_.hasPose(Pose.SLEEPING)) {
++            Direction direction = p_361886_.bedOrientation;
+             if (direction != null) {
+-                float f = p_433493_.eyeHeight - 0.1F;
+-                p_434615_.translate(-direction.getStepX() * f, 0.0F, -direction.getStepZ() * f);
++                float f = p_361886_.eyeHeight - 0.1F;
++                p_115311_.translate(-direction.getStepX() * f, 0.0F, -direction.getStepZ() * f);
+             }
+         }
  
-         p_115311_.popPose();
-         super.render(p_361886_, p_115311_, p_115312_, p_115313_);
+-        float f1 = p_433493_.scale;
+-        p_434615_.scale(f1, f1, f1);
+-        this.setupRotations(p_433493_, p_434615_, p_433493_.bodyRot, f1);
+-        p_434615_.scale(-1.0F, -1.0F, 1.0F);
+-        this.scale(p_433493_, p_434615_);
+-        p_434615_.translate(0.0F, -1.501F, 0.0F);
+-        boolean flag1 = this.isBodyVisible(p_433493_);
+-        boolean flag = !flag1 && !p_433493_.isInvisibleToPlayer;
+-        RenderType rendertype = this.getRenderType(p_433493_, flag1, flag, p_433493_.appearsGlowing());
++        float f1 = p_361886_.scale;
++        p_115311_.scale(f1, f1, f1);
++        this.setupRotations(p_361886_, p_115311_, p_361886_.bodyRot, f1);
++        p_115311_.scale(-1.0F, -1.0F, 1.0F);
++        this.scale(p_361886_, p_115311_);
++        p_115311_.translate(0.0F, -1.501F, 0.0F);
++        this.model.setupAnim(p_361886_);
++        boolean flag1 = this.isBodyVisible(p_361886_);
++        boolean flag = !flag1 && !p_361886_.isInvisibleToPlayer;
++        RenderType rendertype = this.getRenderType(p_361886_, flag1, flag, p_361886_.appearsGlowing);
+         if (rendertype != null) {
+-            int i = getOverlayCoords(p_433493_, this.getWhiteOverlayProgress(p_433493_));
++            VertexConsumer vertexconsumer = p_115312_.getBuffer(rendertype);
++            int i = getOverlayCoords(p_361886_, this.getWhiteOverlayProgress(p_361886_));
+             int j = flag ? 654311423 : -1;
+-            int k = ARGB.multiply(j, this.getModelTint(p_433493_));
+-            p_433768_.submitModel(this.model, p_433493_, p_434615_, rendertype, p_433493_.lightCoords, i, k, null, p_433493_.outlineColor, null);
++            int k = ARGB.multiply(j, this.getModelTint(p_361886_));
++            this.model.renderToBuffer(p_115311_, vertexconsumer, p_115313_, i, k);
+         }
+ 
+-        if (this.shouldRenderLayers(p_433493_) && !this.layers.isEmpty()) {
+-            this.model.setupAnim(p_433493_);
+-
++        if (this.shouldRenderLayers(p_361886_)) {
+             for (RenderLayer<S, M> renderlayer : this.layers) {
+-                renderlayer.submit(p_434615_, p_433768_, p_433493_.lightCoords, p_433493_, p_433493_.yRot, p_433493_.xRot);
++                renderlayer.render(p_115311_, p_115312_, p_115313_, p_361886_, p_361886_.yRot, p_361886_.xRot);
+             }
+         }
+ 
+-        p_434615_.popPose();
+-        super.submit(p_433493_, p_434615_, p_433768_);
++        p_115311_.popPose();
++        super.render(p_361886_, p_115311_, p_115312_, p_115313_);
 +        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLivingEvent.Post<T, S, M>(p_361886_, this, p_361886_.partialTick, p_115311_, p_115312_, p_115313_));
      }
  
      protected boolean shouldRenderLayers(S p_364697_) {
-@@ -207,7 +_,7 @@
+@@ -206,7 +_,7 @@
      protected boolean shouldShowName(T p_363517_, double p_365448_) {
          if (p_363517_.isDiscrete()) {
              float f = 32.0F;
@@ -25,7 +96,7 @@
                  return false;
              }
          }
-@@ -290,7 +_,7 @@
+@@ -289,7 +_,7 @@
  
          p_360515_.isFullyFrozen = p_362733_.isFullyFrozen();
          p_360515_.isBaby = p_362733_.isBaby();
@@ -34,3 +105,11 @@
          p_360515_.isAutoSpinAttack = p_362733_.isAutoSpinAttack();
          p_360515_.hasRedOverlay = p_362733_.hurtTime > 0 || p_362733_.deathTime > 0;
          ItemStack itemstack = p_362733_.getItemBySlot(EquipmentSlot.HEAD);
+@@ -310,6 +_,7 @@
+         p_360515_.deathTime = p_362733_.deathTime > 0 ? p_362733_.deathTime + p_361157_ : 0.0F;
+         Minecraft minecraft = Minecraft.getInstance();
+         p_360515_.isInvisibleToPlayer = p_360515_.isInvisible && p_362733_.isInvisibleTo(minecraft.player);
++        p_360515_.appearsGlowing = minecraft.shouldEntityAppearGlowing(p_362733_);
+     }
+ 
+     protected void extractAdditionalHitboxes(T p_412552_, Builder<HitboxRenderState> p_412540_, float p_412715_) {

@@ -1,0 +1,16 @@
+--- a/net/minecraft/client/renderer/entity/state/WitherSkullRenderState.java
++++ b/net/minecraft/client/renderer/entity/state/WitherSkullRenderState.java
+@@ -1,11 +_,11 @@
+ package net.minecraft.client.renderer.entity.state;
+ 
+-import net.minecraft.client.model.SkullModelBase;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class WitherSkullRenderState extends EntityRenderState {
+     public boolean isDangerous;
+-    public final SkullModelBase.State modelState = new SkullModelBase.State();
++    public float xRot;
++    public float yRot;
+ }

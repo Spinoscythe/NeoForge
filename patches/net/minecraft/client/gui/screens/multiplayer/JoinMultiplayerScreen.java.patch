@@ -1,0 +1,189 @@
+--- a/net/minecraft/client/gui/screens/multiplayer/JoinMultiplayerScreen.java
++++ b/net/minecraft/client/gui/screens/multiplayer/JoinMultiplayerScreen.java
+@@ -3,11 +_,12 @@
+ import com.mojang.logging.LogUtils;
+ import java.util.List;
+ import javax.annotation.Nullable;
+-import net.minecraft.client.gui.components.AbstractWidget;
++import net.minecraft.client.gui.GuiGraphics;
+ import net.minecraft.client.gui.components.Button;
+-import net.minecraft.client.gui.components.events.GuiEventListener;
+-import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
++import net.minecraft.client.gui.layouts.EqualSpacingLayout;
++import net.minecraft.client.gui.layouts.FrameLayout;
+ import net.minecraft.client.gui.layouts.LinearLayout;
++import net.minecraft.client.gui.layouts.SpacerElement;
+ import net.minecraft.client.gui.navigation.CommonInputs;
+ import net.minecraft.client.gui.screens.ConfirmScreen;
+ import net.minecraft.client.gui.screens.ConnectScreen;
+@@ -29,10 +_,11 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public class JoinMultiplayerScreen extends Screen {
++    public static final int BUTTON_ROW_WIDTH = 308;
++    public static final int TOP_ROW_BUTTON_WIDTH = 100;
++    public static final int LOWER_ROW_BUTTON_WIDTH = 74;
++    public static final int FOOTER_HEIGHT = 64;
+     private static final Logger LOGGER = LogUtils.getLogger();
+-    private static final int TOP_ROW_BUTTON_WIDTH = 100;
+-    private static final int LOWER_ROW_BUTTON_WIDTH = 74;
+-    private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 33, 60);
+     private final ServerStatusPinger pinger = new ServerStatusPinger();
+     private final Screen lastScreen;
+     protected ServerSelectionList serverSelectionList;
+@@ -44,6 +_,7 @@
+     private LanServerDetection.LanServerList lanServerList;
+     @Nullable
+     private LanServerDetection.LanServerDetector lanServerDetector;
++    private boolean initedOnce;
+ 
+     public JoinMultiplayerScreen(Screen p_99688_) {
+         super(Component.translatable("multiplayer.title"));
+@@ -52,37 +_,38 @@
+ 
+     @Override
+     protected void init() {
+-        this.layout.addTitleHeader(this.title, this.font);
+-        this.servers = new ServerList(this.minecraft);
+-        this.servers.load();
+-        this.lanServerList = new LanServerDetection.LanServerList();
+-
+-        try {
+-            this.lanServerDetector = new LanServerDetection.LanServerDetector(this.lanServerList);
+-            this.lanServerDetector.start();
+-        } catch (Exception exception) {
+-            LOGGER.warn("Unable to start LAN server detection: {}", exception.getMessage());
++        if (this.initedOnce) {
++            this.serverSelectionList.setRectangle(this.width, this.height - 64 - 32, 0, 32);
++        } else {
++            this.initedOnce = true;
++            this.servers = new ServerList(this.minecraft);
++            this.servers.load();
++            this.lanServerList = new LanServerDetection.LanServerList();
++
++            try {
++                this.lanServerDetector = new LanServerDetection.LanServerDetector(this.lanServerList);
++                this.lanServerDetector.start();
++            } catch (Exception exception) {
++                LOGGER.warn("Unable to start LAN server detection: {}", exception.getMessage());
++            }
++
++            this.serverSelectionList = new ServerSelectionList(this, this.minecraft, this.width, this.height - 64 - 32, 32, 36);
++            this.serverSelectionList.updateOnlineServers(this.servers);
+         }
+ 
+-        this.serverSelectionList = this.layout
+-            .addToContents(new ServerSelectionList(this, this.minecraft, this.width, this.layout.getContentHeight(), this.layout.getHeaderHeight(), 36));
+-        this.serverSelectionList.updateOnlineServers(this.servers);
+-        LinearLayout linearlayout = this.layout.addToFooter(LinearLayout.vertical().spacing(4));
+-        linearlayout.defaultCellSetting().alignHorizontallyCenter();
+-        LinearLayout linearlayout1 = linearlayout.addChild(LinearLayout.horizontal().spacing(4));
+-        LinearLayout linearlayout2 = linearlayout.addChild(LinearLayout.horizontal().spacing(4));
+-        this.selectButton = linearlayout1.addChild(
++        this.addRenderableWidget(this.serverSelectionList);
++        this.selectButton = this.addRenderableWidget(
+             Button.builder(Component.translatable("selectServer.select"), p_99728_ -> this.joinSelectedServer()).width(100).build()
+         );
+-        linearlayout1.addChild(Button.builder(Component.translatable("selectServer.direct"), p_293604_ -> {
++        Button button = this.addRenderableWidget(Button.builder(Component.translatable("selectServer.direct"), p_293604_ -> {
+             this.editingServer = new ServerData(I18n.get("selectServer.defaultName"), "", ServerData.Type.OTHER);
+             this.minecraft.setScreen(new DirectJoinServerScreen(this, this::directJoinCallback, this.editingServer));
+         }).width(100).build());
+-        linearlayout1.addChild(Button.builder(Component.translatable("selectServer.add"), p_293603_ -> {
++        Button button1 = this.addRenderableWidget(Button.builder(Component.translatable("selectServer.add"), p_293603_ -> {
+             this.editingServer = new ServerData(I18n.get("selectServer.defaultName"), "", ServerData.Type.OTHER);
+             this.minecraft.setScreen(new EditServerScreen(this, this::addServerCallback, this.editingServer));
+         }).width(100).build());
+-        this.editButton = linearlayout2.addChild(Button.builder(Component.translatable("selectServer.edit"), p_99715_ -> {
++        this.editButton = this.addRenderableWidget(Button.builder(Component.translatable("selectServer.edit"), p_99715_ -> {
+             ServerSelectionList.Entry serverselectionlist$entry = this.serverSelectionList.getSelected();
+             if (serverselectionlist$entry instanceof ServerSelectionList.OnlineServerEntry) {
+                 ServerData serverdata = ((ServerSelectionList.OnlineServerEntry)serverselectionlist$entry).getServerData();
+@@ -91,7 +_,7 @@
+                 this.minecraft.setScreen(new EditServerScreen(this, this::editServerCallback, this.editingServer));
+             }
+         }).width(74).build());
+-        this.deleteButton = linearlayout2.addChild(Button.builder(Component.translatable("selectServer.delete"), p_99710_ -> {
++        this.deleteButton = this.addRenderableWidget(Button.builder(Component.translatable("selectServer.delete"), p_99710_ -> {
+             ServerSelectionList.Entry serverselectionlist$entry = this.serverSelectionList.getSelected();
+             if (serverselectionlist$entry instanceof ServerSelectionList.OnlineServerEntry) {
+                 String s = ((ServerSelectionList.OnlineServerEntry)serverselectionlist$entry).getServerData().name;
+@@ -104,21 +_,24 @@
+                 }
+             }
+         }).width(74).build());
+-        linearlayout2.addChild(Button.builder(Component.translatable("selectServer.refresh"), p_99706_ -> this.refreshServerList()).width(74).build());
+-        linearlayout2.addChild(Button.builder(CommonComponents.GUI_BACK, p_315824_ -> this.onClose()).width(74).build());
+-        this.layout.visitWidgets(p_438743_ -> {
+-            AbstractWidget abstractwidget = this.addRenderableWidget(p_438743_);
+-        });
+-        this.repositionElements();
++        Button button2 = this.addRenderableWidget(
++            Button.builder(Component.translatable("selectServer.refresh"), p_99706_ -> this.refreshServerList()).width(74).build()
++        );
++        Button button3 = this.addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, p_315824_ -> this.onClose()).width(74).build());
++        LinearLayout linearlayout = LinearLayout.vertical();
++        EqualSpacingLayout equalspacinglayout = linearlayout.addChild(new EqualSpacingLayout(308, 20, EqualSpacingLayout.Orientation.HORIZONTAL));
++        equalspacinglayout.addChild(this.selectButton);
++        equalspacinglayout.addChild(button);
++        equalspacinglayout.addChild(button1);
++        linearlayout.addChild(SpacerElement.height(4));
++        EqualSpacingLayout equalspacinglayout1 = linearlayout.addChild(new EqualSpacingLayout(308, 20, EqualSpacingLayout.Orientation.HORIZONTAL));
++        equalspacinglayout1.addChild(this.editButton);
++        equalspacinglayout1.addChild(this.deleteButton);
++        equalspacinglayout1.addChild(button2);
++        equalspacinglayout1.addChild(button3);
++        linearlayout.arrangeElements();
++        FrameLayout.centerInRectangle(linearlayout, 0, this.height - 64, this.width, 64);
+         this.onSelectedChange();
+-    }
+-
+-    @Override
+-    protected void repositionElements() {
+-        this.layout.arrangeElements();
+-        if (this.serverSelectionList != null) {
+-            this.serverSelectionList.updateSize(this.width, this.layout);
+-        }
+     }
+ 
+     @Override
+@@ -218,14 +_,24 @@
+         } else if (p_99690_ == 294) {
+             this.refreshServerList();
+             return true;
+-        } else if (this.serverSelectionList.getSelected() != null && CommonInputs.selected(p_99690_)) {
+-            this.joinSelectedServer();
+-            return true;
++        } else if (this.serverSelectionList.getSelected() != null) {
++            if (CommonInputs.selected(p_99690_)) {
++                this.joinSelectedServer();
++                return true;
++            } else {
++                return this.serverSelectionList.keyPressed(p_99690_, p_99691_, p_99692_);
++            }
+         } else {
+             return false;
+         }
+     }
+ 
++    @Override
++    public void render(GuiGraphics p_281617_, int p_281629_, int p_281983_, float p_283431_) {
++        super.render(p_281617_, p_281629_, p_281983_, p_283431_);
++        p_281617_.drawCenteredString(this.font, this.title, this.width / 2, 20, -1);
++    }
++
+     public void joinSelectedServer() {
+         ServerSelectionList.Entry serverselectionlist$entry = this.serverSelectionList.getSelected();
+         if (serverselectionlist$entry instanceof ServerSelectionList.OnlineServerEntry) {
+@@ -238,6 +_,11 @@
+ 
+     private void join(ServerData p_99703_) {
+         ConnectScreen.startConnecting(this, this.minecraft, ServerAddress.parseString(p_99703_.ip), p_99703_, false, null);
++    }
++
++    public void setSelected(ServerSelectionList.Entry p_99701_) {
++        this.serverSelectionList.setSelected(p_99701_);
++        this.onSelectedChange();
+     }
+ 
+     protected void onSelectedChange() {

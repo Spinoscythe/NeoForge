@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/projectile/AbstractThrownPotion.java
++++ b/net/minecraft/world/entity/projectile/AbstractThrownPotion.java
+@@ -49,7 +_,7 @@
+     @Override
+     protected void onHitBlock(BlockHitResult p_399776_) {
+         super.onHitBlock(p_399776_);
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             ItemStack itemstack = this.getItem();
+             Direction direction = p_399776_.getDirection();
+             BlockPos blockpos = p_399776_.getBlockPos();

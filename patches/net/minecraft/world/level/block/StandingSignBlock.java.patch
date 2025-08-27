@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/StandingSignBlock.java
++++ b/net/minecraft/world/level/block/StandingSignBlock.java
+@@ -21,8 +_,8 @@
+ 
+ public class StandingSignBlock extends SignBlock {
+     public static final MapCodec<StandingSignBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432683_ -> p_432683_.group(WoodType.CODEC.fieldOf("wood_type").forGetter(SignBlock::type), propertiesCodec())
+-            .apply(p_432683_, StandingSignBlock::new)
++        p_368440_ -> p_368440_.group(WoodType.CODEC.fieldOf("wood_type").forGetter(SignBlock::type), propertiesCodec())
++            .apply(p_368440_, StandingSignBlock::new)
+     );
+     public static final IntegerProperty ROTATION = BlockStateProperties.ROTATION_16;
+ 

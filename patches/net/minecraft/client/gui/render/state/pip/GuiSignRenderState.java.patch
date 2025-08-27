@@ -1,0 +1,50 @@
+--- a/net/minecraft/client/gui/render/state/pip/GuiSignRenderState.java
++++ b/net/minecraft/client/gui/render/state/pip/GuiSignRenderState.java
+@@ -9,36 +_,21 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public record GuiSignRenderState(
+-    Model.Simple signModel,
+-    WoodType woodType,
+-    int x0,
+-    int y0,
+-    int x1,
+-    int y1,
+-    float scale,
+-    @Nullable ScreenRectangle scissorArea,
+-    @Nullable ScreenRectangle bounds
++    Model signModel, WoodType woodType, int x0, int y0, int x1, int y1, float scale, @Nullable ScreenRectangle scissorArea, @Nullable ScreenRectangle bounds
+ ) implements PictureInPictureRenderState {
+     public GuiSignRenderState(
+-        Model.Simple p_435719_,
+-        WoodType p_421576_,
+-        int p_421949_,
+-        int p_421975_,
+-        int p_422255_,
+-        int p_421655_,
+-        float p_422106_,
+-        @Nullable ScreenRectangle p_421999_
++        Model p_416587_, WoodType p_416061_, int p_415990_, int p_415912_, int p_416122_, int p_415541_, float p_416168_, @Nullable ScreenRectangle p_415895_
+     ) {
+         this(
+-            p_435719_,
+-            p_421576_,
+-            p_421949_,
+-            p_421975_,
+-            p_422255_,
+-            p_421655_,
+-            p_422106_,
+-            p_421999_,
+-            PictureInPictureRenderState.getBounds(p_421949_, p_421975_, p_422255_, p_421655_, p_421999_)
++            p_416587_,
++            p_416061_,
++            p_415990_,
++            p_415912_,
++            p_416122_,
++            p_415541_,
++            p_416168_,
++            p_415895_,
++            PictureInPictureRenderState.getBounds(p_415990_, p_415912_, p_416122_, p_415541_, p_415895_)
+         );
+     }
+ }

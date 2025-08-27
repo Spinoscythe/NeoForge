@@ -1,0 +1,68 @@
+--- a/net/minecraft/client/renderer/entity/AbstractBoatRenderer.java
++++ b/net/minecraft/client/renderer/entity/AbstractBoatRenderer.java
+@@ -1,10 +_,11 @@
+ package net.minecraft.client.renderer.entity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import com.mojang.math.Axis;
+ import net.minecraft.client.model.EntityModel;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.state.BoatRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.util.Mth;
+@@ -20,30 +_,31 @@
+         this.shadowRadius = 0.8F;
+     }
+ 
+-    public void submit(BoatRenderState p_432989_, PoseStack p_433482_, SubmitNodeCollector p_435618_) {
+-        p_433482_.pushPose();
+-        p_433482_.translate(0.0F, 0.375F, 0.0F);
+-        p_433482_.mulPose(Axis.YP.rotationDegrees(180.0F - p_432989_.yRot));
+-        float f = p_432989_.hurtTime;
++    public void render(BoatRenderState p_376222_, PoseStack p_376926_, MultiBufferSource p_376211_, int p_376589_) {
++        p_376926_.pushPose();
++        p_376926_.translate(0.0F, 0.375F, 0.0F);
++        p_376926_.mulPose(Axis.YP.rotationDegrees(180.0F - p_376222_.yRot));
++        float f = p_376222_.hurtTime;
+         if (f > 0.0F) {
+-            p_433482_.mulPose(Axis.XP.rotationDegrees(Mth.sin(f) * f * p_432989_.damageTime / 10.0F * p_432989_.hurtDir));
+-        }
+-
+-        if (!p_432989_.isUnderWater && !Mth.equal(p_432989_.bubbleAngle, 0.0F)) {
+-            p_433482_.mulPose(new Quaternionf().setAngleAxis(p_432989_.bubbleAngle * (float) (Math.PI / 180.0), 1.0F, 0.0F, 1.0F));
+-        }
+-
+-        p_433482_.scale(-1.0F, -1.0F, 1.0F);
+-        p_433482_.mulPose(Axis.YP.rotationDegrees(90.0F));
+-        p_435618_.submitModel(
+-            this.model(), p_432989_, p_433482_, this.renderType(), p_432989_.lightCoords, OverlayTexture.NO_OVERLAY, p_432989_.outlineColor, null
+-        );
+-        this.submitTypeAdditions(p_432989_, p_433482_, p_435618_, p_432989_.lightCoords);
+-        p_433482_.popPose();
+-        super.submit(p_432989_, p_433482_, p_435618_);
++            p_376926_.mulPose(Axis.XP.rotationDegrees(Mth.sin(f) * f * p_376222_.damageTime / 10.0F * p_376222_.hurtDir));
++        }
++
++        if (!p_376222_.isUnderWater && !Mth.equal(p_376222_.bubbleAngle, 0.0F)) {
++            p_376926_.mulPose(new Quaternionf().setAngleAxis(p_376222_.bubbleAngle * (float) (Math.PI / 180.0), 1.0F, 0.0F, 1.0F));
++        }
++
++        p_376926_.scale(-1.0F, -1.0F, 1.0F);
++        p_376926_.mulPose(Axis.YP.rotationDegrees(90.0F));
++        EntityModel<BoatRenderState> entitymodel = this.model();
++        entitymodel.setupAnim(p_376222_);
++        VertexConsumer vertexconsumer = p_376211_.getBuffer(this.renderType());
++        entitymodel.renderToBuffer(p_376926_, vertexconsumer, p_376589_, OverlayTexture.NO_OVERLAY);
++        this.renderTypeAdditions(p_376222_, p_376926_, p_376211_, p_376589_);
++        p_376926_.popPose();
++        super.render(p_376222_, p_376926_, p_376211_, p_376589_);
+     }
+ 
+-    protected void submitTypeAdditions(BoatRenderState p_376875_, PoseStack p_376118_, SubmitNodeCollector p_433398_, int p_376899_) {
++    protected void renderTypeAdditions(BoatRenderState p_376875_, PoseStack p_376118_, MultiBufferSource p_376628_, int p_376899_) {
+     }
+ 
+     protected abstract EntityModel<BoatRenderState> model();

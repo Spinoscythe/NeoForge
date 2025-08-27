@@ -1,0 +1,72 @@
+--- a/net/minecraft/commands/arguments/GameProfileArgument.java
++++ b/net/minecraft/commands/arguments/GameProfileArgument.java
+@@ -1,5 +_,7 @@
+ package net.minecraft.commands.arguments;
+ 
++import com.google.common.collect.Lists;
++import com.mojang.authlib.GameProfile;
+ import com.mojang.brigadier.StringReader;
+ import com.mojang.brigadier.arguments.ArgumentType;
+ import com.mojang.brigadier.context.CommandContext;
+@@ -7,7 +_,6 @@
+ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+ import com.mojang.brigadier.suggestion.Suggestions;
+ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+-import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.Collection;
+ import java.util.Collections;
+@@ -20,13 +_,12 @@
+ import net.minecraft.commands.arguments.selector.EntitySelectorParser;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.server.level.ServerPlayer;
+-import net.minecraft.server.players.NameAndId;
+ 
+ public class GameProfileArgument implements ArgumentType<GameProfileArgument.Result> {
+     private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "dd12be42-52a9-4a91-a8a1-11c01849e498", "@e");
+     public static final SimpleCommandExceptionType ERROR_UNKNOWN_PLAYER = new SimpleCommandExceptionType(Component.translatable("argument.player.unknown"));
+ 
+-    public static Collection<NameAndId> getGameProfiles(CommandContext<CommandSourceStack> p_94591_, String p_94592_) throws CommandSyntaxException {
++    public static Collection<GameProfile> getGameProfiles(CommandContext<CommandSourceStack> p_94591_, String p_94592_) throws CommandSyntaxException {
+         return p_94591_.getArgument(p_94592_, GameProfileArgument.Result.class).getNames(p_94591_.getSource());
+     }
+ 
+@@ -59,8 +_,8 @@
+             }
+ 
+             String s = p_353133_.getString().substring(i, p_353133_.getCursor());
+-            return p_438835_ -> {
+-                Optional<NameAndId> optional = p_438835_.getServer().services().nameToIdCache().get(s);
++            return p_94595_ -> {
++                Optional<GameProfile> optional = p_94595_.getServer().getProfileCache().get(s);
+                 return Collections.singleton(optional.orElseThrow(ERROR_UNKNOWN_PLAYER::create));
+             };
+         }
+@@ -93,7 +_,7 @@
+ 
+     @FunctionalInterface
+     public interface Result {
+-        Collection<NameAndId> getNames(CommandSourceStack p_94602_) throws CommandSyntaxException;
++        Collection<GameProfile> getNames(CommandSourceStack p_94602_) throws CommandSyntaxException;
+     }
+ 
+     public static class SelectorResult implements GameProfileArgument.Result {
+@@ -104,15 +_,15 @@
+         }
+ 
+         @Override
+-        public Collection<NameAndId> getNames(CommandSourceStack p_94607_) throws CommandSyntaxException {
++        public Collection<GameProfile> getNames(CommandSourceStack p_94607_) throws CommandSyntaxException {
+             List<ServerPlayer> list = this.selector.findPlayers(p_94607_);
+             if (list.isEmpty()) {
+                 throw EntityArgument.NO_PLAYERS_FOUND.create();
+             } else {
+-                List<NameAndId> list1 = new ArrayList<>();
++                List<GameProfile> list1 = Lists.newArrayList();
+ 
+                 for (ServerPlayer serverplayer : list) {
+-                    list1.add(serverplayer.nameAndId());
++                    list1.add(serverplayer.getGameProfile());
+                 }
+ 
+                 return list1;

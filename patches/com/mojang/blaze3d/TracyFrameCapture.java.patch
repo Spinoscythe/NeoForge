@@ -1,0 +1,29 @@
+--- a/com/mojang/blaze3d/TracyFrameCapture.java
++++ b/com/mojang/blaze3d/TracyFrameCapture.java
+@@ -9,6 +_,7 @@
+ import com.mojang.blaze3d.textures.GpuTexture;
+ import com.mojang.blaze3d.textures.GpuTextureView;
+ import com.mojang.blaze3d.textures.TextureFormat;
++import com.mojang.blaze3d.vertex.VertexFormat;
+ import com.mojang.jtracy.TracyClient;
+ import java.util.OptionalInt;
+ import net.minecraft.client.renderer.RenderPipelines;
+@@ -78,13 +_,17 @@
+ 
+             this.status = TracyFrameCapture.Status.WAITING_FOR_COPY;
+             CommandEncoder commandencoder = RenderSystem.getDevice().createCommandEncoder();
++            RenderSystem.AutoStorageIndexBuffer rendersystem$autostorageindexbuffer = RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
++            GpuBuffer gpubuffer = rendersystem$autostorageindexbuffer.getBuffer(6);
+ 
+             try (RenderPass renderpass = RenderSystem.getDevice()
+                     .createCommandEncoder()
+                     .createRenderPass(() -> "Tracy blit", this.frameBufferView, OptionalInt.empty())) {
+                 renderpass.setPipeline(RenderPipelines.TRACY_BLIT);
++                renderpass.setVertexBuffer(0, RenderSystem.getQuadVertexBuffer());
++                renderpass.setIndexBuffer(gpubuffer, rendersystem$autostorageindexbuffer.type());
+                 renderpass.bindSampler("InSampler", p_372980_.getColorTextureView());
+-                renderpass.draw(0, 3);
++                renderpass.drawIndexed(0, 0, 6, 1);
+             }
+ 
+             commandencoder.copyTextureToBuffer(this.frameBuffer, this.pixelbuffer, 0, () -> this.status = TracyFrameCapture.Status.WAITING_FOR_UPLOAD, 0);

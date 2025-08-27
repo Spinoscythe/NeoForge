@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/BaseCommandBlock.java
++++ b/net/minecraft/world/level/BaseCommandBlock.java
+@@ -91,7 +_,7 @@
+     }
+ 
+     public boolean performCommand(Level p_45415_) {
+-        if (p_45415_.isClientSide() || p_45415_.getGameTime() == this.lastExecution) {
++        if (p_45415_.isClientSide || p_45415_.getGameTime() == this.lastExecution) {
+             return false;
+         } else if ("Searge".equalsIgnoreCase(this.command)) {
+             this.lastOutput = Component.literal("#itzlipofutzli");
+@@ -169,7 +_,7 @@
+         if (!p_45413_.canUseGameMasterBlocks()) {
+             return InteractionResult.PASS;
+         } else {
+-            if (p_45413_.level().isClientSide()) {
++            if (p_45413_.level().isClientSide) {
+                 p_45413_.openMinecartCommandBlock(this);
+             }
+ 

@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/model/VexModel.java
++++ b/net/minecraft/client/model/VexModel.java
+@@ -16,7 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class VexModel extends EntityModel<VexRenderState> implements ArmedModel<VexRenderState> {
++public class VexModel extends EntityModel<VexRenderState> implements ArmedModel {
+     private final ModelPart body = this.root.getChild("body");
+     private final ModelPart rightArm = this.body.getChild("right_arm");
+     private final ModelPart leftArm = this.body.getChild("left_arm");
+@@ -114,7 +_,8 @@
+         }
+     }
+ 
+-    public void translateToHand(VexRenderState p_434708_, HumanoidArm p_259770_, PoseStack p_260351_) {
++    @Override
++    public void translateToHand(HumanoidArm p_259770_, PoseStack p_260351_) {
+         boolean flag = p_259770_ == HumanoidArm.RIGHT;
+         ModelPart modelpart = flag ? this.rightArm : this.leftArm;
+         this.root.translateAndRotate(p_260351_);

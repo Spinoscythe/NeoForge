@@ -1,0 +1,23 @@
+--- a/net/minecraft/client/renderer/entity/AgeableMobRenderer.java
++++ b/net/minecraft/client/renderer/entity/AgeableMobRenderer.java
+@@ -2,7 +_,7 @@
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import net.minecraft.client.model.EntityModel;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+ import net.minecraft.world.entity.Mob;
+ import net.neoforged.api.distmarker.Dist;
+@@ -21,8 +_,8 @@
+     }
+ 
+     @Override
+-    public void submit(S p_433346_, PoseStack p_434948_, SubmitNodeCollector p_433956_) {
+-        this.model = p_433346_.isBaby ? this.babyModel : this.adultModel;
+-        super.submit(p_433346_, p_434948_, p_433956_);
++    public void render(S p_362004_, PoseStack p_361118_, MultiBufferSource p_363184_, int p_361276_) {
++        this.model = p_362004_.isBaby ? this.babyModel : this.adultModel;
++        super.render(p_362004_, p_361118_, p_363184_, p_361276_);
+     }
+ }

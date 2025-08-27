@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/debug/OctreeDebugRenderer.java
++++ b/net/minecraft/client/renderer/debug/OctreeDebugRenderer.java
+@@ -61,7 +_,7 @@
+         VertexConsumer vertexconsumer = p_366909_.getBuffer(RenderType.lines());
+         long j = i + 5L;
+         ShapeRenderer.renderLineBox(
+-            p_366585_.last(),
++            p_366585_,
+             vertexconsumer,
+             aabb.deflate(0.1 * p_366591_).move(-p_366814_, -p_366595_, -p_366414_),
+             getColorComponent(j, 0.3F),

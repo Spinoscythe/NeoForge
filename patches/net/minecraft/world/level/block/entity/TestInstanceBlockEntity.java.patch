@@ -1,0 +1,18 @@
+--- a/net/minecraft/world/level/block/entity/TestInstanceBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/TestInstanceBlockEntity.java
+@@ -129,6 +_,7 @@
+ 
+     public void setSuccess() {
+         this.set(this.data.withStatus(TestInstanceBlockEntity.Status.FINISHED));
++        this.removeBarriers();
+     }
+ 
+     public void setRunning() {
+@@ -308,7 +_,6 @@
+             .setKnownShape(true);
+         BlockPos blockpos = this.getStartCorner();
+         this.forceLoadChunks();
+-        StructureUtils.clearSpaceForStructure(this.getStructureBoundingBox(), p_397984_);
+         this.removeEntities();
+         p_397168_.placeInWorld(p_397984_, blockpos, blockpos, structureplacesettings, p_397984_.getRandom(), 818);
+     }

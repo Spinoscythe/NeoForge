@@ -1,0 +1,11 @@
+--- a/net/minecraft/util/ThreadingDetector.java
++++ b/net/minecraft/util/ThreadingDetector.java
+@@ -76,7 +_,7 @@
+         CrashReport crashreport = new CrashReport(s1, new IllegalStateException(s1));
+         CrashReportCategory crashreportcategory = crashreport.addCategory("Thread dumps");
+         crashreportcategory.setDetail("Thread dumps", s);
+-        LOGGER.error("Thread dumps: \n{}", s);
++        LOGGER.error("Thread dumps: \n" + s);
+         return new ReportedException(crashreport);
+     }
+ 

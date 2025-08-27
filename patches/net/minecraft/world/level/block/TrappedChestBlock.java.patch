@@ -1,0 +1,19 @@
+--- a/net/minecraft/world/level/block/TrappedChestBlock.java
++++ b/net/minecraft/world/level/block/TrappedChestBlock.java
+@@ -4,7 +_,6 @@
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+ import net.minecraft.resources.ResourceLocation;
+-import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.stats.Stat;
+ import net.minecraft.stats.Stats;
+ import net.minecraft.util.Mth;
+@@ -25,7 +_,7 @@
+     }
+ 
+     public TrappedChestBlock(BlockBehaviour.Properties p_57573_) {
+-        super(() -> BlockEntityType.TRAPPED_CHEST, SoundEvents.CHEST_OPEN, SoundEvents.CHEST_CLOSE, p_57573_);
++        super(() -> BlockEntityType.TRAPPED_CHEST, p_57573_);
+     }
+ 
+     @Override

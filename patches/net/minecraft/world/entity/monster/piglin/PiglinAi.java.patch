@@ -1,5 +1,23 @@
 --- a/net/minecraft/world/entity/monster/piglin/PiglinAi.java
 +++ b/net/minecraft/world/entity/monster/piglin/PiglinAi.java
+@@ -154,7 +_,7 @@
+             10,
+             ImmutableList.of(
+                 SetEntityLookTarget.create(PiglinAi::isPlayerHoldingLovedItem, 14.0F),
+-                StartAttacking.<Piglin>create((p_432552_, p_432553_) -> p_432553_.isAdult(), PiglinAi::findNearestValidAttackTarget),
++                StartAttacking.<Piglin>create((p_427117_, p_427118_) -> p_427118_.isAdult(), PiglinAi::findNearestValidAttackTarget),
+                 BehaviorBuilder.triggerIf(Piglin::canHunt, StartHuntingHoglin.create()),
+                 avoidRepellent(),
+                 babySometimesRideBabyHoglin(),
+@@ -189,7 +_,7 @@
+             ImmutableList.<net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Piglin>>of(
+                 avoidRepellent(),
+                 SetEntityLookTarget.create(PiglinAi::isPlayerHoldingLovedItem, 14.0F),
+-                StartAttacking.<Piglin>create((p_432554_, p_432555_) -> p_432555_.isAdult(), PiglinAi::findNearestValidAttackTarget),
++                StartAttacking.<Piglin>create((p_427115_, p_427116_) -> p_427116_.isAdult(), PiglinAi::findNearestValidAttackTarget),
+                 BehaviorBuilder.<Piglin>triggerIf(p_34804_ -> !p_34804_.isDancing(), GoToTargetLocation.create(MemoryModuleType.CELEBRATE_LOCATION, 2, 1.0F)),
+                 BehaviorBuilder.<Piglin>triggerIf(Piglin::isDancing, GoToTargetLocation.create(MemoryModuleType.CELEBRATE_LOCATION, 4, 0.6F)),
+                 new RunOne<Piglin>(
 @@ -377,7 +_,7 @@
          ItemStack itemstack = p_34868_.getItemInHand(InteractionHand.OFF_HAND);
          p_34868_.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);

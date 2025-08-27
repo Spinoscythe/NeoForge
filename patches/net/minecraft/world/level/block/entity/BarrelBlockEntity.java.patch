@@ -1,0 +1,63 @@
+--- a/net/minecraft/world/level/block/entity/BarrelBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/BarrelBlockEntity.java
+@@ -1,6 +_,5 @@
+ package net.minecraft.world.level.block.entity;
+ 
+-import java.util.List;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.NonNullList;
+ import net.minecraft.core.Vec3i;
+@@ -10,7 +_,6 @@
+ import net.minecraft.sounds.SoundSource;
+ import net.minecraft.world.Container;
+ import net.minecraft.world.ContainerHelper;
+-import net.minecraft.world.entity.ContainerUser;
+ import net.minecraft.world.entity.player.Inventory;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.inventory.AbstractContainerMenu;
+@@ -42,7 +_,7 @@
+         }
+ 
+         @Override
+-        public boolean isOwnContainer(Player p_155060_) {
++        protected boolean isOwnContainer(Player p_155060_) {
+             if (p_155060_.containerMenu instanceof ChestMenu) {
+                 Container container = ((ChestMenu)p_155060_.containerMenu).getContainer();
+                 return container == BarrelBlockEntity.this;
+@@ -99,25 +_,17 @@
+     }
+ 
+     @Override
+-    public void startOpen(ContainerUser p_434451_) {
+-        if (!this.remove && !p_434451_.getLivingEntity().isSpectator()) {
+-            this.openersCounter
+-                .incrementOpeners(
+-                    p_434451_.getLivingEntity(), this.getLevel(), this.getBlockPos(), this.getBlockState(), p_434451_.getContainerInteractionRange()
+-                );
+-        }
+-    }
+-
+-    @Override
+-    public void stopOpen(ContainerUser p_433640_) {
+-        if (!this.remove && !p_433640_.getLivingEntity().isSpectator()) {
+-            this.openersCounter.decrementOpeners(p_433640_.getLivingEntity(), this.getLevel(), this.getBlockPos(), this.getBlockState());
+-        }
+-    }
+-
+-    @Override
+-    public List<ContainerUser> getEntitiesWithContainerOpen() {
+-        return this.openersCounter.getEntitiesWithContainerOpen(this.getLevel(), this.getBlockPos());
++    public void startOpen(Player p_58616_) {
++        if (!this.remove && !p_58616_.isSpectator()) {
++            this.openersCounter.incrementOpeners(p_58616_, this.getLevel(), this.getBlockPos(), this.getBlockState());
++        }
++    }
++
++    @Override
++    public void stopOpen(Player p_58614_) {
++        if (!this.remove && !p_58614_.isSpectator()) {
++            this.openersCounter.decrementOpeners(p_58614_, this.getLevel(), this.getBlockPos(), this.getBlockState());
++        }
+     }
+ 
+     public void recheckOpen() {

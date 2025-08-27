@@ -1,0 +1,26 @@
+--- a/net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen.java
++++ b/net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen.java
+@@ -106,6 +_,11 @@
+     }
+ 
+     @Override
++    public void renderBackground(GuiGraphics p_333836_, int p_333748_, int p_333725_, float p_333784_) {
++        this.renderTransparentBackground(p_333836_);
++    }
++
++    @Override
+     public void onClose() {
+         this.onDone();
+     }
+@@ -125,11 +_,6 @@
+     @Override
+     public boolean isPauseScreen() {
+         return false;
+-    }
+-
+-    @Override
+-    public boolean isInGameUi() {
+-        return true;
+     }
+ 
+     protected abstract void renderSignBackground(GuiGraphics p_281459_);

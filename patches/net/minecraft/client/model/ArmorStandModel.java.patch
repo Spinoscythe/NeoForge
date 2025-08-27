@@ -1,0 +1,17 @@
+--- a/net/minecraft/client/model/ArmorStandModel.java
++++ b/net/minecraft/client/model/ArmorStandModel.java
+@@ -81,11 +_,12 @@
+         this.shoulderStick.zRot = (float) (Math.PI / 180.0) * p_360688_.bodyPose.z();
+     }
+ 
+-    public void translateToHand(ArmorStandRenderState p_436048_, HumanoidArm p_102157_, PoseStack p_102158_) {
++    @Override
++    public void translateToHand(HumanoidArm p_102157_, PoseStack p_102158_) {
+         ModelPart modelpart = this.getArm(p_102157_);
+         boolean flag = modelpart.visible;
+         modelpart.visible = true;
+-        super.translateToHand(p_436048_, p_102157_, p_102158_);
++        super.translateToHand(p_102157_, p_102158_);
+         modelpart.visible = flag;
+     }
+ }

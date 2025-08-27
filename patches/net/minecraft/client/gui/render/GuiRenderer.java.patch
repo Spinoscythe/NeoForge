@@ -1,23 +1,65 @@
 --- a/net/minecraft/client/gui/render/GuiRenderer.java
 +++ b/net/minecraft/client/gui/render/GuiRenderer.java
-@@ -105,7 +_,8 @@
+@@ -40,11 +_,12 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.gui.Font;
+-import net.minecraft.client.gui.font.TextRenderable;
++import net.minecraft.client.gui.font.glyphs.BakedGlyph;
+ import net.minecraft.client.gui.navigation.ScreenRectangle;
+ import net.minecraft.client.gui.render.pip.OversizedItemRenderer;
+ import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
+ import net.minecraft.client.gui.render.state.BlitRenderState;
++import net.minecraft.client.gui.render.state.GlyphEffectRenderState;
+ import net.minecraft.client.gui.render.state.GlyphRenderState;
+ import net.minecraft.client.gui.render.state.GuiElementRenderState;
+ import net.minecraft.client.gui.render.state.GuiItemRenderState;
+@@ -56,8 +_,6 @@
+ import net.minecraft.client.renderer.MappableRingBuffer;
+ import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderPipelines;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
+ import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.util.Mth;
+@@ -75,7 +_,7 @@
+ public class GuiRenderer implements AutoCloseable {
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final float MAX_GUI_Z = 10000.0F;
+-    public static final float MIN_GUI_Z = 0.0F;
++    private static final float MIN_GUI_Z = 0.0F;
+     private static final float GUI_Z_NEAR = 1000.0F;
+     public static final int GUI_3D_Z_FAR = 1000;
+     public static final int GUI_3D_Z_NEAR = -1000;
+@@ -106,9 +_,8 @@
      private final CachedOrthoProjectionMatrixBuffer guiProjectionMatrixBuffer = new CachedOrthoProjectionMatrixBuffer("gui", 1000.0F, 11000.0F, true);
      private final CachedOrthoProjectionMatrixBuffer itemsProjectionMatrixBuffer = new CachedOrthoProjectionMatrixBuffer("items", -1000.0F, 1000.0F, true);
      private final MultiBufferSource.BufferSource bufferSource;
+-    private final SubmitNodeCollector submitNodeCollector;
+-    private final FeatureRenderDispatcher featureRenderDispatcher;
 -    private final Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> pictureInPictureRenderers;
 +    private final Map<Class<? extends PictureInPictureRenderState>, net.neoforged.neoforge.client.gui.PictureInPictureRendererPool<?>> pictureInPictureRendererPools;
 +    private final Set<PictureInPictureRenderState> pictureInPictureRenderStatesScratch = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
      @Nullable
      private GpuTexture itemsAtlas;
      @Nullable
-@@ -127,16 +_,10 @@
+@@ -130,24 +_,10 @@
      @Nullable
      private BufferBuilder bufferBuilder = null;
  
--    public GuiRenderer(GuiRenderState p_416418_, MultiBufferSource.BufferSource p_415673_, List<PictureInPictureRenderer<?>> p_415849_) {
+-    public GuiRenderer(
+-        GuiRenderState p_416418_,
+-        MultiBufferSource.BufferSource p_415673_,
+-        SubmitNodeCollector p_440036_,
+-        FeatureRenderDispatcher p_439972_,
+-        List<PictureInPictureRenderer<?>> p_415849_
+-    ) {
 +    public GuiRenderer(GuiRenderState p_416418_, MultiBufferSource.BufferSource p_415673_, List<net.neoforged.neoforge.client.gui.PictureInPictureRendererRegistration<?>> pipRendererFactories) {
          this.renderState = p_416418_;
          this.bufferSource = p_415673_;
+-        this.submitNodeCollector = p_440036_;
+-        this.featureRenderDispatcher = p_439972_;
 -        Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> builder = ImmutableMap.builder();
 -
 -        for (PictureInPictureRenderer<?> pictureinpicturerenderer : p_415849_) {
@@ -29,7 +71,7 @@
      }
  
      public void incrementFrameNumber() {
-@@ -156,6 +_,7 @@
+@@ -167,6 +_,7 @@
          this.renderState.reset();
          this.firstDrawIndexAfterBlur = Integer.MAX_VALUE;
          this.clearUnusedOversizedItemRenderers();
@@ -37,7 +79,51 @@
      }
  
      private void clearUnusedOversizedItemRenderers() {
-@@ -413,14 +_,31 @@
+@@ -291,7 +_,7 @@
+         }
+     }
+ 
+-    private void addElementToMesh(GuiElementRenderState p_419849_) {
++    private void addElementToMesh(GuiElementRenderState p_419849_, int p_419994_) {
+         RenderPipeline renderpipeline = p_419849_.pipeline();
+         TextureSetup texturesetup = p_419849_.textureSetup();
+         ScreenRectangle screenrectangle = p_419849_.scissorArea();
+@@ -308,7 +_,7 @@
+             this.previousScissorArea = screenrectangle;
+         }
+ 
+-        p_419849_.buildVertices(this.bufferBuilder);
++        p_419849_.buildVertices(this.bufferBuilder, 0.0F + p_419994_);
+     }
+ 
+     private void prepareText() {
+@@ -317,18 +_,16 @@
+             final ScreenRectangle screenrectangle = p_425133_.scissor;
+             p_425133_.ensurePrepared().visit(new Font.GlyphVisitor() {
+                 @Override
+-                public void acceptGlyph(TextRenderable p_440516_) {
+-                    this.accept(p_440516_);
++                public void acceptGlyph(BakedGlyph.GlyphInstance p_426097_) {
++                    if (p_426097_.glyph().textureView() != null) {
++                        GuiRenderer.this.renderState.submitGlyphToCurrentLayer(new GlyphRenderState(matrix3x2f, p_426097_, screenrectangle));
++                    }
+                 }
+ 
+                 @Override
+-                public void acceptEffect(TextRenderable p_438996_) {
+-                    this.accept(p_438996_);
+-                }
+-
+-                private void accept(TextRenderable p_439019_) {
+-                    if (p_439019_.textureView() != null) {
+-                        GuiRenderer.this.renderState.submitGlyphToCurrentLayer(new GlyphRenderState(matrix3x2f, p_439019_, screenrectangle));
++                public void acceptEffect(BakedGlyph p_425758_, BakedGlyph.Effect p_426319_) {
++                    if (p_425758_.textureView() != null) {
++                        GuiRenderer.this.renderState.submitGlyphToCurrentLayer(new GlyphEffectRenderState(matrix3x2f, p_425758_, p_426319_, screenrectangle));
+                     }
+                 }
+             });
+@@ -426,14 +_,31 @@
  
      private void preparePictureInPicture() {
          int i = Minecraft.getInstance().getWindow().getGuiScale();
@@ -72,7 +158,26 @@
      }
  
      private void renderItemToAtlas(TrackingItemStackRenderState p_428843_, PoseStack p_416703_, int p_416443_, int p_416400_, int p_416052_) {
-@@ -691,7 +_,7 @@
+@@ -448,8 +_,7 @@
+         }
+ 
+         RenderSystem.enableScissorForRenderTypeDraws(p_416443_, this.itemsAtlas.getHeight(0) - p_416400_ - p_416052_, p_416052_, p_416052_);
+-        p_428843_.submit(p_416703_, this.submitNodeCollector, 15728880, OverlayTexture.NO_OVERLAY, 0);
+-        this.featureRenderDispatcher.renderAllFeatures();
++        p_428843_.render(p_416703_, this.bufferSource, 15728880, OverlayTexture.NO_OVERLAY);
+         this.bufferSource.endBatch();
+         RenderSystem.disableScissorForRenderTypeDraws();
+         p_416703_.popPose();
+@@ -667,7 +_,7 @@
+         return new BufferBuilder(this.byteBufferBuilder, p_416066_.getVertexFormatMode(), p_416066_.getVertexFormat());
+     }
+ 
+-    private boolean scissorChanged(ScreenRectangle p_416356_, @Nullable ScreenRectangle p_416077_) {
++    private boolean scissorChanged(@Nullable ScreenRectangle p_416356_, @Nullable ScreenRectangle p_416077_) {
+         if (p_416356_ == p_416077_) {
+             return false;
+         } else {
+@@ -705,7 +_,7 @@
              this.itemsAtlasDepthView.close();
          }
  

@@ -1,0 +1,41 @@
+--- a/net/minecraft/client/gui/screens/AccessibilityOnboardingScreen.java
++++ b/net/minecraft/client/gui/screens/AccessibilityOnboardingScreen.java
+@@ -18,7 +_,6 @@
+ import net.minecraft.client.gui.screens.options.LanguageSelectScreen;
+ import net.minecraft.network.chat.CommonComponents;
+ import net.minecraft.network.chat.Component;
+-import net.minecraft.sounds.SoundSource;
+ import net.minecraft.util.Mth;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+@@ -99,9 +_,7 @@
+ 
+     @Override
+     public void onClose() {
+-        if (this.fadeOutStart == 0.0F) {
+-            this.fadeOutStart = (float)Util.getMillis();
+-        }
++        this.fadeOutStart = (float)Util.getMillis();
+     }
+ 
+     private void closeAndSetScreen(Screen p_272914_) {
+@@ -157,8 +_,8 @@
+     }
+ 
+     @Override
+-    protected boolean panoramaShouldSpin() {
+-        return false;
++    protected void renderPanorama(GuiGraphics p_330740_, float p_331952_) {
++        this.minecraft.gameRenderer.getPanorama().render(p_330740_, this.width, this.height, false);
+     }
+ 
+     private void handleInitialNarrationDelay() {
+@@ -166,7 +_,7 @@
+             if (this.timer < 40.0F) {
+                 this.timer++;
+             } else if (this.minecraft.isWindowActive()) {
+-                Narrator.getNarrator().say(ONBOARDING_NARRATOR_MESSAGE.getString(), true, this.minecraft.options.getFinalSoundSourceVolume(SoundSource.VOICE));
++                Narrator.getNarrator().say(ONBOARDING_NARRATOR_MESSAGE.getString(), true, 1.0F);
+                 this.hasNarrated = true;
+             }
+         }

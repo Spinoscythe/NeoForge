@@ -1,0 +1,52 @@
+--- a/net/minecraft/client/renderer/entity/EvokerFangsRenderer.java
++++ b/net/minecraft/client/renderer/entity/EvokerFangsRenderer.java
+@@ -1,10 +_,11 @@
+ package net.minecraft.client.renderer.entity;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import com.mojang.math.Axis;
+ import net.minecraft.client.model.EvokerFangsModel;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.state.EvokerFangsRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.resources.ResourceLocation;
+@@ -22,25 +_,18 @@
+         this.model = new EvokerFangsModel(p_174100_.bakeLayer(ModelLayers.EVOKER_FANGS));
+     }
+ 
+-    public void submit(EvokerFangsRenderState p_434129_, PoseStack p_433617_, SubmitNodeCollector p_434083_) {
+-        float f = p_434129_.biteProgress;
++    public void render(EvokerFangsRenderState p_363441_, PoseStack p_114531_, MultiBufferSource p_114532_, int p_114533_) {
++        float f = p_363441_.biteProgress;
+         if (f != 0.0F) {
+-            p_433617_.pushPose();
+-            p_433617_.mulPose(Axis.YP.rotationDegrees(90.0F - p_434129_.yRot));
+-            p_433617_.scale(-1.0F, -1.0F, 1.0F);
+-            p_433617_.translate(0.0F, -1.501F, 0.0F);
+-            p_434083_.submitModel(
+-                this.model,
+-                p_434129_,
+-                p_433617_,
+-                this.model.renderType(TEXTURE_LOCATION),
+-                p_434129_.lightCoords,
+-                OverlayTexture.NO_OVERLAY,
+-                p_434129_.outlineColor,
+-                null
+-            );
+-            p_433617_.popPose();
+-            super.submit(p_434129_, p_433617_, p_434083_);
++            p_114531_.pushPose();
++            p_114531_.mulPose(Axis.YP.rotationDegrees(90.0F - p_363441_.yRot));
++            p_114531_.scale(-1.0F, -1.0F, 1.0F);
++            p_114531_.translate(0.0F, -1.501F, 0.0F);
++            this.model.setupAnim(p_363441_);
++            VertexConsumer vertexconsumer = p_114532_.getBuffer(this.model.renderType(TEXTURE_LOCATION));
++            this.model.renderToBuffer(p_114531_, vertexconsumer, p_114533_, OverlayTexture.NO_OVERLAY);
++            p_114531_.popPose();
++            super.render(p_363441_, p_114531_, p_114532_, p_114533_);
+         }
+     }
+ 

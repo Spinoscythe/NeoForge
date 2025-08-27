@@ -1,6 +1,58 @@
 --- a/net/minecraft/client/multiplayer/chat/ChatListener.java
 +++ b/net/minecraft/client/multiplayer/chat/ChatListener.java
-@@ -124,7 +_,9 @@
+@@ -35,21 +_,12 @@
+     }
+ 
+     public void tick() {
+-        if (this.minecraft.isPaused()) {
+-            if (this.messageDelay > 0L) {
+-                this.previousMessageTime += 50L;
+-            }
+-        } else {
+-            if (this.messageDelay == 0L) {
+-                if (!this.delayedMessageQueue.isEmpty()) {
+-                    this.flushQueue();
+-                }
+-            } else {
+-                ChatListener.Message chatlistener$message;
+-                if (Util.getMillis() >= this.previousMessageTime + this.messageDelay) {
+-                    do {
+-                        chatlistener$message = this.delayedMessageQueue.poll();
+-                    } while (chatlistener$message != null && !chatlistener$message.accept());
++        if (this.messageDelay != 0L) {
++            if (Util.getMillis() >= this.previousMessageTime + this.messageDelay) {
++                ChatListener.Message chatlistener$message = this.delayedMessageQueue.poll();
++
++                while (chatlistener$message != null && !chatlistener$message.accept()) {
++                    chatlistener$message = this.delayedMessageQueue.poll();
+                 }
+             }
+         }
+@@ -57,8 +_,9 @@
+ 
+     public void setMessageDelay(double p_240785_) {
+         long i = (long)(p_240785_ * 1000.0);
+-        if (i == 0L && this.messageDelay > 0L && !this.minecraft.isPaused()) {
+-            this.flushQueue();
++        if (i == 0L && this.messageDelay > 0L) {
++            this.delayedMessageQueue.forEach(ChatListener.Message::accept);
++            this.delayedMessageQueue.clear();
+         }
+ 
+         this.messageDelay = i;
+@@ -72,10 +_,9 @@
+         return this.delayedMessageQueue.size();
+     }
+ 
+-    public void flushQueue() {
++    public void clearQueue() {
+         this.delayedMessageQueue.forEach(ChatListener.Message::accept);
+         this.delayedMessageQueue.clear();
+-        this.previousMessageTime = 0L;
+     }
+ 
+     public boolean removeFromDelayedMessageQueue(MessageSignature p_241445_) {
+@@ -133,7 +_,9 @@
          Instant instant = Instant.now();
          this.handleMessage(null, () -> {
              Component component = p_251256_.decorate(p_250375_);
@@ -11,7 +63,7 @@
              this.narrateChatMessage(p_251256_, p_250375_);
              this.logSystemMessage(component, instant);
              this.previousMessageTime = Util.getMillis();
-@@ -143,12 +_,16 @@
+@@ -152,17 +_,21 @@
              MessageSignature messagesignature = p_249430_.signature();
              FilterMask filtermask = p_249430_.filterMask();
              if (filtermask.isEmpty()) {
@@ -30,7 +82,22 @@
                      this.narrateChatMessage(p_251766_, component);
                  }
              }
-@@ -181,6 +_,8 @@
+ 
+-            this.logPlayerMessage(p_249430_, p_249177_, chattrustlevel);
++            this.logPlayerMessage(p_249430_, p_251766_, p_249177_, chattrustlevel);
+             this.previousMessageTime = Util.getMillis();
+             return true;
+         } else {
+@@ -178,7 +_,7 @@
+         return this.isSenderLocalPlayer(p_251246_.sender()) ? ChatTrustLevel.SECURE : ChatTrustLevel.evaluate(p_251246_, p_250576_, p_249995_);
+     }
+ 
+-    private void logPlayerMessage(PlayerChatMessage p_252155_, GameProfile p_248589_, ChatTrustLevel p_248881_) {
++    private void logPlayerMessage(PlayerChatMessage p_252155_, ChatType.Bound p_249730_, GameProfile p_248589_, ChatTrustLevel p_248881_) {
+         ChatLog chatlog = this.minecraft.getReportingContext().chatLog();
+         chatlog.push(LoggedChatMessage.player(p_248589_, p_252155_, p_248881_));
+     }
+@@ -190,6 +_,8 @@
  
      public void handleSystemMessage(Component p_240522_, boolean p_240642_) {
          if (!this.minecraft.options.hideMatchedNames().get() || !this.minecraft.isBlocked(this.guessChatUUID(p_240522_))) {

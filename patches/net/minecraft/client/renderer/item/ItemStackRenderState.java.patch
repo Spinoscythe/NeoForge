@@ -1,0 +1,77 @@
+--- a/net/minecraft/client/renderer/item/ItemStackRenderState.java
++++ b/net/minecraft/client/renderer/item/ItemStackRenderState.java
+@@ -7,10 +_,11 @@
+ import java.util.function.Consumer;
+ import java.util.function.Supplier;
+ import javax.annotation.Nullable;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.block.model.BakedQuad;
+ import net.minecraft.client.renderer.block.model.ItemTransform;
++import net.minecraft.client.renderer.entity.ItemRenderer;
+ import net.minecraft.client.renderer.special.SpecialModelRenderer;
+ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+ import net.minecraft.util.RandomSource;
+@@ -108,9 +_,9 @@
+         }
+     }
+ 
+-    public void submit(PoseStack p_439009_, SubmitNodeCollector p_439820_, int p_439168_, int p_439735_, int p_440735_) {
++    public void render(PoseStack p_388193_, MultiBufferSource p_388719_, int p_386913_, int p_387272_) {
+         for (int i = 0; i < this.activeLayerCount; i++) {
+-            this.layers[i].submit(p_439009_, p_439820_, p_439168_, p_439735_, p_440735_);
++            this.layers[i].render(p_388193_, p_388719_, p_386913_, p_387272_);
+         }
+     }
+ 
+@@ -219,27 +_,27 @@
+             return this.tintLayers;
+         }
+ 
+-        void submit(PoseStack p_439934_, SubmitNodeCollector p_439690_, int p_439886_, int p_440533_, int p_440728_) {
+-            p_439934_.pushPose();
+-            this.transform.apply(ItemStackRenderState.this.displayContext.leftHand(), p_439934_.last());
++        void render(PoseStack p_387607_, MultiBufferSource p_386763_, int p_387589_, int p_388775_) {
++            p_387607_.pushPose();
++            this.transform.apply(ItemStackRenderState.this.displayContext.leftHand(), p_387607_.last());
+             if (this.specialRenderer != null) {
+                 this.specialRenderer
+-                    .submit(
++                    .render(
+                         this.argumentForSpecialRendering,
+                         ItemStackRenderState.this.displayContext,
+-                        p_439934_,
+-                        p_439690_,
+-                        p_439886_,
+-                        p_440533_,
++                        p_387607_,
++                        p_386763_,
++                        p_387589_,
++                        p_388775_,
+                         this.foilType != ItemStackRenderState.FoilType.NONE
+                     );
+             } else if (this.renderType != null) {
+-                p_439690_.submitItem(
+-                    p_439934_,
++                ItemRenderer.renderItem(
+                     ItemStackRenderState.this.displayContext,
+-                    p_439886_,
+-                    p_440533_,
+-                    p_440728_,
++                    p_387607_,
++                    p_386763_,
++                    p_387589_,
++                    p_388775_,
+                     this.tintLayers,
+                     this.quads,
+                     this.renderType,
+@@ -247,7 +_,7 @@
+                 );
+             }
+ 
+-            p_439934_.popPose();
++            p_387607_.popPose();
+         }
+     }
+ }

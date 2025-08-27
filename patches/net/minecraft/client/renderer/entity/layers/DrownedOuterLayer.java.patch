@@ -1,0 +1,23 @@
+--- a/net/minecraft/client/renderer/entity/layers/DrownedOuterLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/DrownedOuterLayer.java
+@@ -4,7 +_,7 @@
+ import net.minecraft.client.model.DrownedModel;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.ZombieRenderState;
+ import net.minecraft.resources.ResourceLocation;
+@@ -23,8 +_,8 @@
+         this.babyModel = new DrownedModel(p_174491_.bakeLayer(ModelLayers.DROWNED_BABY_OUTER_LAYER));
+     }
+ 
+-    public void submit(PoseStack p_433467_, SubmitNodeCollector p_433531_, int p_435260_, ZombieRenderState p_433578_, float p_434034_, float p_432871_) {
+-        DrownedModel drownedmodel = p_433578_.isBaby ? this.babyModel : this.model;
+-        coloredCutoutModelCopyLayerRender(drownedmodel, DROWNED_OUTER_LAYER_LOCATION, p_433467_, p_433531_, p_435260_, p_433578_, -1, 1);
++    public void render(PoseStack p_116913_, MultiBufferSource p_116914_, int p_116915_, ZombieRenderState p_361730_, float p_116917_, float p_116918_) {
++        DrownedModel drownedmodel = p_361730_.isBaby ? this.babyModel : this.model;
++        coloredCutoutModelCopyLayerRender(drownedmodel, DROWNED_OUTER_LAYER_LOCATION, p_116913_, p_116914_, p_116915_, p_361730_, -1);
+     }
+ }

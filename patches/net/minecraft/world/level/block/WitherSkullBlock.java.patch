@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/WitherSkullBlock.java
++++ b/net/minecraft/world/level/block/WitherSkullBlock.java
+@@ -51,7 +_,7 @@
+     }
+ 
+     public static void checkSpawn(Level p_58256_, BlockPos p_58257_, SkullBlockEntity p_58258_) {
+-        if (!p_58256_.isClientSide()) {
++        if (!p_58256_.isClientSide) {
+             BlockState blockstate = p_58258_.getBlockState();
+             boolean flag = blockstate.is(Blocks.WITHER_SKELETON_SKULL) || blockstate.is(Blocks.WITHER_SKELETON_WALL_SKULL);
+             if (flag && p_58257_.getY() >= p_58256_.getMinY() && p_58256_.getDifficulty() != Difficulty.PEACEFUL) {
+@@ -87,7 +_,7 @@
+         return p_58270_.is(Items.WITHER_SKELETON_SKULL)
+                 && p_58269_.getY() >= p_58268_.getMinY() + 2
+                 && p_58268_.getDifficulty() != Difficulty.PEACEFUL
+-                && !p_58268_.isClientSide()
++                && !p_58268_.isClientSide
+             ? getOrCreateWitherBase().find(p_58268_, p_58269_) != null
+             : false;
+     }

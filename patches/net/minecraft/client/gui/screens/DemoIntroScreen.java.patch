@@ -1,0 +1,12 @@
+--- a/net/minecraft/client/gui/screens/DemoIntroScreen.java
++++ b/net/minecraft/client/gui/screens/DemoIntroScreen.java
+@@ -66,7 +_,7 @@
+         int i = (this.width - 248) / 2 + 10;
+         int j = (this.height - 166) / 2 + 8;
+         p_281247_.drawString(this.font, this.title, i, j, -14737633, false);
+-        j = this.movementMessage.render(p_281247_, MultiLineLabel.Align.LEFT, i, j + 12, 12, false, -11579569);
+-        this.durationMessage.render(p_281247_, MultiLineLabel.Align.LEFT, i, j + 20, 9, false, -14737633);
++        j = this.movementMessage.renderLeftAlignedNoShadow(p_281247_, i, j + 12, 12, -11579569);
++        this.durationMessage.renderLeftAlignedNoShadow(p_281247_, i, j + 20, 9, -14737633);
+     }
+ }

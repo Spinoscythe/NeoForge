@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/PowderSnowBlock.java
 +++ b/net/minecraft/world/level/block/PowderSnowBlock.java
+@@ -62,7 +_,7 @@
+     protected void entityInside(BlockState p_154263_, Level p_154264_, BlockPos p_154265_, Entity p_154266_, InsideBlockEffectApplier p_405853_) {
+         if (!(p_154266_ instanceof LivingEntity) || p_154266_.getInBlockState().is(this)) {
+             p_154266_.makeStuckInBlock(p_154263_, new Vec3(0.9F, 1.5, 0.9F));
+-            if (p_154264_.isClientSide()) {
++            if (p_154264_.isClientSide) {
+                 RandomSource randomsource = p_154264_.getRandom();
+                 boolean flag = p_154266_.xOld != p_154266_.getX() || p_154266_.zOld != p_154266_.getZ();
+                 if (flag && randomsource.nextBoolean()) {
 @@ -138,7 +_,7 @@
          if (p_154256_.getType().is(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS)) {
              return true;

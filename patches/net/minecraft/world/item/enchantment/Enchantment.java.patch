@@ -43,6 +43,15 @@
      public boolean canEnchant(ItemStack p_44689_) {
          return this.definition.supportedItems().contains(p_44689_.getItemHolder());
      }
+@@ -365,7 +_,7 @@
+         applyEffects(
+             this.getEffects(p_345794_),
+             itemContext(p_345992_, p_345038_, p_345886_),
+-            p_432595_ -> p_345188_.setValue(p_432595_.process(p_345038_, p_345992_.getRandom(), p_345188_.getValue()))
++            p_425475_ -> p_345188_.setValue(p_425475_.process(p_345038_, p_345992_.getRandom(), p_345188_.getValue()))
+         );
+     }
+ 
 @@ -511,12 +_,26 @@
          return new Enchantment.Builder(p_345873_);
      }

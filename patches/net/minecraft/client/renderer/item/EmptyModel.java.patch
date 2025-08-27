@@ -1,0 +1,20 @@
+--- a/net/minecraft/client/renderer/item/EmptyModel.java
++++ b/net/minecraft/client/renderer/item/EmptyModel.java
+@@ -4,7 +_,7 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.client.multiplayer.ClientLevel;
+ import net.minecraft.client.resources.model.ResolvableModel;
+-import net.minecraft.world.entity.ItemOwner;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.minecraft.world.item.ItemStack;
+ import net.neoforged.api.distmarker.Dist;
+@@ -21,7 +_,7 @@
+         ItemModelResolver p_390507_,
+         ItemDisplayContext p_390501_,
+         @Nullable ClientLevel p_390403_,
+-        @Nullable ItemOwner p_435178_,
++        @Nullable LivingEntity p_390475_,
+         int p_390493_
+     ) {
+         p_390492_.appendModelIdentityElement(this);

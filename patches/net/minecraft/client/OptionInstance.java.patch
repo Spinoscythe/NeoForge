@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/OptionInstance.java
++++ b/net/minecraft/client/OptionInstance.java
+@@ -145,7 +_,7 @@
+ 
+     public void set(T p_231515_) {
+         T t = this.values.validateValue(p_231515_).orElseGet(() -> {
+-            LOGGER.error("Illegal option value {} for {}", p_231515_, this.caption.getString());
++            LOGGER.error("Illegal option value " + p_231515_ + " for " + this.caption);
+             return this.initialValue;
+         });
+         if (!Minecraft.getInstance().isRunning()) {

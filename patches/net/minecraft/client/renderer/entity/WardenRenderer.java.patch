@@ -1,0 +1,78 @@
+--- a/net/minecraft/client/renderer/entity/WardenRenderer.java
++++ b/net/minecraft/client/renderer/entity/WardenRenderer.java
+@@ -27,21 +_,22 @@
+ 
+     public WardenRenderer(EntityRendererProvider.Context p_234787_) {
+         super(p_234787_, new WardenModel(p_234787_.bakeLayer(ModelLayers.WARDEN)), 0.9F);
+-        WardenModel wardenmodel = new WardenModel(p_234787_.bakeLayer(ModelLayers.WARDEN_BIOLUMINESCENT));
+-        WardenModel wardenmodel1 = new WardenModel(p_234787_.bakeLayer(ModelLayers.WARDEN_PULSATING_SPOTS));
+-        WardenModel wardenmodel2 = new WardenModel(p_234787_.bakeLayer(ModelLayers.WARDEN_TENDRILS));
+-        WardenModel wardenmodel3 = new WardenModel(p_234787_.bakeLayer(ModelLayers.WARDEN_HEART));
+         this.addLayer(
+             new LivingEntityEmissiveLayer<>(
+-                this, p_432300_ -> BIOLUMINESCENT_LAYER_TEXTURE, (p_360647_, p_234810_) -> 1.0F, wardenmodel, RenderType::entityTranslucentEmissive, false
++                this,
++                BIOLUMINESCENT_LAYER_TEXTURE,
++                (p_360647_, p_234810_) -> 1.0F,
++                WardenModel::getBioluminescentLayerModelParts,
++                RenderType::entityTranslucentEmissive,
++                false
+             )
+         );
+         this.addLayer(
+             new LivingEntityEmissiveLayer<>(
+                 this,
+-                p_432297_ -> PULSATING_SPOTS_TEXTURE_1,
++                PULSATING_SPOTS_TEXTURE_1,
+                 (p_360462_, p_234806_) -> Math.max(0.0F, Mth.cos(p_234806_ * 0.045F) * 0.25F),
+-                wardenmodel1,
++                WardenModel::getPulsatingSpotsLayerModelParts,
+                 RenderType::entityTranslucentEmissive,
+                 false
+             )
+@@ -49,24 +_,29 @@
+         this.addLayer(
+             new LivingEntityEmissiveLayer<>(
+                 this,
+-                p_432296_ -> PULSATING_SPOTS_TEXTURE_2,
++                PULSATING_SPOTS_TEXTURE_2,
+                 (p_364045_, p_234802_) -> Math.max(0.0F, Mth.cos(p_234802_ * 0.045F + (float) Math.PI) * 0.25F),
+-                wardenmodel1,
+-                RenderType::entityTranslucentEmissive,
+-                false
+-            )
+-        );
+-        this.addLayer(
+-            new LivingEntityEmissiveLayer<>(
+-                this, p_432299_ -> TEXTURE, (p_359288_, p_359289_) -> p_359288_.tendrilAnimation, wardenmodel2, RenderType::entityTranslucentEmissive, false
+-            )
+-        );
+-        this.addLayer(
+-            new LivingEntityEmissiveLayer<>(
+-                this,
+-                p_432298_ -> HEART_TEXTURE,
++                WardenModel::getPulsatingSpotsLayerModelParts,
++                RenderType::entityTranslucentEmissive,
++                false
++            )
++        );
++        this.addLayer(
++            new LivingEntityEmissiveLayer<>(
++                this,
++                TEXTURE,
++                (p_359288_, p_359289_) -> p_359288_.tendrilAnimation,
++                WardenModel::getTendrilsLayerModelParts,
++                RenderType::entityTranslucentEmissive,
++                false
++            )
++        );
++        this.addLayer(
++            new LivingEntityEmissiveLayer<>(
++                this,
++                HEART_TEXTURE,
+                 (p_359290_, p_359291_) -> p_359290_.heartAnimation,
+-                wardenmodel3,
++                WardenModel::getHeartLayerModelParts,
+                 RenderType::entityTranslucentEmissive,
+                 false
+             )

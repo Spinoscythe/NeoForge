@@ -1,6 +1,62 @@
 --- a/net/minecraft/world/entity/vehicle/AbstractBoat.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractBoat.java
-@@ -423,7 +_,7 @@
+@@ -30,6 +_,8 @@
+ import net.minecraft.world.entity.MoverType;
+ import net.minecraft.world.entity.Pose;
+ import net.minecraft.world.entity.animal.Animal;
++import net.minecraft.world.entity.animal.WaterAnimal;
++import net.minecraft.world.entity.monster.creaking.Creaking;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.Item;
+ import net.minecraft.world.item.ItemStack;
+@@ -215,7 +_,7 @@
+             this.outOfControlTicks++;
+         }
+ 
+-        if (!this.level().isClientSide() && this.outOfControlTicks >= 60.0F) {
++        if (!this.level().isClientSide && this.outOfControlTicks >= 60.0F) {
+             this.ejectPassengers();
+         }
+ 
+@@ -235,7 +_,7 @@
+             }
+ 
+             this.floatBoat();
+-            if (this.level().isClientSide()) {
++            if (this.level().isClientSide) {
+                 this.controlBoat();
+                 this.level().sendPacketToServer(new ServerboundPaddleBoatPacket(this.getPaddleState(0), this.getPaddleState(1)));
+             }
+@@ -281,7 +_,7 @@
+ 
+         List<Entity> list = this.level().getEntities(this, this.getBoundingBox().inflate(0.2F, -0.01F, 0.2F), EntitySelector.pushableBy(this));
+         if (!list.isEmpty()) {
+-            boolean flag = !this.level().isClientSide() && !(this.getControllingPassenger() instanceof Player);
++            boolean flag = !this.level().isClientSide && !(this.getControllingPassenger() instanceof Player);
+ 
+             for (Entity entity : list) {
+                 if (!entity.hasPassenger(this)) {
+@@ -290,7 +_,9 @@
+                         && !entity.isPassenger()
+                         && this.hasEnoughSpaceFor(entity)
+                         && entity instanceof LivingEntity
+-                        && !entity.getType().is(EntityTypeTags.CANNOT_BE_PUSHED_ONTO_BOATS)) {
++                        && !(entity instanceof WaterAnimal)
++                        && !(entity instanceof Player)
++                        && !(entity instanceof Creaking)) {
+                         entity.startRiding(this);
+                     } else {
+                         this.push(entity);
+@@ -301,7 +_,7 @@
+     }
+ 
+     private void tickBubbleColumn() {
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             int i = this.getBubbleTime();
+             if (i > 0) {
+                 this.bubbleMultiplier += 0.05F;
+@@ -419,7 +_,7 @@
                  for (int i2 = i1; i2 < j1; i2++) {
                      blockpos$mutableblockpos.set(l1, k1, i2);
                      FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
@@ -9,7 +65,7 @@
                          f = Math.max(f, fluidstate.getHeight(this.level(), blockpos$mutableblockpos));
                      }
  
-@@ -469,7 +_,7 @@
+@@ -465,7 +_,7 @@
                                      voxelshape,
                                      BooleanOp.AND
                                  )) {
@@ -18,7 +74,7 @@
                                  k1++;
                              }
                          }
-@@ -498,7 +_,7 @@
+@@ -494,7 +_,7 @@
                  for (int i2 = i1; i2 < j1; i2++) {
                      blockpos$mutableblockpos.set(k1, l1, i2);
                      FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
@@ -27,7 +83,7 @@
                          float f = l1 + fluidstate.getHeight(this.level(), blockpos$mutableblockpos);
                          this.waterLevel = Math.max((double)f, this.waterLevel);
                          flag |= aabb.minY < f;
-@@ -528,7 +_,7 @@
+@@ -524,7 +_,7 @@
                  for (int i2 = i1; i2 < j1; i2++) {
                      blockpos$mutableblockpos.set(k1, l1, i2);
                      FluidState fluidstate = this.level().getFluidState(blockpos$mutableblockpos);
@@ -36,7 +92,25 @@
                          if (!fluidstate.isSource()) {
                              return AbstractBoat.Status.UNDER_FLOWING_WATER;
                          }
-@@ -730,7 +_,7 @@
+@@ -705,7 +_,7 @@
+         } else {
+             return (InteractionResult)(p_376241_.isSecondaryUseActive()
+                     || !(this.outOfControlTicks < 60.0F)
+-                    || !this.level().isClientSide() && !p_376241_.startRiding(this)
++                    || !this.level().isClientSide && !p_376241_.startRiding(this)
+                 ? InteractionResult.PASS
+                 : InteractionResult.SUCCESS);
+         }
+@@ -713,7 +_,7 @@
+ 
+     @Override
+     public void remove(Entity.RemovalReason p_376469_) {
+-        if (!this.level().isClientSide() && p_376469_.shouldDestroy() && this.isLeashed()) {
++        if (!this.level().isClientSide && p_376469_.shouldDestroy() && this.isLeashed()) {
+             this.dropLeash();
+         }
+ 
+@@ -726,7 +_,7 @@
          if (!this.isPassenger()) {
              if (p_376924_) {
                  this.resetFallDistance();
@@ -45,7 +119,7 @@
                  this.fallDistance -= (float)p_376661_;
              }
          }
-@@ -754,7 +_,7 @@
+@@ -750,7 +_,7 @@
  
      @Override
      protected boolean canAddPassenger(Entity p_376443_) {

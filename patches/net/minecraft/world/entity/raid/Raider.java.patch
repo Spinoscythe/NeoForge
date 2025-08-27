@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/entity/raid/Raider.java
++++ b/net/minecraft/world/entity/raid/Raider.java
+@@ -198,8 +_,8 @@
+         this.wave = p_422705_.getIntOr("Wave", 0);
+         this.canJoinRaid = p_422705_.getBooleanOr("CanJoinRaid", false);
+         if (this.level() instanceof ServerLevel serverlevel) {
+-            p_422705_.getInt("RaidId").ifPresent(p_432559_ -> {
+-                this.raid = serverlevel.getRaids().get(p_432559_);
++            p_422705_.getInt("RaidId").ifPresent(p_427145_ -> {
++                this.raid = serverlevel.getRaids().get(p_427145_);
+                 if (this.raid != null) {
+                     this.raid.addWaveMob(serverlevel, this.wave, this, false);
+                     if (this.isPatrolLeader()) {

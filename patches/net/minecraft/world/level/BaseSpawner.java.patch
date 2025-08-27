@@ -21,6 +21,15 @@
  
                                  spawndata.getEquipment().ifPresent(mob::equip);
                              }
+@@ -253,7 +_,7 @@
+ 
+     public boolean onEventTriggered(Level p_151317_, int p_151318_) {
+         if (p_151318_ == 1) {
+-            if (p_151317_.isClientSide()) {
++            if (p_151317_.isClientSide) {
+                 this.spawnDelay = this.minSpawnDelay;
+             }
+ 
 @@ -284,5 +_,12 @@
  
      public double getoSpin() {

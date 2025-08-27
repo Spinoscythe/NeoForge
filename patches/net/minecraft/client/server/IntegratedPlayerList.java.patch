@@ -1,0 +1,40 @@
+--- a/net/minecraft/client/server/IntegratedPlayerList.java
++++ b/net/minecraft/client/server/IntegratedPlayerList.java
+@@ -1,5 +_,6 @@
+ package net.minecraft.client.server;
+ 
++import com.mojang.authlib.GameProfile;
+ import com.mojang.logging.LogUtils;
+ import java.net.SocketAddress;
+ import javax.annotation.Nullable;
+@@ -8,7 +_,6 @@
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.server.RegistryLayer;
+ import net.minecraft.server.level.ServerPlayer;
+-import net.minecraft.server.players.NameAndId;
+ import net.minecraft.server.players.PlayerList;
+ import net.minecraft.util.ProblemReporter;
+ import net.minecraft.world.level.storage.PlayerDataStorage;
+@@ -30,7 +_,7 @@
+ 
+     @Override
+     protected void save(ServerPlayer p_120011_) {
+-        if (this.getServer().isSingleplayerOwner(p_120011_.nameAndId())) {
++        if (this.getServer().isSingleplayerOwner(p_120011_.getGameProfile())) {
+             try (ProblemReporter.ScopedCollector problemreporter$scopedcollector = new ProblemReporter.ScopedCollector(p_120011_.problemPath(), LOGGER)) {
+                 TagValueOutput tagvalueoutput = TagValueOutput.createWithContext(problemreporter$scopedcollector, p_120011_.registryAccess());
+                 p_120011_.saveWithoutId(tagvalueoutput);
+@@ -42,10 +_,10 @@
+     }
+ 
+     @Override
+-    public Component canPlayerLogin(SocketAddress p_120007_, NameAndId p_434311_) {
+-        return (Component)(this.getServer().isSingleplayerOwner(p_434311_) && this.getPlayerByName(p_434311_.name()) != null
++    public Component canPlayerLogin(SocketAddress p_120007_, GameProfile p_120008_) {
++        return (Component)(this.getServer().isSingleplayerOwner(p_120008_) && this.getPlayerByName(p_120008_.getName()) != null
+             ? Component.translatable("multiplayer.disconnect.name_taken")
+-            : super.canPlayerLogin(p_120007_, p_434311_));
++            : super.canPlayerLogin(p_120007_, p_120008_));
+     }
+ 
+     public IntegratedServer getServer() {

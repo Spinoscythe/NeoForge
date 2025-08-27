@@ -1,0 +1,45 @@
+--- a/net/minecraft/client/model/BreezeModel.java
++++ b/net/minecraft/client/model/BreezeModel.java
+@@ -1,6 +_,5 @@
+ package net.minecraft.client.model;
+ 
+-import java.util.Set;
+ import net.minecraft.client.animation.KeyframeAnimation;
+ import net.minecraft.client.animation.definitions.BreezeAnimation;
+ import net.minecraft.client.model.geom.ModelPart;
+@@ -51,7 +_,7 @@
+         this.jumpAnimation = BreezeAnimation.JUMP.bake(p_312152_);
+     }
+ 
+-    private static MeshDefinition createBaseMesh() {
++    public static LayerDefinition createBodyLayer(int p_316814_, int p_316468_) {
+         MeshDefinition meshdefinition = new MeshDefinition();
+         PartDefinition partdefinition = meshdefinition.getRoot();
+         PartDefinition partdefinition1 = partdefinition.addOrReplaceChild("body", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
+@@ -117,25 +_,7 @@
+                 .addBox(-2.5F, -8.0F, -2.5F, 5.0F, 8.0F, 5.0F, new CubeDeformation(0.0F)),
+             PartPose.offset(0.0F, -6.0F, 0.0F)
+         );
+-        return meshdefinition;
+-    }
+-
+-    public static LayerDefinition createBodyLayer() {
+-        MeshDefinition meshdefinition = createBaseMesh();
+-        meshdefinition.getRoot().retainPartsAndChildren(Set.of("head", "rods"));
+-        return LayerDefinition.create(meshdefinition, 32, 32);
+-    }
+-
+-    public static LayerDefinition createWindLayer() {
+-        MeshDefinition meshdefinition = createBaseMesh();
+-        meshdefinition.getRoot().retainPartsAndChildren(Set.of("wind_body"));
+-        return LayerDefinition.create(meshdefinition, 128, 128);
+-    }
+-
+-    public static LayerDefinition createEyesLayer() {
+-        MeshDefinition meshdefinition = createBaseMesh();
+-        meshdefinition.getRoot().retainPartsAndChildren(Set.of("eyes"));
+-        return LayerDefinition.create(meshdefinition, 32, 32);
++        return LayerDefinition.create(meshdefinition, p_316814_, p_316468_);
+     }
+ 
+     public void setupAnim(BreezeRenderState p_360635_) {

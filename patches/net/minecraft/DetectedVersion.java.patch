@@ -1,0 +1,52 @@
+--- a/net/minecraft/DetectedVersion.java
++++ b/net/minecraft/DetectedVersion.java
+@@ -9,29 +_,24 @@
+ import java.time.ZonedDateTime;
+ import java.util.Date;
+ import java.util.UUID;
+-import net.minecraft.server.packs.metadata.pack.PackFormat;
+ import net.minecraft.util.GsonHelper;
+ import net.minecraft.world.level.storage.DataVersion;
+ import org.slf4j.Logger;
+ 
+ public class DetectedVersion {
+     private static final Logger LOGGER = LogUtils.getLogger();
+-    public static final WorldVersion BUILT_IN = createBuiltIn(UUID.randomUUID().toString().replaceAll("-", ""), "Development Version");
+-
+-    public static WorldVersion createBuiltIn(String p_433428_, String p_433812_) {
+-        return createBuiltIn(p_433428_, p_433812_, false);
+-    }
+-
+-    public static WorldVersion createBuiltIn(String p_434552_, String p_434237_, boolean p_435203_) {
++    public static final WorldVersion BUILT_IN = createFromConstants();
++
++    private static WorldVersion createFromConstants() {
+         return new WorldVersion.Simple(
+-            p_434552_,
+-            p_434237_,
+-            new DataVersion(4540, "main"),
++            UUID.randomUUID().toString().replaceAll("-", ""),
++            "1.21.8",
++            new DataVersion(4440, "main"),
+             SharedConstants.getProtocolVersion(),
+-            PackFormat.of(66, 0),
+-            PackFormat.of(84, 0),
++            64,
++            81,
+             new Date(),
+-            p_435203_
++            true
+         );
+     }
+ 
+@@ -42,8 +_,8 @@
+             GsonHelper.getAsString(p_415640_, "name"),
+             new DataVersion(GsonHelper.getAsInt(p_415640_, "world_version"), GsonHelper.getAsString(p_415640_, "series_id", "main")),
+             GsonHelper.getAsInt(p_415640_, "protocol_version"),
+-            PackFormat.of(GsonHelper.getAsInt(jsonobject, "resource_major"), GsonHelper.getAsInt(jsonobject, "resource_minor")),
+-            PackFormat.of(GsonHelper.getAsInt(jsonobject, "data_major"), GsonHelper.getAsInt(jsonobject, "data_minor")),
++            GsonHelper.getAsInt(jsonobject, "resource"),
++            GsonHelper.getAsInt(jsonobject, "data"),
+             Date.from(ZonedDateTime.parse(GsonHelper.getAsString(p_415640_, "build_time")).toInstant()),
+             GsonHelper.getAsBoolean(p_415640_, "stable")
+         );

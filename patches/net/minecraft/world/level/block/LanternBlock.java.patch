@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/LanternBlock.java
++++ b/net/minecraft/world/level/block/LanternBlock.java
+@@ -29,7 +_,7 @@
+     private static final VoxelShape SHAPE_HANGING = SHAPE_STANDING.move(0.0, 0.0625, 0.0).optimize();
+ 
+     @Override
+-    public MapCodec<? extends LanternBlock> codec() {
++    public MapCodec<LanternBlock> codec() {
+         return CODEC;
+     }
+ 

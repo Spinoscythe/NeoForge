@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/WoolCarpetBlock.java
++++ b/net/minecraft/world/level/block/WoolCarpetBlock.java
+@@ -8,8 +_,8 @@
+ 
+ public class WoolCarpetBlock extends CarpetBlock {
+     public static final MapCodec<WoolCarpetBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432704_ -> p_432704_.group(DyeColor.CODEC.fieldOf("color").forGetter(WoolCarpetBlock::getColor), propertiesCodec())
+-            .apply(p_432704_, WoolCarpetBlock::new)
++        p_368459_ -> p_368459_.group(DyeColor.CODEC.fieldOf("color").forGetter(WoolCarpetBlock::getColor), propertiesCodec())
++            .apply(p_368459_, WoolCarpetBlock::new)
+     );
+     private final DyeColor color;
+ 

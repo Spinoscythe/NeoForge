@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/CoralPlantBlock.java
++++ b/net/minecraft/world/level/block/CoralPlantBlock.java
+@@ -19,8 +_,8 @@
+ 
+ public class CoralPlantBlock extends BaseCoralPlantTypeBlock {
+     public static final MapCodec<CoralPlantBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432659_ -> p_432659_.group(CoralBlock.DEAD_CORAL_FIELD.forGetter(p_304420_ -> p_304420_.deadBlock), propertiesCodec())
+-            .apply(p_432659_, CoralPlantBlock::new)
++        p_368418_ -> p_368418_.group(CoralBlock.DEAD_CORAL_FIELD.forGetter(p_304420_ -> p_304420_.deadBlock), propertiesCodec())
++            .apply(p_368418_, CoralPlantBlock::new)
+     );
+     private final Block deadBlock;
+     private static final VoxelShape SHAPE = Block.column(12.0, 0.0, 15.0);

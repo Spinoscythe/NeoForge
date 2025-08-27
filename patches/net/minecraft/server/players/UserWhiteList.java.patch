@@ -1,0 +1,40 @@
+--- a/net/minecraft/server/players/UserWhiteList.java
++++ b/net/minecraft/server/players/UserWhiteList.java
+@@ -1,29 +_,30 @@
+ package net.minecraft.server.players;
+ 
+ import com.google.gson.JsonObject;
++import com.mojang.authlib.GameProfile;
+ import java.io.File;
+ import java.util.Objects;
+ 
+-public class UserWhiteList extends StoredUserList<NameAndId, UserWhiteListEntry> {
++public class UserWhiteList extends StoredUserList<GameProfile, UserWhiteListEntry> {
+     public UserWhiteList(File p_11449_) {
+         super(p_11449_);
+     }
+ 
+     @Override
+-    protected StoredUserEntry<NameAndId> createEntry(JsonObject p_11452_) {
++    protected StoredUserEntry<GameProfile> createEntry(JsonObject p_11452_) {
+         return new UserWhiteListEntry(p_11452_);
+     }
+ 
+-    public boolean isWhiteListed(NameAndId p_435506_) {
+-        return this.contains(p_435506_);
++    public boolean isWhiteListed(GameProfile p_11454_) {
++        return this.contains(p_11454_);
+     }
+ 
+     @Override
+     public String[] getUserList() {
+-        return this.getEntries().stream().map(StoredUserEntry::getUser).filter(Objects::nonNull).map(NameAndId::name).toArray(String[]::new);
++        return this.getEntries().stream().map(StoredUserEntry::getUser).filter(Objects::nonNull).map(GameProfile::getName).toArray(String[]::new);
+     }
+ 
+-    protected String getKeyForUser(NameAndId p_435738_) {
+-        return p_435738_.id().toString();
++    protected String getKeyForUser(GameProfile p_11458_) {
++        return p_11458_.getId().toString();
+     }
+ }

@@ -1,0 +1,102 @@
+--- a/net/minecraft/world/entity/EntityReference.java
++++ b/net/minecraft/world/entity/EntityReference.java
+@@ -9,7 +_,6 @@
+ import net.minecraft.core.UUIDUtil;
+ import net.minecraft.network.codec.StreamCodec;
+ import net.minecraft.server.players.OldUsersConverter;
+-import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.level.Level;
+ import net.minecraft.world.level.entity.UUIDLookup;
+ import net.minecraft.world.level.entity.UniquelyIdentifyable;
+@@ -30,29 +_,20 @@
+         return (StreamCodec<ByteBuf, EntityReference<Type>>)STREAM_CODEC;
+     }
+ 
+-    private EntityReference(StoredEntityType p_394384_) {
++    public EntityReference(StoredEntityType p_394384_) {
+         this.entity = Either.right(p_394384_);
+     }
+ 
+-    private EntityReference(UUID p_394483_) {
++    public EntityReference(UUID p_394483_) {
+         this.entity = Either.left(p_394483_);
+     }
+ 
+-    @Nullable
+-    public static <T extends UniquelyIdentifyable> EntityReference<T> of(@Nullable T p_440249_) {
+-        return p_440249_ != null ? new EntityReference<>(p_440249_) : null;
+-    }
+-
+-    public static <T extends UniquelyIdentifyable> EntityReference<T> of(UUID p_440648_) {
+-        return new EntityReference<>(p_440648_);
+-    }
+-
+     public UUID getUUID() {
+         return this.entity.map(p_394562_ -> (UUID)p_394562_, UniquelyIdentifyable::getUUID);
+     }
+ 
+     @Nullable
+-    public StoredEntityType getEntity(UUIDLookup<? extends UniquelyIdentifyable> p_394375_, Class<StoredEntityType> p_394097_) {
++    public StoredEntityType getEntity(UUIDLookup<? super StoredEntityType> p_394375_, Class<StoredEntityType> p_394097_) {
+         Optional<StoredEntityType> optional = this.entity.right();
+         if (optional.isPresent()) {
+             StoredEntityType storedentitytype = optional.get();
+@@ -65,7 +_,7 @@
+ 
+         Optional<UUID> optional1 = this.entity.left();
+         if (optional1.isPresent()) {
+-            StoredEntityType storedentitytype1 = this.resolve(p_394375_.lookup(optional1.get()), p_394097_);
++            StoredEntityType storedentitytype1 = this.resolve(p_394375_.getEntity(optional1.get()), p_394097_);
+             if (storedentitytype1 != null && !storedentitytype1.isRemoved()) {
+                 this.entity = Either.right(storedentitytype1);
+                 return storedentitytype1;
+@@ -76,13 +_,6 @@
+     }
+ 
+     @Nullable
+-    public StoredEntityType getEntity(Level p_439083_, Class<StoredEntityType> p_438991_) {
+-        return Player.class.isAssignableFrom(p_438991_)
+-            ? this.getEntity(p_439083_::getPlayerInAnyDimension, p_438991_)
+-            : this.getEntity(p_439083_::getEntityInAnyDimension, p_438991_);
+-    }
+-
+-    @Nullable
+     private StoredEntityType resolve(@Nullable UniquelyIdentifyable p_394069_, Class<StoredEntityType> p_394131_) {
+         return p_394069_ != null && p_394131_.isAssignableFrom(p_394069_.getClass()) ? p_394131_.cast(p_394069_) : null;
+     }
+@@ -103,24 +_,9 @@
+ 
+     @Nullable
+     public static <StoredEntityType extends UniquelyIdentifyable> StoredEntityType get(
+-        @Nullable EntityReference<StoredEntityType> p_393467_, Level p_440390_, Class<StoredEntityType> p_394473_
++        @Nullable EntityReference<StoredEntityType> p_393467_, UUIDLookup<? super StoredEntityType> p_393924_, Class<StoredEntityType> p_394473_
+     ) {
+-        return p_393467_ != null ? p_393467_.getEntity(p_440390_, p_394473_) : null;
+-    }
+-
+-    @Nullable
+-    public static Entity getEntity(@Nullable EntityReference<Entity> p_440206_, Level p_440128_) {
+-        return get(p_440206_, p_440128_, Entity.class);
+-    }
+-
+-    @Nullable
+-    public static LivingEntity getLivingEntity(@Nullable EntityReference<LivingEntity> p_440105_, Level p_439674_) {
+-        return get(p_440105_, p_439674_, LivingEntity.class);
+-    }
+-
+-    @Nullable
+-    public static Player getPlayer(@Nullable EntityReference<Player> p_440320_, Level p_439792_) {
+-        return get(p_440320_, p_439792_, Player.class);
++        return p_393467_ != null ? p_393467_.getEntity(p_393924_, p_394473_) : null;
+     }
+ 
+     @Nullable
+@@ -134,7 +_,7 @@
+     ) {
+         Optional<UUID> optional = p_422383_.read(p_394543_, UUIDUtil.CODEC);
+         return optional.isPresent()
+-            ? of(optional.get())
++            ? new EntityReference<>(optional.get())
+             : p_422383_.getString(p_394543_)
+                 .map(p_409192_ -> OldUsersConverter.convertMobOwnerIfNecessary(p_393661_.getServer(), p_409192_))
+                 .map(EntityReference<StoredEntityType>::new)

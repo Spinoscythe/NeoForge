@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/TamableAnimal.java
 +++ b/net/minecraft/world/entity/TamableAnimal.java
+@@ -148,7 +_,7 @@
+     }
+ 
+     public void setOwner(@Nullable LivingEntity p_394333_) {
+-        this.entityData.set(DATA_OWNERUUID_ID, Optional.ofNullable(p_394333_).map(EntityReference::of));
++        this.entityData.set(DATA_OWNERUUID_ID, Optional.ofNullable(p_394333_).map(EntityReference::new));
+     }
+ 
+     public void setOwnerReference(@Nullable EntityReference<LivingEntity> p_393498_) {
 @@ -212,13 +_,16 @@
  
      @Override

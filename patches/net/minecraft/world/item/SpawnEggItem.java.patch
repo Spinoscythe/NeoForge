@@ -1,9 +1,216 @@
 --- a/net/minecraft/world/item/SpawnEggItem.java
 +++ b/net/minecraft/world/item/SpawnEggItem.java
-@@ -190,4 +_,45 @@
+@@ -8,20 +_,21 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
++import net.minecraft.core.HolderLookup;
+ import net.minecraft.core.component.DataComponents;
++import net.minecraft.core.registries.Registries;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.stats.Stats;
+-import net.minecraft.world.Difficulty;
+ import net.minecraft.world.InteractionHand;
+ import net.minecraft.world.InteractionResult;
+ import net.minecraft.world.entity.AgeableMob;
++import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntitySpawnReason;
+ import net.minecraft.world.entity.EntityType;
+-import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.Mob;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.flag.FeatureFlagSet;
+-import net.minecraft.world.item.component.TypedEntityData;
++import net.minecraft.world.item.component.CustomData;
+ import net.minecraft.world.item.context.UseOnContext;
+ import net.minecraft.world.level.ClipContext;
+ import net.minecraft.world.level.Level;
+@@ -34,20 +_,19 @@
+ import net.minecraft.world.phys.Vec3;
+ 
+ public class SpawnEggItem extends Item {
+-    private static final Map<EntityType<?>, SpawnEggItem> BY_ID = Maps.newIdentityHashMap();
++    private static final Map<EntityType<? extends Mob>, SpawnEggItem> BY_ID = Maps.newIdentityHashMap();
++    private final EntityType<?> defaultType;
+ 
+-    public SpawnEggItem(Item.Properties p_43210_) {
++    public SpawnEggItem(EntityType<? extends Mob> p_43207_, Item.Properties p_43210_) {
+         super(p_43210_);
+-        TypedEntityData<EntityType<?>> typedentitydata = this.components().get(DataComponents.ENTITY_DATA);
+-        if (typedentitydata != null) {
+-            BY_ID.put(typedentitydata.type(), this);
+-        }
++        this.defaultType = p_43207_;
++        BY_ID.put(p_43207_, this);
+     }
+ 
+     @Override
+     public InteractionResult useOn(UseOnContext p_43223_) {
+         Level level = p_43223_.getLevel();
+-        if (level.isClientSide()) {
++        if (level.isClientSide) {
+             return InteractionResult.SUCCESS;
+         } else {
+             ItemStack itemstack = p_43223_.getItemInHand();
+@@ -55,16 +_,12 @@
+             Direction direction = p_43223_.getClickedFace();
+             BlockState blockstate = level.getBlockState(blockpos);
+             if (level.getBlockEntity(blockpos) instanceof Spawner spawner) {
+-                EntityType<?> entitytype = this.getType(itemstack);
+-                if (entitytype == null) {
+-                    return InteractionResult.FAIL;
+-                } else {
+-                    spawner.setEntityId(entitytype, level.getRandom());
+-                    level.sendBlockUpdated(blockpos, blockstate, blockstate, 3);
+-                    level.gameEvent(p_43223_.getPlayer(), GameEvent.BLOCK_CHANGE, blockpos);
+-                    itemstack.shrink(1);
+-                    return InteractionResult.SUCCESS;
+-                }
++                EntityType<?> entitytype1 = this.getType(level.registryAccess(), itemstack);
++                spawner.setEntityId(entitytype1, level.getRandom());
++                level.sendBlockUpdated(blockpos, blockstate, blockstate, 3);
++                level.gameEvent(p_43223_.getPlayer(), GameEvent.BLOCK_CHANGE, blockpos);
++                itemstack.shrink(1);
++                return InteractionResult.SUCCESS;
+             } else {
+                 BlockPos blockpos1;
+                 if (blockstate.getCollisionShape(level, blockpos).isEmpty()) {
+@@ -73,26 +_,23 @@
+                     blockpos1 = blockpos.relative(direction);
+                 }
+ 
+-                return this.spawnMob(p_43223_.getPlayer(), itemstack, level, blockpos1, true, !Objects.equals(blockpos, blockpos1) && direction == Direction.UP);
+-            }
+-        }
+-    }
+-
+-    private InteractionResult spawnMob(
+-        @Nullable LivingEntity p_437310_, ItemStack p_437337_, Level p_437257_, BlockPos p_437320_, boolean p_437284_, boolean p_437293_
+-    ) {
+-        EntityType<?> entitytype = this.getType(p_437337_);
+-        if (entitytype == null) {
+-            return InteractionResult.FAIL;
+-        } else if (!entitytype.isAllowedInPeaceful() && p_437257_.getDifficulty() == Difficulty.PEACEFUL) {
+-            return InteractionResult.FAIL;
+-        } else {
+-            if (entitytype.spawn((ServerLevel)p_437257_, p_437337_, p_437310_, p_437320_, EntitySpawnReason.SPAWN_ITEM_USE, p_437284_, p_437293_) != null) {
+-                p_437337_.consume(1, p_437310_);
+-                p_437257_.gameEvent(p_437310_, GameEvent.ENTITY_PLACE, p_437320_);
+-            }
+-
+-            return InteractionResult.SUCCESS;
++                EntityType<?> entitytype = this.getType(level.registryAccess(), itemstack);
++                if (entitytype.spawn(
++                        (ServerLevel)level,
++                        itemstack,
++                        p_43223_.getPlayer(),
++                        blockpos1,
++                        EntitySpawnReason.SPAWN_ITEM_USE,
++                        true,
++                        !Objects.equals(blockpos, blockpos1) && direction == Direction.UP
++                    )
++                    != null) {
++                    itemstack.shrink(1);
++                    level.gameEvent(p_43223_.getPlayer(), GameEvent.ENTITY_PLACE, blockpos);
++                }
++
++                return InteractionResult.SUCCESS;
++            }
+         }
+     }
+ 
+@@ -103,16 +_,20 @@
+         if (blockhitresult.getType() != HitResult.Type.BLOCK) {
+             return InteractionResult.PASS;
+         } else if (p_43225_ instanceof ServerLevel serverlevel) {
+-            BlockPos $$7 = blockhitresult.getBlockPos();
+-            if (!(p_43225_.getBlockState($$7).getBlock() instanceof LiquidBlock)) {
++            BlockPos $$8 = blockhitresult.getBlockPos();
++            if (!(p_43225_.getBlockState($$8).getBlock() instanceof LiquidBlock)) {
+                 return InteractionResult.PASS;
+-            } else if (p_43225_.mayInteract(p_43226_, $$7) && p_43226_.mayUseItemAt($$7, blockhitresult.getDirection(), itemstack)) {
+-                InteractionResult interactionresult = this.spawnMob(p_43226_, itemstack, p_43225_, $$7, false, false);
+-                if (interactionresult == InteractionResult.SUCCESS) {
++            } else if (p_43225_.mayInteract(p_43226_, $$8) && p_43226_.mayUseItemAt($$8, blockhitresult.getDirection(), itemstack)) {
++                EntityType<?> entitytype = this.getType(serverlevel.registryAccess(), itemstack);
++                Entity entity = entitytype.spawn(serverlevel, itemstack, p_43226_, $$8, EntitySpawnReason.SPAWN_ITEM_USE, false, false);
++                if (entity == null) {
++                    return InteractionResult.PASS;
++                } else {
++                    itemstack.consume(1, p_43226_);
+                     p_43226_.awardStat(Stats.ITEM_USED.get(this));
++                    p_43225_.gameEvent(p_43226_, GameEvent.ENTITY_PLACE, entity.position());
++                    return InteractionResult.SUCCESS;
+                 }
+-
+-                return interactionresult;
+             } else {
+                 return InteractionResult.FAIL;
+             }
+@@ -121,8 +_,8 @@
+         }
+     }
+ 
+-    public boolean spawnsEntity(ItemStack p_330965_, EntityType<?> p_43232_) {
+-        return Objects.equals(this.getType(p_330965_), p_43232_);
++    public boolean spawnsEntity(HolderLookup.Provider p_390481_, ItemStack p_330965_, EntityType<?> p_43232_) {
++        return Objects.equals(this.getType(p_390481_, p_330965_), p_43232_);
+     }
+ 
+     @Nullable
+@@ -134,24 +_,27 @@
+         return Iterables.unmodifiableIterable(BY_ID.values());
+     }
+ 
+-    @Nullable
+-    public EntityType<?> getType(ItemStack p_330335_) {
+-        TypedEntityData<EntityType<?>> typedentitydata = p_330335_.get(DataComponents.ENTITY_DATA);
+-        return typedentitydata != null ? typedentitydata.type() : null;
++    public EntityType<?> getType(HolderLookup.Provider p_390418_, ItemStack p_330335_) {
++        CustomData customdata = p_330335_.getOrDefault(DataComponents.ENTITY_DATA, CustomData.EMPTY);
++        if (!customdata.isEmpty()) {
++            EntityType<?> entitytype = customdata.parseEntityType(p_390418_, Registries.ENTITY_TYPE);
++            if (entitytype != null) {
++                return entitytype;
++            }
++        }
++
++        return this.defaultType;
+     }
+ 
+     @Override
+     public FeatureFlagSet requiredFeatures() {
+-        return Optional.ofNullable(this.components().get(DataComponents.ENTITY_DATA))
+-            .map(TypedEntityData::type)
+-            .map(EntityType::requiredFeatures)
+-            .orElseGet(FeatureFlagSet::of);
++        return this.defaultType.requiredFeatures();
+     }
+ 
+     public Optional<Mob> spawnOffspringFromSpawnEgg(
+         Player p_43216_, Mob p_43217_, EntityType<? extends Mob> p_43218_, ServerLevel p_43219_, Vec3 p_43220_, ItemStack p_43221_
+     ) {
+-        if (!this.spawnsEntity(p_43221_, p_43218_)) {
++        if (!this.spawnsEntity(p_43219_.registryAccess(), p_43221_, p_43218_)) {
+             return Optional.empty();
+         } else {
+             Mob mob;
+@@ -181,12 +_,54 @@
+     @Override
+     public boolean shouldPrintOpWarning(ItemStack p_390471_, @Nullable Player p_390407_) {
+         if (p_390407_ != null && p_390407_.getPermissionLevel() >= 2) {
+-            TypedEntityData<EntityType<?>> typedentitydata = p_390471_.get(DataComponents.ENTITY_DATA);
+-            if (typedentitydata != null) {
+-                return typedentitydata.type().onlyOpCanSetNbt();
++            CustomData customdata = p_390471_.get(DataComponents.ENTITY_DATA);
++            if (customdata != null) {
++                EntityType<?> entitytype = customdata.parseEntityType(p_390407_.level().registryAccess(), Registries.ENTITY_TYPE);
++                return entitytype != null && entitytype.onlyOpCanSetNbt();
+             }
+         }
  
          return false;
-     }
++    }
 +
 +    public static final net.minecraft.core.dispenser.DispenseItemBehavior DEFAULT_DISPENSE_BEHAVIOR = new net.minecraft.core.dispenser.DefaultDispenseItemBehavior() {
 +        @Override
@@ -44,5 +251,5 @@
 +                }
 +            }
 +        }));
-+    }
+     }
  }

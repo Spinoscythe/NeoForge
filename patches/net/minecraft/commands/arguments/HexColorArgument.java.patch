@@ -1,0 +1,30 @@
+--- a/net/minecraft/commands/arguments/HexColorArgument.java
++++ b/net/minecraft/commands/arguments/HexColorArgument.java
+@@ -7,6 +_,7 @@
+ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+ import com.mojang.brigadier.suggestion.Suggestions;
+ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
++import java.text.MessageFormat;
+ import java.util.Arrays;
+ import java.util.Collection;
+ import java.util.concurrent.CompletableFuture;
+@@ -37,15 +_,13 @@
+ 
+         return switch (s.length()) {
+             case 3 -> ARGB.color(
+-                duplicateDigit(Integer.parseInt(s, 0, 1, 16)), duplicateDigit(Integer.parseInt(s, 1, 2, 16)), duplicateDigit(Integer.parseInt(s, 2, 3, 16))
++                Integer.valueOf(MessageFormat.format("{0}{0}", s.charAt(0)), 16),
++                Integer.valueOf(MessageFormat.format("{0}{0}", s.charAt(1)), 16),
++                Integer.valueOf(MessageFormat.format("{0}{0}", s.charAt(2)), 16)
+             );
+-            case 6 -> ARGB.color(Integer.parseInt(s, 0, 2, 16), Integer.parseInt(s, 2, 4, 16), Integer.parseInt(s, 4, 6, 16));
++            case 6 -> ARGB.color(Integer.valueOf(s.substring(0, 2), 16), Integer.valueOf(s.substring(2, 4), 16), Integer.valueOf(s.substring(4, 6), 16));
+             default -> throw ERROR_INVALID_HEX.createWithContext(p_415863_, s);
+         };
+-    }
+-
+-    private static int duplicateDigit(int p_440199_) {
+-        return p_440199_ * 17;
+     }
+ 
+     @Override

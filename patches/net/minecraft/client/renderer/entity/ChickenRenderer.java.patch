@@ -1,0 +1,26 @@
+--- a/net/minecraft/client/renderer/entity/ChickenRenderer.java
++++ b/net/minecraft/client/renderer/entity/ChickenRenderer.java
+@@ -7,7 +_,7 @@
+ import net.minecraft.client.model.ChickenModel;
+ import net.minecraft.client.model.ColdChickenModel;
+ import net.minecraft.client.model.geom.ModelLayers;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.state.ChickenRenderState;
+ import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+ import net.minecraft.resources.ResourceLocation;
+@@ -42,10 +_,10 @@
+         );
+     }
+ 
+-    public void submit(ChickenRenderState p_432969_, PoseStack p_435830_, SubmitNodeCollector p_433806_) {
+-        if (p_432969_.variant != null) {
+-            this.model = this.models.get(p_432969_.variant.modelAndTexture().model()).getModel(p_432969_.isBaby);
+-            super.submit(p_432969_, p_435830_, p_433806_);
++    public void render(ChickenRenderState p_401826_, PoseStack p_401883_, MultiBufferSource p_401836_, int p_401766_) {
++        if (p_401826_.variant != null) {
++            this.model = this.models.get(p_401826_.variant.modelAndTexture().model()).getModel(p_401826_.isBaby);
++            super.render(p_401826_, p_401883_, p_401836_, p_401766_);
+         }
+     }
+ 

@@ -1,6 +1,67 @@
 --- a/net/minecraft/network/codec/ByteBufCodecs.java
 +++ b/net/minecraft/network/codec/ByteBufCodecs.java
-@@ -577,7 +_,7 @@
+@@ -19,12 +_,12 @@
+ import java.util.Map;
+ import java.util.Optional;
+ import java.util.OptionalInt;
++import java.util.UUID;
+ import java.util.function.BiFunction;
+ import java.util.function.Function;
+ import java.util.function.IntFunction;
+ import java.util.function.Supplier;
+ import java.util.function.ToIntFunction;
+-import net.minecraft.Util;
+ import net.minecraft.core.Holder;
+ import net.minecraft.core.HolderSet;
+ import net.minecraft.core.IdMap;
+@@ -236,25 +_,30 @@
+             }
+         }
+     };
+-    StreamCodec<ByteBuf, String> PLAYER_NAME = stringUtf8(16);
+-    StreamCodec<ByteBuf, GameProfile> GAME_PROFILE = StreamCodec.composite(
+-        UUIDUtil.STREAM_CODEC,
+-        GameProfile::getId,
+-        PLAYER_NAME,
+-        GameProfile::getName,
+-        GAME_PROFILE_PROPERTIES,
+-        GameProfile::getProperties,
+-        Util::createGameProfile
+-    );
++    StreamCodec<ByteBuf, GameProfile> GAME_PROFILE = new StreamCodec<ByteBuf, GameProfile>() {
++        public GameProfile decode(ByteBuf p_422404_) {
++            UUID uuid = UUIDUtil.STREAM_CODEC.decode(p_422404_);
++            String s = Utf8String.read(p_422404_, 16);
++            GameProfile gameprofile = new GameProfile(uuid, s);
++            gameprofile.getProperties().putAll(ByteBufCodecs.GAME_PROFILE_PROPERTIES.decode(p_422404_));
++            return gameprofile;
++        }
++
++        public void encode(ByteBuf p_422062_, GameProfile p_428503_) {
++            UUIDUtil.STREAM_CODEC.encode(p_422062_, p_428503_.getId());
++            Utf8String.write(p_422062_, p_428503_.getName(), 16);
++            ByteBufCodecs.GAME_PROFILE_PROPERTIES.encode(p_422062_, p_428503_.getProperties());
++        }
++    };
+     StreamCodec<ByteBuf, Integer> RGB_COLOR = new StreamCodec<ByteBuf, Integer>() {
+-        public Integer decode(ByteBuf p_422404_) {
+-            return ARGB.color(p_422404_.readByte() & 0xFF, p_422404_.readByte() & 0xFF, p_422404_.readByte() & 0xFF);
++        public Integer decode(ByteBuf p_422595_) {
++            return ARGB.color(p_422595_.readByte() & 0xFF, p_422595_.readByte() & 0xFF, p_422595_.readByte() & 0xFF);
+         }
+ 
+-        public void encode(ByteBuf p_422062_, Integer p_440662_) {
+-            p_422062_.writeByte(ARGB.red(p_440662_));
+-            p_422062_.writeByte(ARGB.green(p_440662_));
+-            p_422062_.writeByte(ARGB.blue(p_440662_));
++        public void encode(ByteBuf p_422247_, Integer p_428314_) {
++            p_422247_.writeByte(ARGB.red(p_428314_));
++            p_422247_.writeByte(ARGB.green(p_428314_));
++            p_422247_.writeByte(ARGB.blue(p_428314_));
+         }
+     };
+ 
+@@ -572,7 +_,7 @@
      ) {
          return new StreamCodec<RegistryFriendlyByteBuf, R>() {
              private IdMap<R> getRegistryOrThrow(RegistryFriendlyByteBuf p_421864_) {
@@ -9,7 +70,7 @@
              }
  
              public R decode(RegistryFriendlyByteBuf p_412249_) {
-@@ -607,7 +_,7 @@
+@@ -602,7 +_,7 @@
              private static final int DIRECT_HOLDER_ID = 0;
  
              private IdMap<Holder<T>> getRegistryOrThrow(RegistryFriendlyByteBuf p_428365_) {
@@ -18,7 +79,7 @@
              }
  
              public Holder<T> decode(RegistryFriendlyByteBuf p_421902_) {
-@@ -629,13 +_,38 @@
+@@ -624,13 +_,38 @@
          };
      }
  
@@ -57,7 +118,7 @@
                  if (i == -1) {
                      Registry<T> registry = p_428283_.registryAccess().lookupOrThrow(p_332137_);
                      return registry.get(TagKey.create(p_332137_, ResourceLocation.STREAM_CODEC.decode(p_428283_))).orElseThrow();
-@@ -651,6 +_,15 @@
+@@ -646,6 +_,15 @@
              }
  
              public void encode(RegistryFriendlyByteBuf p_428187_, HolderSet<T> p_428305_) {
@@ -73,3 +134,27 @@
                  Optional<TagKey<T>> optional = p_428305_.unwrapKey();
                  if (optional.isPresent()) {
                      VarInt.write(p_428187_, 0);
+@@ -665,8 +_,8 @@
+         return new StreamCodec<ByteBuf, JsonElement>() {
+             private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
+ 
+-            public JsonElement decode(ByteBuf p_422595_) {
+-                String s = Utf8String.read(p_422595_, p_422673_);
++            public JsonElement decode(ByteBuf p_428344_) {
++                String s = Utf8String.read(p_428344_, p_422673_);
+ 
+                 try {
+                     return LenientJsonParser.parse(s);
+@@ -675,9 +_,9 @@
+                 }
+             }
+ 
+-            public void encode(ByteBuf p_422247_, JsonElement p_439988_) {
+-                String s = GSON.toJson(p_439988_);
+-                Utf8String.write(p_422247_, s, p_422673_);
++            public void encode(ByteBuf p_428191_, JsonElement p_428484_) {
++                String s = GSON.toJson(p_428484_);
++                Utf8String.write(p_428191_, s, p_422673_);
+             }
+         };
+     }

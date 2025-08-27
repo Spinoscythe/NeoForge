@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/storage/loot/functions/FillPlayerHead.java
++++ b/net/minecraft/world/level/storage/loot/functions/FillPlayerHead.java
+@@ -40,7 +_,7 @@
+     @Override
+     public ItemStack run(ItemStack p_80608_, LootContext p_80609_) {
+         if (p_80608_.is(Items.PLAYER_HEAD) && p_80609_.getOptionalParameter(this.entityTarget.getParam()) instanceof Player player) {
+-            p_80608_.set(DataComponents.PROFILE, ResolvableProfile.createResolved(player.getGameProfile()));
++            p_80608_.set(DataComponents.PROFILE, new ResolvableProfile(player.getGameProfile()));
+         }
+ 
+         return p_80608_;

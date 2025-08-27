@@ -43,6 +43,15 @@
      public static ItemStack getHeldProjectile(LivingEntity p_43011_, Predicate<ItemStack> p_43012_) {
          if (p_43012_.test(p_43011_.getItemInHand(InteractionHand.OFF_HAND))) {
              return p_43011_.getItemInHand(InteractionHand.OFF_HAND);
+@@ -68,7 +_,7 @@
+                     itemstack,
+                     p_360045_ -> this.shootProjectile(p_330728_, p_360045_, j, p_331007_, p_331445_, f4, p_331167_)
+                 );
+-                p_330646_.hurtAndBreak(this.getDurabilityUse(itemstack), p_330728_, p_331152_.asEquipmentSlot());
++                p_330646_.hurtAndBreak(this.getDurabilityUse(itemstack), p_330728_, LivingEntity.getSlotForHand(p_331152_));
+                 if (p_330646_.isEmpty()) {
+                     break;
+                 }
 @@ -91,7 +_,7 @@
              abstractarrow.setCritArrow(true);
          }

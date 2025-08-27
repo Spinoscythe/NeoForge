@@ -9,3 +9,12 @@
                  BlockPos blockpos = p_37384_.getBlockPos().relative(p_37384_.getDirection());
                  if (this.level().isEmptyBlock(blockpos)) {
                      this.level().setBlockAndUpdate(blockpos, BaseFireBlock.getState(this.level(), blockpos));
+@@ -63,7 +_,7 @@
+     @Override
+     protected void onHit(HitResult p_37388_) {
+         super.onHit(p_37388_);
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.discard();
+         }
+     }

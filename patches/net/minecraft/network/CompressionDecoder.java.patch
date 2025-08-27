@@ -1,0 +1,46 @@
+--- a/net/minecraft/network/CompressionDecoder.java
++++ b/net/minecraft/network/CompressionDecoder.java
+@@ -24,24 +_,26 @@
+ 
+     @Override
+     protected void decode(ChannelHandlerContext p_129441_, ByteBuf p_129442_, List<Object> p_129443_) throws Exception {
+-        int i = VarInt.read(p_129442_);
+-        if (i == 0) {
+-            p_129443_.add(p_129442_.readBytes(p_129442_.readableBytes()));
+-        } else {
+-            if (this.validateDecompressed) {
+-                if (i < this.threshold) {
+-                    throw new DecoderException("Badly compressed packet - size of " + i + " is below server threshold of " + this.threshold);
+-                }
+-
+-                if (i > 8388608) {
+-                    throw new DecoderException("Badly compressed packet - size of " + i + " is larger than protocol maximum of 8388608");
+-                }
++        if (p_129442_.readableBytes() != 0) {
++            int i = VarInt.read(p_129442_);
++            if (i == 0) {
++                p_129443_.add(p_129442_.readBytes(p_129442_.readableBytes()));
++            } else {
++                if (this.validateDecompressed) {
++                    if (i < this.threshold) {
++                        throw new DecoderException("Badly compressed packet - size of " + i + " is below server threshold of " + this.threshold);
++                    }
++
++                    if (i > 8388608) {
++                        throw new DecoderException("Badly compressed packet - size of " + i + " is larger than protocol maximum of 8388608");
++                    }
++                }
++
++                this.setupInflaterInput(p_129442_);
++                ByteBuf bytebuf = this.inflate(p_129441_, i);
++                this.inflater.reset();
++                p_129443_.add(bytebuf);
+             }
+-
+-            this.setupInflaterInput(p_129442_);
+-            ByteBuf bytebuf = this.inflate(p_129441_, i);
+-            this.inflater.reset();
+-            p_129443_.add(bytebuf);
+         }
+     }
+ 

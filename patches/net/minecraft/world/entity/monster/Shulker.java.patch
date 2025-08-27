@@ -1,5 +1,56 @@
 --- a/net/minecraft/world/entity/monster/Shulker.java
 +++ b/net/minecraft/world/entity/monster/Shulker.java
+@@ -173,7 +_,7 @@
+     @Override
+     public void tick() {
+         super.tick();
+-        if (!this.level().isClientSide() && !this.isPassenger() && !this.canStayAt(this.blockPosition(), this.getAttachFace())) {
++        if (!this.level().isClientSide && !this.isPassenger() && !this.canStayAt(this.blockPosition(), this.getAttachFace())) {
+             this.findNewAttachment();
+         }
+ 
+@@ -181,7 +_,7 @@
+             this.onPeekAmountChange();
+         }
+ 
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             if (this.clientSideTeleportInterpolation > 0) {
+                 this.clientSideTeleportInterpolation--;
+             } else {
+@@ -262,20 +_,20 @@
+     }
+ 
+     @Override
+-    public boolean startRiding(Entity p_149773_, boolean p_149774_, boolean p_435917_) {
++    public boolean startRiding(Entity p_149773_, boolean p_149774_) {
+         if (this.level().isClientSide()) {
+             this.clientOldAttachPosition = null;
+             this.clientSideTeleportInterpolation = 0;
+         }
+ 
+         this.setAttachFace(Direction.DOWN);
+-        return super.startRiding(p_149773_, p_149774_, p_435917_);
++        return super.startRiding(p_149773_, p_149774_);
+     }
+ 
+     @Override
+     public void stopRiding() {
+         super.stopRiding();
+-        if (this.level().isClientSide()) {
++        if (this.level().isClientSide) {
+             this.clientOldAttachPosition = this.blockPosition();
+         }
+ 
+@@ -326,7 +_,7 @@
+             if (!blockpos1.equals(blockpos)) {
+                 this.entityData.set(DATA_PEEK_ID, (byte)0);
+                 this.hasImpulse = true;
+-                if (this.level().isClientSide() && !this.isPassenger() && !blockpos1.equals(this.clientOldAttachPosition)) {
++                if (this.level().isClientSide && !this.isPassenger() && !blockpos1.equals(this.clientOldAttachPosition)) {
+                     this.clientOldAttachPosition = blockpos;
+                     this.clientSideTeleportInterpolation = 6;
+                     this.xOld = this.getX();
 @@ -388,6 +_,12 @@
                      && this.level().noCollision(this, new AABB(blockpos1).deflate(1.0E-6))) {
                      Direction direction = this.findAttachableSurface(blockpos1);
@@ -13,3 +64,12 @@
                          this.unRide();
                          this.setAttachFace(direction);
                          this.playSound(SoundEvents.SHULKER_TELEPORT, 1.0F, 1.0F);
+@@ -484,7 +_,7 @@
+     }
+ 
+     void setRawPeekAmount(int p_33419_) {
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             this.getAttribute(Attributes.ARMOR).removeModifier(COVERED_ARMOR_MODIFIER_ID);
+             if (p_33419_ == 0) {
+                 this.getAttribute(Attributes.ARMOR).addPermanentModifier(COVERED_ARMOR_MODIFIER);

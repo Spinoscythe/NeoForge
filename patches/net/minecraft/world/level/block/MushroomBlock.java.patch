@@ -1,5 +1,18 @@
 --- a/net/minecraft/world/level/block/MushroomBlock.java
 +++ b/net/minecraft/world/level/block/MushroomBlock.java
+@@ -22,10 +_,10 @@
+ 
+ public class MushroomBlock extends VegetationBlock implements BonemealableBlock {
+     public static final MapCodec<MushroomBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432674_ -> p_432674_.group(
++        p_368432_ -> p_368432_.group(
+                 ResourceKey.codec(Registries.CONFIGURED_FEATURE).fieldOf("feature").forGetter(p_304931_ -> p_304931_.feature), propertiesCodec()
+             )
+-            .apply(p_432674_, MushroomBlock::new)
++            .apply(p_368432_, MushroomBlock::new)
+     );
+     private static final VoxelShape SHAPE = Block.column(6.0, 0.0, 6.0);
+     private final ResourceKey<ConfiguredFeature<?, ?>> feature;
 @@ -84,15 +_,24 @@
      protected boolean canSurvive(BlockState p_54880_, LevelReader p_54881_, BlockPos p_54882_) {
          BlockPos blockpos = p_54882_.below();

@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/gui/screens/FaviconTexture.java
++++ b/net/minecraft/client/gui/screens/FaviconTexture.java
+@@ -81,10 +_,6 @@
+         this.closed = true;
+     }
+ 
+-    public boolean isClosed() {
+-        return this.closed;
+-    }
+-
+     private void checkOpen() {
+         if (this.closed) {
+             throw new IllegalStateException("Icon already closed");

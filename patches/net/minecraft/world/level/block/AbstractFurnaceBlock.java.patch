@@ -1,0 +1,20 @@
+--- a/net/minecraft/world/level/block/AbstractFurnaceBlock.java
++++ b/net/minecraft/world/level/block/AbstractFurnaceBlock.java
+@@ -37,7 +_,7 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_48706_, Level p_48707_, BlockPos p_48708_, Player p_48709_, BlockHitResult p_48711_) {
+-        if (!p_48707_.isClientSide()) {
++        if (!p_48707_.isClientSide) {
+             this.openContainer(p_48707_, p_48708_, p_48709_);
+         }
+ 
+@@ -62,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_48702_, Level p_48703_, BlockPos p_48704_, Direction p_436054_) {
++    protected int getAnalogOutputSignal(BlockState p_48702_, Level p_48703_, BlockPos p_48704_) {
+         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(p_48703_.getBlockEntity(p_48704_));
+     }
+ 

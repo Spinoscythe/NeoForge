@@ -25,7 +25,14 @@
          this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, p_331557_ -> this.onClose()).width(200).build());
          this.layout.visitWidgets(p_332019_ -> {
              AbstractWidget abstractwidget = this.addRenderableWidget(p_332019_);
-@@ -108,7 +_,7 @@
+@@ -102,20 +_,20 @@
+     }
+ 
+     @Override
+-    public boolean mouseClicked(double p_97343_, double p_97344_, int p_97345_, boolean p_433867_) {
++    public boolean mouseClicked(double p_97343_, double p_97344_, int p_97345_) {
+         if (p_97345_ == 0) {
+             int i = (this.width - 252) / 2;
              int j = (this.height - 140) / 2;
  
              for (AdvancementTab advancementtab : this.tabs.values()) {
@@ -34,6 +41,14 @@
                      this.advancements.setSelectedTab(advancementtab.getRootNode().holder(), true);
                      break;
                  }
+             }
+         }
+ 
+-        return super.mouseClicked(p_97343_, p_97344_, p_97345_, p_433867_);
++        return super.mouseClicked(p_97343_, p_97344_, p_97345_);
+     }
+ 
+     @Override
 @@ -134,6 +_,11 @@
          super.render(p_282589_, p_282255_, p_283354_, p_283123_);
          int i = (this.width - 252) / 2;

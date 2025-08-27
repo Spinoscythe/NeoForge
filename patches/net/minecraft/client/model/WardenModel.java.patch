@@ -1,0 +1,90 @@
+--- a/net/minecraft/client/model/WardenModel.java
++++ b/net/minecraft/client/model/WardenModel.java
+@@ -1,6 +_,7 @@
+ package net.minecraft.client.model;
+ 
+-import java.util.Set;
++import com.google.common.collect.ImmutableList;
++import java.util.List;
+ import net.minecraft.client.animation.KeyframeAnimation;
+ import net.minecraft.client.animation.definitions.WardenAnimation;
+ import net.minecraft.client.model.geom.ModelPart;
+@@ -30,6 +_,10 @@
+     protected final ModelPart rightArm;
+     protected final ModelPart rightLeg;
+     protected final ModelPart rightRibcage;
++    private final List<ModelPart> tendrilsLayerModelParts;
++    private final List<ModelPart> heartLayerModelParts;
++    private final List<ModelPart> bioluminescentLayerModelParts;
++    private final List<ModelPart> pulsatingSpotsLayerModelParts;
+     private final KeyframeAnimation attackAnimation;
+     private final KeyframeAnimation sonicBoomAnimation;
+     private final KeyframeAnimation diggingAnimation;
+@@ -50,6 +_,10 @@
+         this.leftTendril = this.head.getChild("left_tendril");
+         this.rightRibcage = this.body.getChild("right_ribcage");
+         this.leftRibcage = this.body.getChild("left_ribcage");
++        this.tendrilsLayerModelParts = ImmutableList.of(this.leftTendril, this.rightTendril);
++        this.heartLayerModelParts = ImmutableList.of(this.body);
++        this.bioluminescentLayerModelParts = ImmutableList.of(this.head, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
++        this.pulsatingSpotsLayerModelParts = ImmutableList.of(this.body, this.head, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
+         this.attackAnimation = WardenAnimation.WARDEN_ATTACK.bake(p_233512_);
+         this.sonicBoomAnimation = WardenAnimation.WARDEN_SONIC_BOOM.bake(p_233512_);
+         this.diggingAnimation = WardenAnimation.WARDEN_DIG.bake(p_233512_);
+@@ -97,34 +_,6 @@
+         return LayerDefinition.create(meshdefinition, 128, 128);
+     }
+ 
+-    public static LayerDefinition createTendrilsLayer() {
+-        return createBodyLayer().apply(p_435990_ -> {
+-            p_435990_.getRoot().retainExactParts(Set.of("left_tendril", "right_tendril"));
+-            return p_435990_;
+-        });
+-    }
+-
+-    public static LayerDefinition createHeartLayer() {
+-        return createBodyLayer().apply(p_434144_ -> {
+-            p_434144_.getRoot().retainExactParts(Set.of("body"));
+-            return p_434144_;
+-        });
+-    }
+-
+-    public static LayerDefinition createBioluminescentLayer() {
+-        return createBodyLayer().apply(p_433229_ -> {
+-            p_433229_.getRoot().retainExactParts(Set.of("head", "left_arm", "right_arm", "left_leg", "right_leg"));
+-            return p_433229_;
+-        });
+-    }
+-
+-    public static LayerDefinition createPulsatingSpotsLayer() {
+-        return createBodyLayer().apply(p_434628_ -> {
+-            p_434628_.getRoot().retainExactParts(Set.of("body", "head", "left_arm", "right_arm", "left_leg", "right_leg"));
+-            return p_434628_;
+-        });
+-    }
+-
+     public void setupAnim(WardenRenderState p_362289_) {
+         super.setupAnim(p_362289_);
+         this.animateHeadLookTarget(p_362289_.yRot, p_362289_.xRot);
+@@ -188,5 +_,21 @@
+         float f = p_360923_.tendrilAnimation * (float)(Math.cos(p_233528_ * 2.25) * Math.PI * 0.1F);
+         this.leftTendril.xRot = f;
+         this.rightTendril.xRot = -f;
++    }
++
++    public List<ModelPart> getTendrilsLayerModelParts(WardenRenderState p_379565_) {
++        return this.tendrilsLayerModelParts;
++    }
++
++    public List<ModelPart> getHeartLayerModelParts(WardenRenderState p_380335_) {
++        return this.heartLayerModelParts;
++    }
++
++    public List<ModelPart> getBioluminescentLayerModelParts(WardenRenderState p_379448_) {
++        return this.bioluminescentLayerModelParts;
++    }
++
++    public List<ModelPart> getPulsatingSpotsLayerModelParts(WardenRenderState p_380118_) {
++        return this.pulsatingSpotsLayerModelParts;
+     }
+ }

@@ -1,0 +1,11 @@
+--- a/net/minecraft/commands/CommandSourceStack.java
++++ b/net/minecraft/commands/CommandSourceStack.java
+@@ -500,7 +_,7 @@
+         Component component = Component.translatable("chat.type.admin", this.getDisplayName(), p_81367_).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
+         if (this.server.getGameRules().getBoolean(GameRules.RULE_SENDCOMMANDFEEDBACK)) {
+             for (ServerPlayer serverplayer : this.server.getPlayerList().getPlayers()) {
+-                if (serverplayer.commandSource() != this.source && this.server.getPlayerList().isOp(serverplayer.nameAndId())) {
++                if (serverplayer.commandSource() != this.source && this.server.getPlayerList().isOp(serverplayer.getGameProfile())) {
+                     serverplayer.sendSystemMessage(component);
+                 }
+             }

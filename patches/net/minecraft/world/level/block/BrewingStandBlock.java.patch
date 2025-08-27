@@ -1,0 +1,37 @@
+--- a/net/minecraft/world/level/block/BrewingStandBlock.java
++++ b/net/minecraft/world/level/block/BrewingStandBlock.java
+@@ -3,7 +_,6 @@
+ import com.mojang.serialization.MapCodec;
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+-import net.minecraft.core.Direction;
+ import net.minecraft.core.particles.ParticleTypes;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.stats.Stats;
+@@ -54,7 +_,7 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_152694_, BlockState p_152695_, BlockEntityType<T> p_152696_) {
+-        return p_152694_.isClientSide() ? null : createTickerHelper(p_152696_, BlockEntityType.BREWING_STAND, BrewingStandBlockEntity::serverTick);
++        return p_152694_.isClientSide ? null : createTickerHelper(p_152696_, BlockEntityType.BREWING_STAND, BrewingStandBlockEntity::serverTick);
+     }
+ 
+     @Override
+@@ -64,7 +_,7 @@
+ 
+     @Override
+     protected InteractionResult useWithoutItem(BlockState p_50930_, Level p_50931_, BlockPos p_50932_, Player p_50933_, BlockHitResult p_50935_) {
+-        if (!p_50931_.isClientSide() && p_50931_.getBlockEntity(p_50932_) instanceof BrewingStandBlockEntity brewingstandblockentity) {
++        if (!p_50931_.isClientSide && p_50931_.getBlockEntity(p_50932_) instanceof BrewingStandBlockEntity brewingstandblockentity) {
+             p_50933_.openMenu(brewingstandblockentity);
+             p_50933_.awardStat(Stats.INTERACT_WITH_BREWINGSTAND);
+         }
+@@ -91,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_50926_, Level p_50927_, BlockPos p_50928_, Direction p_433144_) {
++    protected int getAnalogOutputSignal(BlockState p_50926_, Level p_50927_, BlockPos p_50928_) {
+         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(p_50927_.getBlockEntity(p_50928_));
+     }
+ 

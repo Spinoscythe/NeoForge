@@ -1,0 +1,68 @@
+--- a/net/minecraft/world/phys/shapes/EntityCollisionContext.java
++++ b/net/minecraft/world/phys/shapes/EntityCollisionContext.java
+@@ -1,5 +_,6 @@
+ package net.minecraft.world.phys.shapes;
+ 
++import java.util.function.Predicate;
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+@@ -12,7 +_,7 @@
+ import net.minecraft.world.level.material.FluidState;
+ 
+ public class EntityCollisionContext implements CollisionContext {
+-    protected static final CollisionContext EMPTY = new EntityCollisionContext(false, false, -Double.MAX_VALUE, ItemStack.EMPTY, false, null) {
++    protected static final CollisionContext EMPTY = new EntityCollisionContext(false, false, -Double.MAX_VALUE, ItemStack.EMPTY, p_205118_ -> false, null) {
+         @Override
+         public boolean isAbove(VoxelShape p_82898_, BlockPos p_82899_, boolean p_82900_) {
+             return p_82900_;
+@@ -22,16 +_,18 @@
+     private final double entityBottom;
+     private final boolean placement;
+     private final ItemStack heldItem;
+-    private final boolean alwaysCollideWithFluid;
++    private final Predicate<FluidState> canStandOnFluid;
+     @Nullable
+     private final Entity entity;
+ 
+-    protected EntityCollisionContext(boolean p_361032_, boolean p_405496_, double p_405803_, ItemStack p_404927_, boolean p_439748_, @Nullable Entity p_82872_) {
++    protected EntityCollisionContext(
++        boolean p_361032_, boolean p_405496_, double p_405803_, ItemStack p_404927_, Predicate<FluidState> p_405766_, @Nullable Entity p_82872_
++    ) {
+         this.descending = p_361032_;
+         this.placement = p_405496_;
+         this.entityBottom = p_405803_;
+         this.heldItem = p_404927_;
+-        this.alwaysCollideWithFluid = p_439748_;
++        this.canStandOnFluid = p_405766_;
+         this.entity = p_82872_;
+     }
+ 
+@@ -42,7 +_,9 @@
+             p_404752_,
+             p_198920_.getY(),
+             p_198920_ instanceof LivingEntity livingentity ? livingentity.getMainHandItem() : ItemStack.EMPTY,
+-            p_198916_,
++            p_198916_
++                ? p_360273_ -> true
++                : (p_198920_ instanceof LivingEntity livingentity1 ? p_404624_ -> livingentity1.canStandOnFluid(p_404624_) : p_205113_ -> false),
+             p_198920_
+         );
+     }
+@@ -53,15 +_,8 @@
+     }
+ 
+     @Override
+-    public boolean alwaysCollideWithFluid() {
+-        return this.alwaysCollideWithFluid;
+-    }
+-
+-    @Override
+     public boolean canStandOnFluid(FluidState p_205115_, FluidState p_205116_) {
+-        return !(this.entity instanceof LivingEntity livingentity)
+-            ? false
+-            : livingentity.canStandOnFluid(p_205116_) && !p_205115_.getType().isSame(p_205116_.getType());
++        return this.canStandOnFluid.test(p_205116_) && !p_205115_.getType().isSame(p_205116_.getType());
+     }
+ 
+     @Override

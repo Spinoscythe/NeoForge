@@ -1,6 +1,30 @@
 --- a/net/minecraft/world/item/Item.java
 +++ b/net/minecraft/world/item/Item.java
-@@ -93,7 +_,7 @@
+@@ -22,7 +_,6 @@
+ import net.minecraft.core.component.DataComponents;
+ import net.minecraft.core.registries.BuiltInRegistries;
+ import net.minecraft.core.registries.Registries;
+-import net.minecraft.nbt.CompoundTag;
+ import net.minecraft.network.RegistryFriendlyByteBuf;
+ import net.minecraft.network.chat.CommonComponents;
+ import net.minecraft.network.chat.Component;
+@@ -38,7 +_,6 @@
+ import net.minecraft.tags.EntityTypeTags;
+ import net.minecraft.tags.TagKey;
+ import net.minecraft.util.Mth;
+-import net.minecraft.world.Difficulty;
+ import net.minecraft.world.InteractionHand;
+ import net.minecraft.world.InteractionResult;
+ import net.minecraft.world.damagesource.DamageSource;
+@@ -65,7 +_,6 @@
+ import net.minecraft.world.item.component.ProvidesTrimMaterial;
+ import net.minecraft.world.item.component.Tool;
+ import net.minecraft.world.item.component.TooltipDisplay;
+-import net.minecraft.world.item.component.TypedEntityData;
+ import net.minecraft.world.item.component.UseCooldown;
+ import net.minecraft.world.item.component.UseRemainder;
+ import net.minecraft.world.item.context.UseOnContext;
+@@ -96,7 +_,7 @@
          );
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<Item>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.ITEM);
      private static final Logger LOGGER = LogUtils.getLogger();
@@ -9,7 +33,7 @@
      public static final ResourceLocation BASE_ATTACK_DAMAGE_ID = ResourceLocation.withDefaultNamespace("base_attack_damage");
      public static final ResourceLocation BASE_ATTACK_SPEED_ID = ResourceLocation.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;
-@@ -125,12 +_,13 @@
+@@ -128,12 +_,13 @@
          this.components = p_41383_.buildAndValidateComponents(Component.translatable(this.descriptionId), p_41383_.effectiveModel());
          this.craftingRemainingItem = p_41383_.craftingRemainingItem;
          this.requiredFeatures = p_41383_.requiredFeatures;
@@ -24,7 +48,7 @@
      }
  
      @Deprecated
-@@ -142,6 +_,15 @@
+@@ -145,6 +_,15 @@
          return this.components;
      }
  
@@ -40,7 +64,7 @@
      public int getDefaultMaxStackSize() {
          return this.components.getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
      }
-@@ -149,6 +_,8 @@
+@@ -152,9 +_,14 @@
      public void onUseTick(Level p_41428_, LivingEntity p_41429_, ItemStack p_41430_, int p_41431_) {
      }
  
@@ -48,6 +72,21 @@
 +    @Deprecated
      public void onDestroyed(ItemEntity p_150887_) {
      }
+ 
++    public void verifyComponentsAfterLoad(ItemStack p_331627_) {
++    }
++
+     public boolean canDestroyBlock(ItemStack p_394530_, BlockState p_394066_, Level p_394541_, BlockPos p_394506_, LivingEntity p_394296_) {
+         Tool tool = p_394530_.get(DataComponents.TOOL);
+         return tool != null && !tool.canDestroyBlocksInCreative() ? !(p_394296_ instanceof Player player && player.getAbilities().instabuild) : true;
+@@ -244,7 +_,7 @@
+         if (tool == null) {
+             return false;
+         } else {
+-            if (!p_41417_.isClientSide() && p_41418_.getDestroySpeed(p_41417_, p_41419_) != 0.0F && tool.damagePerBlock() > 0) {
++            if (!p_41417_.isClientSide && p_41418_.getDestroySpeed(p_41417_, p_41419_) != 0.0F && tool.damagePerBlock() > 0) {
+                 p_41416_.hurtAndBreak(tool.damagePerBlock(), p_41420_, EquipmentSlot.MAINHAND);
+             }
  
 @@ -266,6 +_,7 @@
          return BuiltInRegistries.ITEM.wrapAsHolder(this).getRegisteredName();
@@ -98,7 +137,18 @@
  
          public Item.Properties food(FoodProperties p_41490_) {
              return this.food(p_41490_, Consumables.DEFAULT_FOOD);
-@@ -543,6 +_,7 @@
+@@ -459,10 +_,6 @@
+             return p_394325_.applySwordProperties(this, p_394629_, p_394038_);
+         }
+ 
+-        public Item.Properties spawnEgg(EntityType<?> p_433964_) {
+-            return this.component(DataComponents.ENTITY_DATA, TypedEntityData.of(p_433964_, new CompoundTag()));
+-        }
+-
+         public Item.Properties humanoidArmor(ArmorMaterial p_394389_, ArmorType p_393823_) {
+             return this.durability(p_393823_.getDurability(p_394389_.durability()))
+                 .attributes(p_394389_.createAttributes(p_393823_))
+@@ -547,6 +_,7 @@
          }
  
          public <T> Item.Properties component(DataComponentType<T> p_330871_, T p_330323_) {
@@ -106,7 +156,7 @@
              this.components.set(p_330871_, p_330323_);
              return this;
          }
-@@ -553,6 +_,10 @@
+@@ -557,6 +_,10 @@
  
          DataComponentMap buildAndValidateComponents(Component p_371796_, ResourceLocation p_371450_) {
              DataComponentMap datacomponentmap = this.components.set(DataComponents.ITEM_NAME, p_371796_).set(DataComponents.ITEM_MODEL, p_371450_).build();
@@ -117,10 +167,23 @@
              if (datacomponentmap.has(DataComponents.DAMAGE) && datacomponentmap.getOrDefault(DataComponents.MAX_STACK_SIZE, 1) > 1) {
                  throw new IllegalStateException("Item cannot have both durability and be stackable");
              } else {
-@@ -589,6 +_,14 @@
+@@ -583,11 +_,6 @@
+             public MapItemSavedData mapData(MapId p_339618_) {
+                 return null;
+             }
+-
+-            @Override
+-            public boolean isPeaceful() {
+-                return false;
+-            }
+         };
+ 
+         @Nullable
+@@ -598,7 +_,13 @@
          @Nullable
          MapItemSavedData mapData(MapId p_339670_);
  
+-        boolean isPeaceful();
 +        /**
 +         * Neo: Returns the level if it's available.
 +         */
@@ -128,19 +191,29 @@
 +        default Level level() {
 +            return null;
 +        }
-+
+ 
          static Item.TooltipContext of(@Nullable final Level p_339599_) {
              return p_339599_ == null ? EMPTY : new Item.TooltipContext() {
+@@ -618,8 +_,8 @@
+                 }
+ 
                  @Override
-@@ -604,6 +_,11 @@
-                 @Override
-                 public MapItemSavedData mapData(MapId p_339628_) {
-                     return p_339599_.getMapData(p_339628_);
-+                }
-+
-+                @Override
+-                public boolean isPeaceful() {
+-                    return p_339599_.getDifficulty() == Difficulty.PEACEFUL;
 +                public Level level() {
 +                    return p_339599_;
+                 }
+             };
+         }
+@@ -640,11 +_,6 @@
+                 @Override
+                 public MapItemSavedData mapData(MapId p_339679_) {
+                     return null;
+-                }
+-
+-                @Override
+-                public boolean isPeaceful() {
+-                    return false;
                  }
              };
          }

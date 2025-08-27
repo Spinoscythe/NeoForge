@@ -1,0 +1,11 @@
+--- a/net/minecraft/commands/arguments/blocks/BlockStateParser.java
++++ b/net/minecraft/commands/arguments/blocks/BlockStateParser.java
+@@ -50,7 +_,7 @@
+         (p_304124_, p_304125_, p_304126_) -> Component.translatableEscape("argument.block.property.invalid", p_304124_, p_304126_, p_304125_)
+     );
+     public static final Dynamic2CommandExceptionType ERROR_EXPECTED_VALUE = new Dynamic2CommandExceptionType(
+-        (p_304127_, p_304128_) -> Component.translatableEscape("argument.block.property.novalue", p_304128_, p_304127_)
++        (p_304127_, p_304128_) -> Component.translatableEscape("argument.block.property.novalue", p_304127_, p_304128_)
+     );
+     public static final SimpleCommandExceptionType ERROR_EXPECTED_END_OF_PROPERTIES = new SimpleCommandExceptionType(
+         Component.translatable("argument.block.property.unclosed")

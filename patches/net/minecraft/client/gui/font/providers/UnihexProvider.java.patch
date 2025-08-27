@@ -1,0 +1,105 @@
+--- a/net/minecraft/client/gui/font/providers/UnihexProvider.java
++++ b/net/minecraft/client/gui/font/providers/UnihexProvider.java
+@@ -1,10 +_,9 @@
+ package net.minecraft.client.gui.font.providers;
+ 
+ import com.google.common.annotations.VisibleForTesting;
+-import com.mojang.blaze3d.font.GlyphBitmap;
+ import com.mojang.blaze3d.font.GlyphInfo;
+ import com.mojang.blaze3d.font.GlyphProvider;
+-import com.mojang.blaze3d.font.UnbakedGlyph;
++import com.mojang.blaze3d.font.SheetGlyphInfo;
+ import com.mojang.blaze3d.platform.NativeImage;
+ import com.mojang.blaze3d.systems.RenderSystem;
+ import com.mojang.blaze3d.textures.GpuTexture;
+@@ -22,6 +_,7 @@
+ import java.io.InputStream;
+ import java.nio.IntBuffer;
+ import java.util.List;
++import java.util.function.Function;
+ import java.util.zip.ZipEntry;
+ import java.util.zip.ZipInputStream;
+ import javax.annotation.Nullable;
+@@ -53,7 +_,7 @@
+ 
+     @Nullable
+     @Override
+-    public UnbakedGlyph getGlyph(int p_285239_) {
++    public GlyphInfo getGlyph(int p_285239_) {
+         return this.glyphs.get(p_285239_);
+     }
+ 
+@@ -303,36 +_,30 @@
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+-    record Glyph(UnihexProvider.LineData contents, int left, int right) implements UnbakedGlyph {
++    record Glyph(UnihexProvider.LineData contents, int left, int right) implements GlyphInfo {
+         public int width() {
+             return this.right - this.left + 1;
+         }
+ 
+         @Override
+-        public GlyphInfo info() {
+-            return new GlyphInfo() {
+-                @Override
+-                public float getAdvance() {
+-                    return Glyph.this.width() / 2 + 1;
+-                }
+-
+-                @Override
+-                public float getShadowOffset() {
+-                    return 0.5F;
+-                }
+-
+-                @Override
+-                public float getBoldOffset() {
+-                    return 0.5F;
+-                }
+-            };
+-        }
+-
+-        @Override
+-        public BakedGlyph bake(UnbakedGlyph.Stitcher p_439528_) {
+-            return p_439528_.stitch(
+-                this.info(),
+-                new GlyphBitmap() {
++        public float getAdvance() {
++            return this.width() / 2 + 1;
++        }
++
++        @Override
++        public float getShadowOffset() {
++            return 0.5F;
++        }
++
++        @Override
++        public float getBoldOffset() {
++            return 0.5F;
++        }
++
++        @Override
++        public BakedGlyph bake(Function<SheetGlyphInfo, BakedGlyph> p_285377_) {
++            return p_285377_.apply(
++                new SheetGlyphInfo() {
+                     @Override
+                     public float getOversample() {
+                         return 2.0F;
+@@ -349,15 +_,13 @@
+                     }
+ 
+                     @Override
+-                    public void upload(int p_439387_, int p_439034_, GpuTexture p_440500_) {
++                    public void upload(int p_285473_, int p_285510_, GpuTexture p_405137_) {
+                         IntBuffer intbuffer = MemoryUtil.memAllocInt(Glyph.this.width() * 16);
+                         UnihexProvider.unpackBitsToBytes(intbuffer, Glyph.this.contents, Glyph.this.left, Glyph.this.right);
+                         intbuffer.rewind();
+                         RenderSystem.getDevice()
+                             .createCommandEncoder()
+-                            .writeToTexture(
+-                                p_440500_, MemoryUtil.memByteBuffer(intbuffer), NativeImage.Format.RGBA, 0, 0, p_439387_, p_439034_, Glyph.this.width(), 16
+-                            );
++                            .writeToTexture(p_405137_, intbuffer, NativeImage.Format.RGBA, 0, 0, p_285473_, p_285510_, Glyph.this.width(), 16);
+                         MemoryUtil.memFree(intbuffer);
+                     }
+ 

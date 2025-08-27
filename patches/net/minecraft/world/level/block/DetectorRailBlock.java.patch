@@ -11,6 +11,24 @@
          this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, false).setValue(SHAPE, RailShape.NORTH_SOUTH).setValue(WATERLOGGED, false));
      }
  
+@@ -49,7 +_,7 @@
+ 
+     @Override
+     protected void entityInside(BlockState p_52458_, Level p_52459_, BlockPos p_52460_, Entity p_52461_, InsideBlockEffectApplier p_405668_) {
+-        if (!p_52459_.isClientSide()) {
++        if (!p_52459_.isClientSide) {
+             if (!p_52458_.getValue(POWERED)) {
+                 this.checkPressed(p_52459_, p_52460_, p_52458_);
+             }
+@@ -140,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_52454_, Level p_52455_, BlockPos p_52456_, Direction p_432924_) {
++    protected int getAnalogOutputSignal(BlockState p_52454_, Level p_52455_, BlockPos p_52456_) {
+         if (p_52454_.getValue(POWERED)) {
+             List<MinecartCommandBlock> list = this.getInteractingMinecartOfType(p_52455_, p_52456_, MinecartCommandBlock.class, p_153123_ -> true);
+             if (!list.isEmpty()) {
 @@ -185,6 +_,6 @@
  
      @Override

@@ -1,0 +1,135 @@
+--- a/net/minecraft/client/renderer/special/PlayerHeadSpecialRenderer.java
++++ b/net/minecraft/client/renderer/special/PlayerHeadSpecialRenderer.java
+@@ -2,13 +_,20 @@
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.serialization.MapCodec;
++import java.util.HashMap;
++import java.util.Map;
++import java.util.Objects;
+ import java.util.Set;
+ import javax.annotation.Nullable;
++import net.minecraft.client.Minecraft;
+ import net.minecraft.client.model.SkullModelBase;
+-import net.minecraft.client.renderer.PlayerSkinRenderCache;
++import net.minecraft.client.model.geom.EntityModelSet;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
++import net.minecraft.client.resources.DefaultPlayerSkin;
++import net.minecraft.client.resources.PlayerSkin;
++import net.minecraft.client.resources.SkinManager;
+ import net.minecraft.core.component.DataComponents;
+ import net.minecraft.world.item.ItemDisplayContext;
+ import net.minecraft.world.item.ItemStack;
+@@ -19,26 +_,32 @@
+ import org.joml.Vector3f;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class PlayerHeadSpecialRenderer implements SpecialModelRenderer<PlayerSkinRenderCache.RenderInfo> {
+-    private final PlayerSkinRenderCache playerSkinRenderCache;
++public class PlayerHeadSpecialRenderer implements SpecialModelRenderer<PlayerHeadSpecialRenderer.PlayerHeadRenderInfo> {
++    private final Map<ResolvableProfile, PlayerHeadSpecialRenderer.PlayerHeadRenderInfo> updatedResolvableProfiles = new HashMap<>();
++    private final SkinManager skinManager;
+     private final SkullModelBase modelBase;
++    private final PlayerHeadSpecialRenderer.PlayerHeadRenderInfo defaultPlayerHeadRenderInfo;
+ 
+-    PlayerHeadSpecialRenderer(PlayerSkinRenderCache p_439689_, SkullModelBase p_428324_) {
+-        this.playerSkinRenderCache = p_439689_;
++    PlayerHeadSpecialRenderer(SkinManager p_428227_, SkullModelBase p_428324_, PlayerHeadSpecialRenderer.PlayerHeadRenderInfo p_428497_) {
++        this.skinManager = p_428227_;
+         this.modelBase = p_428324_;
++        this.defaultPlayerHeadRenderInfo = p_428497_;
+     }
+ 
+-    public void submit(
+-        @Nullable PlayerSkinRenderCache.RenderInfo p_440518_,
+-        ItemDisplayContext p_439045_,
+-        PoseStack p_439384_,
+-        SubmitNodeCollector p_440076_,
+-        int p_439441_,
+-        int p_440187_,
+-        boolean p_439657_
++    public void render(
++        @Nullable PlayerHeadSpecialRenderer.PlayerHeadRenderInfo p_428304_,
++        ItemDisplayContext p_428430_,
++        PoseStack p_428478_,
++        MultiBufferSource p_428438_,
++        int p_428449_,
++        int p_428317_,
++        boolean p_428229_
+     ) {
+-        RenderType rendertype = p_440518_ != null ? p_440518_.renderType() : PlayerSkinRenderCache.DEFAULT_PLAYER_SKIN_RENDER_TYPE;
+-        SkullBlockRenderer.submitSkull(null, 180.0F, 0.0F, p_439384_, p_440076_, p_439441_, this.modelBase, rendertype, 0);
++        PlayerHeadSpecialRenderer.PlayerHeadRenderInfo playerheadspecialrenderer$playerheadrenderinfo = Objects.requireNonNullElse(
++            p_428304_, this.defaultPlayerHeadRenderInfo
++        );
++        RenderType rendertype = playerheadspecialrenderer$playerheadrenderinfo.renderType();
++        SkullBlockRenderer.renderSkull(null, 180.0F, 0.0F, p_428478_, p_428438_, p_428449_, this.modelBase, rendertype);
+     }
+ 
+     @Override
+@@ -50,9 +_,41 @@
+     }
+ 
+     @Nullable
+-    public PlayerSkinRenderCache.RenderInfo extractArgument(ItemStack p_428504_) {
++    public PlayerHeadSpecialRenderer.PlayerHeadRenderInfo extractArgument(ItemStack p_428504_) {
+         ResolvableProfile resolvableprofile = p_428504_.get(DataComponents.PROFILE);
+-        return resolvableprofile == null ? null : this.playerSkinRenderCache.getOrDefault(resolvableprofile);
++        if (resolvableprofile == null) {
++            return null;
++        } else {
++            PlayerHeadSpecialRenderer.PlayerHeadRenderInfo playerheadspecialrenderer$playerheadrenderinfo = this.updatedResolvableProfiles
++                .get(resolvableprofile);
++            if (playerheadspecialrenderer$playerheadrenderinfo != null) {
++                return playerheadspecialrenderer$playerheadrenderinfo;
++            } else {
++                ResolvableProfile resolvableprofile1 = resolvableprofile.pollResolve();
++                return resolvableprofile1 != null ? this.createAndCacheIfTextureIsUnpacked(resolvableprofile1) : null;
++            }
++        }
++    }
++
++    @Nullable
++    private PlayerHeadSpecialRenderer.PlayerHeadRenderInfo createAndCacheIfTextureIsUnpacked(ResolvableProfile p_428356_) {
++        PlayerSkin playerskin = this.skinManager.getInsecureSkin(p_428356_.gameProfile(), null);
++        if (playerskin != null) {
++            PlayerHeadSpecialRenderer.PlayerHeadRenderInfo playerheadspecialrenderer$playerheadrenderinfo = PlayerHeadSpecialRenderer.PlayerHeadRenderInfo.create(
++                playerskin
++            );
++            this.updatedResolvableProfiles.put(p_428356_, playerheadspecialrenderer$playerheadrenderinfo);
++            return playerheadspecialrenderer$playerheadrenderinfo;
++        } else {
++            return null;
++        }
++    }
++
++    @OnlyIn(Dist.CLIENT)
++    public record PlayerHeadRenderInfo(RenderType renderType) {
++        static PlayerHeadSpecialRenderer.PlayerHeadRenderInfo create(PlayerSkin p_428337_) {
++            return new PlayerHeadSpecialRenderer.PlayerHeadRenderInfo(SkullBlockRenderer.getPlayerSkinRenderType(p_428337_.texture()));
++        }
+     }
+ 
+     @OnlyIn(Dist.CLIENT)
+@@ -66,9 +_,15 @@
+ 
+         @Nullable
+         @Override
+-        public SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext p_433416_) {
+-            SkullModelBase skullmodelbase = SkullBlockRenderer.createModel(p_433416_.entityModelSet(), SkullBlock.Types.PLAYER);
+-            return skullmodelbase == null ? null : new PlayerHeadSpecialRenderer(p_433416_.playerSkinRenderCache(), skullmodelbase);
++        public SpecialModelRenderer<?> bake(EntityModelSet p_428374_) {
++            SkullModelBase skullmodelbase = SkullBlockRenderer.createModel(p_428374_, SkullBlock.Types.PLAYER);
++            return skullmodelbase == null
++                ? null
++                : new PlayerHeadSpecialRenderer(
++                    Minecraft.getInstance().getSkinManager(),
++                    skullmodelbase,
++                    PlayerHeadSpecialRenderer.PlayerHeadRenderInfo.create(DefaultPlayerSkin.getDefaultSkin())
++                );
+         }
+     }
+ }

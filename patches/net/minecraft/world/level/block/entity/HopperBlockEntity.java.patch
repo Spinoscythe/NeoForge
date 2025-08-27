@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+@@ -103,7 +_,7 @@
+     }
+ 
+     private static boolean tryMoveItems(Level p_155579_, BlockPos p_155580_, BlockState p_155581_, HopperBlockEntity p_155582_, BooleanSupplier p_155583_) {
+-        if (p_155579_.isClientSide()) {
++        if (p_155579_.isClientSide) {
+             return false;
+         } else {
+             if (!p_155582_.isOnCooldown() && p_155581_.getValue(HopperBlock.ENABLED)) {
 @@ -138,10 +_,11 @@
      }
  

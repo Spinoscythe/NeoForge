@@ -1,7 +1,11 @@
 --- a/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
 +++ b/net/minecraft/world/entity/projectile/AbstractHurtingProjectile.java
-@@ -73,7 +_,8 @@
-         if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
+@@ -70,10 +_,11 @@
+     public void tick() {
+         Entity entity = this.getOwner();
+         this.applyInertia();
+-        if (this.level().isClientSide() || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
++        if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
              HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity, this.getClipType());
              Vec3 vec3;
 -            if (hitresult.getType() != HitResult.Type.MISS) {
@@ -19,3 +23,14 @@
                  this.hitTargetOrDeflectSelf(hitresult);
              }
  
+@@ -174,8 +_,8 @@
+     }
+ 
+     @Override
+-    protected void onDeflection(boolean p_341895_) {
+-        super.onDeflection(p_341895_);
++    protected void onDeflection(@Nullable Entity p_341940_, boolean p_341895_) {
++        super.onDeflection(p_341940_, p_341895_);
+         if (p_341895_) {
+             this.accelerationPower = 0.1;
+         } else {

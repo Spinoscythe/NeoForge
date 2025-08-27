@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/model/AllayModel.java
++++ b/net/minecraft/client/model/AllayModel.java
+@@ -17,7 +_,7 @@
+ import net.neoforged.api.distmarker.OnlyIn;
+ 
+ @OnlyIn(Dist.CLIENT)
+-public class AllayModel extends EntityModel<AllayRenderState> implements ArmedModel<AllayRenderState> {
++public class AllayModel extends EntityModel<AllayRenderState> implements ArmedModel {
+     private final ModelPart head = this.root.getChild("head");
+     private final ModelPart body = this.root.getChild("body");
+     private final ModelPart right_arm = this.body.getChild("right_arm");
+@@ -115,7 +_,8 @@
+         this.left_arm.yRot = -0.27925268F * f7;
+     }
+ 
+-    public void translateToHand(AllayRenderState p_434608_, HumanoidArm p_233322_, PoseStack p_233323_) {
++    @Override
++    public void translateToHand(HumanoidArm p_233322_, PoseStack p_233323_) {
+         float f = 1.0F;
+         float f1 = 3.0F;
+         this.root.translateAndRotate(p_233323_);

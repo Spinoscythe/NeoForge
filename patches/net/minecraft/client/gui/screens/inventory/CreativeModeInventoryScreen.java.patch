@@ -107,7 +107,7 @@
                  }
  
                  this.menu.items.addAll(searchtree.search(s.toLowerCase(Locale.ROOT)));
-@@ -475,7 +_,7 @@
+@@ -475,17 +_,17 @@
      @Override
      protected void renderLabels(GuiGraphics p_283168_, int p_281774_, int p_281466_) {
          if (selectedTab.showTitle()) {
@@ -116,7 +116,10 @@
          }
      }
  
-@@ -485,7 +_,7 @@
+     @Override
+-    public boolean mouseClicked(double p_98531_, double p_98532_, int p_98533_, boolean p_433638_) {
++    public boolean mouseClicked(double p_98531_, double p_98532_, int p_98533_) {
+         if (p_98533_ == 0) {
              double d0 = p_98531_ - this.leftPos;
              double d1 = p_98532_ - this.topPos;
  
@@ -125,6 +128,15 @@
                  if (this.checkTabClicked(creativemodetab, d0, d1)) {
                      return true;
                  }
+@@ -497,7 +_,7 @@
+             }
+         }
+ 
+-        return super.mouseClicked(p_98531_, p_98532_, p_98533_, p_433638_);
++        return super.mouseClicked(p_98531_, p_98532_, p_98533_);
+     }
+ 
+     @Override
 @@ -507,7 +_,7 @@
              double d1 = p_98623_ - this.topPos;
              this.scrolling = false;

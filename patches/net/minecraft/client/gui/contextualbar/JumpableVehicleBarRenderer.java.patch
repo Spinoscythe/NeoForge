@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/contextualbar/JumpableVehicleBarRenderer.java
++++ b/net/minecraft/client/gui/contextualbar/JumpableVehicleBarRenderer.java
+@@ -20,7 +_,7 @@
+ 
+     public JumpableVehicleBarRenderer(Minecraft p_415664_) {
+         this.minecraft = p_415664_;
+-        this.playerJumpableVehicle = Objects.requireNonNull(Objects.requireNonNull(p_415664_.player).jumpableVehicle());
++        this.playerJumpableVehicle = Objects.requireNonNull(p_415664_.player).jumpableVehicle();
+     }
+ 
+     @Override

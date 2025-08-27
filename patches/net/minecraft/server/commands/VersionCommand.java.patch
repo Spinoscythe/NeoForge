@@ -1,0 +1,13 @@
+--- a/net/minecraft/server/commands/VersionCommand.java
++++ b/net/minecraft/server/commands/VersionCommand.java
+@@ -34,8 +_,8 @@
+             Component.translatable("commands.version.protocol", worldversion.protocolVersion(), "0x" + Integer.toHexString(worldversion.protocolVersion()))
+         );
+         p_416474_.accept(Component.translatable("commands.version.build_time", Component.translationArg(worldversion.buildTime())));
+-        p_416474_.accept(Component.translatable("commands.version.pack.resource", worldversion.packVersion(PackType.CLIENT_RESOURCES).toString()));
+-        p_416474_.accept(Component.translatable("commands.version.pack.data", worldversion.packVersion(PackType.SERVER_DATA).toString()));
++        p_416474_.accept(Component.translatable("commands.version.pack.resource", worldversion.packVersion(PackType.CLIENT_RESOURCES)));
++        p_416474_.accept(Component.translatable("commands.version.pack.data", worldversion.packVersion(PackType.SERVER_DATA)));
+         p_416474_.accept(worldversion.stable() ? STABLE : UNSTABLE);
+     }
+ }

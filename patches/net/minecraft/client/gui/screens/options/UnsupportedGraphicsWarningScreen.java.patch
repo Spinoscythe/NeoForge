@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/screens/options/UnsupportedGraphicsWarningScreen.java
++++ b/net/minecraft/client/gui/screens/options/UnsupportedGraphicsWarningScreen.java
+@@ -66,7 +_,7 @@
+     public void render(GuiGraphics p_345032_, int p_345965_, int p_345120_, float p_346047_) {
+         super.render(p_345032_, p_345965_, p_345120_, p_346047_);
+         p_345032_.drawCenteredString(this.font, this.title, this.width / 2, this.contentTop - 9 * 2, -1);
+-        this.messageLines.render(p_345032_, MultiLineLabel.Align.CENTER, this.width / 2, this.contentTop, 9, true, -1);
++        this.messageLines.renderCentered(p_345032_, this.width / 2, this.contentTop);
+     }
+ 
+     @Override

@@ -1,14 +1,71 @@
 --- a/net/minecraft/client/multiplayer/ClientPacketListener.java
 +++ b/net/minecraft/client/multiplayer/ClientPacketListener.java
-@@ -425,6 +_,7 @@
+@@ -41,12 +_,11 @@
+ import net.minecraft.client.gui.components.ChatComponent;
+ import net.minecraft.client.gui.components.toasts.RecipeToast;
+ import net.minecraft.client.gui.components.toasts.SystemToast;
+-import net.minecraft.client.gui.screens.ChatScreen;
+ import net.minecraft.client.gui.screens.ConfirmScreen;
+ import net.minecraft.client.gui.screens.DeathScreen;
+ import net.minecraft.client.gui.screens.DemoIntroScreen;
+-import net.minecraft.client.gui.screens.LevelLoadingScreen;
+ import net.minecraft.client.gui.screens.MenuScreens;
++import net.minecraft.client.gui.screens.ReceivingLevelScreen;
+ import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.client.gui.screens.WinScreen;
+ import net.minecraft.client.gui.screens.achievement.StatsScreen;
+@@ -84,10 +_,10 @@
+ import net.minecraft.core.component.DataComponents;
+ import net.minecraft.core.component.TypedDataComponent;
+ import net.minecraft.core.particles.ParticleTypes;
++import net.minecraft.nbt.Tag;
+ import net.minecraft.network.Connection;
+ import net.minecraft.network.HashedPatchMap;
+ import net.minecraft.network.TickablePacketListener;
+-import net.minecraft.network.chat.CommonComponents;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.network.chat.LastSeenMessagesTracker;
+ import net.minecraft.network.chat.LocalChatSession;
+@@ -103,6 +_,7 @@
+ import net.minecraft.network.protocol.PacketUtils;
+ import net.minecraft.network.protocol.common.ClientboundUpdateTagsPacket;
+ import net.minecraft.network.protocol.common.ServerboundClientInformationPacket;
++import net.minecraft.network.protocol.common.ServerboundCustomClickActionPacket;
+ import net.minecraft.network.protocol.common.custom.BeeDebugPayload;
+ import net.minecraft.network.protocol.common.custom.BrainDebugPayload;
+ import net.minecraft.network.protocol.common.custom.BreezeDebugPayload;
+@@ -263,6 +_,8 @@
+ import net.minecraft.resources.RegistryOps;
+ import net.minecraft.resources.ResourceKey;
+ import net.minecraft.resources.ResourceLocation;
++import net.minecraft.server.ServerLinks;
++import net.minecraft.server.dialog.Dialog;
+ import net.minecraft.server.level.ClientInformation;
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.sounds.SoundSource;
+@@ -355,8 +_,6 @@
+     private static final Component RECONFIGURE_SCREEN_MESSAGE = Component.translatable("connect.reconfiguring");
+     private static final Component BAD_CHAT_INDEX = Component.translatable("multiplayer.disconnect.bad_chat_index");
+     private static final Component COMMAND_SEND_CONFIRM_TITLE = Component.translatable("multiplayer.confirm_command.title");
+-    private static final Component BUTTON_RUN_COMMAND = Component.translatable("multiplayer.confirm_command.run_command");
+-    private static final Component BUTTON_SUGGEST_COMMAND = Component.translatable("multiplayer.confirm_command.suggest_command");
+     private static final int PENDING_OFFSET_THRESHOLD = 64;
+     public static final int TELEPORT_INTERPOLATION_THRESHOLD = 64;
+     private static final ClientboundCommandsPacket.NodeBuilder<ClientSuggestionProvider> COMMAND_NODE_BUILDER = new ClientboundCommandsPacket.NodeBuilder<ClientSuggestionProvider>() {
+@@ -425,9 +_,11 @@
      private final ChunkBatchSizeCalculator chunkBatchSizeCalculator = new ChunkBatchSizeCalculator();
      private final PingDebugMonitor pingDebugMonitor;
      private final DebugSampleSubscriber debugSampleSubscriber;
 +    private net.neoforged.neoforge.network.connection.ConnectionType connectionType;
      @Nullable
-     private LevelLoadStatusManager levelLoadStatusManager;
+-    private LevelLoadTracker levelLoadTracker;
++    private LevelLoadStatusManager levelLoadStatusManager;
      private boolean serverEnforcesSecureChat;
-@@ -453,7 +_,8 @@
++    private boolean seenInsecureChatWarning = false;
+     private volatile boolean closed;
+     private final Scoreboard scoreboard = new Scoreboard();
+     private final ClientWaypointManager waypointManager = new ClientWaypointManager();
+@@ -452,9 +_,9 @@
              p_253924_.gui.getChat().restoreState(p_295121_.chatState());
          }
  
@@ -16,8 +73,28 @@
 +        this.connectionType = p_295121_.connectionType();
 +        this.potionBrewing = PotionBrewing.bootstrap(this.enabledFeatures, this.registryAccess);
          this.fuelValues = FuelValues.vanillaBurnTimes(p_295121_.receivedRegistries(), this.enabledFeatures);
+-        this.levelLoadTracker = p_295121_.levelLoadTracker();
      }
  
+     public ClientSuggestionProvider getSuggestionsProvider() {
+@@ -470,7 +_,7 @@
+     public void clearLevel() {
+         this.clearCacheSlots();
+         this.level = null;
+-        this.levelLoadTracker = null;
++        this.levelLoadStatusManager = null;
+     }
+ 
+     private void clearCacheSlots() {
+@@ -517,7 +_,7 @@
+             commonplayerspawninfo.seed(),
+             i
+         );
+-        this.minecraft.setLevel(this.level);
++        this.minecraft.setLevel(this.level, ReceivingLevelScreen.Reason.OTHER);
+         if (this.minecraft.player == null) {
+             this.minecraft.player = this.minecraft.gameMode.createPlayer(this.level, new StatsCounter(), new ClientRecipeBook());
+             this.minecraft.player.setYRot(-180.0F);
 @@ -528,12 +_,13 @@
  
          this.minecraft.debugRenderer.clear();
@@ -27,32 +104,142 @@
          this.level.addEntity(this.minecraft.player);
          this.minecraft.player.input = new KeyboardInput(this.minecraft.options);
          this.minecraft.gameMode.adjustPlayer(this.minecraft.player);
-         this.minecraft.cameraEntity = this.minecraft.player;
--        this.startWaitingForNewLevel(this.minecraft.player, this.level, ReceivingLevelScreen.Reason.OTHER);
+-        this.minecraft.setCameraEntity(this.minecraft.player);
+-        this.startWaitingForNewLevel(this.minecraft.player, this.level, LevelLoadingScreen.Reason.OTHER);
++        this.minecraft.cameraEntity = this.minecraft.player;
 +        this.startWaitingForNewLevel(this.minecraft.player, this.level, ReceivingLevelScreen.Reason.OTHER, null, null);
          this.minecraft.player.setReducedDebugInfo(p_105030_.reducedDebugInfo());
          this.minecraft.player.setShowDeathScreen(p_105030_.showDeathScreen());
          this.minecraft.player.setDoLimitedCrafting(p_105030_.doLimitedCrafting());
-@@ -961,7 +_,8 @@
-                         this.serverCookies,
+@@ -577,14 +_,6 @@
+         } else {
+             LOGGER.warn("Skipping Entity with id {}", p_104958_.getType());
+         }
+-
+-        if (entity instanceof Player player) {
+-            UUID uuid = player.getUUID();
+-            PlayerInfo playerinfo = this.playerInfoMap.get(uuid);
+-            if (playerinfo != null) {
+-                this.seenPlayers.put(uuid, playerinfo);
+-            }
+-        }
+     }
+ 
+     @Nullable
+@@ -624,7 +_,7 @@
+         PacketUtils.ensureRunningOnSameThread(p_105092_, this, this.minecraft);
+         Entity entity = this.level.getEntity(p_105092_.getId());
+         if (entity != null) {
+-            entity.lerpMotion(p_105092_.getMovement());
++            entity.lerpMotion(p_105092_.getXa(), p_105092_.getYa(), p_105092_.getZa());
+         }
+     }
+ 
+@@ -746,10 +_,10 @@
+                     if (p_105036_.hasRotation()) {
+                         entity.moveOrInterpolateTo(vec3, p_105036_.getYRot(), p_105036_.getXRot());
+                     } else {
+-                        entity.moveOrInterpolateTo(vec3);
++                        entity.moveOrInterpolateTo(vec3, entity.getYRot(), entity.getXRot());
+                     }
+                 } else if (p_105036_.hasRotation()) {
+-                    entity.moveOrInterpolateTo(p_105036_.getYRot(), p_105036_.getXRot());
++                    entity.moveOrInterpolateTo(entity.position(), p_105036_.getYRot(), p_105036_.getXRot());
+                 }
+ 
+                 entity.setOnGround(p_105036_.isOnGround());
+@@ -829,13 +_,8 @@
+     public void handleRotatePlayer(ClientboundPlayerRotationPacket p_379872_) {
+         PacketUtils.ensureRunningOnSameThread(p_379872_, this, this.minecraft);
+         Player player = this.minecraft.player;
+-        Set<Relative> set = Relative.union(Relative.DELTA, Relative.rotation(p_379872_.relativeY(), p_379872_.relativeX()));
+-        PositionMoveRotation positionmoverotation = PositionMoveRotation.of(player);
+-        PositionMoveRotation positionmoverotation1 = PositionMoveRotation.calculateAbsolute(
+-            positionmoverotation, positionmoverotation.withRotation(p_379872_.yRot(), p_379872_.xRot()), set
+-        );
+-        player.setYRot(positionmoverotation1.yRot());
+-        player.setXRot(positionmoverotation1.xRot());
++        player.setYRot(p_379872_.yRot());
++        player.setXRot(p_379872_.xRot());
+         player.setOldRot();
+         this.connection.send(new ServerboundMovePlayerPacket.Rot(player.getYRot(), player.getXRot(), false, false));
+     }
+@@ -953,7 +_,7 @@
+     @Override
+     public void handleConfigurationStart(ClientboundStartConfigurationPacket p_296485_) {
+         PacketUtils.ensureRunningOnSameThread(p_296485_, this, this.minecraft);
+-        this.minecraft.getChatListener().flushQueue();
++        this.minecraft.getChatListener().clearQueue();
+         this.sendChatAcknowledgement();
+         ChatComponent.State chatcomponent$state = this.minecraft.gui.getChat().storeState();
+         this.minecraft.clearClientLevel(new ServerReconfigScreen(RECONFIGURE_SCREEN_MESSAGE, this.connection));
+@@ -964,7 +_,6 @@
+                     this.minecraft,
+                     this.connection,
+                     new CommonListenerCookie(
+-                        new LevelLoadTracker(),
+                         this.localGameProfile,
+                         this.telemetryManager,
+                         this.registryAccess,
+@@ -976,8 +_,7 @@
                          chatcomponent$state,
                          this.customReportDetails,
--                        this.serverLinks()
-+                        this.serverLinks(),
+                         this.serverLinks(),
+-                        this.seenPlayers,
+-                        this.seenInsecureChatWarning
 +                        this.connectionType
                      )
                  )
              );
-@@ -1283,7 +_,7 @@
+@@ -1162,7 +_,7 @@
+             for (int i : p_105102_.getPassengers()) {
+                 Entity entity1 = this.level.getEntity(i);
+                 if (entity1 != null) {
+-                    entity1.startRiding(entity, true, false);
++                    entity1.startRiding(entity, true);
+                     if (entity1 == this.minecraft.player) {
+                         this.removedPlayerVehicleId = OptionalInt.empty();
+                         if (!flag) {
+@@ -1259,7 +_,7 @@
+         LocalPlayer localplayer = this.minecraft.player;
+         ResourceKey<Level> resourcekey1 = localplayer.level().dimension();
+         boolean flag = resourcekey != resourcekey1;
+-        LevelLoadingScreen.Reason levelloadingscreen$reason = this.determineLevelLoadingReason(localplayer.isDeadOrDying(), resourcekey, resourcekey1);
++        ReceivingLevelScreen.Reason receivinglevelscreen$reason = this.determineLevelLoadingReason(localplayer.isDeadOrDying(), resourcekey, resourcekey1);
+         if (flag) {
+             Map<MapId, MapItemSavedData> map = this.level.getAllMapData();
+             boolean flag1 = commonplayerspawninfo.isDebug();
+@@ -1282,10 +_,10 @@
+                 i
+             );
+             this.level.addMapData(map);
+-            this.minecraft.setLevel(this.level);
++            this.minecraft.setLevel(this.level, receivinglevelscreen$reason);
+         }
+ 
+-        this.minecraft.setCameraEntity(null);
++        this.minecraft.cameraEntity = null;
+         if (localplayer.hasContainerOpen()) {
+             localplayer.closeContainer();
+         }
+@@ -1299,14 +_,14 @@
              localplayer1 = this.minecraft.gameMode.createPlayer(this.level, localplayer.getStats(), localplayer.getRecipeBook());
          }
  
--        this.startWaitingForNewLevel(localplayer1, this.level, receivinglevelscreen$reason);
+-        this.startWaitingForNewLevel(localplayer1, this.level, levelloadingscreen$reason);
 +        this.startWaitingForNewLevel(localplayer1, this.level, receivinglevelscreen$reason, localplayer.isDeadOrDying() ? null : resourcekey, localplayer.isDeadOrDying() ? null : resourcekey1);
          localplayer1.setId(localplayer.getId());
          this.minecraft.player = localplayer1;
          if (flag) {
-@@ -1311,6 +_,7 @@
+             this.minecraft.getMusicManager().stopPlaying();
+         }
+ 
+-        this.minecraft.setCameraEntity(localplayer1);
++        this.minecraft.cameraEntity = localplayer1;
+         if (p_105066_.shouldKeep((byte)2)) {
+             List<SynchedEntityData.DataValue<?>> list = localplayer.getEntityData().getNonDefaultValues();
+             if (list != null) {
+@@ -1327,6 +_,7 @@
              localplayer1.getAttributes().assignBaseValues(localplayer.getAttributes());
          }
  
@@ -60,7 +247,38 @@
          this.level.addEntity(localplayer1);
          localplayer1.input = new KeyboardInput(this.minecraft.options);
          this.minecraft.gameMode.adjustPlayer(localplayer1);
-@@ -1460,7 +_,7 @@
+@@ -1343,17 +_,17 @@
+         this.minecraft.gameMode.setLocalMode(commonplayerspawninfo.gameType(), commonplayerspawninfo.previousGameType());
+     }
+ 
+-    private LevelLoadingScreen.Reason determineLevelLoadingReason(boolean p_341642_, ResourceKey<Level> p_341617_, ResourceKey<Level> p_341637_) {
+-        LevelLoadingScreen.Reason levelloadingscreen$reason = LevelLoadingScreen.Reason.OTHER;
++    private ReceivingLevelScreen.Reason determineLevelLoadingReason(boolean p_341642_, ResourceKey<Level> p_341617_, ResourceKey<Level> p_341637_) {
++        ReceivingLevelScreen.Reason receivinglevelscreen$reason = ReceivingLevelScreen.Reason.OTHER;
+         if (!p_341642_) {
+             if (p_341617_ == Level.NETHER || p_341637_ == Level.NETHER) {
+-                levelloadingscreen$reason = LevelLoadingScreen.Reason.NETHER_PORTAL;
++                receivinglevelscreen$reason = ReceivingLevelScreen.Reason.NETHER_PORTAL;
+             } else if (p_341617_ == Level.END || p_341637_ == Level.END) {
+-                levelloadingscreen$reason = LevelLoadingScreen.Reason.END_PORTAL;
++                receivinglevelscreen$reason = ReceivingLevelScreen.Reason.END_PORTAL;
+             }
+         }
+ 
+-        return levelloadingscreen$reason;
++        return receivinglevelscreen$reason;
+     }
+ 
+     @Override
+@@ -1373,7 +_,6 @@
+                 false
+             );
+         this.minecraft.level.addParticle(p_105012_.explosionParticle(), vec3.x(), vec3.y(), vec3.z(), 1.0, 0.0, 0.0);
+-        this.minecraft.level.trackExplosionEffects(vec3, p_105012_.radius(), p_105012_.blockCount(), p_105012_.blockParticles());
+         p_105012_.playerKnockback().ifPresent(this.minecraft.player::addDeltaMovement);
+     }
+ 
+@@ -1477,7 +_,7 @@
              ProblemReporter.ScopedCollector problemreporter$scopedcollector = new ProblemReporter.ScopedCollector(p_421289_.problemPath(), LOGGER);
  
              try {
@@ -69,24 +287,45 @@
              } catch (Throwable throwable1) {
                  try {
                      problemreporter$scopedcollector.close();
-@@ -1582,9 +_,15 @@
-         }
-     }
- 
+@@ -1594,23 +_,20 @@
+             this.minecraft.player.setShowDeathScreen(f == 0.0F);
+         } else if (clientboundgameeventpacket$type == ClientboundGameEventPacket.LIMITED_CRAFTING) {
+             this.minecraft.player.setDoLimitedCrafting(f == 1.0F);
+-        } else if (clientboundgameeventpacket$type == ClientboundGameEventPacket.LEVEL_CHUNKS_LOAD_START && this.levelLoadTracker != null) {
+-            this.levelLoadTracker.loadingPacketsReceived();
+-        }
+-    }
+-
+-    private void startWaitingForNewLevel(LocalPlayer p_304688_, ClientLevel p_304528_, LevelLoadingScreen.Reason p_433545_) {
+-        if (this.levelLoadTracker == null) {
+-            this.levelLoadTracker = new LevelLoadTracker();
+-        }
+-
+-        this.levelLoadTracker.startClientLoad(p_304688_, p_304528_, this.minecraft.levelRenderer);
+-        if (this.minecraft.screen instanceof LevelLoadingScreen levelloadingscreen) {
+-            levelloadingscreen.update(this.levelLoadTracker, p_433545_);
+-        } else {
+-            this.minecraft.gui.getChat().preserveCurrentChatScreen();
+-            this.minecraft.setScreenAndShow(new LevelLoadingScreen(this.levelLoadTracker, p_433545_));
+-        }
++        } else if (clientboundgameeventpacket$type == ClientboundGameEventPacket.LEVEL_CHUNKS_LOAD_START && this.levelLoadStatusManager != null) {
++            this.levelLoadStatusManager.loadingPacketsReceived();
++        }
++    }
++
 +    /** @deprecated Neo: use {@link #startWaitingForNewLevel(LocalPlayer, ClientLevel, ReceivingLevelScreen.Reason, ResourceKey, ResourceKey)} instead. */
 +    @Deprecated
-     private void startWaitingForNewLevel(LocalPlayer p_304688_, ClientLevel p_304528_, ReceivingLevelScreen.Reason p_341690_) {
++    private void startWaitingForNewLevel(LocalPlayer p_304688_, ClientLevel p_304528_, ReceivingLevelScreen.Reason p_341690_) {
 +        this.startWaitingForNewLevel(p_304688_, p_304528_, p_341690_, null, null);
 +    }
 +
 +    private void startWaitingForNewLevel(LocalPlayer p_304688_, ClientLevel p_304528_, ReceivingLevelScreen.Reason p_341690_, @Nullable ResourceKey<Level> toDimension, @Nullable ResourceKey<Level> fromDimension) {
-         this.levelLoadStatusManager = new LevelLoadStatusManager(p_304688_, p_304528_, this.minecraft.levelRenderer);
--        this.minecraft.setScreen(new ReceivingLevelScreen(this.levelLoadStatusManager::levelReady, p_341690_));
++        this.levelLoadStatusManager = new LevelLoadStatusManager(p_304688_, p_304528_, this.minecraft.levelRenderer);
 +        this.minecraft.setScreen(net.neoforged.neoforge.client.DimensionTransitionScreenManager.getScreen(toDimension, fromDimension).create(this.levelLoadStatusManager::levelReady, p_341690_));
      }
  
      @Override
-@@ -1632,7 +_,9 @@
+@@ -1658,7 +_,9 @@
      @Override
      public void handleCommands(ClientboundCommandsPacket p_104990_) {
          PacketUtils.ensureRunningOnSameThread(p_104990_, this, this.minecraft);
@@ -97,7 +336,7 @@
      }
  
      @Override
-@@ -1651,6 +_,8 @@
+@@ -1677,6 +_,8 @@
      public void handleUpdateRecipes(ClientboundUpdateRecipesPacket p_105132_) {
          PacketUtils.ensureRunningOnSameThread(p_105132_, this, this.minecraft);
          this.recipes = new ClientRecipeContainer(p_105132_.itemSets(), p_105132_.stonecutterRecipes());
@@ -106,7 +345,7 @@
      }
  
      @Override
-@@ -1775,8 +_,11 @@
+@@ -1801,8 +_,11 @@
          });
          list.forEach(Registry.PendingTags::apply);
          this.fuelValues = FuelValues.vanillaBurnTimes(this.registryAccess, this.enabledFeatures);
@@ -120,7 +359,47 @@
      }
  
      @Override
-@@ -2631,6 +_,8 @@
+@@ -2028,7 +_,7 @@
+ 
+     private void initializeChatSession(ClientboundPlayerInfoUpdatePacket.Entry p_248806_, PlayerInfo p_251136_) {
+         GameProfile gameprofile = p_251136_.getProfile();
+-        SignatureValidator signaturevalidator = this.minecraft.services().profileKeySignatureValidator();
++        SignatureValidator signaturevalidator = this.minecraft.getProfileKeySignatureValidator();
+         if (signaturevalidator == null) {
+             LOGGER.warn("Ignoring chat session from {} due to missing Services public key", gameprofile.getName());
+             p_251136_.clearChatSession(this.enforcesSecureChat());
+@@ -2049,7 +_,7 @@
+     }
+ 
+     private boolean enforcesSecureChat() {
+-        return this.minecraft.services().canValidateProfileKeys() && this.serverEnforcesSecureChat;
++        return this.minecraft.canValidateProfileKeys() && this.serverEnforcesSecureChat;
+     }
+ 
+     @Override
+@@ -2611,21 +_,6 @@
+         return null;
+     }
+ 
+-    public Map<UUID, PlayerInfo> getSeenPlayers() {
+-        return this.seenPlayers;
+-    }
+-
+-    @Nullable
+-    public PlayerInfo getPlayerInfoIgnoreCase(String p_439465_) {
+-        for (PlayerInfo playerinfo : this.playerInfoMap.values()) {
+-            if (playerinfo.getProfile().getName().equalsIgnoreCase(p_439465_)) {
+-                return playerinfo;
+-            }
+-        }
+-
+-        return null;
+-    }
+-
+     public GameProfile getLocalGameProfile() {
+         return this.localGameProfile;
+     }
+@@ -2672,6 +_,8 @@
      }
  
      public void sendChat(String p_249888_) {
@@ -129,7 +408,7 @@
          Instant instant = Instant.now();
          long i = Crypt.SaltSupplier.getLong();
          LastSeenMessagesTracker.Update lastseenmessagestracker$update = this.lastSeenMessages.generateAndApplyUpdate();
-@@ -2640,6 +_,7 @@
+@@ -2681,6 +_,7 @@
      }
  
      public void sendCommand(String p_250092_) {
@@ -137,7 +416,7 @@
          SignableCommand<ClientSuggestionProvider> signablecommand = SignableCommand.of(this.commands.parse(p_250092_, this.suggestionsProvider));
          if (signablecommand.arguments().isEmpty()) {
              this.send(new ServerboundChatCommandPacket(p_250092_));
-@@ -2656,6 +_,8 @@
+@@ -2697,6 +_,8 @@
      }
  
      public void sendUnattendedCommand(String p_425988_, @Nullable Screen p_427225_) {
@@ -146,7 +425,130 @@
          switch (this.verifyCommand(p_425988_)) {
              case NO_ISSUES:
                  this.send(new ServerboundChatCommandPacket(p_425988_));
-@@ -2798,6 +_,10 @@
+@@ -2706,7 +_,7 @@
+                 this.openCommandSendConfirmationWindow(p_425988_, "multiplayer.confirm_command.parse_errors", p_427225_);
+                 break;
+             case SIGNATURE_REQUIRED:
+-                this.openSignedCommandSendConfirmationWindow(p_425988_, "multiplayer.confirm_command.signature_required", p_427225_);
++                LOGGER.error("Not allowed to run command with signed argument from click event: '{}'", p_425988_);
+                 break;
+             case PERMISSIONS_REQUIRED:
+                 this.openCommandSendConfirmationWindow(p_425988_, "multiplayer.confirm_command.permissions_required", p_427225_);
+@@ -2731,46 +_,19 @@
+         return !p_425800_.getReader().canRead() && p_425800_.getExceptions().isEmpty() && p_425800_.getContext().getLastChild().getCommand() != null;
+     }
+ 
+-    private void openSendConfirmationWindow(String p_437232_, String p_437279_, Component p_437192_, Runnable p_437237_) {
+-        Screen screen = this.minecraft.screen;
+-        this.minecraft
+-            .setScreen(
+-                new ConfirmScreen(
+-                    p_437167_ -> {
+-                        if (p_437167_) {
+-                            p_437237_.run();
+-                        } else {
+-                            this.minecraft.setScreen(screen);
+-                        }
+-                    },
+-                    COMMAND_SEND_CONFIRM_TITLE,
+-                    Component.translatable(p_437279_, Component.literal(p_437232_).withStyle(ChatFormatting.YELLOW)),
+-                    p_437192_,
+-                    screen != null ? CommonComponents.GUI_BACK : CommonComponents.GUI_CANCEL
+-                )
+-            );
+-    }
+-
+     private void openCommandSendConfirmationWindow(String p_426004_, String p_425994_, @Nullable Screen p_427498_) {
+-        this.openSendConfirmationWindow(p_426004_, p_425994_, BUTTON_RUN_COMMAND, () -> {
+-            this.send(new ServerboundChatCommandPacket(p_426004_));
+-            this.minecraft.setScreen(p_427498_);
+-        });
+-    }
++        Screen screen = this.minecraft.screen;
++        this.minecraft.setScreen(new ConfirmScreen(p_426902_ -> {
++            if (p_426902_) {
++                this.send(new ServerboundChatCommandPacket(p_426004_));
++            }
+ 
+-    private void openSignedCommandSendConfirmationWindow(String p_437304_, String p_437330_, @Nullable Screen p_437401_) {
+-        boolean flag = p_437401_ == null && this.minecraft.getChatStatus().isChatAllowed(this.minecraft.isLocalServer());
+-        this.openSendConfirmationWindow(p_437304_, p_437330_, flag ? BUTTON_SUGGEST_COMMAND : CommonComponents.GUI_COPY_TO_CLIPBOARD, () -> {
+-            if (flag) {
+-                this.minecraft.openChatScreen(ChatComponent.ChatMethod.COMMAND);
+-                if (this.minecraft.screen instanceof ChatScreen chatscreen) {
+-                    chatscreen.insertText(p_437304_, false);
+-                }
++            if (p_426902_) {
++                this.minecraft.setScreen(p_427498_);
+             } else {
+-                this.minecraft.keyboardHandler.setClipboard("/" + p_437304_);
+-                this.minecraft.setScreen(p_437401_);
++                this.minecraft.setScreen(screen);
+             }
+-        });
++        }, COMMAND_SEND_CONFIRM_TITLE, Component.translatable(p_425994_, Component.literal(p_426004_).withStyle(ChatFormatting.YELLOW))));
+     }
+ 
+     public void broadcastClientInformation(ClientInformation p_360411_) {
+@@ -2798,19 +_,12 @@
+ 
+         this.debugSampleSubscriber.tick();
+         this.telemetryManager.tick();
+-        if (this.levelLoadTracker != null) {
+-            this.levelLoadTracker.tickClientLoad();
+-            if (this.levelLoadTracker.isLevelReady()) {
+-                this.notifyPlayerLoaded();
+-                this.levelLoadTracker = null;
++        if (this.levelLoadStatusManager != null) {
++            this.levelLoadStatusManager.tick();
++            if (this.levelLoadStatusManager.levelReady() && !this.minecraft.player.hasClientLoaded()) {
++                this.connection.send(new ServerboundPlayerLoadedPacket());
++                this.minecraft.player.setClientLoaded(true);
+             }
+-        }
+-    }
+-
+-    private void notifyPlayerLoaded() {
+-        if (!this.minecraft.player.hasClientLoaded()) {
+-            this.connection.send(new ServerboundPlayerLoadedPacket());
+-            this.minecraft.player.setClientLoaded(true);
+         }
+     }
+ 
+@@ -2830,11 +_,31 @@
+ 
+     @Override
+     protected DialogConnectionAccess createDialogAccess() {
+-        return new ClientCommonPacketListenerImpl.CommonDialogAccess() {
++        return new DialogConnectionAccess() {
++            @Override
++            public void disconnect(Component p_427271_) {
++                ClientPacketListener.this.getConnection().disconnect(p_427271_);
++            }
++
+             @Override
+             public void runCommand(String p_427295_, @Nullable Screen p_427359_) {
+                 ClientPacketListener.this.sendUnattendedCommand(p_427295_, p_427359_);
+             }
++
++            @Override
++            public void openDialog(Holder<Dialog> p_427376_, @Nullable Screen p_428197_) {
++                ClientPacketListener.this.showDialog(p_427376_, this, p_428197_);
++            }
++
++            @Override
++            public void sendCustomAction(ResourceLocation p_427398_, Optional<Tag> p_427244_) {
++                ClientPacketListener.this.send(new ServerboundCustomClickActionPacket(p_427398_, p_427244_));
++            }
++
++            @Override
++            public ServerLinks serverLinks() {
++                return ClientPacketListener.this.serverLinks();
++            }
+         };
+     }
+ 
+@@ -2853,6 +_,10 @@
  
      public Scoreboard scoreboard() {
          return this.scoreboard;

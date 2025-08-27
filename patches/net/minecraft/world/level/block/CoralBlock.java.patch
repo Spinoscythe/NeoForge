@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/CoralBlock.java
 +++ b/net/minecraft/world/level/block/CoralBlock.java
+@@ -21,7 +_,7 @@
+ public class CoralBlock extends Block {
+     public static final MapCodec<Block> DEAD_CORAL_FIELD = BuiltInRegistries.BLOCK.byNameCodec().fieldOf("dead");
+     public static final MapCodec<CoralBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432657_ -> p_432657_.group(DEAD_CORAL_FIELD.forGetter(p_304453_ -> p_304453_.deadBlock), propertiesCodec()).apply(p_432657_, CoralBlock::new)
++        p_368416_ -> p_368416_.group(DEAD_CORAL_FIELD.forGetter(p_304453_ -> p_304453_.deadBlock), propertiesCodec()).apply(p_368416_, CoralBlock::new)
+     );
+     private final Block deadBlock;
+ 
 @@ -61,9 +_,10 @@
      }
  

@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/level/block/WitherRoseBlock.java
++++ b/net/minecraft/world/level/block/WitherRoseBlock.java
+@@ -26,7 +_,7 @@
+ 
+ public class WitherRoseBlock extends FlowerBlock {
+     public static final MapCodec<WitherRoseBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432703_ -> p_432703_.group(EFFECTS_FIELD.forGetter(FlowerBlock::getSuspiciousEffects), propertiesCodec()).apply(p_432703_, WitherRoseBlock::new)
++        p_368458_ -> p_368458_.group(EFFECTS_FIELD.forGetter(FlowerBlock::getSuspiciousEffects), propertiesCodec()).apply(p_368458_, WitherRoseBlock::new)
+     );
+ 
+     @Override

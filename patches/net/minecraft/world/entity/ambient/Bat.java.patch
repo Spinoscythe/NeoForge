@@ -1,0 +1,11 @@
+--- a/net/minecraft/world/entity/ambient/Bat.java
++++ b/net/minecraft/world/entity/ambient/Bat.java
+@@ -44,7 +_,7 @@
+ 
+     public Bat(EntityType<? extends Bat> p_27412_, Level p_27413_) {
+         super(p_27412_, p_27413_);
+-        if (!p_27413_.isClientSide()) {
++        if (!p_27413_.isClientSide) {
+             this.setResting(true);
+         }
+     }

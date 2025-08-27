@@ -1,0 +1,31 @@
+--- a/net/minecraft/world/level/block/ShulkerBoxBlock.java
++++ b/net/minecraft/world/level/block/ShulkerBoxBlock.java
+@@ -43,8 +_,8 @@
+ 
+ public class ShulkerBoxBlock extends BaseEntityBlock {
+     public static final MapCodec<ShulkerBoxBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432678_ -> p_432678_.group(DyeColor.CODEC.optionalFieldOf("color").forGetter(p_304373_ -> Optional.ofNullable(p_304373_.color)), propertiesCodec())
+-            .apply(p_432678_, (p_304374_, p_304375_) -> new ShulkerBoxBlock(p_304374_.orElse(null), p_304375_))
++        p_368435_ -> p_368435_.group(DyeColor.CODEC.optionalFieldOf("color").forGetter(p_304373_ -> Optional.ofNullable(p_304373_.color)), propertiesCodec())
++            .apply(p_368435_, (p_304374_, p_304375_) -> new ShulkerBoxBlock(p_304374_.orElse(null), p_304375_))
+     );
+     public static final Map<Direction, VoxelShape> SHAPES_OPEN_SUPPORT = Shapes.rotateAll(Block.boxZ(16.0, 0.0, 1.0));
+     public static final EnumProperty<Direction> FACING = DirectionalBlock.FACING;
+@@ -110,7 +_,7 @@
+     public BlockState playerWillDestroy(Level p_56212_, BlockPos p_56213_, BlockState p_56214_, Player p_56215_) {
+         BlockEntity blockentity = p_56212_.getBlockEntity(p_56213_);
+         if (blockentity instanceof ShulkerBoxBlockEntity shulkerboxblockentity) {
+-            if (!p_56212_.isClientSide() && p_56215_.preventsBlockDrops() && !shulkerboxblockentity.isEmpty()) {
++            if (!p_56212_.isClientSide && p_56215_.preventsBlockDrops() && !shulkerboxblockentity.isEmpty()) {
+                 ItemStack itemstack = getColoredItemStack(this.getColor());
+                 itemstack.applyComponents(blockentity.collectComponents());
+                 ItemEntity itementity = new ItemEntity(p_56212_, p_56213_.getX() + 0.5, p_56213_.getY() + 0.5, p_56213_.getZ() + 0.5, itemstack);
+@@ -168,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_56223_, Level p_56224_, BlockPos p_56225_, Direction p_434981_) {
++    protected int getAnalogOutputSignal(BlockState p_56223_, Level p_56224_, BlockPos p_56225_) {
+         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(p_56224_.getBlockEntity(p_56225_));
+     }
+ 

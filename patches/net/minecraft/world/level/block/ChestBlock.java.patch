@@ -1,6 +1,124 @@
 --- a/net/minecraft/world/level/block/ChestBlock.java
 +++ b/net/minecraft/world/level/block/ChestBlock.java
-@@ -332,7 +_,8 @@
+@@ -1,8 +_,6 @@
+ package net.minecraft.world.level.block;
+ 
+ import com.mojang.serialization.MapCodec;
+-import com.mojang.serialization.codecs.RecordCodecBuilder;
+-import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+ import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
+ import java.util.List;
+ import java.util.Map;
+@@ -12,11 +_,9 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.core.BlockPos;
+ import net.minecraft.core.Direction;
+-import net.minecraft.core.registries.BuiltInRegistries;
+ import net.minecraft.network.chat.Component;
+ import net.minecraft.resources.ResourceLocation;
+ import net.minecraft.server.level.ServerLevel;
+-import net.minecraft.sounds.SoundEvent;
+ import net.minecraft.stats.Stat;
+ import net.minecraft.stats.Stats;
+ import net.minecraft.util.RandomSource;
+@@ -59,22 +_,13 @@
+ import net.minecraft.world.phys.shapes.VoxelShape;
+ 
+ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements SimpleWaterloggedBlock {
+-    public static final MapCodec<ChestBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432652_ -> p_432652_.group(
+-                BuiltInRegistries.SOUND_EVENT.byNameCodec().fieldOf("open_sound").forGetter(ChestBlock::getOpenChestSound),
+-                BuiltInRegistries.SOUND_EVENT.byNameCodec().fieldOf("close_sound").forGetter(ChestBlock::getCloseChestSound),
+-                propertiesCodec()
+-            )
+-            .apply(p_432652_, (p_432649_, p_432650_, p_432651_) -> new ChestBlock(() -> BlockEntityType.CHEST, p_432649_, p_432650_, p_432651_))
+-    );
++    public static final MapCodec<ChestBlock> CODEC = simpleCodec(p_368411_ -> new ChestBlock(() -> BlockEntityType.CHEST, p_368411_));
+     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
+     public static final EnumProperty<ChestType> TYPE = BlockStateProperties.CHEST_TYPE;
+     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+     public static final int EVENT_SET_OPEN_COUNT = 1;
+     private static final VoxelShape SHAPE = Block.column(14.0, 0.0, 14.0);
+     private static final Map<Direction, VoxelShape> HALF_SHAPES = Shapes.rotateHorizontal(Block.boxZ(14.0, 0.0, 14.0, 0.0, 15.0));
+-    private final SoundEvent openSound;
+-    private final SoundEvent closeSound;
+     private static final DoubleBlockCombiner.Combiner<ChestBlockEntity, Optional<Container>> CHEST_COMBINER = new DoubleBlockCombiner.Combiner<ChestBlockEntity, Optional<Container>>() {
+         public Optional<Container> acceptDouble(ChestBlockEntity p_51591_, ChestBlockEntity p_51592_) {
+             return Optional.of(new CompoundContainer(p_51591_, p_51592_));
+@@ -129,12 +_,8 @@
+         return CODEC;
+     }
+ 
+-    public ChestBlock(
+-        Supplier<BlockEntityType<? extends ChestBlockEntity>> p_51491_, SoundEvent p_433615_, SoundEvent p_433364_, BlockBehaviour.Properties p_51490_
+-    ) {
++    public ChestBlock(Supplier<BlockEntityType<? extends ChestBlockEntity>> p_51491_, BlockBehaviour.Properties p_51490_) {
+         super(p_51490_, p_51491_);
+-        this.openSound = p_433615_;
+-        this.closeSound = p_433364_;
+         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(TYPE, ChestType.SINGLE).setValue(WATERLOGGED, false));
+     }
+ 
+@@ -162,7 +_,7 @@
+             p_374060_.scheduleTick(p_51559_, Fluids.WATER, Fluids.WATER.getTickDelay(p_374487_));
+         }
+ 
+-        if (this.chestCanConnectTo(p_51557_) && p_51556_.getAxis().isHorizontal()) {
++        if (p_51557_.is(this) && p_51556_.getAxis().isHorizontal()) {
+             ChestType chesttype = p_51557_.getValue(TYPE);
+             if (p_51555_.getValue(TYPE) == ChestType.SINGLE
+                 && chesttype != ChestType.SINGLE
+@@ -177,10 +_,6 @@
+         return super.updateShape(p_51555_, p_374487_, p_374060_, p_51559_, p_51556_, p_51560_, p_51557_, p_374212_);
+     }
+ 
+-    public boolean chestCanConnectTo(BlockState p_433544_) {
+-        return p_433544_.is(this);
+-    }
+-
+     @Override
+     protected VoxelShape getShape(BlockState p_51569_, BlockGetter p_51570_, BlockPos p_51571_, CollisionContext p_51572_) {
+         return switch ((ChestType)p_51569_.getValue(TYPE)) {
+@@ -194,11 +_,6 @@
+         return p_51585_.getValue(TYPE) == ChestType.LEFT ? direction.getClockWise() : direction.getCounterClockWise();
+     }
+ 
+-    public static BlockPos getConnectedBlockPos(BlockPos p_436025_, BlockState p_432843_) {
+-        Direction direction = getConnectedDirection(p_432843_);
+-        return p_436025_.relative(direction);
+-    }
+-
+     @Override
+     public BlockState getStateForPlacement(BlockPlaceContext p_51493_) {
+         ChestType chesttype = ChestType.SINGLE;
+@@ -233,7 +_,7 @@
+     @Nullable
+     private Direction candidatePartnerFacing(BlockPlaceContext p_51495_, Direction p_51496_) {
+         BlockState blockstate = p_51495_.getLevel().getBlockState(p_51495_.getClickedPos().relative(p_51496_));
+-        return this.chestCanConnectTo(blockstate) && blockstate.getValue(TYPE) == ChestType.SINGLE ? blockstate.getValue(FACING) : null;
++        return blockstate.is(this) && blockstate.getValue(TYPE) == ChestType.SINGLE ? blockstate.getValue(FACING) : null;
+     }
+ 
+     @Override
+@@ -314,7 +_,7 @@
+     @Nullable
+     @Override
+     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153055_, BlockState p_153056_, BlockEntityType<T> p_153057_) {
+-        return p_153055_.isClientSide() ? createTickerHelper(p_153057_, this.blockEntityType(), ChestBlockEntity::lidAnimateTick) : null;
++        return p_153055_.isClientSide ? createTickerHelper(p_153057_, this.blockEntityType(), ChestBlockEntity::lidAnimateTick) : null;
+     }
+ 
+     public static boolean isChestBlockedAt(LevelAccessor p_51509_, BlockPos p_51510_) {
+@@ -347,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected int getAnalogOutputSignal(BlockState p_51527_, Level p_51528_, BlockPos p_51529_, Direction p_434774_) {
++    protected int getAnalogOutputSignal(BlockState p_51527_, Level p_51528_, BlockPos p_51529_) {
+         return AbstractContainerMenu.getRedstoneSignalFromContainer(getContainer(this, p_51527_, p_51528_, p_51529_, false));
+     }
+ 
+@@ -358,7 +_,8 @@
  
      @Override
      protected BlockState mirror(BlockState p_51549_, Mirror p_51550_) {
@@ -10,3 +128,17 @@
      }
  
      @Override
+@@ -377,13 +_,5 @@
+         if (blockentity instanceof ChestBlockEntity) {
+             ((ChestBlockEntity)blockentity).recheckOpen();
+         }
+-    }
+-
+-    public SoundEvent getOpenChestSound() {
+-        return this.openSound;
+-    }
+-
+-    public SoundEvent getCloseChestSound() {
+-        return this.closeSound;
+     }
+ }

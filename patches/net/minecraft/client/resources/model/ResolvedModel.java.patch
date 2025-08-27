@@ -9,11 +9,14 @@
      }
  
      static TextureAtlasSprite resolveParticleSprite(TextureSlots p_404698_, ModelBaker p_405533_, ModelDebugName p_405824_) {
-@@ -122,7 +_,16 @@
+@@ -122,10 +_,16 @@
          ItemTransform itemtransform5 = findTopTransform(p_404681_, ItemDisplayContext.GUI);
          ItemTransform itemtransform6 = findTopTransform(p_404681_, ItemDisplayContext.GROUND);
          ItemTransform itemtransform7 = findTopTransform(p_404681_, ItemDisplayContext.FIXED);
--        return new ItemTransforms(itemtransform, itemtransform1, itemtransform2, itemtransform3, itemtransform4, itemtransform5, itemtransform6, itemtransform7);
+-        ItemTransform itemtransform8 = findTopTransform(p_404681_, ItemDisplayContext.ON_SHELF);
+-        return new ItemTransforms(
+-            itemtransform, itemtransform1, itemtransform2, itemtransform3, itemtransform4, itemtransform5, itemtransform6, itemtransform7, itemtransform8
+-        );
 +        com.google.common.collect.ImmutableMap.Builder<ItemDisplayContext, ItemTransform> moddedTransforms = com.google.common.collect.ImmutableMap.builder();
 +        for (ItemDisplayContext context : ItemDisplayContext.values()) {
 +            if (context.isModded()) {

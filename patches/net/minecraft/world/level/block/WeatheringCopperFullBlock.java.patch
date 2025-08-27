@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/WeatheringCopperFullBlock.java
++++ b/net/minecraft/world/level/block/WeatheringCopperFullBlock.java
+@@ -11,8 +_,8 @@
+ 
+ public class WeatheringCopperFullBlock extends Block implements WeatheringCopper {
+     public static final MapCodec<WeatheringCopperFullBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432697_ -> p_432697_.group(WeatheringCopper.WeatherState.CODEC.fieldOf("weathering_state").forGetter(ChangeOverTimeBlock::getAge), propertiesCodec())
+-            .apply(p_432697_, WeatheringCopperFullBlock::new)
++        p_368452_ -> p_368452_.group(WeatheringCopper.WeatherState.CODEC.fieldOf("weathering_state").forGetter(ChangeOverTimeBlock::getAge), propertiesCodec())
++            .apply(p_368452_, WeatheringCopperFullBlock::new)
+     );
+     private final WeatheringCopper.WeatherState weatherState;
+ 

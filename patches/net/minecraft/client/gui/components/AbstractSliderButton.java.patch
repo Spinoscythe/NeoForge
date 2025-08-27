@@ -1,0 +1,24 @@
+--- a/net/minecraft/client/gui/components/AbstractSliderButton.java
++++ b/net/minecraft/client/gui/components/AbstractSliderButton.java
+@@ -52,11 +_,7 @@
+         p_168798_.add(NarratedElementType.TITLE, this.createNarrationMessage());
+         if (this.active) {
+             if (this.isFocused()) {
+-                if (this.canChangeValue) {
+-                    p_168798_.add(NarratedElementType.USAGE, Component.translatable("narration.slider.usage.focused"));
+-                } else {
+-                    p_168798_.add(NarratedElementType.USAGE, Component.translatable("narration.slider.usage.focused.keyboard_cannot_change_value"));
+-                }
++                p_168798_.add(NarratedElementType.USAGE, Component.translatable("narration.slider.usage.focused"));
+             } else {
+                 p_168798_.add(NarratedElementType.USAGE, Component.translatable("narration.slider.usage.hovered"));
+             }
+@@ -83,7 +_,7 @@
+     }
+ 
+     @Override
+-    public void onClick(double p_93588_, double p_93589_, boolean p_434040_) {
++    public void onClick(double p_93588_, double p_93589_) {
+         this.setValueFromMouse(p_93588_);
+     }
+ 

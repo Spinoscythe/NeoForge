@@ -1,0 +1,28 @@
+--- a/net/minecraft/client/gui/screens/worldselection/EditWorldScreen.java
++++ b/net/minecraft/client/gui/screens/worldselection/EditWorldScreen.java
+@@ -20,7 +_,6 @@
+ import net.minecraft.client.gui.layouts.FrameLayout;
+ import net.minecraft.client.gui.layouts.LinearLayout;
+ import net.minecraft.client.gui.layouts.SpacerElement;
+-import net.minecraft.client.gui.navigation.CommonInputs;
+ import net.minecraft.client.gui.screens.BackupConfirmScreen;
+ import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.nbt.NbtException;
+@@ -133,17 +_,6 @@
+     protected void repositionElements() {
+         this.layout.arrangeElements();
+         FrameLayout.centerInRectangle(this.layout, this.getRectangle());
+-    }
+-
+-    @Override
+-    public boolean keyPressed(int p_440121_, int p_440033_, int p_440005_) {
+-        if (this.nameEdit.isFocused() && CommonInputs.confirm(p_440121_)) {
+-            this.onRename(this.nameEdit.getValue());
+-            this.onClose();
+-            return true;
+-        } else {
+-            return super.keyPressed(p_440121_, p_440033_, p_440005_);
+-        }
+     }
+ 
+     @Override

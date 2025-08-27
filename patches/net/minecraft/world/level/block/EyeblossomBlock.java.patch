@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/block/EyeblossomBlock.java
++++ b/net/minecraft/world/level/block/EyeblossomBlock.java
+@@ -27,8 +_,8 @@
+ 
+ public class EyeblossomBlock extends FlowerBlock {
+     public static final MapCodec<EyeblossomBlock> CODEC = RecordCodecBuilder.mapCodec(
+-        p_432663_ -> p_432663_.group(Codec.BOOL.fieldOf("open").forGetter(p_383069_ -> p_383069_.type.open), propertiesCodec())
+-            .apply(p_432663_, EyeblossomBlock::new)
++        p_383166_ -> p_383166_.group(Codec.BOOL.fieldOf("open").forGetter(p_383069_ -> p_383069_.type.open), propertiesCodec())
++            .apply(p_383166_, EyeblossomBlock::new)
+     );
+     private static final int EYEBLOSSOM_XZ_RANGE = 3;
+     private static final int EYEBLOSSOM_Y_RANGE = 2;

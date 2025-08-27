@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/renderer/entity/BoggedRenderer.java
++++ b/net/minecraft/client/renderer/entity/BoggedRenderer.java
+@@ -15,7 +_,7 @@
+     private static final ResourceLocation BOGGED_OUTER_LAYER_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/skeleton/bogged_overlay.png");
+ 
+     public BoggedRenderer(EntityRendererProvider.Context p_326938_) {
+-        super(p_326938_, ModelLayers.BOGGED_ARMOR, new BoggedModel(p_326938_.bakeLayer(ModelLayers.BOGGED)));
++        super(p_326938_, ModelLayers.BOGGED_INNER_ARMOR, ModelLayers.BOGGED_OUTER_ARMOR, new BoggedModel(p_326938_.bakeLayer(ModelLayers.BOGGED)));
+         this.addLayer(new SkeletonClothingLayer<>(this, p_326938_.getModelSet(), ModelLayers.BOGGED_OUTER_LAYER, BOGGED_OUTER_LAYER_LOCATION));
+     }
+ 

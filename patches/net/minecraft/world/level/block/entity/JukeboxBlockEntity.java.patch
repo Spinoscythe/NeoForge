@@ -1,0 +1,25 @@
+--- a/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/JukeboxBlockEntity.java
+@@ -46,7 +_,7 @@
+     }
+ 
+     public void popOutTheItem() {
+-        if (this.level != null && !this.level.isClientSide()) {
++        if (this.level != null && !this.level.isClientSide) {
+             BlockPos blockpos = this.getBlockPos();
+             ItemStack itemstack = this.getTheItem();
+             if (!itemstack.isEmpty()) {
+@@ -119,13 +_,6 @@
+         } else {
+             this.jukeboxSongPlayer.stop(this.level, this.getBlockState());
+         }
+-    }
+-
+-    @Override
+-    public void setRemoved() {
+-        super.setRemoved();
+-        this.level.gameEvent(GameEvent.JUKEBOX_STOP_PLAY, this.getBlockPos(), GameEvent.Context.of(this.getBlockState()));
+-        this.level.levelEvent(1011, this.getBlockPos(), 0);
+     }
+ 
+     @Override

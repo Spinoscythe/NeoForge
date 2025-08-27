@@ -1,6 +1,22 @@
 --- a/net/minecraft/world/entity/ai/attributes/DefaultAttributes.java
 +++ b/net/minecraft/world/entity/ai/attributes/DefaultAttributes.java
-@@ -178,11 +_,12 @@
+@@ -34,7 +_,6 @@
+ import net.minecraft.world.entity.animal.armadillo.Armadillo;
+ import net.minecraft.world.entity.animal.axolotl.Axolotl;
+ import net.minecraft.world.entity.animal.camel.Camel;
+-import net.minecraft.world.entity.animal.coppergolem.CopperGolem;
+ import net.minecraft.world.entity.animal.frog.Frog;
+ import net.minecraft.world.entity.animal.frog.Tadpole;
+ import net.minecraft.world.entity.animal.goat.Goat;
+@@ -103,7 +_,6 @@
+         .put(EntityType.CAVE_SPIDER, CaveSpider.createCaveSpider().build())
+         .put(EntityType.CHICKEN, Chicken.createAttributes().build())
+         .put(EntityType.COD, AbstractFish.createAttributes().build())
+-        .put(EntityType.COPPER_GOLEM, CopperGolem.createAttributes().build())
+         .put(EntityType.COW, Cow.createAttributes().build())
+         .put(EntityType.CREAKING, Creaking.createAttributes().build())
+         .put(EntityType.CREEPER, Creeper.createAttributes().build())
+@@ -180,11 +_,12 @@
          .build();
  
      public static AttributeSupplier getSupplier(EntityType<? extends LivingEntity> p_22298_) {

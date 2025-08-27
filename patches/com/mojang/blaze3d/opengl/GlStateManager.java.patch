@@ -1,6 +1,26 @@
 --- a/com/mojang/blaze3d/opengl/GlStateManager.java
 +++ b/com/mojang/blaze3d/opengl/GlStateManager.java
-@@ -39,6 +_,7 @@
+@@ -7,8 +_,11 @@
+ import com.mojang.jtracy.Plot;
+ import com.mojang.jtracy.TracyClient;
+ import java.nio.ByteBuffer;
++import java.nio.FloatBuffer;
++import java.nio.IntBuffer;
+ import java.util.stream.IntStream;
+ import javax.annotation.Nullable;
++import net.minecraft.Util;
+ import net.neoforged.api.distmarker.Dist;
+ import net.neoforged.api.distmarker.OnlyIn;
+ import org.lwjgl.PointerBuffer;
+@@ -26,6 +_,7 @@
+ @OnlyIn(Dist.CLIENT)
+ @DontObfuscate
+ public class GlStateManager {
++    private static final boolean ON_LINUX = Util.getPlatform() == Util.OS.LINUX;
+     private static final Plot PLOT_TEXTURES = TracyClient.createPlot("GPU Textures");
+     private static int numTextures = 0;
+     private static final Plot PLOT_BUFFERS = TracyClient.createPlot("GPU Buffers");
+@@ -35,6 +_,7 @@
      private static final GlStateManager.CullState CULL = new GlStateManager.CullState();
      private static final GlStateManager.PolygonOffsetState POLY_OFFSET = new GlStateManager.PolygonOffsetState();
      private static final GlStateManager.ColorLogicState COLOR_LOGIC = new GlStateManager.ColorLogicState();
@@ -8,7 +28,120 @@
      private static final GlStateManager.ScissorState SCISSOR = new GlStateManager.ScissorState();
      private static int activeTexture;
      private static final GlStateManager.TextureState[] TEXTURES = IntStream.range(0, 12)
-@@ -642,5 +_,120 @@
+@@ -178,11 +_,46 @@
+         return GL20.glGetUniformLocation(p_412693_, p_412767_);
+     }
+ 
++    public static void _glUniform1(int p_412745_, IntBuffer p_412781_) {
++        RenderSystem.assertOnRenderThread();
++        GL20.glUniform1iv(p_412745_, p_412781_);
++    }
++
+     public static void _glUniform1i(int p_412109_, int p_412740_) {
+         RenderSystem.assertOnRenderThread();
+         GL20.glUniform1i(p_412109_, p_412740_);
+     }
+ 
++    public static void _glUniform1(int p_412157_, FloatBuffer p_412479_) {
++        RenderSystem.assertOnRenderThread();
++        GL20.glUniform1fv(p_412157_, p_412479_);
++    }
++
++    public static void _glUniform2(int p_412186_, FloatBuffer p_412695_) {
++        RenderSystem.assertOnRenderThread();
++        GL20.glUniform2fv(p_412186_, p_412695_);
++    }
++
++    public static void _glUniform3(int p_412302_, IntBuffer p_412623_) {
++        RenderSystem.assertOnRenderThread();
++        GL20.glUniform3iv(p_412302_, p_412623_);
++    }
++
++    public static void _glUniform3(int p_412156_, FloatBuffer p_412202_) {
++        RenderSystem.assertOnRenderThread();
++        GL20.glUniform3fv(p_412156_, p_412202_);
++    }
++
++    public static void _glUniform4(int p_412399_, FloatBuffer p_412778_) {
++        RenderSystem.assertOnRenderThread();
++        GL20.glUniform4fv(p_412399_, p_412778_);
++    }
++
++    public static void _glUniformMatrix4(int p_412478_, FloatBuffer p_412526_) {
++        RenderSystem.assertOnRenderThread();
++        GL20.glUniformMatrix4fv(p_412478_, false, p_412526_);
++    }
++
+     public static void _glBindAttribLocation(int p_412646_, int p_412124_, CharSequence p_412306_) {
+         RenderSystem.assertOnRenderThread();
+         GL20.glBindAttribLocation(p_412646_, p_412124_, p_412306_);
+@@ -273,13 +_,6 @@
+     public static void _glDeleteFramebuffers(int p_412563_) {
+         RenderSystem.assertOnRenderThread();
+         GL30.glDeleteFramebuffers(p_412563_);
+-        if (readFbo == p_412563_) {
+-            readFbo = 0;
+-        }
+-
+-        if (writeFbo == p_412563_) {
+-            writeFbo = 0;
+-        }
+     }
+ 
+     public static int glGenFramebuffers() {
+@@ -292,6 +_,11 @@
+         GL30.glFramebufferTexture2D(p_412121_, p_412761_, p_412688_, p_412161_, p_412731_);
+     }
+ 
++    public static void glActiveTexture(int p_412764_) {
++        RenderSystem.assertOnRenderThread();
++        GL13.glActiveTexture(p_412764_);
++    }
++
+     public static void glBlendFuncSeparate(int p_412333_, int p_412425_, int p_412352_, int p_412353_) {
+         RenderSystem.assertOnRenderThread();
+         GL14.glBlendFuncSeparate(p_412333_, p_412425_, p_412352_, p_412353_);
+@@ -363,7 +_,7 @@
+         RenderSystem.assertOnRenderThread();
+         if (activeTexture != p_412206_ - 33984) {
+             activeTexture = p_412206_ - 33984;
+-            GL13.glActiveTexture(p_412206_);
++            glActiveTexture(p_412206_);
+         }
+     }
+ 
+@@ -405,11 +_,15 @@
+         }
+     }
+ 
++    public static int _getActiveTexture() {
++        return activeTexture + 33984;
++    }
++
+     public static void _texImage2D(
+-        int p_412310_, int p_412419_, int p_412630_, int p_412350_, int p_412242_, int p_412290_, int p_412363_, int p_412035_, @Nullable ByteBuffer p_436805_
++        int p_412310_, int p_412419_, int p_412630_, int p_412350_, int p_412242_, int p_412290_, int p_412363_, int p_412035_, @Nullable IntBuffer p_412583_
+     ) {
+         RenderSystem.assertOnRenderThread();
+-        GL11.glTexImage2D(p_412310_, p_412419_, p_412630_, p_412350_, p_412242_, p_412290_, p_412363_, p_412035_, p_436805_);
++        GL11.glTexImage2D(p_412310_, p_412419_, p_412630_, p_412350_, p_412242_, p_412290_, p_412363_, p_412035_, p_412583_);
+     }
+ 
+     public static void _texSubImage2D(
+@@ -420,10 +_,10 @@
+     }
+ 
+     public static void _texSubImage2D(
+-        int p_412117_, int p_412548_, int p_412368_, int p_412679_, int p_412432_, int p_412239_, int p_412198_, int p_412304_, ByteBuffer p_436763_
++        int p_412117_, int p_412548_, int p_412368_, int p_412679_, int p_412432_, int p_412239_, int p_412198_, int p_412304_, IntBuffer p_412510_
+     ) {
+         RenderSystem.assertOnRenderThread();
+-        GL11.glTexSubImage2D(p_412117_, p_412548_, p_412368_, p_412679_, p_412432_, p_412239_, p_412198_, p_412304_, p_436763_);
++        GL11.glTexSubImage2D(p_412117_, p_412548_, p_412368_, p_412679_, p_412432_, p_412239_, p_412198_, p_412304_, p_412510_);
+     }
+ 
+     public static void _viewport(int p_412768_, int p_412268_, int p_412374_, int p_412660_) {
+@@ -601,5 +_,120 @@
      @OnlyIn(Dist.CLIENT)
      static class TextureState {
          public int binding;

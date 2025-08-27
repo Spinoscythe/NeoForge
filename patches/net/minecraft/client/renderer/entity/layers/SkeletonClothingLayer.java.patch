@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/renderer/entity/layers/SkeletonClothingLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/SkeletonClothingLayer.java
+@@ -5,7 +_,7 @@
+ import net.minecraft.client.model.SkeletonModel;
+ import net.minecraft.client.model.geom.EntityModelSet;
+ import net.minecraft.client.model.geom.ModelLayerLocation;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.SkeletonRenderState;
+ import net.minecraft.resources.ResourceLocation;
+@@ -23,7 +_,7 @@
+         this.layerModel = new SkeletonModel<>(p_326830_.bakeLayer(p_326794_));
+     }
+ 
+-    public void submit(PoseStack p_435743_, SubmitNodeCollector p_435711_, int p_434500_, S p_436040_, float p_434917_, float p_435872_) {
+-        coloredCutoutModelCopyLayerRender(this.layerModel, this.clothesLocation, p_435743_, p_435711_, p_434500_, p_436040_, -1, 1);
++    public void render(PoseStack p_326898_, MultiBufferSource p_326791_, int p_326885_, S p_361596_, float p_326921_, float p_326877_) {
++        coloredCutoutModelCopyLayerRender(this.layerModel, this.clothesLocation, p_326898_, p_326791_, p_326885_, p_361596_, -1);
+     }
+ }

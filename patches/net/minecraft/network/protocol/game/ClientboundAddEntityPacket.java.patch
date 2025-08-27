@@ -1,0 +1,86 @@
+--- a/net/minecraft/network/protocol/game/ClientboundAddEntityPacket.java
++++ b/net/minecraft/network/protocol/game/ClientboundAddEntityPacket.java
+@@ -18,13 +_,17 @@
+     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundAddEntityPacket> STREAM_CODEC = Packet.codec(
+         ClientboundAddEntityPacket::write, ClientboundAddEntityPacket::new
+     );
++    private static final double MAGICAL_QUANTIZATION = 8000.0;
++    private static final double LIMIT = 3.9;
+     private final int id;
+     private final UUID uuid;
+     private final EntityType<?> type;
+     private final double x;
+     private final double y;
+     private final double z;
+-    private final Vec3 movement;
++    private final int xa;
++    private final int ya;
++    private final int za;
+     private final byte xRot;
+     private final byte yRot;
+     private final byte yHeadRot;
+@@ -84,12 +_,14 @@
+         this.x = p_237548_;
+         this.y = p_237549_;
+         this.z = p_237550_;
+-        this.movement = p_237555_;
+         this.xRot = Mth.packDegrees(p_237551_);
+         this.yRot = Mth.packDegrees(p_237552_);
+         this.yHeadRot = Mth.packDegrees((float)p_237556_);
+         this.type = p_237553_;
+         this.data = p_237554_;
++        this.xa = (int)(Mth.clamp(p_237555_.x, -3.9, 3.9) * 8000.0);
++        this.ya = (int)(Mth.clamp(p_237555_.y, -3.9, 3.9) * 8000.0);
++        this.za = (int)(Mth.clamp(p_237555_.z, -3.9, 3.9) * 8000.0);
+     }
+ 
+     private ClientboundAddEntityPacket(RegistryFriendlyByteBuf p_319919_) {
+@@ -99,11 +_,13 @@
+         this.x = p_319919_.readDouble();
+         this.y = p_319919_.readDouble();
+         this.z = p_319919_.readDouble();
+-        this.movement = p_319919_.readLpVec3();
+         this.xRot = p_319919_.readByte();
+         this.yRot = p_319919_.readByte();
+         this.yHeadRot = p_319919_.readByte();
+         this.data = p_319919_.readVarInt();
++        this.xa = p_319919_.readShort();
++        this.ya = p_319919_.readShort();
++        this.za = p_319919_.readShort();
+     }
+ 
+     private void write(RegistryFriendlyByteBuf p_320192_) {
+@@ -113,11 +_,13 @@
+         p_320192_.writeDouble(this.x);
+         p_320192_.writeDouble(this.y);
+         p_320192_.writeDouble(this.z);
+-        p_320192_.writeLpVec3(this.movement);
+         p_320192_.writeByte(this.xRot);
+         p_320192_.writeByte(this.yRot);
+         p_320192_.writeByte(this.yHeadRot);
+         p_320192_.writeVarInt(this.data);
++        p_320192_.writeShort(this.xa);
++        p_320192_.writeShort(this.ya);
++        p_320192_.writeShort(this.za);
+     }
+ 
+     @Override
+@@ -153,8 +_,16 @@
+         return this.z;
+     }
+ 
+-    public Vec3 getMovement() {
+-        return this.movement;
++    public double getXa() {
++        return this.xa / 8000.0;
++    }
++
++    public double getYa() {
++        return this.ya / 8000.0;
++    }
++
++    public double getZa() {
++        return this.za / 8000.0;
+     }
+ 
+     public float getXRot() {

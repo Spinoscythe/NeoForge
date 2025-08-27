@@ -1,0 +1,29 @@
+--- a/net/minecraft/client/renderer/entity/layers/EyesLayer.java
++++ b/net/minecraft/client/renderer/entity/layers/EyesLayer.java
+@@ -1,9 +_,10 @@
+ package net.minecraft.client.renderer.entity.layers;
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import net.minecraft.client.model.EntityModel;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.RenderLayerParent;
+ import net.minecraft.client.renderer.entity.state.EntityRenderState;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+@@ -17,11 +_,9 @@
+     }
+ 
+     @Override
+-    public void submit(PoseStack p_433452_, SubmitNodeCollector p_433171_, int p_434650_, S p_435883_, float p_433542_, float p_435619_) {
+-        p_433171_.order(1)
+-            .submitModel(
+-                this.getParentModel(), p_435883_, p_433452_, this.renderType(), p_434650_, OverlayTexture.NO_OVERLAY, -1, null, p_435883_.outlineColor, null
+-            );
++    public void render(PoseStack p_116983_, MultiBufferSource p_116984_, int p_116985_, S p_363277_, float p_116987_, float p_116988_) {
++        VertexConsumer vertexconsumer = p_116984_.getBuffer(this.renderType());
++        this.getParentModel().renderToBuffer(p_116983_, vertexconsumer, p_116985_, OverlayTexture.NO_OVERLAY);
+     }
+ 
+     public abstract RenderType renderType();

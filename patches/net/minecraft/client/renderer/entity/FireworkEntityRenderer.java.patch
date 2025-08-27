@@ -1,0 +1,40 @@
+--- a/net/minecraft/client/renderer/entity/FireworkEntityRenderer.java
++++ b/net/minecraft/client/renderer/entity/FireworkEntityRenderer.java
+@@ -2,7 +_,7 @@
+ 
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.math.Axis;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.entity.state.FireworkRocketRenderState;
+ import net.minecraft.client.renderer.item.ItemModelResolver;
+ import net.minecraft.client.renderer.texture.OverlayTexture;
+@@ -20,18 +_,18 @@
+         this.itemModelResolver = p_174114_.getItemModelResolver();
+     }
+ 
+-    public void submit(FireworkRocketRenderState p_434540_, PoseStack p_433240_, SubmitNodeCollector p_433704_) {
+-        p_433240_.pushPose();
+-        p_433240_.mulPose(this.entityRenderDispatcher.cameraOrientation());
+-        if (p_434540_.isShotAtAngle) {
+-            p_433240_.mulPose(Axis.ZP.rotationDegrees(180.0F));
+-            p_433240_.mulPose(Axis.YP.rotationDegrees(180.0F));
+-            p_433240_.mulPose(Axis.XP.rotationDegrees(90.0F));
++    public void render(FireworkRocketRenderState p_362873_, PoseStack p_114659_, MultiBufferSource p_114660_, int p_114661_) {
++        p_114659_.pushPose();
++        p_114659_.mulPose(this.entityRenderDispatcher.cameraOrientation());
++        if (p_362873_.isShotAtAngle) {
++            p_114659_.mulPose(Axis.ZP.rotationDegrees(180.0F));
++            p_114659_.mulPose(Axis.YP.rotationDegrees(180.0F));
++            p_114659_.mulPose(Axis.XP.rotationDegrees(90.0F));
+         }
+ 
+-        p_434540_.item.submit(p_433240_, p_433704_, p_434540_.lightCoords, OverlayTexture.NO_OVERLAY, p_434540_.outlineColor);
+-        p_433240_.popPose();
+-        super.submit(p_434540_, p_433240_, p_433704_);
++        p_362873_.item.render(p_114659_, p_114660_, p_114661_, OverlayTexture.NO_OVERLAY);
++        p_114659_.popPose();
++        super.render(p_362873_, p_114659_, p_114660_, p_114661_);
+     }
+ 
+     public FireworkRocketRenderState createRenderState() {

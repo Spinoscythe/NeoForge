@@ -1,0 +1,13 @@
+--- a/net/minecraft/world/level/levelgen/Heightmap.java
++++ b/net/minecraft/world/level/levelgen/Heightmap.java
+@@ -128,7 +_,9 @@
+         if (along.length == p_158367_.length) {
+             System.arraycopy(p_158367_, 0, along, 0, p_158367_.length);
+         } else {
+-            LOGGER.warn("Ignoring heightmap data for chunk {}, size does not match; expected: {}, got: {}", p_158365_.getPos(), along.length, p_158367_.length);
++            LOGGER.warn(
++                "Ignoring heightmap data for chunk " + p_158365_.getPos() + ", size does not match; expected: " + along.length + ", got: " + p_158367_.length
++            );
+             primeHeightmaps(p_158365_, EnumSet.of(p_158366_));
+         }
+     }

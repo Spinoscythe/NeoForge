@@ -1,0 +1,13 @@
+--- a/net/minecraft/client/multiplayer/ProfileKeyPairManager.java
++++ b/net/minecraft/client/multiplayer/ProfileKeyPairManager.java
+@@ -24,7 +_,9 @@
+     };
+ 
+     static ProfileKeyPairManager create(UserApiService p_253925_, User p_254501_, Path p_254206_) {
+-        return new AccountProfileKeyPairManager(p_253925_, p_254501_.getProfileId(), p_254206_);
++        return (ProfileKeyPairManager)(p_254501_.getType() == User.Type.MSA
++            ? new AccountProfileKeyPairManager(p_253925_, p_254501_.getProfileId(), p_254206_)
++            : EMPTY_KEY_MANAGER);
+     }
+ 
+     CompletableFuture<Optional<ProfileKeyPair>> prepareKeyPair();

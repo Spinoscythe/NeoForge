@@ -1,5 +1,23 @@
 --- a/net/minecraft/world/entity/animal/Bee.java
 +++ b/net/minecraft/world/entity/animal/Bee.java
+@@ -350,7 +_,7 @@
+     }
+ 
+     public static boolean isNightOrRaining(Level p_368571_) {
+-        return p_368571_.dimensionType().hasSkyLight() && p_368571_.dimension() != Level.END && (p_368571_.isDarkOutside() || p_368571_.isRaining());
++        return p_368571_.dimensionType().hasSkyLight() && (p_368571_.isDarkOutside() || p_368571_.isRaining());
+     }
+ 
+     public void setStayOutOfHiveCountdown(int p_27916_) {
+@@ -474,7 +_,7 @@
+     @Override
+     public void aiStep() {
+         super.aiStep();
+-        if (!this.level().isClientSide()) {
++        if (!this.level().isClientSide) {
+             if (this.stayOutOfHiveCountdown > 0) {
+                 this.stayOutOfHiveCountdown--;
+             }
 @@ -500,7 +_,7 @@
          if (this.hivePos == null) {
              return null;
@@ -8,6 +26,15 @@
 +            return this.isTooFarAway(this.hivePos) ? null : this.level().getBlockEntity(this.hivePos) instanceof BeehiveBlockEntity hive ? hive : null;
          }
      }
+ 
+@@ -588,7 +_,7 @@
+             MobEffectInstance mobeffectinstance = flowerblock.getBeeInteractionEffect();
+             if (mobeffectinstance != null) {
+                 this.usePlayerItem(p_383058_, p_383220_, itemstack);
+-                if (!this.level().isClientSide()) {
++                if (!this.level().isClientSide) {
+                     this.addEffect(mobeffectinstance);
+                 }
  
 @@ -663,8 +_,18 @@
      }

@@ -1,0 +1,11 @@
+--- a/net/minecraft/client/gui/render/state/GuiElementRenderState.java
++++ b/net/minecraft/client/gui/render/state/GuiElementRenderState.java
+@@ -10,7 +_,7 @@
+ 
+ @OnlyIn(Dist.CLIENT)
+ public interface GuiElementRenderState extends ScreenArea {
+-    void buildVertices(VertexConsumer p_415710_);
++    void buildVertices(VertexConsumer p_415710_, float p_418216_);
+ 
+     RenderPipeline pipeline();
+ 

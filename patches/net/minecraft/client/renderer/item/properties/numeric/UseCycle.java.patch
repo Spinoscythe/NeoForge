@@ -1,0 +1,22 @@
+--- a/net/minecraft/client/renderer/item/properties/numeric/UseCycle.java
++++ b/net/minecraft/client/renderer/item/properties/numeric/UseCycle.java
+@@ -6,7 +_,6 @@
+ import javax.annotation.Nullable;
+ import net.minecraft.client.multiplayer.ClientLevel;
+ import net.minecraft.util.ExtraCodecs;
+-import net.minecraft.world.entity.ItemOwner;
+ import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.item.ItemStack;
+ import net.neoforged.api.distmarker.Dist;
+@@ -19,9 +_,8 @@
+     );
+ 
+     @Override
+-    public float get(ItemStack p_387347_, @Nullable ClientLevel p_388372_, @Nullable ItemOwner p_435901_, int p_388681_) {
+-        LivingEntity livingentity = p_435901_ == null ? null : p_435901_.asLivingEntity();
+-        return livingentity != null && livingentity.getUseItem() == p_387347_ ? livingentity.getUseItemRemainingTicks() % this.period : 0.0F;
++    public float get(ItemStack p_387347_, @Nullable ClientLevel p_388372_, @Nullable LivingEntity p_387048_, int p_388681_) {
++        return p_387048_ != null && p_387048_.getUseItem() == p_387347_ ? p_387048_.getUseItemRemainingTicks() % this.period : 0.0F;
+     }
+ 
+     @Override

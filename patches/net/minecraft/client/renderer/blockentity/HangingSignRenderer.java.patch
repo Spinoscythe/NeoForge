@@ -1,0 +1,92 @@
+--- a/net/minecraft/client/renderer/blockentity/HangingSignRenderer.java
++++ b/net/minecraft/client/renderer/blockentity/HangingSignRenderer.java
+@@ -2,6 +_,7 @@
+ 
+ import com.google.common.collect.ImmutableMap;
+ import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexConsumer;
+ import com.mojang.math.Axis;
+ import java.util.Arrays;
+ import java.util.Map;
+@@ -14,14 +_,11 @@
+ import net.minecraft.client.model.geom.builders.LayerDefinition;
+ import net.minecraft.client.model.geom.builders.MeshDefinition;
+ import net.minecraft.client.model.geom.builders.PartDefinition;
++import net.minecraft.client.renderer.MultiBufferSource;
+ import net.minecraft.client.renderer.RenderType;
+ import net.minecraft.client.renderer.Sheets;
+-import net.minecraft.client.renderer.SubmitNodeCollector;
+-import net.minecraft.client.renderer.texture.OverlayTexture;
+ import net.minecraft.client.resources.model.Material;
+-import net.minecraft.client.resources.model.MaterialSet;
+ import net.minecraft.util.StringRepresentable;
+-import net.minecraft.util.Unit;
+ import net.minecraft.world.level.block.CeilingHangingSignBlock;
+ import net.minecraft.world.level.block.state.BlockState;
+ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+@@ -43,7 +_,7 @@
+     public static final float MODEL_RENDER_SCALE = 1.0F;
+     private static final float TEXT_RENDER_SCALE = 0.9F;
+     private static final Vec3 TEXT_OFFSET = new Vec3(0.0, -0.32F, 0.073F);
+-    private final Map<HangingSignRenderer.ModelKey, Model.Simple> hangingSignModels;
++    private final Map<HangingSignRenderer.ModelKey, Model> hangingSignModels;
+ 
+     public HangingSignRenderer(BlockEntityRendererProvider.Context p_248772_) {
+         super(p_248772_);
+@@ -55,12 +_,12 @@
+         this.hangingSignModels = stream.collect(
+             ImmutableMap.toImmutableMap(
+                 p_382879_ -> (HangingSignRenderer.ModelKey)p_382879_,
+-                p_432287_ -> createSignModel(p_248772_.entityModelSet(), p_432287_.woodType, p_432287_.attachmentType)
++                p_389337_ -> createSignModel(p_248772_.getModelSet(), p_389337_.woodType, p_389337_.attachmentType)
+             )
+         );
+     }
+ 
+-    public static Model.Simple createSignModel(EntityModelSet p_389708_, WoodType p_389565_, HangingSignRenderer.AttachmentType p_389605_) {
++    public static Model createSignModel(EntityModelSet p_389708_, WoodType p_389565_, HangingSignRenderer.AttachmentType p_389605_) {
+         return new Model.Simple(p_389708_.bakeLayer(ModelLayers.createHangingSignModelName(p_389565_, p_389605_)), RenderType::entityCutoutNoCull);
+     }
+ 
+@@ -86,7 +_,7 @@
+     }
+ 
+     @Override
+-    protected Model.Simple getSignModel(BlockState p_389435_, WoodType p_389454_) {
++    protected Model getSignModel(BlockState p_389435_, WoodType p_389454_) {
+         HangingSignRenderer.AttachmentType hangingsignrenderer$attachmenttype = HangingSignRenderer.AttachmentType.byBlockState(p_389435_);
+         return this.hangingSignModels.get(new HangingSignRenderer.ModelKey(p_389454_, hangingsignrenderer$attachmenttype));
+     }
+@@ -101,25 +_,13 @@
+         return TEXT_OFFSET;
+     }
+ 
+-    public static void submitSpecial(
+-        MaterialSet p_439449_, PoseStack p_438972_, SubmitNodeCollector p_440396_, int p_440554_, int p_439176_, Model.Simple p_439270_, Material p_439920_
+-    ) {
+-        p_438972_.pushPose();
+-        translateBase(p_438972_, 0.0F);
+-        p_438972_.scale(1.0F, -1.0F, -1.0F);
+-        p_440396_.submitModel(
+-            p_439270_,
+-            Unit.INSTANCE,
+-            p_438972_,
+-            p_439920_.renderType(p_439270_::renderType),
+-            p_440554_,
+-            p_439176_,
+-            -1,
+-            p_439449_.get(p_439920_),
+-            OverlayTexture.NO_OVERLAY,
+-            null
+-        );
+-        p_438972_.popPose();
++    public static void renderInHand(PoseStack p_389446_, MultiBufferSource p_389729_, int p_389488_, int p_389717_, Model p_389611_, Material p_389587_) {
++        p_389446_.pushPose();
++        translateBase(p_389446_, 0.0F);
++        p_389446_.scale(1.0F, -1.0F, -1.0F);
++        VertexConsumer vertexconsumer = p_389587_.buffer(p_389729_, p_389611_::renderType);
++        p_389611_.renderToBuffer(p_389446_, vertexconsumer, p_389488_, p_389717_);
++        p_389446_.popPose();
+     }
+ 
+     public static LayerDefinition createHangingSignLayer(HangingSignRenderer.AttachmentType p_382784_) {

@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/gui/components/ItemDisplayWidget.java
++++ b/net/minecraft/client/gui/components/ItemDisplayWidget.java
+@@ -46,16 +_,12 @@
+         }
+ 
+         if (this.isFocused()) {
+-            p_425745_.submitOutline(this.getX(), this.getY(), this.getWidth(), this.getHeight(), -1);
++            p_425745_.renderOutline(this.getX(), this.getY(), this.getWidth(), this.getHeight(), -1);
+         }
+ 
+         if (this.tooltip && this.isHoveredOrFocused()) {
+-            this.renderTooltip(p_425745_, p_425710_, p_425986_);
++            p_425745_.setTooltipForNextFrame(this.minecraft.font, this.itemStack, p_425710_, p_425986_);
+         }
+-    }
+-
+-    protected void renderTooltip(GuiGraphics p_440462_, int p_439191_, int p_439103_) {
+-        p_440462_.setTooltipForNextFrame(this.minecraft.font, this.itemStack, p_439191_, p_439103_);
+     }
+ 
+     @Override

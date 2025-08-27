@@ -1,0 +1,20 @@
+--- a/net/minecraft/server/ServerFunctionLibrary.java
++++ b/net/minecraft/server/ServerFunctionLibrary.java
+@@ -69,14 +_,13 @@
+ 
+     @Override
+     public CompletableFuture<Void> reload(
+-        PreparableReloadListener.SharedState p_433722_, Executor p_136061_, PreparableReloadListener.PreparationBarrier p_136057_, Executor p_136062_
++        PreparableReloadListener.PreparationBarrier p_136057_, ResourceManager p_136058_, Executor p_136061_, Executor p_136062_
+     ) {
+-        ResourceManager resourcemanager = p_433722_.resourceManager();
+         CompletableFuture<Map<ResourceLocation, List<TagLoader.EntryWithSource>>> completablefuture = CompletableFuture.supplyAsync(
+-            () -> this.tagsLoader.load(resourcemanager), p_136061_
++            () -> this.tagsLoader.load(p_136058_), p_136061_
+         );
+         CompletableFuture<Map<ResourceLocation, CompletableFuture<CommandFunction<CommandSourceStack>>>> completablefuture1 = CompletableFuture.<Map<ResourceLocation, Resource>>supplyAsync(
+-                () -> LISTER.listMatchingResources(resourcemanager), p_136061_
++                () -> LISTER.listMatchingResources(p_136058_), p_136061_
+             )
+             .thenCompose(
+                 p_248095_ -> {

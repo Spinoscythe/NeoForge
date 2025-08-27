@@ -1,6 +1,14 @@
 --- a/net/minecraft/world/item/HoeItem.java
 +++ b/net/minecraft/world/item/HoeItem.java
-@@ -22,6 +_,12 @@
+@@ -11,6 +_,7 @@
+ import net.minecraft.sounds.SoundEvents;
+ import net.minecraft.sounds.SoundSource;
+ import net.minecraft.world.InteractionResult;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.item.context.UseOnContext;
+ import net.minecraft.world.level.ItemLike;
+@@ -21,6 +_,12 @@
  import net.minecraft.world.level.gameevent.GameEvent;
  
  public class HoeItem extends Item {
@@ -13,7 +21,7 @@
      protected static final Map<Block, Pair<Predicate<UseOnContext>, Consumer<UseOnContext>>> TILLABLES = Maps.newHashMap(
          ImmutableMap.of(
              Blocks.GRASS_BLOCK,
-@@ -45,7 +_,8 @@
+@@ -44,7 +_,8 @@
      public InteractionResult useOn(UseOnContext p_41341_) {
          Level level = p_41341_.getLevel();
          BlockPos blockpos = p_41341_.getClickedPos();
@@ -23,7 +31,20 @@
          if (pair == null) {
              return InteractionResult.PASS;
          } else {
-@@ -85,5 +_,10 @@
+@@ -53,10 +_,10 @@
+             if (predicate.test(p_41341_)) {
+                 Player player = p_41341_.getPlayer();
+                 level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+-                if (!level.isClientSide()) {
++                if (!level.isClientSide) {
+                     consumer.accept(p_41341_);
+                     if (player != null) {
+-                        p_41341_.getItemInHand().hurtAndBreak(1, player, p_41341_.getHand().asEquipmentSlot());
++                        p_41341_.getItemInHand().hurtAndBreak(1, player, LivingEntity.getSlotForHand(p_41341_.getHand()));
+                     }
+                 }
+ 
+@@ -84,5 +_,10 @@
  
      public static boolean onlyIfAirAbove(UseOnContext p_150857_) {
          return p_150857_.getClickedFace() != Direction.DOWN && p_150857_.getLevel().getBlockState(p_150857_.getClickedPos().above()).isAir();

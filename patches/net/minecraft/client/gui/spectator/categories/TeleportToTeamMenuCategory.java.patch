@@ -1,0 +1,21 @@
+--- a/net/minecraft/client/gui/spectator/categories/TeleportToTeamMenuCategory.java
++++ b/net/minecraft/client/gui/spectator/categories/TeleportToTeamMenuCategory.java
+@@ -1,5 +_,6 @@
+ package net.minecraft.client.gui.spectator.categories;
+ 
++import com.mojang.authlib.GameProfile;
+ import java.util.ArrayList;
+ import java.util.List;
+ import java.util.Optional;
+@@ -99,8 +_,9 @@
+             if (list.isEmpty()) {
+                 return Optional.empty();
+             } else {
+-                PlayerInfo playerinfo1 = list.get(RandomSource.create().nextInt(list.size()));
+-                return Optional.of(new TeleportToTeamMenuCategory.TeamSelectionItem(p_259058_, list, playerinfo1::getSkin));
++                GameProfile gameprofile = list.get(RandomSource.create().nextInt(list.size())).getProfile();
++                Supplier<PlayerSkin> supplier = p_260048_.getSkinManager().lookupInsecure(gameprofile);
++                return Optional.of(new TeleportToTeamMenuCategory.TeamSelectionItem(p_259058_, list, supplier));
+             }
+         }
+ 

@@ -1,0 +1,29 @@
+--- a/net/minecraft/world/level/block/HoneyBlock.java
++++ b/net/minecraft/world/level/block/HoneyBlock.java
+@@ -50,7 +_,7 @@
+     @Override
+     public void fallOn(Level p_153372_, BlockState p_153373_, BlockPos p_153374_, Entity p_153375_, double p_396999_) {
+         p_153375_.playSound(SoundEvents.HONEY_BLOCK_SLIDE, 1.0F, 1.0F);
+-        if (!p_153372_.isClientSide()) {
++        if (!p_153372_.isClientSide) {
+             p_153372_.broadcastEntityEvent(p_153375_, (byte)54);
+         }
+ 
+@@ -117,7 +_,7 @@
+                 p_53996_.playSound(SoundEvents.HONEY_BLOCK_SLIDE, 1.0F, 1.0F);
+             }
+ 
+-            if (!p_53995_.isClientSide() && p_53995_.random.nextInt(5) == 0) {
++            if (!p_53995_.isClientSide && p_53995_.random.nextInt(5) == 0) {
+                 p_53995_.broadcastEntityEvent(p_53996_, (byte)53);
+             }
+         }
+@@ -132,7 +_,7 @@
+     }
+ 
+     private static void showParticles(Entity p_53989_, int p_53990_) {
+-        if (p_53989_.level().isClientSide()) {
++        if (p_53989_.level().isClientSide) {
+             BlockState blockstate = Blocks.HONEY_BLOCK.defaultBlockState();
+ 
+             for (int i = 0; i < p_53990_; i++) {
