@@ -77,7 +77,21 @@
                              p_34297_.addFreshEntity(chicken1);
                          }
                      }
-@@ -575,6 +_,22 @@
+@@ -565,16 +_,36 @@
+                 .addOrReplacePermanentModifier(
+                     new AttributeModifier(LEADER_ZOMBIE_BONUS_ID, this.random.nextDouble() * 0.25 + 0.5, AttributeModifier.Operation.ADD_VALUE)
+                 );
++            var damageTaken = getMaxHealth() - getHealth();
+             this.getAttribute(Attributes.MAX_HEALTH)
+                 .addOrReplacePermanentModifier(
+                     new AttributeModifier(LEADER_ZOMBIE_BONUS_ID, this.random.nextDouble() * 3.0 + 1.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
+                 );
++            // Neo: fix MC-219981 by resetting the leader zombie's health based on the new max health
++            // without disregarding damage already taken (if any)
++            setHealth(getMaxHealth() - damageTaken);
+             this.setCanBreakDoors(true);
+         }
+     }
  
      protected void randomizeReinforcementsChance() {
          this.getAttribute(Attributes.SPAWN_REINFORCEMENTS_CHANCE).setBaseValue(this.random.nextDouble() * 0.1F);

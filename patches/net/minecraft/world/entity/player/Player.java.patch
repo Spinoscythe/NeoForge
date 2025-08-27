@@ -555,6 +555,15 @@
              }
          }
      }
+@@ -2019,7 +_,7 @@
+     }
+ 
+     public boolean isScoping() {
+-        return this.isUsingItem() && this.getUseItem().is(Items.SPYGLASS);
++        return this.isUsingItem() && this.getUseItem().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SPYGLASS_SCOPE);
+     }
+ 
+     @Override
 @@ -2077,16 +_,6 @@
          }
      }

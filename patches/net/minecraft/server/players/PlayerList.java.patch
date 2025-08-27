@@ -35,7 +35,7 @@
  
      public PlayerList(MinecraftServer p_203842_, LayeredRegistryAccess<RegistryLayer> p_251844_, PlayerDataStorage p_203844_, int p_203845_) {
          this.server = p_203842_;
-@@ -132,82 +_,119 @@
+@@ -132,82 +_,120 @@
      }
  
      public void placeNewPlayer(Connection p_11262_, ServerPlayer p_11263_, CommonListenerCookie p_301988_) {
@@ -185,12 +185,13 @@
 +            servergamepacketlistenerimpl.send(new ClientboundChangeDifficultyPacket(leveldata.getDifficulty(), leveldata.isDifficultyLocked()));
 +            servergamepacketlistenerimpl.send(new ClientboundPlayerAbilitiesPacket(p_11263_.getAbilities()));
 +            servergamepacketlistenerimpl.send(new ClientboundSetHeldSlotPacket(p_11263_.getInventory().getSelectedSlot()));
-+            var dataSyncEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.OnDatapackSyncEvent(this, p_11263_));
++            var dataSyncEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.OnDatapackSyncEvent.Pre(this, p_11263_));
 +            RecipeManager recipemanager = this.server.getRecipeManager();
 +            servergamepacketlistenerimpl.send(
 +                new ClientboundUpdateRecipesPacket(recipemanager.getSynchronizedItemProperties(), recipemanager.getSynchronizedStonecutterRecipes())
 +            );
 +            net.neoforged.neoforge.common.CommonHooks.sendRecipes(p_11263_, dataSyncEvent.getRecipeTypesToSend(), recipemanager.recipeMap());
++            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.OnDatapackSyncEvent.Post(this, p_11263_));
 +            this.sendPlayerPermissionLevel(p_11263_);
 +            p_11263_.getStats().markAllDirty();
 +            p_11263_.getRecipeBook().sendInitialRecipeBook(p_11263_);
@@ -469,7 +470,7 @@
              playeradvancements.reload(this.server.getAdvancements());
          }
  
-+        var dataSyncEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.OnDatapackSyncEvent(this, null));
++        var dataSyncEvent = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.OnDatapackSyncEvent.Pre(this, null));
          this.broadcastAll(new ClientboundUpdateTagsPacket(TagNetworkSerialization.serializeTagsToNetwork(this.registries)));
          RecipeManager recipemanager = this.server.getRecipeManager();
          ClientboundUpdateRecipesPacket clientboundupdaterecipespacket = new ClientboundUpdateRecipesPacket(
